@@ -1,5 +1,3 @@
-'use client';
-
 import { SwiperSlide } from 'swiper/react';
 import Slider from '@/components/ui/slider';
 import {
@@ -13,8 +11,6 @@ import {
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/scrollbar';
-import Image from 'next/image';
-import { placeholder } from '@/utils/shimmer-placeholder';
 
 export default function Trailers({ videos }: { videos: Video[] }) {
   // Filter to only get trailers from YouTube
@@ -38,12 +34,10 @@ export default function Trailers({ videos }: { videos: Video[] }) {
               >
                 <MorphingDialogTrigger className='group w-full overflow-hidden rounded-lg'>
                   <div className='relative aspect-video w-full'>
-                    <Image
+                    <img
                       src={`https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`}
                       alt={video.name}
                       className='h-full w-full object-cover'
-                      fill
-                      placeholder={placeholder}
                     />
                     <div className='absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:bg-black/50'>
                       <div className='flex h-12 w-12 items-center justify-center rounded-full bg-black/60 text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-black'>

@@ -1,12 +1,12 @@
-import Image from 'next/image';
-import Link from 'next/link';
+import { Button } from '@heroui/button';
 import { ReactNode } from 'react';
+import { Link } from 'react-router';
 
 export function NoResults({ children }: { children?: ReactNode }) {
   return (
     <div className='flex min-h-[500px] flex-1 flex-col items-center justify-center gap-1 text-center'>
       <div className='relative aspect-square w-[300px]'>
-        <Image src='/images/empty.svg' alt='' fill />
+        <img src='/images/empty.svg' alt='' className='h-full w-full object-contain' />
       </div>{' '}
       <h2 className='text-xl font-semibold text-Grey/50 sm:text-2xl'>Sorry, No results found</h2>
       <p className='font-medium text-Grey/300'>There are no movies or tv shows matching your search terms.</p>
@@ -27,7 +27,7 @@ export function EmptyWatchList({
   return (
     <div className={`flex min-h-[500px] flex-1 flex-col items-center justify-center gap-1 text-center ${className}`}>
       <div className='relative aspect-square w-[300px]'>
-        <Image src='/images/empty.svg' alt='' fill />
+        <img src='/images/empty.svg' alt='' className='h-full w-full object-contain' />
       </div>
       <h2 className='text-xl font-semibold text-Grey/50 sm:text-2xl'>{heading}</h2>
       <p className='font-medium text-Grey/300'>
@@ -35,20 +35,36 @@ export function EmptyWatchList({
         <br />
         Check your friends
         <Link
-          href='/suggestions'
+          to='/suggestions'
           className='mx-1 w-fit font-medium text-Primary/400 transition-colors duration-200 hover:text-Primary/500'
         >
           suggestions
         </Link>
         or
         <Link
-          href='/'
+          to='/'
           className='mx-1 w-fit font-medium text-Primary/400 transition-colors duration-200 hover:text-Primary/500'
         >
           add
         </Link>
         some {type === 'all' ? 'movies or tv shows' : type} to fill your list.
       </p>
+    </div>
+  );
+}
+
+export function Error({ children, message = 'Something went wrong' }: { children?: ReactNode; message?: string }) {
+  return (
+    <div className='flex min-h-[500px] flex-1 flex-col items-center justify-center gap-1 text-center'>
+      <div className='relative aspect-square w-[300px]'>
+        <img src='/images/error.svg' alt='' className='h-full w-full object-contain' />
+      </div>
+      <h2 className='text-xl font-semibold text-Grey/50 sm:text-2xl'>Oops! An error occurred</h2>
+      <p className='font-medium text-Grey/300'>{message}</p>
+      <Button as={Link} to='/' className='mt-4' variant='ghost' color='secondary'>
+        Return to Home
+      </Button>
+      {children}
     </div>
   );
 }

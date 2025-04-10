@@ -1,49 +1,39 @@
 import { GENRES } from '@/lib/api/values';
 import { getMediaType, getRating, getReleaseYear, slugify } from '@/utils';
-import Image from 'next/image';
-import Link from 'next/link';
-import placeholderImage from '@/images/placeholder.png';
-import { placeholder } from '@/utils/shimmer-placeholder';
-import CardActions from './CardActions';
-import { getWatchlist } from '@/lib/db/watchlist';
-import { getSession } from '@/lib/db/user';
+import { Link } from 'react-router';
+import LazyImage from './ui/LazyImage';
+// import CardActions from './CardActions';
 
 const getLink = (type: string, id: number, title: string) => {
-  return `/${type === 'tv' ? 'tv' : 'movies'}/${id}-${slugify(title)}`;
+  return `/${type === 'tv' ? 'tv' : 'movies'}/details/${id}-${slugify(title)}`;
 };
 
-export default async function Card({ media }: { media: TvShow | Movie }) {
-  const session = await getSession();
-  const watchlist = session ? await getWatchlist() : null;
-
+export default function Card({
+  media /*, watchlist, user*/,
+}: {
+  media: TvShow | Movie /*; watchlist?: any; user?: any*/;
+}) {
   const { id, poster_path, vote_average, genre_ids } = media;
   const type = getMediaType(media);
   const title = type === 'movie' ? (media as Movie).title : (media as TvShow).name;
 
-  const isAdded = watchlist?.items?.some((item) => item?.media?.tmdb_id === media.id) || false;
+  // const isAdded = watchlist?.some((item: any) => item?.media?.tmdb_id === media.id) || false;
 
   return (
     <div className='group relative flex flex-col'>
-      <CardActions media={{ ...media, media_type: type }} isAdded={isAdded} user={watchlist?.owner as User} />
-      <Link href={getLink(type, id, title)} className='mb-3 w-full rounded-2xl'>
+      {/* <CardActions media={{ ...media, media_type: type }} isAdded={isAdded} user={user} /> */}
+      <Link to={getLink(type, id, title)} className='mb-3 w-full rounded-2xl'>
         <div className='relative h-[220px] w-full overflow-hidden rounded-2xl shadow-lg md:h-[250px] lg:h-[300px]'>
-          {media.poster_path ? (
-            <Image
-              src={`http://image.tmdb.org/t/p/w500${poster_path}`}
-              alt={title}
-              fill
-              sizes='100%'
-              className='object-cover object-center transition-transform duration-300 group-hover:scale-110'
-              placeholder={placeholder}
-            />
-          ) : (
-            <Image src={placeholderImage} placeholder={placeholder} alt={title} fill className='object-cover' />
-          )}
+          <LazyImage
+            src={poster_path ? `http://image.tmdb.org/t/p/w500${poster_path}` : '/images/placeholder.png'}
+            alt={title}
+            className='h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-110'
+          />
         </div>
       </Link>
       <div className='mb-2 flex items-center justify-between gap-1'>
         <Link
-          href={getLink(type, id,title)}
+          to={getLink(type, id, title)}
           className='mb-1 line-clamp-1 cursor-pointer text-ellipsis text-sm text-Primary/50 hover:text-Primary/200 sm:mb-2 md:text-base'
         >
           {title}

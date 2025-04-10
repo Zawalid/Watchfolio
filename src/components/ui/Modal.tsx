@@ -1,4 +1,4 @@
-import { Modal as M, ModalContent, ModalProps } from "@heroui/modal";
+import { Modal as M, ModalContent, ModalProps } from '@heroui/modal';
 
 interface Props extends ModalProps {
   children: React.ReactNode;

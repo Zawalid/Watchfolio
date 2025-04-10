@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { Button } from "@heroui/button";
+import { Button } from '@heroui/button';
 import Link from 'next/link';
 
 export const metadata = {

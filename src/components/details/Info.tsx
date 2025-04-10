@@ -1,15 +1,13 @@
-import { placeholder } from '@/utils/shimmer-placeholder';
 import { LANGUAGES } from '@/lib/api/values';
 import { getMediaType, getRating, getReleaseYear } from '@/utils';
-import Image from 'next/image';
 import { STAR_ICON } from '@/components/ui/Icons';
-
+import LazyImage from '../ui/LazyImage';
 
 /* 
 Watch Now : https://broflix.ci/tv/id | https://broflix.ci/movies/id
 */
 
-export function Info({ media }: { media: TvShowDetails | MovieDetails }) {
+export default function Info({ media }: { media: TvShowDetails | MovieDetails }) {
   const { vote_average, backdrop_path, poster_path, overview, original_language, genres } = media;
   const type = getMediaType(media);
 
@@ -19,7 +17,7 @@ export function Info({ media }: { media: TvShowDetails | MovieDetails }) {
 
   return (
     <>
-      <div className='absolute inset-0 top-[70px] min-h-dvh'>
+      <div className='absolute inset-0 max-h-[110vh]'>
         <div
           className='h-full w-full bg-cover bg-center bg-no-repeat'
           style={{
@@ -28,22 +26,19 @@ export function Info({ media }: { media: TvShowDetails | MovieDetails }) {
         />
         <div className='absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-black' />
       </div>
-      <div className='h-[95vh]  relative z-10 flex flex-col justify-center px-6 pt-40'>
+      <div className='relative z-10 flex h-[95vh] flex-col justify-center px-6 pt-40'>
         <div className='flex flex-col-reverse gap-6 md:flex-row md:gap-8'>
           <div className='relative aspect-[2/3] w-full max-w-[250px] overflow-hidden rounded-lg shadow-xl md:sticky md:top-24'>
-            <Image
+            <LazyImage
               src={poster_path ? `http://image.tmdb.org/t/p/original${poster_path}` : '/images/placeholder.png'}
               alt={title}
-              className='object-cover'
-              fill
-              placeholder={placeholder}
-              priority
+              className='h-full w-full object-cover'
             />
           </div>
 
           <div className='flex flex-1 flex-col gap-3'>
             <div className='space-y-2'>
-              <h1 className='text-3xl font-bold text-white md:text-4xl'>{title}</h1>
+              <h1 className='text-3xl font-bold leading-none text-white md:text-4xl'>{title}</h1>
               <div className='flex flex-wrap items-center gap-x-2 gap-y-2'>
                 <span className='text-sm text-gray-300'>{getReleaseYear(media)}</span>
                 <span className='text-gray-300'>●</span>
@@ -89,7 +84,7 @@ function MovieDetails({ details }: { details: MovieDetails }) {
         </div>
         <div className='flex items-center gap-2'>
           <span className='text-gray-400'>Run time</span>
-          <span className='text-gray-200'>{Number(runtime) ? runtime : 0} min</span>
+          <span className='text-gray-200'>{Number(runtime) ? `${runtime} min` : 'N/A'} </span>
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
+import { Outlet } from 'react-router';
 import Tabs from '@/components/ui/Tabs';
-import { TABS_INDICATORS } from '@/utils/constants';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function TvLayout() {
   return (
     <div className='space-y-12'>
       <Tabs
@@ -9,11 +9,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           { label: 'Popular', value: 'popular', link: '/tv/popular' },
           { label: 'Top Rated', value: 'top-rated', link: '/tv/top-rated' },
           { label: 'Airing Today', value: 'airing-today', link: '/tv/airing-today' },
-          { label: 'On TV', value: 'on-tv', link: '/tv/on-tv' },
+          { label: 'On The Air', value: 'no-the-air', link: '/tv/no-the-air' },
         ]}
-        TABS_INDICATORS={TABS_INDICATORS}
       />
-      {children}
+      <Outlet />
     </div>
   );
 }

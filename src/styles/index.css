@@ -2,17 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-
 * {
   @apply box-border;
 }
 
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  @apply hidden
+#root {
+  @apply grid min-h-dvh;
 }
 
-
-
-
+::-webkit-scrollbar {
+  @apply hidden;
+}

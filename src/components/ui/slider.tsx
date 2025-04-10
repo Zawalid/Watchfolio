@@ -4,9 +4,9 @@ import { Navigation, A11y, Keyboard, Mousewheel, Autoplay, FreeMode } from 'swip
 import { LEFT_ARROW_ICON, RIGHT_ARROW_ICON } from './Icons';
 import { useRef, useState, useEffect } from 'react';
 
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/scrollbar';
+// import 'swiper/css';
+// import 'swiper/css/navigation';
+// import 'swiper/css/scrollbar';
 
 // ------------- Types & Interfaces -------------
 export interface SliderProps extends Omit<SwiperProps, 'navigation' | 'modules'> {
@@ -32,7 +32,7 @@ export default function Slider({
   speed = 1500,
   showNavigation = true,
   customNavigationButtons,
-  navigationClassName = 'absolute top-1/2 z-10 flex w-full -translate-y-1/2 justify-between',
+  navigationClassName = 'absolute top-1/2 z- flex w-full -translate-y-1/2 justify-between',
   smartSlide = false,
   ...restProps
 }: SliderProps) {
@@ -50,7 +50,7 @@ export default function Slider({
     const updateButtonStates = () => {
       // Get total width of all slides including spacing
       const slidesWidth =
-        Array.from(swiper.slides).reduce((total, slide: any) => {
+        Array.from(swiper.slides).reduce((total, slide: HTMLElement) => {
           return total + slide.offsetWidth;
         }, 0) +
         (swiper.slides.length - 1) * +spaceBetween;
@@ -74,8 +74,7 @@ export default function Slider({
     updateButtonStates();
 
     // Monitor for changes
-    const events = ['resize', 'slideChange', 'update', 'afterInit',   'transitionEnd', 
-      'observerUpdate',];
+    const events = ['resize', 'slideChange', 'update', 'afterInit', 'transitionEnd', 'observerUpdate'];
     events.forEach((event) => swiper.on(event as keyof SwiperEvents, updateButtonStates));
 
     // Cleanup
@@ -160,7 +159,7 @@ export default function Slider({
             }
           : false
       }
-      mousewheel={true}
+      mousewheel={{ forceToAxis: true }}
       freeMode={true}
       speed={speed}
       keyboard={{ enabled: true, onlyInViewport: true }}

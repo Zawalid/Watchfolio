@@ -1,9 +1,5 @@
-'use client';
-
 import { formatDate } from '@/utils';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import { placeholder } from '@/utils/shimmer-placeholder';
+import { motion } from 'motion/react';
 
 interface EpisodesListProps {
   episodes: Episode[];
@@ -71,12 +67,10 @@ export default function EpisodesList({ episodes, count, showName, seasonName }: 
               {/* Episode still image */}
               {episode.still_path && (
                 <div className='relative aspect-video w-full overflow-hidden rounded-lg sm:w-1/3 lg:w-1/4'>
-                  <Image
+                  <img
                     src={`http://image.tmdb.org/t/p/w500${episode.still_path}`}
                     alt={`${episode.name} - Episode ${episode.episode_number}`}
                     className='h-full w-full object-cover transition-all duration-500 hover:scale-105'
-                    fill
-                    placeholder={placeholder}
                     sizes='(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw'
                   />
                 </div>

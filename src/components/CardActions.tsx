@@ -1,13 +1,10 @@
-'use client';
-
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
 import { useDisclosure } from '@heroui/modal';
 import AddToList from './AddToList';
 import { ADD_TO_LIST_ICON, FAVORITE_ICON, SIGN_OUT_ICON, WATCHLIST_ADDED_ICON, WATCHLIST_ICON } from './ui/Icons';
 import ConfirmationModal from './ConfirmationModal';
 import { actionToast } from '@/utils';
-import Link from 'next/link';
-import { addItemToWatchlist, removeItemFromWatchlist } from '@/lib/actions/watchlist';
+import { Link } from 'react-router';
 
 type Props = {
   media: Movie | TvShow;
@@ -22,22 +19,29 @@ export default function CardActions({ media, isAdded, user }: Props) {
   const title = (media as Movie).title || (media as TvShow).name;
 
   const remove = async (confirmation?: 'enabled' | 'disabled') => {
-    await actionToast(
-      async () => await removeItemFromWatchlist(media.id, confirmation),
+    // Mock implementation - would be replaced with actual API call
+    actionToast(
+      async () => {
+        return new Promise((resolve) => setTimeout(resolve, 500));
+      },
       'Removing from watchlist...',
       `"${title}" was removed from your watchlist`,
       'Failed to remove the item. Please try again'
     );
   };
-  
+
   const toggle = async () => {
     if (isAdded) {
       if (user?.preferences?.removeFromWatchlistConfirmation === 'DISABLED') remove();
       else confirmationDisclosure.onOpen();
       return;
     }
-    await actionToast(
-      async () => await addItemToWatchlist(media),
+
+    // Mock implementation - would be replaced with actual API call
+    actionToast(
+      async () => {
+        return new Promise((resolve) => setTimeout(resolve, 500));
+      },
       'Adding to watchlist...',
       `"${title}" was add to your watchlist`,
       'Failed to add the item. Please try again'
@@ -127,14 +131,14 @@ function Unauthenticated() {
       <DropdownSection showDivider>
         <DropdownItem key='signin'>
           <p className='mb-1 text-Grey/100'>Want add this item to a list?</p>
-          <Link href='/signin' className='text-Primary/400 transition-colors duration-200 hover:text-Primary/500'>
+          <Link to='/signin' className='text-Primary/400 transition-colors duration-200 hover:text-Primary/500'>
             Sign in
           </Link>
         </DropdownItem>
       </DropdownSection>
       <DropdownItem key='signup'>
         <p className='mb-1 text-Grey/100'>Not a member?</p>
-        <Link href='/signup' className='text-Primary/400 transition-colors duration-200 hover:text-Primary/500'>
+        <Link to='/signup' className='text-Primary/400 transition-colors duration-200 hover:text-Primary/500'>
           Sign up and join the community
         </Link>
       </DropdownItem>

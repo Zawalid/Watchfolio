@@ -16,5 +16,5 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 
   // console.log(tvShow)
 
-  return <Details media={{...tvShow,media_type : "tv"}} />;
+  return <Details media={{ ...tvShow, media_type: 'tv' }} />;
 }

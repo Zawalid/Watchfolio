@@ -7,9 +7,8 @@ import { preferencesSchema } from '@/lib/validation';
 
 type FormData = z.infer<typeof preferencesSchema>;
 
-
 export default async function Page() {
-  const user = {}
+  const user = {};
 
   return (
     <div className='flex flex-col gap-8'>

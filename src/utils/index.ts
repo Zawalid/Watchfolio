@@ -64,14 +64,14 @@ export const actionToast = async (
     await action();
     toast.success(successMessage, { id });
   } catch (error) {
-    console.log("error",error);
-    if(errorMessage) toast.error(errorMessage, { id });
+    console.log('error', error);
+    if (errorMessage) toast.error(errorMessage, { id });
   }
 };
 
 export function formatDate(dateString: string | null): string {
   if (!dateString) return 'Unknown date';
-  
+
   try {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', {

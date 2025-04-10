@@ -11,15 +11,15 @@ declare global {
     select: {
       removeFromWatchlistConfirmation: true;
       signOutConfirmation: true;
-    }
-  }>
+    };
+  }>;
   declare type Watchlist = Prisma.WatchlistGetPayload<{
     include: {
       items: {
         include: {
           media: true;
-        }
-      }
+        };
+      };
       owner: true;
     };
   }>;

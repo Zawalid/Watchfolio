@@ -18,7 +18,7 @@ export default function Textarea({ children, label, ...props }: InputProps) {
         <textarea
           {...props}
           className={cn(
-            'peer relative z-10 overflow-hidden w-full rounded-xl border-2 bg-Black/10 px-4 pb-3 pt-7 text-sm text-Grey/100 outline-none placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:placeholder:text-Grey/600',
+            'peer relative z-10 w-full overflow-hidden rounded-xl border-2 bg-Black/10 px-4 pb-3 pt-7 text-sm text-Grey/100 outline-none placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:placeholder:text-Grey/600',
             error
               ? 'border-Error/500 focus:border-Error/500'
               : 'border-Grey/800 focus:border-Primary/500 read-only:focus:border-Primary/300',

@@ -1,34 +1,33 @@
-'use client';
-
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from '@heroui/dropdown';
 import { Avatar } from '@heroui/avatar';
 import { useDisclosure } from '@heroui/modal';
 import { SETTINGS_ICON, SIGN_OUT_ICON } from './ui/Icons';
 import ConfirmationModal from './ConfirmationModal';
-// import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { signOutAction } from '@/lib/actions/auth';
+import { useNavigate } from 'react-router';
 
 export default function UserDropdown({ user }: { user: User | null }) {
   const disclosure = useDisclosure();
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   if (!user) return;
-  //   const call = async () => await client.oneTap();
-  //   call();
-  // }, [user]);
+  const navigate = useNavigate();
 
   if (!user) return null;
 
   const signOut = async (confirmation?: 'enabled' | 'disabled') => {
-    await signOutAction({
-      confirmation,
-      onSuccess: () => {
-        router.push('/signin');
-        router.refresh();
-      },
-    });
+    // Mock implementation - would be replaced with actual API call
+    const mockSignOut = () => {
+      return new Promise<void>((resolve) => {
+        setTimeout(() => {
+          localStorage.removeItem('user'); // Example implementation
+          resolve();
+        }, 500);
+      });
+    };
+
+    try {
+      await mockSignOut();
+      navigate('/signin');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (

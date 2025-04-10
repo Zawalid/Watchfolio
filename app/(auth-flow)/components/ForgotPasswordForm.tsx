@@ -2,7 +2,7 @@
 
 import Input from '@/components/ui/Input';
 import { useAction } from '@/hooks/useAction';
-import { Button } from "@heroui/button";
+import { Button } from '@heroui/button';
 import { sendPasswordResetEmail } from '../actions/password-reset';
 
 export default function Form() {

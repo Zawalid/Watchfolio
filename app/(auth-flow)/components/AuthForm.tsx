@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Input from '@/components/ui/Input';
-import { Button } from "@heroui/button";
+import { Button } from '@heroui/button';
 import PasswordInput from '@/components/ui/PasswordInput';
 import { signInAction, signUpAction } from '@/lib/actions/auth';
 import { useAction } from '@/hooks/useAction';

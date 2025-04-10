@@ -1,4 +1,4 @@
-export default function bufferToBase64(arrayBuffer : ArrayBuffer) {
+export default function bufferToBase64(arrayBuffer: ArrayBuffer) {
   let base64 = '';
   const encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   const bytes = new Uint8Array(arrayBuffer);

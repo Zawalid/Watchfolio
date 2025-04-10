@@ -1,53 +1,47 @@
-import { Suspense, type JSX } from 'react';
-// import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { NoResults } from './Status';
+import { JSX } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import Card from './Card';
-import { getMediaType } from '@/utils';
-import Pagination from './ui/Pagination';
+import { Error, NoResults } from './Status';
+import Pagination from '@/components/ui/Pagination';
 import CardsListSkeleton from './CardsSkeleton';
-// import { useSearchParams } from '@/hooks/useSearchParams';
+import { parseAsInteger, useQueryState } from 'nuqs';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 
-type Props = {
-  data: TMDBResponse;
-  query?: string;
-  page?: number;
+type CardsListProps = {
+  queryOptions: UseQueryOptions<TMDBResponse>;
   emptyComponent?: JSX.Element;
+  errorMessage?: string;
 };
 
-function List({ data, emptyComponent, query = '', page }: Props) {
-  // const [parent] = useAutoAnimate({ duration: 400 });
+export default function CardsList({ queryOptions, emptyComponent, errorMessage }: CardsListProps) {
+  const [query] = useQueryState('query', { defaultValue: '' });
+  const [page] = useQueryState('page', parseAsInteger.withDefault(1));
 
-  const filteredData = data.results.filter((media) => {
-    const title = getMediaType(media) === 'movie' ? (media as Movie).title : (media as TvShow).name;
-    return title.toLowerCase().includes(query.toLowerCase());
+  const { data, isPending, isError } = useQuery({
+    ...queryOptions,
+    queryKey: [...queryOptions.queryKey, query, page],
   });
 
-  if (query && !filteredData.length) return <NoResults />;
-  if (!data?.results.length && emptyComponent) return emptyComponent;
+  const [parent] = useAutoAnimate({ duration: 500 });
+
+  if (isError) return <Error message={errorMessage} />;
+  if (isPending) return <CardsListSkeleton />;
+  if (query && !data?.results?.length) return <NoResults />;
+  if (!data?.results?.length && emptyComponent) return emptyComponent;
 
   return (
     <>
       <div
         className='grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] items-start gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]'
-        // ref={parent}
+        ref={parent}
       >
-        {filteredData.map((media) => (
-          <Card key={media.id} media={media} />
-        ))}
+        {data?.results?.map((media) => <Card key={media.id} media={media} />)}
       </div>
       <Pagination
-        total={Math.min(data.total_pages, 500)} // Because te TMDB API only allows up to 500 pages
-        page={page || data.page}
+        total={Math.min(data?.total_pages || 0, 500)} //? Because te TMDB API only allows up to 500 pages
+        page={page || data?.page}
         siblings={2}
       />
     </>
-  );
-}
-
-export default function CardsList(props: Props) {
-  return (
-    <Suspense fallback={<CardsListSkeleton />}>
-      <List {...props} />
-    </Suspense>
   );
 }

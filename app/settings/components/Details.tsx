@@ -31,7 +31,6 @@ export default function Details({ user }: { user: User | null }) {
   const [parent] = useAutoAnimate();
   const values = watch();
 
-
   const onSubmit = async (data: FormData) => {
     if (!dirtyFields) return;
     const updatedData = Object.fromEntries(Object.entries(data).filter(([key]) => dirtyFields[key as keyof FormData]));

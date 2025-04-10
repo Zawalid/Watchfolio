@@ -2,8 +2,8 @@
 
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { WARNING_ICON } from '@/components/ui/Icons';
-import { Button } from "@heroui/button";
-import { useDisclosure } from "@heroui/modal";
+import { Button } from '@heroui/button';
+import { useDisclosure } from '@heroui/modal';
 import { deleteAccount } from '../actions/account';
 
 export default function DeleteAccount() {

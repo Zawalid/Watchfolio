@@ -1,7 +1,7 @@
 'use client';
 
 import { useAction } from '@/hooks/useAction';
-import { Button } from "@heroui/button";
+import { Button } from '@heroui/button';
 import { signInMagically } from '../actions/password-reset';
 
 export default function Form({ userId, secret }: { userId?: string; secret?: string }) {

@@ -14,5 +14,5 @@ export default async function Page(props: { params: Promise<{ slug: string }> })
 
   if (!movie) notFound();
 
-  return <Details media={{...movie,media_type : "movie"}} />;
+  return <Details media={{ ...movie, media_type: 'movie' }} />;
 }

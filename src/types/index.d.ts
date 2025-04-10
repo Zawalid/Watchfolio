@@ -24,3 +24,5 @@ declare type disclosure = {
   onOpenChange: (open: boolean) => void;
   onClose: () => void;
 };
+
+declare type Categories = 'popular' | 'top-rated' | 'now-playing' | 'upcoming' | 'no-the-air' | 'airing-today';

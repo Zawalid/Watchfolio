@@ -1,6 +1,6 @@
 function CardSkeleton() {
   return (
-    <div className='animate-pulse flex flex-col gap-4 backdrop-blur-sm'>
+    <div className='flex animate-pulse flex-col gap-4 backdrop-blur-sm'>
       <div className='h-[300px] rounded-xl bg-Grey/800' />
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>

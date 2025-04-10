@@ -1,18 +1,20 @@
+body {
+  @apply blur-bg bg-[url('/images/Background.svg')] antialiased dark;
+}
+
 /** Classes */
 .icon {
-  @apply transition-colors duration-200 text-Grey/600 hover:text-Grey/400
+  @apply text-Grey/600 transition-colors duration-200 hover:text-Grey/400;
 }
 
 .blur-bg {
-  @apply !bg-[url('/images/Background.svg')] !bg-cover !bg-no-repeat !bg-Grey/900
+  @apply !bg-Grey/900 !bg-[url('/images/Background.svg')] !bg-cover !bg-no-repeat;
 }
-
 
 /* Avatar */
 .ring-offset-background {
-  --tw-ring-offset-color: #121829
+  --tw-ring-offset-color: #121829;
 }
-
 
 /** Sonnner */
 [data-sonner-toast] {
@@ -41,16 +43,14 @@
 }
 
 [data-sonner-toast][data-type='success'] [data-icon] {
-  @apply bg-Warning/500
+  @apply bg-Warning/500;
 }
 
 [data-sonner-toast][data-type='error'] [data-icon] {
-  @apply bg-Error/700
+  @apply bg-Error/700;
 }
 
 [data-sonner-toast][data-type='loading'] [data-icon] {
   width: 20px;
   margin-right: 15px;
 }
-
-

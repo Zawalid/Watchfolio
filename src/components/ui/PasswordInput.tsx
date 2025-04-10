@@ -1,10 +1,9 @@
-'use client';
 import { useState } from 'react';
 import Input, { type InputProps } from './Input';
 import { INVISIBLE_ICON, VISIBLE_ICON } from './Icons';
 
 export default function PasswordInput({ ...props }: InputProps) {
-  const [visible, setVisible] = useState<boolean>( false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   return (
     <Input type={visible ? 'text' : 'password'} placeholder='●●●●●●●●●●' icon='password' {...props}>
@@ -13,7 +12,7 @@ export default function PasswordInput({ ...props }: InputProps) {
         type='button'
         onClick={() => setVisible((v) => !v)}
       >
-        { visible ? INVISIBLE_ICON : VISIBLE_ICON}
+        {visible ? INVISIBLE_ICON : VISIBLE_ICON}
       </button>
     </Input>
   );

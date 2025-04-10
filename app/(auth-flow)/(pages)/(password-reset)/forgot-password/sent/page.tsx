@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import { Button } from "@heroui/button";
+import { Button } from '@heroui/button';
 import { redirect } from 'next/navigation';
 import { sendPasswordResetEmail } from '@/app/(auth-flow)/actions/password-reset';
 import BackButton from '@/app/(auth-flow)/components/BackButton';

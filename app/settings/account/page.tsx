@@ -4,7 +4,7 @@ import DeleteAccount from '../components/DeleteAccount';
 import { getUser } from '@/lib/db/user';
 
 export default async function Page() {
-  const user = await getUser()
+  const user = await getUser();
 
   return (
     <div className='flex flex-col gap-8'>

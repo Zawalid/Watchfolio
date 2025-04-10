@@ -19,7 +19,7 @@ export async function generateDetailsMetadata({ slug, type }: { slug: string; ty
   const title = `${details.title ?? details.name ?? 'Unknown'} (${releaseYear})`;
 
   return {
-    title : `${title} | Watchfolio`,
+    title: `${title} | Watchfolio`,
     description: details.overview ?? '',
     openGraph: {
       title,
