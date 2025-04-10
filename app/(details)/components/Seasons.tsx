@@ -1,0 +1,72 @@
+'use client';
+
+import Image from 'next/image';
+import { placeholder } from '@/utils/shimmer-placeholder';
+import { SwiperSlide } from 'swiper/react';
+import Slider from '@/components/ui/slider';
+import {
+  MorphingDialog,
+  MorphingDialogClose,
+  MorphingDialogContainer,
+  MorphingDialogContent,
+  MorphingDialogTrigger,
+} from '@/components/ui/MorphingDialog';
+import SeasonDetails from './SeasonDetails';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/scrollbar';
+
+export default function Seasons({ seasons, show }: { seasons: Season[]; show: TvShow }) {
+  if (!seasons?.length) return null;
+
+  // Remove specials (season 0) if there are other seasons
+  const filteredSeasons = seasons.length > 1 ? seasons.filter((season) => season.season_number > 0) : seasons;
+
+  return (
+    <div className='py-6'>
+      <h2 className='mb-4 text-2xl font-semibold text-white'>Seasons</h2>
+      <div className='relative'>
+        <Slider smartSlide={true} spaceBetween={16} className='seasons-slider'>
+          {filteredSeasons.map((season) => (
+            <SwiperSlide key={season.id} className='!w-[200px]'>
+              <MorphingDialog
+                transition={{
+                  duration: 0.3,
+                  ease: 'easeInOut',
+                }}
+              >
+                <MorphingDialogTrigger className='group w-full overflow-hidden rounded-lg'>
+                  <div className='relative aspect-[2/3] w-full'>
+                    <Image
+                      src={
+                        season.poster_path
+                          ? `http://image.tmdb.org/t/p/w500${season.poster_path}`
+                          : '/images/placeholder.png'
+                      }
+                      alt={`${show.name}: ${season.name}`}
+                      className='h-full w-full object-cover transition-transform group-hover:scale-105'
+                      fill
+                      placeholder={placeholder}
+                    />
+                    <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4'>
+                      <p className='text-lg font-medium text-white'>{season.name}</p>
+                      <p className='text-sm text-gray-300'>{season.episode_count} Episodes</p>
+                    </div>
+                  </div>
+                </MorphingDialogTrigger>
+
+                <MorphingDialogContainer>
+                  <MorphingDialogContent className='relative max-h-[80vh] w-full max-w-[80vw] overflow-auto rounded-xl bg-blur p-6 backdrop-blur-2xl'>
+                    <SeasonDetails show={show}  season={season} />
+                  </MorphingDialogContent>
+                  <MorphingDialogClose />
+                </MorphingDialogContainer>
+              </MorphingDialog>
+            </SwiperSlide>
+          ))}
+        </Slider>
+      </div>
+    </div>
+  );
+}
