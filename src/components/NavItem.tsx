@@ -12,7 +12,7 @@ export default function NavItem({ link: { label, href, icon, checks } }: { link:
       <li className='group'>
         <Link
           to={href}
-          className={`flex items-center gap-1.5 font-medium transition-colors duration-300 hover:text-Grey/50 group-has-[.active]:font-semibold group-has-[.active]:text-Primary/400 ${isActive ? 'text-Grey/50' : 'text-Grey/300'}`}
+          className={`flex items-center gap-1.5 font-medium transition-colors duration-300 hover:text-Grey-50 group-has-[.active]:font-semibold group-has-[.active]:text-Primary-400 ${isActive ? 'text-Grey-50' : 'text-Grey-300'}`}
         >
           <span className='[&>svg]:h-4'>{icon}</span>
           {label}

@@ -7,8 +7,8 @@ export default function NotFound() {
         <img src='/images/404.svg' alt='' style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
       <div className='flex flex-col items-center gap-1 text-center'>
-        <h2 className='text-2xl font-semibold text-Grey/50 sm:text-3xl'>Lost your way?</h2>
-        <p className='font-medium text-Grey/300'>
+        <h2 className='text-2xl font-semibold text-Grey-50 sm:text-3xl'>Lost your way?</h2>
+        <p className='font-medium text-Grey-300'>
           Oops! This is awkward. You are looking for something that doesn&apos;t <br />
           actually exist.
         </p>

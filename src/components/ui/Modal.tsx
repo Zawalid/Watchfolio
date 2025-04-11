@@ -13,7 +13,7 @@ export default function Modal({ children, disclosure, ...props }: Props) {
       placement='center'
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      backdrop='blur'
+      backdrop='blur-sm'
       classNames={{
         body: 'py-6',
         backdrop: 'bg-black/50 backdrop-blur-[3px]',

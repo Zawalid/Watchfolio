@@ -29,17 +29,17 @@ export default function AddToList({ disclosure }: { disclosure: disclosure }) {
   return (
     <Modal disclosure={disclosure}>
       <ModalHeader className='flex justify-center'>
-        <h4 className='text-xl font-semibold text-Primary/100'>Add to list</h4>
+        <h4 className='text-xl font-semibold text-Primary-100'>Add to list</h4>
       </ModalHeader>
       <ModalBody>
         {sampleData.length ? (
           sampleData.map((list) => <List key={list.name} list={list} />)
         ) : (
-          <p className='text-center text-Grey/300'>
+          <p className='text-center text-Grey-300'>
             No lists found. It looks like you haven&apos;t created any lists yet. Start by adding a new list.
           </p>
         )}
-        <Button className='mt-5 border-border text-white hover:border-Primary/500' variant='ghost' color='primary'>
+        <Button className='mt-5 border-border text-white hover:border-Primary-500' variant='ghost' color='primary'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -54,10 +54,10 @@ export default function AddToList({ disclosure }: { disclosure: disclosure }) {
         </Button>
       </ModalBody>
       <ModalFooter>
-        <Button className='bg-Grey/800 hover:bg-Grey/700' onPress={disclosure.onClose}>
+        <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={disclosure.onClose}>
           Close
         </Button>
-        <Button className='bg-Primary/500 hover:bg-Primary/600' onPress={disclosure.onClose}>
+        <Button className='bg-Primary-500 hover:bg-Primary-600' onPress={disclosure.onClose}>
           Save
         </Button>
       </ModalFooter>
@@ -69,7 +69,7 @@ function List({ list }: { list: List }) {
   return (
     <div className='flex justify-between'>
       <Checkbox defaultSelected>{list.name}</Checkbox>
-      <span className='rounded-md bg-Grey/800 px-2 py-1.5 text-sm text-Grey/100'>{list.items.length} Items</span>
+      <span className='rounded-md bg-Grey-800 px-2 py-1.5 text-sm text-Grey-100'>{list.items.length} Items</span>
     </div>
   );
 }

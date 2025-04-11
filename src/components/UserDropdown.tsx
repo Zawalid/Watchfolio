@@ -44,7 +44,7 @@ export default function UserDropdown({ user }: { user: User | null }) {
             isBordered
             classNames={{
               base: 'bg-transparent',
-              icon: 'text-Primary/100',
+              icon: 'text-Primary-100',
             }}
             color='secondary'
             size='sm'
@@ -73,14 +73,14 @@ export default function UserDropdown({ user }: { user: User | null }) {
         >
           <DropdownSection showDivider>
             <DropdownItem key='profile' className='cursor-auto data-[hover=true]:bg-transparent'>
-              <h5 className='text-base font-bold text-Primary/100'>{user.name}</h5>
-              <h6 className='font-medium text-Primary/200'>{user.email}</h6>
+              <h5 className='text-base font-bold text-Primary-100'>{user.name}</h5>
+              <h6 className='font-medium text-Primary-200'>{user.email}</h6>
             </DropdownItem>
           </DropdownSection>
           <DropdownItem
             key='settings'
             href='/settings'
-            className='data-[hover=true]:bg-Black/20'
+            className='data-[hover=true]:bg-black/20'
             startContent={SETTINGS_ICON}
           >
             Settings

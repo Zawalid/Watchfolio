@@ -47,9 +47,9 @@ export default function EpisodesList({ episodes, count, showName, seasonName }: 
     <div className='scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-600 max-h-[85vh] overflow-y-auto overflow-x-hidden px-4 py-6'>
       <div className='mb-6 flex items-center justify-between'>
         <h2 className='text-2xl font-bold text-white'>
-          <span className='text-Primary/400'>{showName}</span>: {seasonName} Episodes
+          <span className='text-Primary-400'>{showName}</span>: {seasonName} Episodes
         </h2>
-        <span className='text-sm font-medium text-Primary/400'>
+        <span className='text-sm font-medium text-Primary-400'>
           {episodes.length} {episodes.length === 1 ? 'Episode' : 'Episodes'}
         </span>
       </div>
@@ -60,7 +60,7 @@ export default function EpisodesList({ episodes, count, showName, seasonName }: 
             key={episode.id}
             custom={index}
             variants={episodeVariants}
-            className='group relative overflow-hidden rounded-lg bg-white/5 p-5 transition-all hover:bg-Primary/900/30 hover:ring-1 hover:ring-Primary/500/30'
+            className='group relative overflow-hidden rounded-lg bg-white/5 p-5 transition-all hover:bg-Primary-900/30 hover:ring-1 hover:ring-Primary-500/30'
             whileHover={{ y: -2 }}
           >
             <div className='flex flex-col gap-4 sm:flex-row'>
@@ -79,17 +79,17 @@ export default function EpisodesList({ episodes, count, showName, seasonName }: 
               {/* Episode details */}
               <div className='flex-1 space-y-3'>
                 <div className='flex flex-wrap items-center gap-2'>
-                  <span className='flex h-7 w-7 items-center justify-center rounded-full bg-Primary/500/20 text-sm font-semibold text-Primary/300'>
+                  <span className='flex h-7 w-7 items-center justify-center rounded-full bg-Primary-500/20 text-sm font-semibold text-Primary-300'>
                     {episode.episode_number}
                   </span>
-                  <h3 className='text-xl font-medium text-white transition-colors group-hover:text-Primary/300'>
+                  <h3 className='text-xl font-medium text-white transition-colors group-hover:text-Primary-300'>
                     {episode.name}
                   </h3>
                 </div>
 
                 <div className='flex flex-wrap gap-2'>
                   {episode.air_date && (
-                    <span className='inline-flex items-center rounded-full bg-Secondary/900 px-2.5 py-0.5 text-xs font-medium text-Secondary/300 ring-1 ring-Secondary/500/30'>
+                    <span className='inline-flex items-center rounded-full bg-Secondary-900 px-2.5 py-0.5 text-xs font-medium text-Secondary-300 ring-1 ring-Secondary-500/30'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         className='mr-1 h-3 w-3'
@@ -107,7 +107,7 @@ export default function EpisodesList({ episodes, count, showName, seasonName }: 
                   )}
 
                   {episode.runtime && (
-                    <span className='inline-flex items-center rounded-full bg-Tertary/900 px-2.5 py-0.5 text-xs font-medium text-Tertary/300 ring-1 ring-Tertary/500/30'>
+                    <span className='inline-flex items-center rounded-full bg-Tertary-900 px-2.5 py-0.5 text-xs font-medium text-Tertary-300 ring-1 ring-Tertary-500/30'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         className='mr-1 h-3 w-3'

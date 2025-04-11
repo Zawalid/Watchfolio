@@ -8,8 +8,8 @@ export function NoResults({ children }: { children?: ReactNode }) {
       <div className='relative aspect-square w-[300px]'>
         <img src='/images/empty.svg' alt='' className='h-full w-full object-contain' />
       </div>{' '}
-      <h2 className='text-xl font-semibold text-Grey/50 sm:text-2xl'>Sorry, No results found</h2>
-      <p className='font-medium text-Grey/300'>There are no movies or tv shows matching your search terms.</p>
+      <h2 className='text-xl font-semibold text-Grey-50 sm:text-2xl'>Sorry, No results found</h2>
+      <p className='font-medium text-Grey-300'>There are no movies or tv shows matching your search terms.</p>
       {children}
     </div>
   );
@@ -29,21 +29,21 @@ export function EmptyWatchList({
       <div className='relative aspect-square w-[300px]'>
         <img src='/images/empty.svg' alt='' className='h-full w-full object-contain' />
       </div>
-      <h2 className='text-xl font-semibold text-Grey/50 sm:text-2xl'>{heading}</h2>
-      <p className='font-medium text-Grey/300'>
+      <h2 className='text-xl font-semibold text-Grey-50 sm:text-2xl'>{heading}</h2>
+      <p className='font-medium text-Grey-300'>
         Your watchlist is empty! Maybe your friends have some great suggestions?
         <br />
         Check your friends
         <Link
           to='/suggestions'
-          className='mx-1 w-fit font-medium text-Primary/400 transition-colors duration-200 hover:text-Primary/500'
+          className='mx-1 w-fit font-medium text-Primary-400 transition-colors duration-200 hover:text-Primary-500'
         >
           suggestions
         </Link>
         or
         <Link
           to='/'
-          className='mx-1 w-fit font-medium text-Primary/400 transition-colors duration-200 hover:text-Primary/500'
+          className='mx-1 w-fit font-medium text-Primary-400 transition-colors duration-200 hover:text-Primary-500'
         >
           add
         </Link>
@@ -59,8 +59,8 @@ export function Error({ children, message = 'Something went wrong' }: { children
       <div className='relative aspect-square w-[300px]'>
         <img src='/images/error.svg' alt='' className='h-full w-full object-contain' />
       </div>
-      <h2 className='text-xl font-semibold text-Grey/50 sm:text-2xl'>Oops! An error occurred</h2>
-      <p className='font-medium text-Grey/300'>{message}</p>
+      <h2 className='text-xl font-semibold text-Grey-50 sm:text-2xl'>Oops! An error occurred</h2>
+      <p className='font-medium text-Grey-300'>{message}</p>
       <Button as={Link} to='/' className='mt-4' variant='ghost' color='secondary'>
         Return to Home
       </Button>

@@ -34,14 +34,14 @@ export default function Card({
       <div className='mb-2 flex items-center justify-between gap-1'>
         <Link
           to={getLink(type, id, title)}
-          className='mb-1 line-clamp-1 cursor-pointer text-ellipsis text-sm text-Primary/50 hover:text-Primary/200 sm:mb-2 md:text-base'
+          className='mb-1 line-clamp-1 cursor-pointer text-ellipsis text-sm text-Primary-50 hover:text-Primary-200 sm:mb-2 md:text-base'
         >
           {title}
         </Link>
-        <p className='text-xs text-Grey/300 md:text-sm'>{getReleaseYear(media) || 'N/A'}</p>
+        <p className='text-xs text-Grey-300 md:text-sm'>{getReleaseYear(media) || 'N/A'}</p>
       </div>
       <div className='flex items-center justify-between'>
-        <p className='line-clamp-1 text-ellipsis text-xs text-Grey/300 md:text-sm'>
+        <p className='line-clamp-1 text-ellipsis text-xs text-Grey-300 md:text-sm'>
           {genre_ids?.length ? genre_ids?.map((id) => GENRES.find((g) => g.id === id)?.name).join(', ') : 'N/A'}
         </p>
         <div className='flex items-center justify-between space-x-1'>

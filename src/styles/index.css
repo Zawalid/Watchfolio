@@ -1,6 +1,151 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@config "../../tailwind.config.ts";
+
+@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-Primary-50: #ebe9fe;
+  --color-Primary-100: #dedbfd;
+  --color-Primary-200: #beb7fb;
+  --color-Primary-300: #9c92f8;
+  --color-Primary-400: #7b6ef6;
+  --color-Primary-500: #5a4af4;
+  --color-Primary-600: #483bc3;
+  --color-Primary-700: #362c92;
+  --color-Primary-800: #251e62;
+  --color-Primary-900: #120f31;
+  --color-Secondary-50: #e4f4ff;
+  --color-Secondary-100: #d2ecfe;
+  --color-Secondary-200: #a5dbfe;
+  --color-Secondary-300: #78c8fd;
+  --color-Secondary-400: #4bb7fd;
+  --color-Secondary-500: #1ea5fc;
+  --color-Secondary-600: #1884ca;
+  --color-Secondary-700: #126297;
+  --color-Secondary-800: #0c4265;
+  --color-Secondary-900: #062032;
+  --color-Tertary-50: #f6edff;
+  --color-Tertary-100: #f0e2ff;
+  --color-Tertary-200: #e2c5ff;
+  --color-Tertary-300: #d3a7ff;
+  --color-Tertary-400: #c58aff;
+  --color-Tertary-500: #b66dff;
+  --color-Tertary-600: #9257cc;
+  --color-Tertary-700: #6d4199;
+  --color-Tertary-800: #492c66;
+  --color-Tertary-900: #241633;
+  --color-Success-50: #e1f9f2;
+  --color-Success-100: #cdf5e9;
+  --color-Success-200: #9bebd3;
+  --color-Success-300: #69e2bd;
+  --color-Success-400: #37d8a7;
+  --color-Success-500: #05ce91;
+  --color-Success-600: #04a574;
+  --color-Success-700: #037c57;
+  --color-Success-800: #02523a;
+  --color-Success-900: #01291d;
+  --color-Error-50: #ffecec;
+  --color-Error-100: #ffdfdf;
+  --color-Error-200: #ffc0c0;
+  --color-Error-300: #ffa0a0;
+  --color-Error-400: #ff8181;
+  --color-Error-500: #ff6161;
+  --color-Error-600: #cc4e4e;
+  --color-Error-700: #993a3a;
+  --color-Error-800: #662727;
+  --color-Error-900: #331313;
+  --color-Warning-50: #fff5e9;
+  --color-Warning-100: #ffefdb;
+  --color-Warning-200: #ffdeb6;
+  --color-Warning-300: #ffce92;
+  --color-Warning-400: #ffbd6d;
+  --color-Warning-500: #ffad49;
+  --color-Warning-600: #cc8a3a;
+  --color-Warning-700: #99682c;
+  --color-Warning-800: #66451d;
+  --color-Warning-900: #33230f;
+  --color-Grey-50: #ebeef5;
+  --color-Grey-100: #c3c8d4;
+  --color-Grey-200: #a8aebf;
+  --color-Grey-300: #8e95a9;
+  --color-Grey-400: #767e94;
+  --color-Grey-500: #61697f;
+  --color-Grey-600: #475069;
+  --color-Grey-700: #323b54;
+  --color-Grey-800: #20283e;
+  --color-Grey-900: #121829;
+  --color-blur: rgba(18, 24, 41, 0.8);
+  --color-border: #292f46;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 3rem;
+  --text-4xl: 4rem;
+
+  --font-poppins: Poppins;
+
+  --breakpoint-xs: 400px;
+  --breakpoint-mobile: 500px;
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+
+  @media (width >=--theme(--breakpoint-xs)) {
+    max-width: none;
+  }
+
+  @media (width >=100%) {
+    max-width: 100%;
+  }
+
+  @media (width >=640px) {
+    max-width: 640px;
+  }
+
+  @media (width >=768px) {
+    max-width: 768px;
+  }
+
+  @media (width >=1024px) {
+    max-width: 1024px;
+    padding-inline: 5rem;
+  }
+
+  @media (width >=1280px) {
+    max-width: 1280px;
+  }
+
+  @media (width >=1536px) {
+    max-width: 1536px;
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 * {
   @apply box-border;
@@ -12,4 +157,70 @@
 
 ::-webkit-scrollbar {
   @apply hidden;
+}
+
+
+/** Utilities */
+
+@utility blur-bg {
+  background-image: url('/images/Background.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: var(--color-Grey-900);
+}
+
+
+
+body {
+  @apply dark blur-bg bg-[url('/images/Background.svg')] antialiased;
+}
+
+.icon {
+  @apply transition-colors duration-200 hover:text-Grey-400
+}
+
+
+.ring-offset-background {
+  --tw-ring-offset-color: #121829
+}
+
+
+/** Sonnner */
+[data-sonner-toast] {
+  @apply blur-bg border-border;
+}
+
+[data-sonner-toast]:not([data-type='loading']) {
+  & [data-icon] {
+    height: calc(100% + 2px);
+    position: absolute;
+    left: 0;
+    width: 45px;
+    justify-content: center;
+    color: white;
+    border-radius: 8px 0 0 8px;
+
+    & svg {
+      width: 25px;
+      height: 25px;
+    }
+  }
+
+  & [data-content] {
+    margin-left: 40px;
+  }
+}
+
+[data-sonner-toast][data-type='success'] [data-icon] {
+  @apply bg-Warning-500
+}
+
+[data-sonner-toast][data-type='error'] [data-icon] {
+  @apply bg-Error-700
+}
+
+[data-sonner-toast][data-type='loading'] [data-icon] {
+  width: 20px;
+  margin-right: 15px;
 }

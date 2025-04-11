@@ -25,7 +25,7 @@ export default function Trailers({ videos }: { videos: Video[] }) {
       <div className='relative'>
         <Slider smartSlide={true} spaceBetween={16} className='trailers-slider'>
           {trailers.map((video) => (
-            <SwiperSlide key={video.id} className='!w-[430px]'>
+            <SwiperSlide key={video.id} className='w-[430px]!'>
               <MorphingDialog
                 transition={{
                   duration: 0.3,

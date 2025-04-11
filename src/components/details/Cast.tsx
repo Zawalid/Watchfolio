@@ -11,7 +11,7 @@ export default function Cast({ cast }: { cast: Person[] }) {
       <div className='relative'>
         <Slider smartSlide={true}>
           {cast?.map((member) => (
-            <SwiperSlide key={member.id} className='!w-[100px]'>
+            <SwiperSlide key={member.id} className='w-[100px]!'>
               <div>
                 <div className='aspect-square overflow-hidden rounded-full'>
                   <LazyImage

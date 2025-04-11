@@ -24,11 +24,11 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
             backgroundImage: `url("http://image.tmdb.org/t/p/original${backdrop_path}")`,
           }}
         />
-        <div className='absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-black' />
+        <div className='absolute inset-0 bg-linear-to-b from-transparent via-black/80 to-black' />
       </div>
       <div className='relative z-10 flex h-[95vh] flex-col justify-center px-6 pt-40'>
         <div className='flex flex-col-reverse gap-6 md:flex-row md:gap-8'>
-          <div className='relative aspect-[2/3] w-full max-w-[250px] overflow-hidden rounded-lg shadow-xl md:sticky md:top-24'>
+          <div className='relative aspect-2/3 w-full max-w-[250px] overflow-hidden rounded-lg shadow-xl md:sticky md:top-24'>
             <LazyImage
               src={poster_path ? `http://image.tmdb.org/t/p/original${poster_path}` : '/images/placeholder.png'}
               alt={title}
@@ -144,7 +144,7 @@ function Genres({ genres }: { genres: { id: number; name: string }[] }) {
       {genres.map((g) => (
         <span
           key={g.id}
-          className='text-nowrap rounded-md bg-white/10 px-2.5 py-0.5 text-sm text-gray-200 backdrop-blur-sm'
+          className='text-nowrap rounded-md bg-white/10 px-2.5 py-0.5 text-sm text-gray-200 backdrop-blur-xs'
         >
           {g.name}
         </span>

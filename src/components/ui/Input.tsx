@@ -30,7 +30,7 @@ export default function Input({ children, type, icon, label, ...props }: InputPr
   return (
     <div className={cn('flex flex-col gap-2', parentClassname)} ref={parent}>
       <div className='relative rounded-xl'>
-        <span className='absolute left-4 top-1/2 -translate-y-1/2 text-Grey/600'>
+        <span className='absolute left-4 top-1/2 -translate-y-1/2 text-Grey-600'>
           {icons[type as IconType] || (icon && icons[icon])}
         </span>
         <input
@@ -38,20 +38,20 @@ export default function Input({ children, type, icon, label, ...props }: InputPr
           placeholder={type === 'email' ? 'eg. hello@example.com' : placeholder}
           {...props}
           className={cn(
-            'peer relative z-10 w-full rounded-xl border-2 bg-Black/10 pb-3 pl-14 pr-4 pt-7 text-sm text-Grey/100 outline-none placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:placeholder:text-Grey/600',
+            'peer relative z-10 w-full rounded-xl border-2 bg-black/10 pb-3 pl-14 pr-4 pt-7 text-sm text-Grey-100 outline-hidden placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:placeholder:text-Grey-600',
             error
-              ? 'border-Error/500 focus:border-Error/500'
-              : 'border-Grey/800 focus:border-Primary/500 read-only:focus:border-Primary/300',
+              ? 'border-Error-500 focus:border-Error-500'
+              : 'border-Grey-800 focus:border-Primary-500 read-only:focus:border-Primary-300',
             props.className
           )}
         />
-        <label className='absolute left-14 top-1/2 z-0 -translate-y-1/2 cursor-text text-sm text-Grey/600 transition-all duration-300 focus:text-white peer-focus:z-10 peer-focus:-translate-y-6 peer-focus:text-Grey/400 peer-[&:not(:placeholder-shown)]:z-10 peer-[&:not(:placeholder-shown)]:-translate-y-6 peer-[&:not(:placeholder-shown)]:text-Grey/400'>
+        <label className='absolute left-14 top-1/2 z-0 -translate-y-1/2 cursor-text text-sm text-Grey-600 transition-all duration-300 focus:text-white peer-focus:z-10 peer-focus:-translate-y-6 peer-focus:text-Grey-400 peer-not-placeholder-shown:z-10 peer-not-placeholder-shown:-translate-y-6 peer-not-placeholder-shown:text-Grey-400'>
           {label}
         </label>
 
         {children}
       </div>
-      {error && <span className='text-sm text-Error/500'>{error}</span>}
+      {error && <span className='text-sm text-Error-500'>{error}</span>}
     </div>
   );
 }

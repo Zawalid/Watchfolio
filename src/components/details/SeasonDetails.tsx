@@ -37,7 +37,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
       >
         {/* Poster Image */}
         <motion.div className='shrink-0 md:w-1/3' variants={itemVariants}>
-          <div className='relative aspect-[2/3] w-full overflow-hidden rounded-2xl shadow-xl ring-2 ring-Primary/500/20'>
+          <div className='relative aspect-2/3 w-full overflow-hidden rounded-2xl shadow-xl ring-2 ring-Primary-500/20'>
             <img
               src={
                 season.poster_path ? `http://image.tmdb.org/t/p/w500${season.poster_path}` : '/images/placeholder.png'
@@ -45,7 +45,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
               alt={`${show.name}: ${season.name}`}
               className='h-full w-full object-cover transition-all duration-500 hover:scale-105'
             />
-            <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 md:opacity-100'></div>
+            <div className='absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 md:opacity-100'></div>
           </div>
         </motion.div>
 
@@ -53,12 +53,12 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
         <motion.div className='flex-1 space-y-8' variants={itemVariants}>
           <motion.div variants={itemVariants}>
             <h3 className='mb-4 text-4xl font-bold tracking-tight text-white'>
-              <span className='text-Primary/400'>{show.name}</span>: {season.name}
+              <span className='text-Primary-400'>{show.name}</span>: {season.name}
             </h3>
             <div className='mb-5 flex flex-wrap gap-2'>
               {season.air_date && (
                 <motion.span
-                  className='inline-flex items-center rounded-full bg-Secondary/900 px-3 py-1 text-sm font-medium text-Secondary/300 ring-1 ring-Secondary/500/30'
+                  className='inline-flex items-center rounded-full bg-Secondary-900 px-3 py-1 text-sm font-medium text-Secondary-300 ring-1 ring-Secondary-500/30'
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -78,7 +78,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
                 </motion.span>
               )}
               <motion.span
-                className='inline-flex items-center rounded-full bg-Tertary/900 px-3 py-1 text-sm font-medium text-Tertary/300 ring-1 ring-Tertary/500/30'
+                className='inline-flex items-center rounded-full bg-Tertary-900 px-3 py-1 text-sm font-medium text-Tertary-300 ring-1 ring-Tertary-500/30'
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -111,10 +111,10 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
 
           {/* Overview */}
           <motion.div
-            className='space-y-4 rounded-xl bg-black/20 p-5 ring-1 ring-white/5 backdrop-blur-sm'
+            className='space-y-4 rounded-xl bg-black/20 p-5 ring-1 ring-white/5 backdrop-blur-xs'
             variants={itemVariants}
           >
-            <h4 className='text-xl font-semibold text-Primary/300'>Overview</h4>
+            <h4 className='text-xl font-semibold text-Primary-300'>Overview</h4>
             <p className='text-base leading-relaxed text-gray-300'>
               {season.overview || `No description available for ${season.name}.`}
             </p>

@@ -28,17 +28,17 @@ export default function ConfirmationModal({
   return (
     <Modal disclosure={disclosure}>
       <ModalHeader className='flex items-center gap-4'>
-        <div className='grid size-10 place-content-center rounded-full bg-Warning/600 text-white'>{icon}</div>
-        <h2 className='text-xl font-semibold text-Primary/100'>{heading}</h2>
+        <div className='grid size-10 place-content-center rounded-full bg-Warning-600 text-white'>{icon}</div>
+        <h2 className='text-xl font-semibold text-Primary-100'>{heading}</h2>
       </ModalHeader>
       <ModalBody>
-        <p className='text-Grey/200'>{message}</p>
+        <p className='text-Grey-200'>{message}</p>
         {showConfirmation && (
           <div className='flex items-center gap-3'>
             <Checkbox
               isSelected={confirmation === 'disabled'}
               onValueChange={() => setConfirmation(confirmation === 'disabled' ? 'enabled' : 'disabled')}
-              classNames={{ label: 'text-Grey/300 text-sm' }}
+              classNames={{ label: 'text-Grey-300 text-sm' }}
             >
               Don&apos;t show this message again
             </Checkbox>
@@ -46,7 +46,7 @@ export default function ConfirmationModal({
         )}
       </ModalBody>
       <ModalFooter>
-        <Button className='bg-Grey/800 hover:bg-Grey/700' onPress={disclosure.onClose}>
+        <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={disclosure.onClose}>
           Cancel
         </Button>
         <Button

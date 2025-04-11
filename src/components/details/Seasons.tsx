@@ -22,7 +22,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
       <div className='relative'>
         <Slider smartSlide={true} spaceBetween={16} className='seasons-slider'>
           {filteredSeasons.map((season) => (
-            <SwiperSlide key={season.id} className='!w-[200px]'>
+            <SwiperSlide key={season.id} className='w-[200px]!'>
               <MorphingDialog
                 transition={{
                   duration: 0.3,
@@ -30,7 +30,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
                 }}
               >
                 <MorphingDialogTrigger className='group w-full overflow-hidden rounded-lg'>
-                  <div className='relative aspect-[2/3] w-full'>
+                  <div className='relative aspect-2/3 w-full'>
                     <LazyImage
                       src={
                         season.poster_path
@@ -40,7 +40,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
                       alt={`${show.name}: ${season.name}`}
                       className='h-full w-full object-cover transition-transform group-hover:scale-105'
                     />
-                    <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4'>
+                    <div className='absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4'>
                       <p className='text-lg font-medium text-white'>{season.name}</p>
                       <p className='text-sm text-gray-300'>{season.episode_count} Episodes</p>
                     </div>

@@ -52,7 +52,7 @@ export default function CardActions({ media, isAdded, user }: Props) {
     <>
       <Dropdown classNames={{ content: 'blur-bg  backdrop-blur-2xl' }} backdrop='opaque' radius='sm'>
         <DropdownTrigger>
-          <button className='absolute right-2 top-2 z-10 grid size-7 place-content-center rounded-full border border-Grey/600 bg-Grey/900 text-white shadow-md transition-transform duration-300 hover:scale-110'>
+          <button className='absolute right-2 top-2 z-10 grid size-7 place-content-center rounded-full border border-Grey-600 bg-Grey-900 text-white shadow-md transition-transform duration-300 hover:scale-110'>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
@@ -79,9 +79,9 @@ export default function CardActions({ media, isAdded, user }: Props) {
                 'border-none',
                 'text-default-500',
                 'data-[hover=true]:text-foreground',
-                'data-[hover=true]:bg-Primary/500',
-                'data-[selectable=true]:focus:bg-Primary/500',
-                'data-[focus-visible=true]:ring-Primary/700',
+                'data-[hover=true]:bg-Primary-500',
+                'data-[selectable=true]:focus:bg-Primary-500',
+                'data-[focus-visible=true]:ring-Primary-700',
               ],
             }}
             onAction={(key) => {
@@ -130,15 +130,15 @@ function Unauthenticated() {
     >
       <DropdownSection showDivider>
         <DropdownItem key='signin'>
-          <p className='mb-1 text-Grey/100'>Want add this item to a list?</p>
-          <Link to='/signin' className='text-Primary/400 transition-colors duration-200 hover:text-Primary/500'>
+          <p className='mb-1 text-Grey-100'>Want add this item to a list?</p>
+          <Link to='/signin' className='text-Primary-400 transition-colors duration-200 hover:text-Primary-500'>
             Sign in
           </Link>
         </DropdownItem>
       </DropdownSection>
       <DropdownItem key='signup'>
-        <p className='mb-1 text-Grey/100'>Not a member?</p>
-        <Link to='/signup' className='text-Primary/400 transition-colors duration-200 hover:text-Primary/500'>
+        <p className='mb-1 text-Grey-100'>Not a member?</p>
+        <Link to='/signup' className='text-Primary-400 transition-colors duration-200 hover:text-Primary-500'>
           Sign up and join the community
         </Link>
       </DropdownItem>

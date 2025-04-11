@@ -32,9 +32,9 @@ export default function Tabs({ tabs, preserveSearchParams = false, className = '
   }, [activeTabValue, tabs]);
 
   return (
-    <ul className={`relative flex w-fit gap-5 rounded-xl bg-Black/20 p-2 backdrop-blur-2xl ${className}`}>
+    <ul className={`relative flex w-fit gap-5 rounded-xl bg-black/20 p-2 backdrop-blur-2xl ${className}`}>
       <li
-        className='absolute top-1/2 -z-10 h-[calc(100%-16px)] -translate-y-1/2 rounded-lg bg-Primary/400 transition-all duration-500'
+        className='absolute top-1/2 -z-10 h-[calc(100%-16px)] -translate-y-1/2 rounded-lg bg-Primary-400 transition-all duration-500'
         style={{ left: `${indicator.left}px`, width: `${indicator.width}px` }}
       ></li>
       {tabs.map((tab, index) => (
@@ -50,7 +50,7 @@ export default function Tabs({ tabs, preserveSearchParams = false, className = '
               search: preserveSearchParams ? searchParams.toString() : undefined,
             }}
             className={`block size-full px-8 py-2 text-sm font-medium transition-colors duration-200 ${
-              activeTabValue === tab.value ? 'text-Primary/50' : 'text-Grey/300 hover:text-Grey/600'
+              activeTabValue === tab.value ? 'text-Primary-50' : 'text-Grey-300 hover:text-Grey-600'
             }`}
           >
             {tab.label}
