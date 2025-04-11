@@ -26,3 +26,11 @@ export const getDetails = async (type: 'movie' | 'tv', slug: string): Promise<Tv
 
   return details;
 };
+
+export const getRecommendations = async (type: 'movie' | 'tv', id: number): Promise<TMDBResponse> => {
+  return await fetchFromTMDB(`/${type}/${id}/recommendations`);
+};
+
+export const getSimilar = async (type: 'movie' | 'tv', id: number): Promise<TMDBResponse> => {
+  return await fetchFromTMDB(`/${type}/${id}/similar`);
+};

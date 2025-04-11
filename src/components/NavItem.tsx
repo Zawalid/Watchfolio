@@ -8,7 +8,7 @@ export default function NavItem({ link: { label, href, icon, checks } }: { link:
   const isActive = pathname === href || (pathname.includes(href) && checks && checks.some((c) => pathname.includes(c)));
 
   return (
-    <RoughNotation type='circle' show={isActive} color='#1ea5fc' padding={10} strokeWidth={2}>
+    <RoughNotation type='highlight' show={isActive} color='#1ea5fc' >
       <li className='group'>
         <Link
           to={href}

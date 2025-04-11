@@ -1,34 +1,47 @@
 import { JSX } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { parseAsInteger, useQueryState } from 'nuqs';
 import Card from './Card';
 import { Error, NoResults } from './Status';
 import Pagination from '@/components/ui/Pagination';
-import CardsListSkeleton from './CardsSkeleton';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import CardsListSkeleton from './skeletons/CardsSkeleton';
+import Slider from './ui/slider';
 
 type CardsListProps = {
   queryOptions: UseQueryOptions<TMDBResponse>;
+  asSlider?: boolean;
   emptyComponent?: JSX.Element;
   errorMessage?: string;
 };
 
-export default function CardsList({ queryOptions, emptyComponent, errorMessage }: CardsListProps) {
+export default function CardsList({ queryOptions, asSlider, emptyComponent, errorMessage }: CardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
 
-  const { data, isPending, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     ...queryOptions,
-    queryKey: [...queryOptions.queryKey, query, page],
+    queryKey: [...new Set([...queryOptions.queryKey, query, page])],
   });
 
   const [parent] = useAutoAnimate({ duration: 500 });
 
   if (isError) return <Error message={errorMessage} />;
-  if (isPending) return <CardsListSkeleton />;
+  if (isLoading) return <CardsListSkeleton asSlider={asSlider} />;
   if (query && !data?.results?.length) return <NoResults />;
-  if (!data?.results?.length && emptyComponent) return emptyComponent;
+  if (data?.total_results === 0 && emptyComponent) return emptyComponent;
 
+ if (asSlider)
+    return (
+      <Slider smartSlide={true}>
+        {data?.results?.map((media) => (
+          <Slider.Slide key={media.id} className='w-[160px] sm:w-[200px]!'>
+           <Card key={media.id} media={media} />
+          </Slider.Slide>
+        ))}
+      </Slider>
+    );
+    
   return (
     <>
       <div

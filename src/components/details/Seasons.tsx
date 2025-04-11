@@ -17,7 +17,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
   const filteredSeasons = seasons.length > 1 ? seasons.filter((season) => season.season_number > 0) : seasons;
 
   return (
-    <div className='py-6'>
+    <section className='py-6'>
       <h2 className='mb-4 text-2xl font-semibold text-white'>Seasons</h2>
       <div className='relative'>
         <Slider smartSlide={true} spaceBetween={16} className='seasons-slider'>
@@ -38,7 +38,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
                           : '/images/placeholder.png'
                       }
                       alt={`${show.name}: ${season.name}`}
-                      className='h-full w-full object-cover transition-transform group-hover:scale-105'
+                      className='size-full object-cover transition-transform group-hover:scale-105'
                     />
                     <div className='absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4'>
                       <p className='text-lg font-medium text-white'>{season.name}</p>
@@ -58,6 +58,6 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
           ))}
         </Slider>
       </div>
-    </div>
+    </section>
   );
 }

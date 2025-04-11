@@ -25,19 +25,11 @@ export const getTvShows = async (category: Categories, page?: number): Promise<T
       return await getTopRatedTvShows(page);
     case 'airing-today':
       return await getAiringTodayTvShows(page);
-    case 'no-the-air':
+    case 'on-tv':
       return await getOnTheAirTvShows(page);
     default:
       throw new Error('Invalid category');
   }
-};
-
-export const getSimilarTvShows = async (id: number | string, page?: number): Promise<TMDBResponse> => {
-  return await fetchFromTMDB(`/tv/${id}/similar`, { page: String(page || 1) });
-};
-
-export const getTvShowRecommendations = async (id: number | string, page?: number): Promise<TMDBResponse> => {
-  return await fetchFromTMDB(`/tv/${id}/recommendations`, { page: String(page || 1) });
 };
 
 export const getTvShowCredits = async (id: string | number): Promise<TMDBResponse> => {

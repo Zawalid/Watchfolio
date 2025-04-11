@@ -70,7 +70,7 @@ export default function EpisodesList({ episodes, count, showName, seasonName }: 
                   <img
                     src={`http://image.tmdb.org/t/p/w500${episode.still_path}`}
                     alt={`${episode.name} - Episode ${episode.episode_number}`}
-                    className='h-full w-full object-cover transition-all duration-500 hover:scale-105'
+                    className='size-full object-cover transition-all duration-500 hover:scale-105'
                     sizes='(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw'
                   />
                 </div>

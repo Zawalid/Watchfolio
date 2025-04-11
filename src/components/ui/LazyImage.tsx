@@ -30,7 +30,7 @@ export default function LazyImage({
   const actualSrc = hasError ? fallbackSrc : src;
 
   return (
-    <div className='relative h-full w-full'>
+    <div className='relative size-full'>
       {/* Shimmer placeholder */}
       {!isLoaded && (
         <div

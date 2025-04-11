@@ -1,12 +1,12 @@
 import { SwiperSlide } from 'swiper/react';
 import Slider from '@/components/ui/slider';
-import LazyImage from '../ui/LazyImage';
+import LazyImage from '@/components/ui/LazyImage';
 
 export default function Cast({ cast }: { cast: Person[] }) {
   if (!cast?.length) return null; // TODO: Handle empty cast array
 
   return (
-    <div className='py-6'>
+    <section className='py-6'>
       <h2 className='mb-4 text-2xl font-semibold text-white'>Main Cast</h2>
       <div className='relative'>
         <Slider smartSlide={true}>
@@ -21,7 +21,7 @@ export default function Cast({ cast }: { cast: Person[] }) {
                         : '/images/placeholder.png'
                     }
                     alt={member.name}
-                    className='h-full w-full object-cover'
+                    className='size-full object-cover'
                   />
                 </div>
                 <div className='mt-2 text-center'>
@@ -33,6 +33,6 @@ export default function Cast({ cast }: { cast: Person[] }) {
           ))}
         </Slider>
       </div>
-    </div>
+    </section>
   );
 }

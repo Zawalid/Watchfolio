@@ -1,12 +1,6 @@
 import { type LoaderFunctionArgs } from 'react-router';
 import { getDetails, getMovies, getTvShows } from '@/lib/api';
-import { prefetchQuery } from '@/lib/react-query';
-
-// Query key factory functions
-export const queryKeys = {
-  details: (type: 'movie' | 'tv', slug: string) => ['details', type, slug],
-  category: (type: 'movie' | 'tv', category: Categories, page: number) => [type, category, page],
-};
+import { prefetchQuery, queryKeys } from '@/lib/react-query';
 
 const createDetailsLoader =
   (type: 'movie' | 'tv') =>
@@ -15,7 +9,6 @@ const createDetailsLoader =
     const queryKey = queryKeys.details(type, slug);
 
     const data = await prefetchQuery(() => getDetails(type, slug), queryKey);
-    console.log(data);
     return data.data;
   };
 
@@ -30,7 +23,6 @@ const createCategoryLoader =
     const queryKey = queryKeys.category(type, category, page);
 
     const data = await prefetchQuery<TMDBResponse | TMDBResponse[]>(() => fetchFn(category, page), queryKey);
-    console.log(data);
     return data.data;
   };
 

@@ -16,59 +16,61 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
     type === 'movie' ? (media as MovieDetails).original_title : (media as TvShowDetails).original_name;
 
   return (
-    <>
-      <div className='absolute inset-0 max-h-[110vh]'>
+    <section className='h-screen'>
+      <div className='absolute top-[70px] inset-0'>
         <div
-          className='h-full w-full bg-cover bg-center bg-no-repeat'
+          className='size-full bg-cover bg-center bg-no-repeat'
           style={{
             backgroundImage: `url("http://image.tmdb.org/t/p/original${backdrop_path}")`,
           }}
         />
         <div className='absolute inset-0 bg-linear-to-b from-transparent via-black/80 to-black' />
       </div>
-      <div className='relative z-10 flex h-[95vh] flex-col justify-center px-6 pt-40'>
-        <div className='flex flex-col-reverse gap-6 md:flex-row md:gap-8'>
-          <div className='relative aspect-2/3 w-full max-w-[250px] overflow-hidden rounded-lg shadow-xl md:sticky md:top-24'>
-            <LazyImage
-              src={poster_path ? `http://image.tmdb.org/t/p/original${poster_path}` : '/images/placeholder.png'}
-              alt={title}
-              className='h-full w-full object-cover'
-            />
-          </div>
+      <div className='relative container z-10 flex h-full items-end'>
+        <div className='w-full max-w-7xl pb-20'>
+          <div className='flex flex-col-reverse gap-6 md:flex-row md:gap-8'>
+            <div className="relative aspect-[2/3] w-full max-w-[250px] overflow-hidden rounded-lg shadow-xl">
+              <LazyImage
+                src={poster_path ? `http://image.tmdb.org/t/p/original${poster_path}` : '/images/placeholder.png'}
+                alt={title}
+                className='size-full object-cover'
+              />
+            </div>
 
-          <div className='flex flex-1 flex-col gap-3'>
-            <div className='space-y-2'>
-              <h1 className='text-3xl font-bold leading-none text-white md:text-4xl'>{title}</h1>
-              <div className='flex flex-wrap items-center gap-x-2 gap-y-2'>
-                <span className='text-sm text-gray-300'>{getReleaseYear(media)}</span>
-                <span className='text-gray-300'>●</span>
-                <span className='text-sm text-gray-300'>
-                  {LANGUAGES.find((l) => l.iso_639_1 === original_language)?.english_name}
-                </span>
-                <span className='text-gray-300'>●</span>
-                <Rating rating={Number(getRating(vote_average))} />
-                {original_title !== title && (
-                  <>
-                    <span className='text-gray-300'>●</span>
-                    <span className='text-sm text-gray-300'>{original_title}</span>
-                  </>
-                )}
+            <div className='flex flex-1 flex-col gap-3'>
+              <div className='space-y-2'>
+                <h1 className='text-3xl leading-none font-bold text-white md:text-4xl'>{title}</h1>
+                <div className='flex flex-wrap items-center gap-x-2 gap-y-2'>
+                  <span className='text-sm text-gray-300'>{getReleaseYear(media)}</span>
+                  <span className='text-gray-300'>●</span>
+                  <span className='text-sm text-gray-300'>
+                    {LANGUAGES.find((l) => l.iso_639_1 === original_language)?.english_name}
+                  </span>
+                  <span className='text-gray-300'>●</span>
+                  <Rating rating={Number(getRating(vote_average))} />
+                  {original_title !== title && (
+                    <>
+                      <span className='text-gray-300'>●</span>
+                      <span className='text-sm text-gray-300'>{original_title}</span>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-            <Genres genres={genres} />
-            <div className='max-w-prose'>
-              <p className='text-base leading-relaxed text-gray-300'>{overview}</p>
-            </div>
+              <Genres genres={genres} />
+              <div className='max-w-prose'>
+                <p className='text-base leading-relaxed text-gray-300'>{overview}</p>
+              </div>
 
-            {type === 'movie' ? (
-              <MovieDetails details={media as MovieDetails} />
-            ) : (
-              <TvShowDetails details={media as TvShowDetails} />
-            )}
+              {type === 'movie' ? (
+                <MovieDetails details={media as MovieDetails} />
+              ) : (
+                <TvShowDetails details={media as TvShowDetails} />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </section>
   );
 }
 
@@ -144,7 +146,7 @@ function Genres({ genres }: { genres: { id: number; name: string }[] }) {
       {genres.map((g) => (
         <span
           key={g.id}
-          className='text-nowrap rounded-md bg-white/10 px-2.5 py-0.5 text-sm text-gray-200 backdrop-blur-xs'
+          className='rounded-md bg-white/10 px-2.5 py-0.5 text-sm text-nowrap text-gray-200 backdrop-blur-xs'
         >
           {g.name}
         </span>
@@ -164,7 +166,7 @@ function Rating({ rating, className = '' }: { rating: number; className?: string
 
   return (
     <div
-      className={`flex items-center gap-1 rounded-lg px-1.5 py-0.5 text-xs text-white ${getBgColor(rating)} ${className}`}
+      className={`flex items-center gap-1 rounded-lg px-2 py-0.5 text-sm text-white [&>svg]:!size-4 ${getBgColor(rating)} ${className}`}
     >
       {STAR_ICON}
       <span className='font-medium'>{rating}</span>

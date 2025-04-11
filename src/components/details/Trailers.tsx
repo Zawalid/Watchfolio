@@ -8,9 +8,6 @@ import {
   MorphingDialogTrigger,
 } from '@/components/ui/MorphingDialog';
 
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/scrollbar';
 
 export default function Trailers({ videos }: { videos: Video[] }) {
   // Filter to only get trailers from YouTube
@@ -19,7 +16,7 @@ export default function Trailers({ videos }: { videos: Video[] }) {
   if (!trailers?.length) return null;
 
   return (
-    <div className='py-6'>
+    <section className='py-6'>
       <h2 className='mb-4 text-2xl font-semibold text-white'>Trailers</h2>
 
       <div className='relative'>
@@ -37,7 +34,7 @@ export default function Trailers({ videos }: { videos: Video[] }) {
                     <img
                       src={`https://img.youtube.com/vi/${video.key}/maxresdefault.jpg`}
                       alt={video.name}
-                      className='h-full w-full object-cover'
+                      className='size-full object-cover'
                     />
                     <div className='absolute inset-0 flex items-center justify-center transition-all duration-300 group-hover:bg-black/50'>
                       <div className='flex h-12 w-12 items-center justify-center rounded-full bg-black/60 text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-black'>
@@ -66,7 +63,7 @@ export default function Trailers({ videos }: { videos: Video[] }) {
                     <iframe
                       src={`https://www.youtube.com/embed/${video.key}?autoplay=1`}
                       title={video.name}
-                      className='h-full w-full'
+                      className='size-full'
                       allowFullScreen
                       allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
                     ></iframe>
@@ -79,6 +76,6 @@ export default function Trailers({ videos }: { videos: Video[] }) {
           ))}
         </Slider>
       </div>
-    </div>
+    </section>
   );
 }

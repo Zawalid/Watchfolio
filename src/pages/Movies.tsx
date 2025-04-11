@@ -1,21 +1,21 @@
 import CardsList from '@/components/CardsList';
 import { getMovies } from '@/lib/api';
+import { queryKeys } from '@/lib/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useLoaderData, useParams } from 'react-router';
+import { useParams, useLoaderData } from 'react-router';
 
 export default function Movies() {
   const { category } = useParams<{ category: Categories }>();
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
-
-  console.log(page)
+  const initialData = useLoaderData();
 
   return (
     <CardsList
       queryOptions={{
-        queryKey: ['movies', category],
+        queryKey: queryKeys.category('movie', category!, page),
         queryFn: async () => await getMovies(category!, page),
         enabled: !!category,
-        initialData: useLoaderData(),
+        placeholderData: (previousData) => previousData || initialData,
       }}
       errorMessage='Something went wrong while fetching movies. Please try again later.'
     />

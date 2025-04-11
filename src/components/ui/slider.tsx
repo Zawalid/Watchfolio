@@ -1,12 +1,8 @@
-import { Swiper, SwiperProps } from 'swiper/react';
+import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import { SwiperEvents, Swiper as SwiperType } from 'swiper/types';
 import { Navigation, A11y, Keyboard, Mousewheel, Autoplay, FreeMode } from 'swiper/modules';
 import { LEFT_ARROW_ICON, RIGHT_ARROW_ICON } from './Icons';
 import { useRef, useState, useEffect } from 'react';
-
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/scrollbar';
 
 // ------------- Types & Interfaces -------------
 export interface SliderProps extends Omit<SwiperProps, 'navigation' | 'modules'> {
@@ -23,7 +19,7 @@ export interface SliderProps extends Omit<SwiperProps, 'navigation' | 'modules'>
 }
 
 // ------------- Component -------------
-export default function Slider({
+function Slider({
   children,
   navigationIds = { prev: 'prev', next: 'next' },
   className = '',
@@ -32,7 +28,7 @@ export default function Slider({
   speed = 1500,
   showNavigation = true,
   customNavigationButtons,
-  navigationClassName = 'absolute top-1/2 z- flex w-full -translate-y-1/2 justify-between',
+  navigationClassName = 'absolute top-1/2 z-10 flex w-full -translate-y-1/2 justify-between',
   smartSlide = false,
   ...restProps
 }: SliderProps) {
@@ -197,3 +193,7 @@ export default function Slider({
     </Swiper>
   );
 }
+
+Slider.Slide = SwiperSlide;
+
+export default Slider;

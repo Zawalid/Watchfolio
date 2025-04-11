@@ -4,6 +4,7 @@ import { parseAsInteger, useQueryState } from 'nuqs';
 import Input from '@/components/ui/Input';
 import { search } from '@/lib/api';
 import CardsList from '@/components/CardsList';
+import { queryKeys } from '@/lib/react-query';
 
 export default function Search() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -33,7 +34,7 @@ export default function Search() {
           placeholder='eg. The Wire'
         >
           <button
-            className={`icon absolute cursor-pointer text-Grey-100 right-4 top-1/2 z-20 -translate-y-1/2 ${!query ? 'hidden' : ''}`}
+            className={`icon text-Grey-100 absolute top-1/2 right-4 z-20 -translate-y-1/2 cursor-pointer ${!query ? 'hidden' : ''}`}
             type='reset'
             onClick={() => {
               setQuery('');
@@ -66,7 +67,7 @@ export default function Search() {
       {query ? (
         <CardsList
           queryOptions={{
-            queryKey: ['search'],
+            queryKey: queryKeys.search(query, page),
             queryFn: async () => await search(query, page),
             enabled: !!query,
           }}
@@ -74,8 +75,8 @@ export default function Search() {
         />
       ) : (
         <div className='flex flex-1 flex-col items-center justify-center'>
-          <h2 className='text-2xl font-semibold text-Grey-50'>Start Searching...</h2>
-          <p className='leading-relaxed text-Grey-300'>
+          <h2 className='text-Grey-50 text-2xl font-semibold'>Start Searching...</h2>
+          <p className='text-Grey-300 leading-relaxed'>
             It looks like you haven&apos;t searched for anything yet. Start typing to find what you&apos;re looking for!
           </p>
         </div>

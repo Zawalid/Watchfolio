@@ -6,7 +6,7 @@ export function NoResults({ children }: { children?: ReactNode }) {
   return (
     <div className='flex min-h-[500px] flex-1 flex-col items-center justify-center gap-1 text-center'>
       <div className='relative aspect-square w-[300px]'>
-        <img src='/images/empty.svg' alt='' className='h-full w-full object-contain' />
+        <img src='/images/empty.svg' alt='' className='size-full object-contain' />
       </div>{' '}
       <h2 className='text-xl font-semibold text-Grey-50 sm:text-2xl'>Sorry, No results found</h2>
       <p className='font-medium text-Grey-300'>There are no movies or tv shows matching your search terms.</p>
@@ -27,7 +27,7 @@ export function EmptyWatchList({
   return (
     <div className={`flex min-h-[500px] flex-1 flex-col items-center justify-center gap-1 text-center ${className}`}>
       <div className='relative aspect-square w-[300px]'>
-        <img src='/images/empty.svg' alt='' className='h-full w-full object-contain' />
+        <img src='/images/empty.svg' alt='' className='size-full object-contain' />
       </div>
       <h2 className='text-xl font-semibold text-Grey-50 sm:text-2xl'>{heading}</h2>
       <p className='font-medium text-Grey-300'>
@@ -57,7 +57,7 @@ export function Error({ children, message = 'Something went wrong' }: { children
   return (
     <div className='flex min-h-[500px] flex-1 flex-col items-center justify-center gap-1 text-center'>
       <div className='relative aspect-square w-[300px]'>
-        <img src='/images/error.svg' alt='' className='h-full w-full object-contain' />
+        <img src='/images/error.svg' alt='' className='size-full object-contain' />
       </div>
       <h2 className='text-xl font-semibold text-Grey-50 sm:text-2xl'>Oops! An error occurred</h2>
       <p className='font-medium text-Grey-300'>{message}</p>

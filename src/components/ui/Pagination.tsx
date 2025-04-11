@@ -7,7 +7,7 @@ export default function Pagination(props: PaginationProps) {
   const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
   return (
-    <div className='flex justify-center'>
+    <div className='flex [&_[role="button"]]:cursor-pointer justify-center'>
       <P
         showControls
         initialPage={1}

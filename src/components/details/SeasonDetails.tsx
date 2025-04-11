@@ -43,7 +43,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
                 season.poster_path ? `http://image.tmdb.org/t/p/w500${season.poster_path}` : '/images/placeholder.png'
               }
               alt={`${show.name}: ${season.name}`}
-              className='h-full w-full object-cover transition-all duration-500 hover:scale-105'
+              className='size-full object-cover transition-all duration-500 hover:scale-105'
             />
             <div className='absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 md:opacity-100'></div>
           </div>

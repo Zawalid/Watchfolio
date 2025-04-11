@@ -27,7 +27,7 @@ export default function Card({
           <LazyImage
             src={poster_path ? `http://image.tmdb.org/t/p/w500${poster_path}` : '/images/placeholder.png'}
             alt={title}
-            className='h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-110'
+            className='size-full object-cover object-center transition-transform duration-300 group-hover:scale-110'
           />
         </div>
       </Link>

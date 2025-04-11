@@ -3,7 +3,7 @@ import Tabs from '@/components/ui/Tabs';
 
 export default function MoviesLayout() {
   return (
-    <div className='space-y-12'>
+    <div className='space-y-12 container'>
       <Tabs
         tabs={[
           { label: 'Popular', value: 'popular', link: '/movies/popular' },

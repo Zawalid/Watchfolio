@@ -25,4 +25,4 @@ declare type disclosure = {
   onClose: () => void;
 };
 
-declare type Categories = 'popular' | 'top-rated' | 'now-playing' | 'upcoming' | 'no-the-air' | 'airing-today';
+declare type Categories = 'popular' | 'top-rated' | 'now-playing' | 'upcoming' | 'on-tv' | 'airing-today';
