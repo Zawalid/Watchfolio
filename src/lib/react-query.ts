@@ -9,7 +9,7 @@ export async function prefetchQuery<TData>(queryFn: () => Promise<TData>, queryK
 
   if (cachedData) return { data: cachedData, queryKey, fromCache: true };
 
-  const data = await queryClient.fetchQuery({ queryKey, queryFn });
+  const data = await queryClient.prefetchQuery({ queryKey, queryFn });
 
   return { data, queryKey, fromCache: false };
 }
@@ -19,4 +19,5 @@ export const queryKeys = {
   category: (type: 'movie' | 'tv', category: string, page: number) => [type, category, page],
   search: (query: string, page: number) => ['search', query, page],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
+  season: (seasonNumber: number) => ['season', seasonNumber],
 };

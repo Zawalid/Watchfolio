@@ -4,7 +4,6 @@ import {
   MorphingDialog,
   MorphingDialogClose,
   MorphingDialogContainer,
-  MorphingDialogContent,
   MorphingDialogTrigger,
 } from '@/components/ui/MorphingDialog';
 import LazyImage from '@/components/ui/LazyImage';
@@ -40,7 +39,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
                       alt={`${show.name}: ${season.name}`}
                       className='size-full object-cover transition-transform group-hover:scale-105'
                     />
-                    <div className='absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4'>
+                    <div className='absolute right-0 bottom-0 left-0 bg-linear-to-t from-black/80 to-transparent p-4'>
                       <p className='text-lg font-medium text-white'>{season.name}</p>
                       <p className='text-sm text-gray-300'>{season.episode_count} Episodes</p>
                     </div>
@@ -48,9 +47,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
                 </MorphingDialogTrigger>
 
                 <MorphingDialogContainer>
-                  <MorphingDialogContent className='relative max-h-[80vh] w-full max-w-[80vw] overflow-auto rounded-xl bg-blur p-6 backdrop-blur-2xl'>
-                    <SeasonDetails show={show} season={season} />
-                  </MorphingDialogContent>
+                  <SeasonDetails season={season} show={show} />
                   <MorphingDialogClose />
                 </MorphingDialogContainer>
               </MorphingDialog>

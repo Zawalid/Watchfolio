@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence, MotionConfig, Transition, Variant } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig, Transition, Variant } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { cn } from '@/utils';
 import { X_ICON } from '@/components/ui/Icons';
@@ -324,7 +324,7 @@ function MorphingDialogClose({ children, className, variants }: MorphingDialogCl
       type='button'
       aria-label='Close dialog'
       key={`dialog-close-${uniqueId}`}
-      className={cn('absolute right-6 top-6 h-fit w-fit rounded-full bg-white p-1', className)}
+      className={cn('absolute top-6 right-6 h-fit w-fit rounded-full bg-white p-1', className)}
       initial='initial'
       animate='animate'
       exit='exit'
