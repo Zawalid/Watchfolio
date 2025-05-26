@@ -141,6 +141,10 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+
+  button {
+    cursor: pointer;
+  }
 }
 
 * {
@@ -166,6 +170,10 @@
   background-color: var(--color-Grey-900);
 }
 
+
+@utility pill-bg {
+  @apply rounded-lg border border-white/10 bg-gray-800/40 px-3 py-1.5  backdrop-blur-sm
+}
 
 
 body {

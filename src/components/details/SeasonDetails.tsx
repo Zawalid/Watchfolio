@@ -35,7 +35,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
         </div>
       </motion.div>
 
-      <motion.div className='space-y-5 overflow-hidden p-6 pr-2' variants={containerVariants}>
+      <motion.div className='flex min-h-0 flex-col space-y-5 p-6 pr-2' variants={containerVariants}>
         <motion.div variants={itemVariants}>
           <h3 className='text-2xl font-bold text-white'>
             {seasonWithEps.name}
@@ -99,9 +99,11 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
         )}
         <div className='bg-border h-px'></div>
         {seasonWithEps.episodes && seasonWithEps.episodes.length > 0 && (
-          <motion.div variants={itemVariants} className='flex max-h-[calc(80vh-300px)] flex-col overflow-auto'>
+          <motion.div variants={itemVariants} className='flex min-h-0 flex-1 flex-col'>
             <h4 className='mb-2 text-base font-medium tracking-wider text-gray-400 uppercase'>Episodes</h4>
-            <EpisodesList episodes={seasonWithEps.episodes} />
+            <div className='min-h-0 flex-1 overflow-auto'>
+              <EpisodesList episodes={seasonWithEps.episodes} />
+            </div>
           </motion.div>
         )}
       </motion.div>

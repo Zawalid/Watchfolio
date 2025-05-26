@@ -1,7 +1,8 @@
-import { GENRES } from '@/lib/api/values';
-import { getMediaType, getRating, getReleaseYear, slugify } from '@/utils';
 import { Link } from 'react-router';
-import LazyImage from './ui/LazyImage';
+import { getMediaType, getRating, getReleaseYear } from '@/utils/media';
+import { slugify } from '@/utils';
+import { GENRES } from '@/lib/api/values';
+import LazyImage from '@/components/ui/LazyImage';
 // import CardActions from './CardActions';
 
 const getLink = (type: string, id: number, title: string) => {

@@ -27,7 +27,7 @@ export default function Details({ type }: { type: 'movie' | 'tv' }) {
   if (!media) return;
 
   return (
-    <div className='min-h-screen bg-black'>
+    <div >
       <Info media={media} />
       <div className='container'>
         {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons} show={media as TvShowDetails} />}

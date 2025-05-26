@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { placeholder } from '@/utils/shimmer-placeholder';
+import { cn } from '@/utils';
 
 type LazyImageProps = {
   src: string;
@@ -39,11 +40,10 @@ export default function LazyImage({
         />
       )}
 
-      {/* Actual image */}
       <img
         src={actualSrc}
         alt={alt}
-        className={`${className} transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+        className={cn('transition-opacity duration-300', isLoaded ? 'opacity-100' : 'opacity-0', className)}
         onLoad={handleLoad}
         onError={handleError}
         {...props}

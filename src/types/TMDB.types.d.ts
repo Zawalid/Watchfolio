@@ -49,6 +49,7 @@ declare interface Person {
   character: string; // Character name (for cast members)
   credit_id: string; // Unique credit identifier
   order: number; // Order in credits list
+  job?: string; // Job title (for crew members, e.g., Director, Writer)
 }
 
 /**
@@ -90,6 +91,16 @@ declare interface TMDBMedia {
   genre_ids: number[]; // Array of genre identifiers
   original_language: string; // Original language code (e.g., 'en')
   media_type: 'tv' | 'movie'; // Type of media
+  production_companies?: {
+    id: number; // Company identifier
+    logo_path: string | null; // Relative path to company logo
+    name: string; // Company name
+    origin_country: string; // Country of origin
+  }[]; // Array of production companies
+  production_countries?: {
+    iso_3166_1: string; // Country code (e.g., 'US')
+    name: string; // Country name
+  }[]; // Array of production countries
 }
 
 /**
@@ -141,6 +152,7 @@ declare interface TvShowDetails extends TMDBMedia {
   number_of_episodes: number; // Total number of episodes
   episode_run_time: number[]; // Average episode runtime in minutes
   seasons: Season[]; // Array of seasons
+  created_by?: Person[];
 }
 
 /**

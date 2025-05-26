@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
-    "format": "prettier --write .",
-    "check-types": "tsc --noEmit"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "verify": "pnpm lint && pnpm typecheck",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,css,html}\""
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
