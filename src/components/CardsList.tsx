@@ -31,17 +31,17 @@ export default function CardsList({ queryOptions, asSlider, emptyComponent, erro
   if (query && !data?.results?.length) return <NoResults />;
   if (data?.total_results === 0 && emptyComponent) return emptyComponent;
 
- if (asSlider)
+  if (asSlider)
     return (
       <Slider smartSlide={true}>
         {data?.results?.map((media) => (
           <Slider.Slide key={media.id} className='w-[160px] sm:w-[200px]!'>
-           <Card key={media.id} media={media} />
+            <Card key={media.id} media={media} />
           </Slider.Slide>
         ))}
       </Slider>
     );
-    
+
   return (
     <>
       <div

@@ -13,6 +13,7 @@ export default function UserDropdown({ user }: { user: User | null }) {
 
   const signOut = async (confirmation?: 'enabled' | 'disabled') => {
     // Mock implementation - would be replaced with actual API call
+    console.log(confirmation)
     const mockSignOut = () => {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -33,7 +34,7 @@ export default function UserDropdown({ user }: { user: User | null }) {
   return (
     <>
       <Dropdown
-        classNames={{ content: 'blur-bg  backdrop-blur-2xl' }}
+        classNames={{ content: 'blur-bg backdrop-blur-2xl' }}
         backdrop='opaque'
         radius='sm'
         placement='bottom-end'

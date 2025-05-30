@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import EpisodesList from './EpisodesList';
 import { MorphingDialogContent } from '@/components/ui/MorphingDialog';
 import { queryKeys } from '@/lib/react-query';
-import { getTvShowSeasonDetails } from '@/lib/api';
+import { getTvShowSeasonDetails } from '@/lib/api/TMDB';
 import { formatDate } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
 
@@ -35,7 +35,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
         </div>
       </motion.div>
 
-      <motion.div className='flex min-h-0 flex-col space-y-5 p-6 pr-2' variants={containerVariants}>
+      <motion.div className='flex min-h-0 flex-col space-y-5 p-6' variants={containerVariants}>
         <motion.div variants={itemVariants}>
           <h3 className='text-2xl font-bold text-white'>
             {seasonWithEps.name}

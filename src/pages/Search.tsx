@@ -2,7 +2,7 @@ import { useIsFetching } from '@tanstack/react-query';
 import { Button } from '@heroui/button';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import Input from '@/components/ui/Input';
-import { search } from '@/lib/api';
+import { search } from '@/lib/api/TMDB';
 import CardsList from '@/components/CardsList';
 import { queryKeys } from '@/lib/react-query';
 
@@ -14,7 +14,7 @@ export default function Search() {
   return (
     <div className='flex h-full flex-col gap-12'>
       <form
-        className='flex w-1/2 gap-2 self-center'
+        className='flex gap-2 w-3/5 self-center'
         id='search-form'
         onSubmit={(e) => {
           e.preventDefault();

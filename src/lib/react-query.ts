@@ -20,4 +20,5 @@ export const queryKeys = {
   search: (query: string, page: number) => ['search', query, page],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
   season: (seasonNumber: number) => ['season', seasonNumber],
+  
 };

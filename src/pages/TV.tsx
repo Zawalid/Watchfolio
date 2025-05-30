@@ -1,5 +1,5 @@
 import CardsList from '@/components/CardsList';
-import { getTvShows } from '@/lib/api';
+import { getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useParams, useLoaderData } from 'react-router';

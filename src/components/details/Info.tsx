@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { LANGUAGES } from '@/lib/api/values';
+import { LANGUAGES } from '@/lib/api/TMDB/values';
 import { STAR_ICON } from '@/components/ui/Icons';
 import LazyImage from '@/components/ui/LazyImage';
 import { getDirectorOrCreator, getFormattedRuntime, getMediaType, getRating, getReleaseYear } from '@/utils/media';
+import ActionButtons from './ActionButtons';
 
 export default function Info({ media }: { media: TvShowDetails | MovieDetails }) {
   const { vote_average, poster_path, genres } = media;
@@ -11,12 +12,12 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
   const title = type === 'movie' ? (media as MovieDetails).title : (media as TvShowDetails).name;
 
   return (
-    <div className='container min-h-[700px] flex-1 py-4 pt-16'>
+    <div className='min-h-[700px] flex-1 py-4 pt-16'>
       <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
         {/* Left Column - Poster & Actions */}
         <div className='flex flex-col gap-3'>
           <motion.div
-            className='group ring-Primary-500/20 relative aspect-[2/3] w-full max-w-[280px] overflow-hidden rounded-xl shadow-2xl ring-1'
+            className='group ring-Primary-500/20 relative aspect-[2/3] w-full max-w-[300px] overflow-hidden rounded-xl shadow-2xl ring-1'
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
@@ -29,51 +30,7 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
           </motion.div>
 
-          <motion.div
-            className='flex w-full flex-col gap-2'
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
-          >
-            <button className='bg-Primary-500 hover:bg-Primary-600 hover:shadow-Primary-500/25 flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-medium text-white transition-all duration-200 hover:scale-105 hover:shadow-lg'>
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-4'>
-                <path
-                  fillRule='evenodd'
-                  d='M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z'
-                  clipRule='evenodd'
-                />
-              </svg>
-              Watch Now
-            </button>
-            <button className='flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 py-2.5 text-sm font-medium text-white backdrop-blur-md transition-all duration-200 hover:scale-105 hover:bg-white/10'>
-              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-4'>
-                <path
-                  fillRule='evenodd'
-                  d='M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z'
-                  clipRule='evenodd'
-                />
-              </svg>
-              Watch Trailer
-            </button>
-            <div className='flex gap-2'>
-              <button className='flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 py-2.5 text-xs font-medium text-white backdrop-blur-md transition-all duration-200 hover:scale-105 hover:bg-white/10'>
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-4'>
-                  <path d='m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z' />
-                </svg>
-                Favorite
-              </button>
-              <button className='flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 py-2.5 text-xs font-medium text-white backdrop-blur-md transition-all duration-200 hover:scale-105 hover:bg-white/10'>
-                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' className='size-4'>
-                  <path
-                    fillRule='evenodd'
-                    d='M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z'
-                    clipRule='evenodd'
-                  />
-                </svg>
-                Watch Later
-              </button>
-            </div>
-          </motion.div>
+          <ActionButtons mediaId={media.id} mediaType={type} onPlayTrailer={() => {}} />
         </div>
 
         {/* Right Column - Info */}
@@ -87,11 +44,7 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
           <div className='mb-6'>
             <div className='mb-3 flex items-center gap-3'>
               <Rating rating={Number(getRating(vote_average))} />
-              <motion.span
-                className='bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <motion.span className='bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
                 <svg xmlns='http://www.w3.org/2000/svg' className='mr-1 size-4' viewBox='0 0 20 20' fill='currentColor'>
                   <path
                     fillRule='evenodd'
@@ -101,11 +54,7 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
                 </svg>
                 {getReleaseYear(media, 'full')}
               </motion.span>
-              <motion.span
-                className='bg-Tertiary-900/80 text-Tertiary-300 ring-Tertiary-500/30 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <motion.span className='bg-Tertiary-900/80 text-Tertiary-300 ring-Tertiary-500/30 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
                 <svg xmlns='http://www.w3.org/2000/svg' className='mr-1 size-4' viewBox='0 0 20 20' fill='currentColor'>
                   <path
                     fillRule='evenodd'
@@ -126,6 +75,7 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2, delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   {genre.name}
                 </motion.span>
@@ -153,8 +103,6 @@ function Rating({ rating }: { rating: number }) {
   return (
     <motion.div
       className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md ${getBgColor(rating)}`}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
     >
       {STAR_ICON}
       <span>{rating}</span>
@@ -168,7 +116,7 @@ function Details({ media }: { media: TvShowDetails | MovieDetails }) {
 
   return (
     <div className='mt-4 space-y-4 border-t border-white/10 pt-4'>
-      <div className='flex gap-6'>
+      <div className='flex gap-12'>
         <div>
           <h4 className='mb-1 text-xs font-medium text-gray-400'>Status</h4>
           <p className='pill-bg text-sm text-gray-200'>
@@ -183,7 +131,7 @@ function Details({ media }: { media: TvShowDetails | MovieDetails }) {
           </p>
         </div>
       </div>
-      <div className='flex justify-between gap-6'>
+      <div className='flex gap-12'>
         <div>
           <h4 className='mb-1 text-xs font-medium text-gray-400'>Production Countries</h4>
           <div className='flex flex-wrap gap-2'>
@@ -208,7 +156,7 @@ function Details({ media }: { media: TvShowDetails | MovieDetails }) {
       </div>
       <div>
         <h4 className='mb-1 text-xs font-medium text-gray-400'>{type === 'movie' ? 'Director' : 'Creator'}</h4>
-        <div className='pill-bg flex w-fit items-center gap-1.5 [&>div]:size-8'>
+        <div className='pill-bg flex w-fit items-center gap-2.5 overflow-hidden py-0 pl-0 [&>div]:size-8'>
           <LazyImage
             src={
               directorOrCreator?.profile_path
@@ -216,7 +164,7 @@ function Details({ media }: { media: TvShowDetails | MovieDetails }) {
                 : '/images/placeholder-person.png'
             }
             alt={directorOrCreator?.name || 'Unknown'}
-            className='size-8 rounded-full border border-white/10 object-cover'
+            className='rounded-e-l size-full object-cover'
           />
           <span className='text-sm text-gray-200'>{directorOrCreator?.name}</span>
         </div>
@@ -224,3 +172,36 @@ function Details({ media }: { media: TvShowDetails | MovieDetails }) {
     </div>
   );
 }
+
+// function ActionButtons() {
+//   return (
+//     <motion.div
+//       className='flex w-full flex-col gap-2'
+//       initial={{ opacity: 0, y: 20 }}
+//       animate={{ opacity: 1, y: 0 }}
+//       transition={{ duration: 0.3, delay: 0.1 }}
+//     >
+//       {/* Will probably redirect to https://broflix.ci/ */}
+//       {/* <Button
+//         color='primary'
+//         isDisabled
+//         className='transition-all! duration-200 hover:scale-105'
+//         startContent={<Play className='size-4' />}
+//       >
+//         Watch Now
+//       </Button> */}
+//       <Button className='button-secondary' isDisabled startContent={<Play className='size-4' />}>
+//         Watch Trailer
+//       </Button>
+//       <div className="grid grid-cols-2 gap-2">
+
+//       <Button className='button-secondary' isDisabled startContent={<Heart className='size-4' />}>
+//         Favorite
+//       </Button>
+//       <Button className='button-secondary' isDisabled startContent={<Bookmark className='size-4' />}>
+//         Watch Later
+//       </Button>
+//       </div>
+//     </motion.div>
+//   );
+// }

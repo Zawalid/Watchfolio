@@ -4,7 +4,7 @@ import Info from '@/components/details/Info';
 import Seasons from '@/components/details/Seasons';
 import Trailers from '@/components/details/Trailers';
 import { useQuery } from '@tanstack/react-query';
-import { getDetails } from '@/lib/api';
+import { getDetails } from '@/lib/api/TMDB';
 import DetailsSkeleton from '@/components/skeletons/DetailsSkeleton';
 import { Error } from '@/components/Status';
 import Recommendations from '@/components/details/Recommendations';
@@ -27,9 +27,9 @@ export default function Details({ type }: { type: 'movie' | 'tv' }) {
   if (!media) return;
 
   return (
-    <div >
+    <div>
       <Info media={media} />
-      <div className='container'>
+      <div>
         {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons} show={media as TvShowDetails} />}
         <Cast cast={media.credits.cast} />
         <Trailers videos={media.videos?.results || []} />

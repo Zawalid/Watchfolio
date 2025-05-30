@@ -25,7 +25,7 @@ const sampleData: List[] = [
   },
 ];
 
-export default function AddToList({ disclosure }: { disclosure: disclosure }) {
+export default function AddToList({ disclosure }: { disclosure: Disclosure }) {
   return (
     <Modal disclosure={disclosure}>
       <ModalHeader className='flex justify-center'>

@@ -1,4 +1,4 @@
-import { getDetails } from '@/lib/api';
+import { getDetails } from '@/lib/api/TMDB';
 
 interface MediaDetails {
   release_date?: string | null;

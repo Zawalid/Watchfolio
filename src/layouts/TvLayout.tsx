@@ -3,7 +3,7 @@ import Tabs from '@/components/ui/Tabs';
 
 export default function TvLayout() {
   return (
-    <div className='space-y-12 container'>
+    <div className='space-y-12'>
       <Tabs
         tabs={[
           { label: 'Popular', value: 'popular', link: '/tv/popular' },

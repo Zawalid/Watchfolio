@@ -1,5 +1,5 @@
 import { type LoaderFunctionArgs } from 'react-router';
-import { getDetails, getMovies, getTvShows } from '@/lib/api';
+import { getDetails, getMovies, getTvShows } from '@/lib/api/TMDB';
 import { prefetchQuery, queryKeys } from '@/lib/react-query';
 
 const createDetailsLoader =

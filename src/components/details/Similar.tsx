@@ -1,4 +1,4 @@
-import { getSimilar } from '@/lib/api';
+import { getSimilar } from '@/lib/api/TMDB';
 import CardsList from '../CardsList';
 
 export default function Similar({ type, id }: { type: 'movie' | 'tv'; id: number }) {

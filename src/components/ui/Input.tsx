@@ -5,6 +5,7 @@ import { NAME_ICON, EMAIL_ICON, PASSWORD_ICON, LINK_ICON, SEARCH_ICON, TITLE_ICO
 
 type IconType = 'name' | 'email' | 'search' | 'password' | 'title' | 'link';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const icons: Record<IconType, JSX.Element> = {
   name: NAME_ICON,
   email: EMAIL_ICON,

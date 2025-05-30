@@ -1,4 +1,4 @@
-import { getRecommendations } from '@/lib/api';
+import { getRecommendations } from '@/lib/api/TMDB';
 import CardsList from '../CardsList';
 
 export default function Recommendations({ type, id }: { type: 'movie' | 'tv'; id: number }) {
