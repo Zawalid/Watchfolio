@@ -1,166 +1,151 @@
 /**
  * Standard response format from TMDB API list endpoints
  */
-declare type TMDBResponse = {
-  page: number; // Current page of results
-  results: TvShow[] | Movie[]; // Array of movies or TV shows
-  total_pages: number; // Total number of available pages
-  total_results: number; // Total number of matching results
+declare type TMDBResponse<T = Media> = {
+  page: number;
+  results: T[];
+  total_pages: number;
+  total_results: number;
 };
-
-/**
- * Basic movie information for list/search results
- */
-declare interface Movie {
-  id: number; // Unique TMDB movie identifier
-  vote_average: number; // Average user rating (0-10)
-  poster_path: string | null; // Relative path to poster image
-  genre_ids: number[]; // Array of genre identifiers
-  media_type: 'tv' | 'movie'; // Type of media
-  title: string; // Movie title
-  release_date: string | null; // Release date in format YYYY-MM-DD
-}
-
-/**
- * Basic TV show information for list/search results
- */
-declare interface TvShow {
-  id: number; // Unique TMDB TV show identifier
-  vote_average: number; // Average user rating (0-10)
-  poster_path: string | null; // Relative path to poster image
-  genre_ids: number[]; // Array of genre identifiers
-  media_type: 'tv' | 'movie'; // Type of media
-  name: string; // TV show name/title
-  first_air_date: string | null; // First air date in format YYYY-MM-DD
-}
 
 /**
  * Cast or crew member information
  */
 declare interface Person {
-  adult: boolean; // Whether person is marked as adult content
-  gender: number; // Gender identifier (1=female, 2=male)
-  id: number; // Unique TMDB person identifier
-  known_for_department: string; // Primary department (Acting, Directing, etc.)
-  name: string; // Person's name
-  original_name: string; // Person's name in original language
-  popularity: number; // Popularity score on TMDB
-  profile_path: string | null; // Relative path to profile image
-  character: string; // Character name (for cast members)
-  credit_id: string; // Unique credit identifier
-  order: number; // Order in credits list
-  job?: string; // Job title (for crew members, e.g., Director, Writer)
+  adult: boolean;
+  gender: number;
+  id: number;
+  known_for_department: string;
+  name: string;
+  original_name: string;
+  popularity: number;
+  profile_path: string | null;
+  character: string;
+  credit_id: string;
+  order: number;
+  job?: string;
 }
 
 /**
  * Video information for trailers, teasers, clips, etc.
  */
 declare interface Video {
-  id: string; // Unique video identifier
-  iso_639_1: string; // Language code (e.g., 'en' for English)
-  iso_3166_1: string; // Country code (e.g., 'US' for United States)
-  key: string; // YouTube video key for embedding
-  name: string; // Title of the video
-  official: boolean; // Whether it's an official video
-  published_at: string; // Publication date
-  site: string; // Video hosting site (YouTube, Vimeo, etc.)
-  size: number; // Resolution (480, 720, 1080)
-  type: string; // Type (Trailer, Teaser, Clip, etc.)
-}
-
-/**
- * Common media properties shared by both movies and TV shows
- */
-declare interface TMDBMedia {
-  id: number; // Unique TMDB identifier
-  vote_average: number; // Average user rating (0-10)
-  backdrop_path: string; // Relative path to backdrop image
-  poster_path: string | null; // Relative path to poster image
-  overview: string; // Plot summary/description
-  genres: {
-    id: number; // Genre identifier
-    name: string; // Genre name (e.g., "Action", "Drama")
-  }[];
-  credits: {
-    cast: Person[]; // Cast members
-    crew: Person[]; // Crew members
-  };
-  videos?: {
-    results: Video[]; // Associated videos
-  };
-  genre_ids: number[]; // Array of genre identifiers
-  original_language: string; // Original language code (e.g., 'en')
-  media_type: 'tv' | 'movie'; // Type of media
-  production_companies?: {
-    id: number; // Company identifier
-    logo_path: string | null; // Relative path to company logo
-    name: string; // Company name
-    origin_country: string; // Country of origin
-  }[]; // Array of production companies
-  production_countries?: {
-    iso_3166_1: string; // Country code (e.g., 'US')
-    name: string; // Country name
-  }[]; // Array of production countries
+  id: string;
+  iso_639_1: string;
+  iso_3166_1: string;
+  key: string;
+  name: string;
+  official: boolean;
+  published_at: string;
+  site: string;
+  size: number;
+  type: string;
 }
 
 /**
  * Information about a TV episode
  */
 declare interface Episode {
-  air_date: string; // Air date of the episode in format YYYY-MM-DD
-  episode_number: number; // Episode number within the season
-  episode_type: string; // Type of episode (e.g., "standard")
-  id: number; // Unique episode identifier
-  name: string; // Episode title
-  overview: string; // Episode description/summary
-  production_code: string; // Production code identifier
-  runtime: number; // Episode runtime in minutes
-  season_number: number; // Season number this episode belongs to
-  show_id: number; // ID of the show this episode belongs to
-  still_path: string | null; // Relative path to episode still image
-  vote_average: number; // Average user rating (0-10)
-  vote_count: number; // Number of votes
+  air_date: string;
+  episode_number: number;
+  episode_type: string;
+  id: number;
+  name: string;
+  overview: string;
+  production_code: string;
+  runtime: number;
+  season_number: number;
+  show_id: number;
+  still_path: string | null;
+  vote_average: number;
+  vote_count: number;
 }
 
 /**
  * Information about a TV season
  */
 declare interface Season {
-  _id?: string; // MongoDB ID (if applicable)
-  air_date: string; // First air date of the season
-  episode_count?: number; // Number of episodes in the season
-  episodes?: Episode[]; // Array of episodes in this season
-  id: number; // Unique season identifier
-  name: string; // Season name
-  overview: string; // Season description
-  poster_path: string | null; // Relative path to season poster
-  season_number: number; // Season number (1, 2, etc.)
-  vote_average: number; // Average user rating for the season
-  show_id?: number; // ID of the show this season belongs to
+  _id?: string;
+  air_date: string;
+  episode_count?: number;
+  episodes?: Episode[];
+  id: number;
+  name: string;
+  overview: string;
+  poster_path: string | null;
+  season_number: number;
+  vote_average: number;
+  show_id?: number;
 }
 
 /**
- * Detailed TV show information
+ * Base properties shared by all media types
  */
-declare interface TvShowDetails extends TMDBMedia {
-  original_name: string; // Original name in native language
-  name: string; // TV show name/title
-  status: string; // Status (e.g., "Returning Series", "Ended")
-  first_air_date: string | null; // First air date in format YYYY-MM-DD
-  last_air_date: string; // Most recent air date
-  number_of_seasons: number; // Total number of seasons
-  number_of_episodes: number; // Total number of episodes
-  episode_run_time: number[]; // Average episode runtime in minutes
-  seasons: Season[]; // Array of seasons
+declare interface BaseMedia {
+  id: number;
+  vote_average: number;
+  vote_count: number;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  overview: string;
+  original_language: string;
+  adult: boolean;
+  popularity: number;
+}
+
+/**
+ * Movie information - works for both basic and detailed responses
+ */
+declare interface Movie extends BaseMedia {
+  media_type: 'movie';
+  title: string;
+  original_title: string;
+  release_date: string | null;
+
+  genre_ids?: number[];
+  genres?: { id: number; name: string }[];
+
+  runtime?: number;
+  budget?: number;
+  revenue?: number;
+  status?: string;
+  tagline?: string;
+  credits?: { cast: Person[]; crew: Person[] };
+  videos?: { results: Video[] };
+  production_companies?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
+  production_countries?: { iso_3166_1: string; name: string }[];
+  spoken_languages?: { english_name: string; iso_639_1: string; name: string }[];
+  belongs_to_collection?: { id: number; name: string; poster_path: string | null; backdrop_path: string | null };
+}
+
+/**
+ * TV Show information - works for both basic and detailed responses
+ */
+declare interface TvShow extends BaseMedia {
+  media_type: 'tv';
+  name: string;
+  original_name: string;
+  first_air_date: string | null;
+  origin_country: string[];
+
+  genre_ids?: number[];
+  genres?: { id: number; name: string }[];
+
+  status?: string;
+  last_air_date?: string | null;
+  number_of_seasons?: number;
+  number_of_episodes?: number;
+  episode_run_time?: number[];
+  seasons?: Season[];
   created_by?: Person[];
+  credits?: { cast: Person[]; crew: Person[] };
+  videos?: { results: Video[] };
+  production_companies?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
+  production_countries?: { iso_3166_1: string; name: string }[];
+  spoken_languages?: { english_name: string; iso_639_1: string; name: string }[];
+  networks?: { id: number; name: string; logo_path: string | null; origin_country: string }[];
+  type?: string;
+  in_production?: boolean;
 }
 
-/**
- * Detailed movie information
- */
-declare interface MovieDetails extends TMDBMedia {
-  original_title: string; // Original title in native language
-  title: string; // Movie title
-  release_date: string | null; // Release date in format YYYY-MM-DD
-  runtime: number; // Runtime in minutes
-}
+type Media = Movie | TvShow

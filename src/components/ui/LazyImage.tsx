@@ -9,7 +9,7 @@ type LazyImageProps = {
   fallbackSrc?: string;
 } & React.ImgHTMLAttributes<HTMLImageElement>;
 
-export default function LazyImage({
+export  function LazyImage({
   src,
   alt,
   className = '',

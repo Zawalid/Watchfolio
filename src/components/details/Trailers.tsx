@@ -1,5 +1,5 @@
 import { SwiperSlide } from 'swiper/react';
-import Slider from '@/components/ui/slider';
+import { Slider } from '@/components/ui/slider';
 import {
   MorphingDialog,
   MorphingDialogClose,
@@ -7,7 +7,6 @@ import {
   MorphingDialogContent,
   MorphingDialogTrigger,
 } from '@/components/ui/MorphingDialog';
-
 
 export default function Trailers({ videos }: { videos: Video[] }) {
   // Filter to only get trailers from YouTube
@@ -59,7 +58,7 @@ export default function Trailers({ videos }: { videos: Video[] }) {
                   </div>
                 </MorphingDialogTrigger>
                 <MorphingDialogContainer>
-                  <MorphingDialogContent className='relative aspect-video max-h-[90vh] w-full max-w-[90vw] overflow-hidden rounded-xl bg-background'>
+                  <MorphingDialogContent className='bg-background relative aspect-video max-h-[90vh] w-full max-w-[90vw] overflow-hidden rounded-xl'>
                     <iframe
                       src={`https://www.youtube.com/embed/${video.key}?autoplay=1`}
                       title={video.name}

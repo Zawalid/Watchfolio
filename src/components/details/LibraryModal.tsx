@@ -50,22 +50,21 @@ interface Disclosure {
 
 interface LibraryModalProps {
   disclosure: Disclosure;
-  mediaType: 'movie' | 'tv';
-  mediaId: number;
+  media: Media;
 }
 
-export default function LibraryModal({ disclosure, mediaType, mediaId }: LibraryModalProps) {
+export default function LibraryModal({ disclosure, media }: LibraryModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);
 
-  const libraryItem = useLibraryStore((state) => state.getItem(mediaType, mediaId));
-  const { setItemStatus, setItemRating, removeItem } = useLibraryStore();
+  const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
+  const { addOrUpdateItem, removeItem } = useLibraryStore();
 
   const handleStatusChange = (status: UserMediaStatus) => {
-    if (status === 'none') removeItem(mediaType, mediaId);
-    else setItemStatus(mediaType, mediaId, status);
+    if (status === 'none') removeItem(media.media_type, media.id);
+    else addOrUpdateItem({ id: media.id, mediaType: media.media_type, status }, media);
   };
 
-  const handleRatingChange = (rating: number | undefined) => setItemRating(mediaType, mediaId, rating);
+  const handleRatingChange = (rating: number | undefined) => addOrUpdateItem({ id: media.id, mediaType: media.media_type, userRating: rating }, media);
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
 
   return (
@@ -119,11 +118,10 @@ function StatusSection({
           return (
             <Button
               key={option.value}
-              className={`group relative h-auto w-full justify-start overflow-hidden px-6 py-3 text-left transition-all duration-300 ${
-                isSelected
-                  ? 'scale-[1.02] transform border border-blue-400/50 bg-gradient-to-r from-blue-600/90 via-blue-500/90 to-purple-600/90 text-white shadow-2xl shadow-blue-500/25'
-                  : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white hover:shadow-lg hover:shadow-gray-700/20'
-              }`}
+              className={`group relative h-auto w-full justify-start overflow-hidden px-6 py-3 text-left transition-all duration-300 ${isSelected
+                ? 'scale-[1.02] transform border border-blue-400/50 bg-gradient-to-r from-blue-600/90 via-blue-500/90 to-purple-600/90 text-white shadow-2xl shadow-blue-500/25'
+                : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white hover:shadow-lg hover:shadow-gray-700/20'
+                }`}
               onPress={() => setSelectedStatus(option.value)}
             >
               {/* Animated background glow for selected state */}
@@ -145,26 +143,23 @@ function StatusSection({
               {/* Content */}
               <div className='relative z-10 flex items-center gap-4'>
                 <div
-                  className={`rounded-full p-2 transition-all duration-300 ${
-                    isSelected
-                      ? 'bg-white/20 shadow-lg ring-2 ring-white/30 backdrop-blur-sm [&>svg]:text-white'
-                      : 'bg-gray-700/50 group-hover:bg-gray-600/60'
-                  }`}
+                  className={`rounded-full p-2 transition-all duration-300 ${isSelected
+                    ? 'bg-white/20 shadow-lg ring-2 ring-white/30 backdrop-blur-sm [&>svg]:text-white'
+                    : 'bg-gray-700/50 group-hover:bg-gray-600/60'
+                    }`}
                 >
                   {option.icon}
                 </div>
                 <div>
                   <div
-                    className={`font-semibold transition-all duration-300 ${
-                      isSelected ? 'text-white drop-shadow-sm' : 'text-gray-200'
-                    }`}
+                    className={`font-semibold transition-all duration-300 ${isSelected ? 'text-white drop-shadow-sm' : 'text-gray-200'
+                      }`}
                   >
                     {option.label}
                   </div>
                   <div
-                    className={`mt-1 text-sm transition-all duration-300 ${
-                      isSelected ? 'text-blue-100/80' : 'text-gray-400'
-                    }`}
+                    className={`mt-1 text-sm transition-all duration-300 ${isSelected ? 'text-blue-100/80' : 'text-gray-400'
+                      }`}
                   >
                     {option.description}
                   </div>
@@ -234,11 +229,10 @@ function RatingSection({
                 isIconOnly
               >
                 <Star
-                  className={`size-5 transition-colors ${
-                    (hoverRating !== undefined ? rateValue <= hoverRating : currentRating && rateValue <= currentRating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-600'
-                  }`}
+                  className={`size-5 transition-colors ${(hoverRating !== undefined ? rateValue <= hoverRating : currentRating && rateValue <= currentRating)
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-gray-600'
+                    }`}
                 />
               </Button>
             );

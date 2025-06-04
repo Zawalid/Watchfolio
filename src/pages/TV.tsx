@@ -1,8 +1,8 @@
-import CardsList from '@/components/CardsList';
+import { useParams, useLoaderData } from 'react-router';
+import { parseAsInteger, useQueryState } from 'nuqs';
+import MediaCardsList from '@/components/Media/MediaCardsList';
 import { getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useParams, useLoaderData } from 'react-router';
 
 export default function Tv() {
   const { category } = useParams<{ category: Categories }>();
@@ -10,7 +10,7 @@ export default function Tv() {
   const initialData = useLoaderData();
 
   return (
-    <CardsList
+    <MediaCardsList
       queryOptions={{
         queryKey: queryKeys.category('tv', category!, page),
         queryFn: async () => await getTvShows(category!, page),

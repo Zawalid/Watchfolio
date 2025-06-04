@@ -16,6 +16,7 @@ export const getQueryString = (params: Record<string, string>): string => {
 };
 
 export const slugify = (text: string) => {
+  if (!text) return '';
   return text
     .toLowerCase()
     .replace(/ /g, '-')

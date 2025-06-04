@@ -11,7 +11,7 @@ import Recommendations from '@/components/details/Recommendations';
 import Similar from '@/components/details/Similar';
 
 export default function Details({ type }: { type: 'movie' | 'tv' }) {
-  // const media = useLoaderData() as TvShowDetails | MovieDetails;
+  // const media = useLoaderData() as Media;
   const { slug } = useParams();
   const {
     data: media,
@@ -30,7 +30,7 @@ export default function Details({ type }: { type: 'movie' | 'tv' }) {
     <div>
       <Info media={media} />
       <div>
-        {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons} show={media as TvShowDetails} />}
+        {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons} show={media as TvShow} />}
         <Cast cast={media.credits.cast} />
         <Trailers videos={media.videos?.results || []} />
         <Similar type={type} id={media.id} />

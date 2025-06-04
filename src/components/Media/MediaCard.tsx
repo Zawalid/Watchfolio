@@ -2,21 +2,21 @@ import { Link } from 'react-router';
 import { getMediaType, getRating, getReleaseYear } from '@/utils/media';
 import { slugify } from '@/utils';
 import { GENRES } from '@/lib/api/TMDB/values';
-import LazyImage from '@/components/ui/LazyImage';
-import CardActions from './CardActions';
+import { LazyImage } from '@/components/ui/LazyImage';
+import MediaCardActions from './MediaCardActions';
 
 const getLink = (type: string, id: number, title: string) => {
   return `/${type === 'tv' ? 'tv' : 'movies'}/details/${id}-${slugify(title)}`;
 };
 
-export default function Card({ media }: { media: TvShow | Movie }) {
+export default function MediaCard({ media }: { media: Media }) {
   const { id, poster_path, vote_average, genre_ids } = media;
   const type = getMediaType(media);
-  const title = type === 'movie' ? (media as Movie).title : (media as TvShow).name;
+  const title = (type === 'movie' ? (media as Movie).title : (media as TvShow).name) || 'Untitled';
 
   return (
     <div className='group relative flex flex-col'>
-      <CardActions media={{ ...media, media_type: type }} />
+      <MediaCardActions media={media} />
       <Link to={getLink(type, id, title)} className='mb-3 w-full rounded-2xl'>
         <div className='relative h-[220px] w-full overflow-hidden rounded-2xl shadow-lg md:h-[250px] lg:h-[300px]'>
           <LazyImage

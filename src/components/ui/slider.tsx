@@ -19,7 +19,7 @@ export interface SliderProps extends Omit<SwiperProps, 'navigation' | 'modules'>
 }
 
 // ------------- Component -------------
-function Slider({
+export function Slider({
   children,
   navigationIds = { prev: 'prev', next: 'next' },
   className = '',
@@ -196,4 +196,3 @@ function Slider({
 
 Slider.Slide = SwiperSlide;
 
-export default Slider;

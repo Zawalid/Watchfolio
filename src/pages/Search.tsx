@@ -3,7 +3,7 @@ import { Button } from '@heroui/button';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import Input from '@/components/ui/Input';
 import { search } from '@/lib/api/TMDB';
-import CardsList from '@/components/CardsList';
+import MediaCardsList from '@/components/Media/MediaCardsList';
 import { queryKeys } from '@/lib/react-query';
 
 export default function Search() {
@@ -14,7 +14,7 @@ export default function Search() {
   return (
     <div className='flex h-full flex-col gap-12'>
       <form
-        className='flex gap-2 w-3/5 self-center'
+        className='flex w-3/5 gap-2 self-center'
         id='search-form'
         onSubmit={(e) => {
           e.preventDefault();
@@ -65,7 +65,7 @@ export default function Search() {
         </Button>
       </form>
       {query ? (
-        <CardsList
+        <MediaCardsList
           queryOptions={{
             queryKey: queryKeys.search(query, page),
             queryFn: async () => await search(query, page),

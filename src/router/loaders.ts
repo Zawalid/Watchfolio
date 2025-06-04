@@ -27,6 +27,6 @@ const createCategoryLoader =
   };
 
 export const moviesLoader = createCategoryLoader('movie', getMovies);
-export const movieDetailsLoader = createDetailsLoader('movie');
+export const MovieLoader = createDetailsLoader('movie');
 export const tvShowsLoader = createCategoryLoader('tv', getTvShows);
 export const tvDetailsLoader = createDetailsLoader('tv');

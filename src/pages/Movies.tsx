@@ -1,8 +1,8 @@
-import CardsList from '@/components/CardsList';
+import { useParams, useLoaderData } from 'react-router';
+import { parseAsInteger, useQueryState } from 'nuqs';
+import MediaCardsList from '@/components/Media/MediaCardsList';
 import { getMovies } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
-import { parseAsInteger, useQueryState } from 'nuqs';
-import { useParams, useLoaderData } from 'react-router';
 
 export default function Movies() {
   const { category } = useParams<{ category: Categories }>();
@@ -10,7 +10,7 @@ export default function Movies() {
   const initialData = useLoaderData();
 
   return (
-    <CardsList
+    <MediaCardsList
       queryOptions={{
         queryKey: queryKeys.category('movie', category!, page),
         queryFn: async () => await getMovies(category!, page),

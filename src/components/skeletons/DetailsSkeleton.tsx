@@ -1,6 +1,6 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
-import CardsListSkeleton from './CardsSkeleton';
-import Slider from '@/components/ui/slider';
+import MediaCardsListSkeleton from './MediaCardsListSkeleton';
+import { Slider } from '@/components/ui/slider';
 
 const backgroundImage = { style: { backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' } };
 
@@ -161,7 +161,7 @@ export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
         <section key={i} className='py-12'>
           <div className='mx-auto max-w-7xl px-6'>
             <div className='bg-Grey-700/50 mb-6 h-8 w-56 animate-pulse rounded-lg' />
-            <CardsListSkeleton asSlider={true} />
+            <MediaCardsListSkeleton asSlider={true} />
           </div>
         </section>
       ))}

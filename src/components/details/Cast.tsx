@@ -1,6 +1,6 @@
 import { SwiperSlide } from 'swiper/react';
-import Slider from '@/components/ui/slider';
-import LazyImage from '@/components/ui/LazyImage';
+import { Slider } from '@/components/ui/slider';
+import { LazyImage } from '@/components/ui/LazyImage';
 
 export default function Cast({ cast }: { cast: Person[] }) {
   if (!cast?.length) return null; // TODO: Handle empty cast array

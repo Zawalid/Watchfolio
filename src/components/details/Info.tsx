@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion';
 import { LANGUAGES } from '@/lib/api/TMDB/values';
 import { STAR_ICON } from '@/components/ui/Icons';
-import LazyImage from '@/components/ui/LazyImage';
+import { LazyImage } from '@/components/ui/LazyImage';
 import { getDirectorOrCreator, getFormattedRuntime, getMediaType, getRating, getReleaseYear } from '@/utils/media';
 import ActionButtons from './ActionButtons';
 
-export default function Info({ media }: { media: TvShowDetails | MovieDetails }) {
+export default function Info({ media }: { media: Media }) {
   const { vote_average, poster_path, genres } = media;
   const type = getMediaType(media);
 
-  const title = type === 'movie' ? (media as MovieDetails).title : (media as TvShowDetails).name;
+  const title = type === 'movie' ? (media as Movie).title : (media as TvShow).name;
 
   return (
     <div className='min-h-[700px] flex-1 py-4 pt-16'>
@@ -30,7 +30,7 @@ export default function Info({ media }: { media: TvShowDetails | MovieDetails })
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
           </motion.div>
 
-          <ActionButtons mediaId={media.id} mediaType={type} onPlayTrailer={() => {}} />
+          <ActionButtons media={media} onPlayTrailer={() => {}} />
         </div>
 
         {/* Right Column - Info */}
@@ -110,7 +110,7 @@ function Rating({ rating }: { rating: number }) {
   );
 }
 
-function Details({ media }: { media: TvShowDetails | MovieDetails }) {
+function Details({ media }: { media: Media }) {
   const type = getMediaType(media);
   const directorOrCreator = getDirectorOrCreator(media);
 
@@ -120,7 +120,7 @@ function Details({ media }: { media: TvShowDetails | MovieDetails }) {
         <div>
           <h4 className='mb-1 text-xs font-medium text-gray-400'>Status</h4>
           <p className='pill-bg text-sm text-gray-200'>
-            {getMediaType(media) === 'tv' ? (media as TvShowDetails).status : 'Released'}
+            {getMediaType(media) === 'tv' ? (media as TvShow).status : 'Released'}
           </p>
         </div>
 

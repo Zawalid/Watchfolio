@@ -31,7 +31,7 @@ export default function Input({ children, type, icon, label, ...props }: InputPr
   return (
     <div className={cn('flex flex-col gap-2', parentClassname)} ref={parent}>
       <div className='relative rounded-xl'>
-        <span className='absolute left-4 top-1/2 -translate-y-1/2 text-Grey-600'>
+        <span className='absolute z-10 left-4 top-1/2 -translate-y-1/2 text-Grey-600'>
           {icons[type as IconType] || (icon && icons[icon])}
         </span>
         <input
@@ -39,10 +39,10 @@ export default function Input({ children, type, icon, label, ...props }: InputPr
           placeholder={type === 'email' ? 'eg. hello@example.com' : placeholder}
           {...props}
           className={cn(
-            'peer relative z-10 w-full rounded-xl border-2 bg-black/10 pb-3 pl-14 pr-4 pt-7 text-sm text-Grey-100 outline-hidden placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:placeholder:text-Grey-600',
+            'peer relative z-10 w-full rounded-xl transition-colors duration-200 border-2 bg-white/5 pb-3 pl-14 pr-4 pt-7 text-sm text-Grey-100 outline-hidden placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:bg-transparent focus:placeholder:text-Grey-600',
             error
               ? 'border-Error-500 focus:border-Error-500'
-              : 'border-Grey-800 focus:border-Primary-500 read-only:focus:border-Primary-300',
+              : 'border-white/5 focus:border-Primary-500 read-only:focus:border-Primary-300',
             props.className
           )}
         />

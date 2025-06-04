@@ -1,12 +1,15 @@
 type UserMediaStatus = 'watched' | 'watching' | 'will-watch' | 'on-hold' | 'dropped' | 'none';
 
+type UserMediaFilter = Exclude<UserMediaStatus, 'none'> | 'favorites' | 'all';
+
 interface UserMediaData {
   id: number; // TMDB ID
   mediaType: 'movie' | 'tv';
   // Optional: Store minimal TMDB data for offline/list display if needed
-  // title?: string;
-  // posterPath?: string | null;
-  // releaseYear?: string;
+  title?: string;
+  posterPath?: string | null;
+  releaseDate?: string;
+  genres?: string[];
 
   status: UserMediaStatus; // Default to 'none' if just favorited/rated without explicit status
   isFavorite: boolean;

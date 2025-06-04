@@ -1,12 +1,12 @@
 import { SwiperSlide } from 'swiper/react';
-import Slider from '@/components/ui/slider';
+import { Slider } from '@/components/ui/slider';
 import {
   MorphingDialog,
   MorphingDialogClose,
   MorphingDialogContainer,
   MorphingDialogTrigger,
 } from '@/components/ui/MorphingDialog';
-import LazyImage from '@/components/ui/LazyImage';
+import { LazyImage } from '@/components/ui/LazyImage';
 import SeasonDetails from './SeasonDetails';
 
 export default function Seasons({ seasons, show }: { seasons: Season[]; show: TvShow }) {

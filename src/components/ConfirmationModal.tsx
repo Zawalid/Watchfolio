@@ -5,7 +5,7 @@ import { JSX, useState } from 'react';
 import Modal from './ui/Modal';
 
 type Props = {
-  disclosure: disclosure;
+  disclosure: Disclosure;
   icon: JSX.Element;
   heading: string;
   message: string;

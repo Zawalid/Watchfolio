@@ -2,7 +2,7 @@ import { formatDate } from '.';
 
 export const getRating = (rating: number) => (rating % 1 === 0 ? rating : rating.toFixed(1));
 
-export const getReleaseYear = (media: TvShow | Movie, format: 'year' | 'full' = 'year') => {
+export const getReleaseYear = (media: Media, format: 'year' | 'full' = 'year') => {
   const dateStr = (media as Movie).release_date || (media as TvShow).first_air_date;
 
   if (!dateStr) return null;
@@ -14,7 +14,7 @@ export const getReleaseYear = (media: TvShow | Movie, format: 'year' | 'full' = 
   }
 };
 
-export const getMediaType = (media: TvShow | Movie): 'movie' | 'tv' => {
+export const getMediaType = (media: Media): 'movie' | 'tv' => {
   if (media.media_type) return media.media_type;
   if ((media as Movie).release_date !== undefined) {
     return 'movie';
@@ -24,10 +24,10 @@ export const getMediaType = (media: TvShow | Movie): 'movie' | 'tv' => {
   throw new Error('Unknown media type');
 };
 
-export const getFormattedRuntime = (media: TvShowDetails | MovieDetails): string => {
-  const runtime = (media as MovieDetails).runtime || (media as TvShowDetails).episode_run_time?.[0];
+export const getFormattedRuntime = (media: Media): string => {
+  const runtime = (media as Movie).runtime || (media as TvShow).episode_run_time?.[0];
 
-  console.log(runtime)
+  console.log(runtime);
 
   if (!runtime) return 'N/A';
 
@@ -37,14 +37,14 @@ export const getFormattedRuntime = (media: TvShowDetails | MovieDetails): string
   return `${hours > 0 ? `${hours}h ` : ''}${minutes}m ${getMediaType(media) === 'tv' ? '/Episode' : ''}`;
 };
 
-export const getDirectorOrCreator = (media: MovieDetails | TvShowDetails): Person | null => {
+export const getDirectorOrCreator = (media: Media): Person | null => {
   const mediaType = getMediaType(media);
 
   if (mediaType === 'movie') {
-    const movieMedia = media as MovieDetails;
+    const movieMedia = media as Movie;
     return movieMedia.credits?.crew?.find((person) => person.job === 'Director') || null;
   } else {
-    const tvMedia = media as TvShowDetails;
+    const tvMedia = media as TvShow;
     return tvMedia.created_by?.[0] || null;
   }
 };

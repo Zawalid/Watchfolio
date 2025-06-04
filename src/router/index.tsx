@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-import { Layout, MoviesLayout, TvLayout } from '@/layouts';
-import { Home, NotFound, Movies, TV, Details, Search } from '@/pages';
-import {  moviesLoader,  tvShowsLoader } from './loaders';
+import { Layout, LibraryLayout, MoviesLayout, TvLayout } from '@/layouts';
+import { Library, NotFound, Movies, TV, Details, Search } from '@/pages';
+import { moviesLoader, tvShowsLoader } from './loaders';
 
 export const router = createBrowserRouter([
   {
@@ -10,7 +10,27 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home,
+        Component : Library
+      },
+      {
+        path: 'library',
+        Component: LibraryLayout,
+        children: [
+          {
+            children: [
+              {
+                index: true,
+                element: <Navigate to='/library/all' />,
+              },
+              {
+                path: ':filter',
+                
+                Component: Library,
+                loader: tvShowsLoader,
+              },
+            ],
+          },
+        ],
       },
       {
         path: 'movies',
@@ -32,7 +52,7 @@ export const router = createBrowserRouter([
           {
             path: 'details/:slug',
             element: <Details type='movie' />,
-            // loader: movieDetailsLoader,
+            // loader: MovieLoader,
           },
         ],
       },
@@ -70,4 +90,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-],);
+]);

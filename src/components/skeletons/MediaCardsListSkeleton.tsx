@@ -1,7 +1,7 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
-import Slider from '../ui/slider';
+import { Slider } from '../ui/slider';
 
-function CardSkeleton() {
+function MediaCardSkeleton() {
   return (
     <div className='flex flex-col gap-4 backdrop-blur-xs'>
       <div
@@ -28,13 +28,13 @@ function CardSkeleton() {
   );
 }
 
-export default function CardsListSkeleton({ length = 20, asSlider }: { length?: number; asSlider?: boolean }) {
+export default function MediaCardsListSkeleton({ length = 20, asSlider }: { length?: number; asSlider?: boolean }) {
   if (asSlider)
     return (
       <Slider smartSlide={true}>
         {Array.from({ length: 8 }).map((_, i) => (
           <Slider.Slide key={i} className='w-[160px] sm:w-[200px]!'>
-            <CardSkeleton />
+            <MediaCardSkeleton />
           </Slider.Slide>
         ))}
       </Slider>
@@ -42,7 +42,7 @@ export default function CardsListSkeleton({ length = 20, asSlider }: { length?: 
   return (
     <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
       {Array.from({ length }).map((_, i) => (
-        <CardSkeleton key={i} />
+        <MediaCardSkeleton key={i} />
       ))}
     </div>
   );

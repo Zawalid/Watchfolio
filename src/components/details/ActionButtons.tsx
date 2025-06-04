@@ -2,25 +2,24 @@ import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useLibraryModal } from '@/context/LibraryModal';
+import { useLibraryModal } from '@/context/useLibraryModal';
 
 interface ActionButtonsProps {
-  mediaType: 'movie' | 'tv';
-  mediaId: number;
+  media: Media;
   onPlayTrailer: () => void;
 }
 
-export default function ActionButtons({ mediaType, mediaId, onPlayTrailer }: ActionButtonsProps) {
+export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsProps) {
   const { openModal } = useLibraryModal();
 
-  const libraryItem = useLibraryStore((state) => state.getItem(mediaType, mediaId));
+  const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const toggleFavorite = useLibraryStore((state) => state.toggleFavorite);
 
   const isFavorite = libraryItem?.isFavorite || false;
   const currentStatus = libraryItem?.status || 'none';
 
   const handleToggleFavorite = () => {
-    toggleFavorite(mediaType, mediaId);
+    toggleFavorite(media.media_type, media.id);
   };
 
   return (
@@ -55,7 +54,7 @@ export default function ActionButtons({ mediaType, mediaId, onPlayTrailer }: Act
               isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
             }`}
             onPress={handleToggleFavorite}
-            startContent={<Heart className={`size-4 ${isFavorite ? 'fill-pink-500 text-pink-500' : ''}`} />}
+            startContent={<Heart className={`size-4 ${isFavorite ? 'fill-current text-pink-500' : ''}`} />}
           >
             Favorite
           </Button>
@@ -65,7 +64,7 @@ export default function ActionButtons({ mediaType, mediaId, onPlayTrailer }: Act
             className={`button-secondary transition-colors ${
               currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
             }`}
-            onPress={() => openModal(mediaType, mediaId)}
+            onPress={() => openModal(media)}
             startContent={currentStatus !== 'none' ? <Check className='size-4' /> : <LibraryBig className='size-4' />}
           >
             {currentStatus !== 'none' ? 'In Library' : 'Add to Library'}
