@@ -1,20 +1,21 @@
+import { GENRES } from '@/lib/api/TMDB/values';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-
 
 interface LibraryState {
   library: LibraryCollection;
 
   // Actions
   getItem: (mediaType: 'movie' | 'tv', id: number) => UserMediaData | undefined;
-  addOrUpdateItem: (mediaData: Partial<UserMediaData> & Pick<UserMediaData, 'id' | 'mediaType'>, metadata?: Media) => UserMediaData | null;
+  addOrUpdateItem: (
+    mediaData: Partial<UserMediaData> & Pick<UserMediaData, 'id' | 'mediaType'>,
+    metadata?: Media
+  ) => UserMediaData | null;
   removeItem: (mediaType: 'movie' | 'tv', id: number) => void;
-  setItemStatus: (mediaType: 'movie' | 'tv', id: number, status: UserMediaStatus) => UserMediaData | null;
-  setItemRating: (mediaType: 'movie' | 'tv', id: number, rating?: number) => UserMediaData | null;
-  toggleFavorite: (mediaType: 'movie' | 'tv', id: number) => UserMediaData | null;
-  setItemNotes: (mediaType: 'movie' | 'tv', id: number, notes: string) => UserMediaData | null;
-  addWatchDate: (mediaType: 'movie' | 'tv', id: number, date?: string) => UserMediaData | null;
-  updateTvProgress: (tvShowId: number, seasonNumber: number, episodeNumber: number) => UserMediaData | null;
+  toggleFavorite: (
+    mediaData: Partial<UserMediaData> & Pick<UserMediaData, 'id' | 'mediaType'>,
+    metadata?: Media
+  ) => UserMediaData | null;
   getAllItems: () => UserMediaData[];
   getItemsByStatus: (status: UserMediaStatus) => UserMediaData[];
   getFavorites: () => UserMediaData[];
@@ -38,13 +39,14 @@ const shouldRemoveItem = (item: UserMediaData): boolean => {
 // Helper to transform TMDB Media to UserMediaData fields
 const transformMediaToUserData = (media: Media): Partial<UserMediaData> => {
   const title = (media as Movie).title || (media as TvShow).name;
-  const releaseDate = ((media as Movie).release_date || (media as TvShow).first_air_date) || undefined;
+  const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
 
   return {
     title,
     posterPath: media.poster_path,
     releaseDate,
-    genres: media.genres?.map((g: { id: number; name: string }) => g.name) || media.genre_ids?.map(String) || [],
+    genres:
+      media.genres?.map((g: { id: number; name: string }) => g.name) || media.genre_ids?.map((id) => GENRES[id]) || [],
   };
 };
 
@@ -65,7 +67,7 @@ export const useLibraryStore = create<LibraryState>()(
         const existingItem = library[key];
 
         // Transform any TMDB data that might be passed
-        const transformedData = metadata && metadata ? transformMediaToUserData(metadata) : {}
+        const transformedData = metadata && metadata ? transformMediaToUserData(metadata) : {};
 
         const defaultItemData: UserMediaData = {
           id: mediaData.id,
@@ -80,6 +82,7 @@ export const useLibraryStore = create<LibraryState>()(
           ...defaultItemData,
           ...existingItem,
           ...transformedData,
+          ...mediaData,
           lastUpdatedAt: now,
         };
 
@@ -106,6 +109,18 @@ export const useLibraryStore = create<LibraryState>()(
         }));
 
         return newItemData;
+      },
+
+      toggleFavorite: (mediaData, metadata) => {
+        const currentItem = get().getItem(mediaData.mediaType, mediaData.id);
+        return get().addOrUpdateItem(
+          {
+            mediaType: mediaData.mediaType,
+            id: mediaData.id,
+            isFavorite: !(currentItem?.isFavorite || false),
+          },
+          metadata
+        );
       },
 
       removeItem: (mediaType, id) => {
@@ -137,43 +152,6 @@ export const useLibraryStore = create<LibraryState>()(
         }
       },
 
-      setItemStatus: (mediaType, id, status) => {
-        return get().addOrUpdateItem({ mediaType, id, status });
-      },
-
-      setItemRating: (mediaType, id, rating) => {
-        return get().addOrUpdateItem({ mediaType, id, userRating: rating });
-      },
-
-      toggleFavorite: (mediaType, id) => {
-        const currentItem = get().getItem(mediaType, id);
-        return get().addOrUpdateItem({
-          mediaType,
-          id,
-          isFavorite: !(currentItem?.isFavorite || false)
-        }
-        );
-      },
-
-      setItemNotes: (mediaType, id, notes) => {
-        return get().addOrUpdateItem({ mediaType, id, notes });
-      },
-
-      addWatchDate: (mediaType, id, date) => {
-        const watchDate = date || new Date().toISOString();
-        const currentItem = get().getItem(mediaType, id);
-        const watchDates = [...(currentItem?.watchDates || []), watchDate];
-        return get().addOrUpdateItem({ mediaType, id, watchDates, status: 'watched' });
-      },
-
-      updateTvProgress: (tvShowId, seasonNumber, episodeNumber) => {
-        return get().addOrUpdateItem({
-          mediaType: 'tv',
-          id: tvShowId,
-          lastWatchedEpisode: { seasonNumber, episodeNumber, watchedAt: new Date().toISOString(), }, status: 'watching',
-        });
-      },
-
       getAllItems: () => {
         const { library } = get();
         return Object.values(library);
@@ -194,9 +172,9 @@ export const useLibraryStore = create<LibraryState>()(
         const counts: Record<UserMediaFilter, number> = {
           all: 0,
           watching: 0,
-          'will-watch': 0,
+          willWatch: 0,
           watched: 0,
-          'on-hold': 0,
+          onHold: 0,
           dropped: 0,
           favorites: 0,
         };
@@ -204,9 +182,9 @@ export const useLibraryStore = create<LibraryState>()(
         Object.values(library).forEach((item) => {
           counts.all++;
           if (item.status === 'watching') counts.watching++;
-          else if (item.status === 'will-watch') counts['will-watch']++;
+          else if (item.status === 'willWatch') counts['willWatch']++;
           else if (item.status === 'watched') counts.watched++;
-          else if (item.status === 'on-hold') counts['on-hold']++;
+          else if (item.status === 'onHold') counts['onHold']++;
           else if (item.status === 'dropped') counts.dropped++;
           if (item.isFavorite) counts.favorites++;
         });

@@ -1,4 +1,4 @@
-type UserMediaStatus = 'watched' | 'watching' | 'will-watch' | 'on-hold' | 'dropped' | 'none';
+type UserMediaStatus = 'watched' | 'watching' | 'willWatch' | 'onHold' | 'dropped' | 'none';
 
 type UserMediaFilter = Exclude<UserMediaStatus, 'none'> | 'favorites' | 'all';
 

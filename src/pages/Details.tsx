@@ -30,8 +30,8 @@ export default function Details({ type }: { type: 'movie' | 'tv' }) {
     <div>
       <Info media={media} />
       <div>
-        {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons} show={media as TvShow} />}
-        <Cast cast={media.credits.cast} />
+        {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons || []} show={media as TvShow} />}
+        <Cast cast={media.credits?.cast || []} />
         <Trailers videos={media.videos?.results || []} />
         <Similar type={type} id={media.id} />
         <Recommendations type={type} id={media.id} />

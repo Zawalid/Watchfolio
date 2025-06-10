@@ -45,7 +45,7 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
   return (
     <>
       <div
-        className='grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] items-start gap-5 md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))]'
+        className='grid items-start gap-5 grid-cols-[repeat(auto-fill,minmax(200px,1fr))]'
         ref={parent}
       >
         {data?.results?.map((media) => <MediaCard key={media.id} media={media} />)}

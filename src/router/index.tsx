@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router';
 import { Layout, LibraryLayout, MoviesLayout, TvLayout } from '@/layouts';
-import { Library, NotFound, Movies, TV, Details, Search } from '@/pages';
+import { Home, Library, NotFound, Movies, TV, Details, Search } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 
 export const router = createBrowserRouter([
@@ -10,7 +10,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component : Library
+        Component: Home,
       },
       {
         path: 'library',
@@ -24,7 +24,7 @@ export const router = createBrowserRouter([
               },
               {
                 path: ':filter',
-                
+
                 Component: Library,
                 loader: tvShowsLoader,
               },

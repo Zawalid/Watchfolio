@@ -176,7 +176,7 @@
 }
 
 @utility button-secondary {
-  @apply  rounded-lg border border-white/10 bg-white/5! py-2.5 text-sm font-medium text-white backdrop-blur-md transition-all! duration-200 hover:scale-105 hover:bg-white/10
+  @apply  rounded-lg border border-white/10 bg-white/5! py-2.5 text-sm font-medium text-white backdrop-blur-md transition-all! duration-200  hover:bg-white/10!;
 }
 
 

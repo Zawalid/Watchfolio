@@ -1,3 +1,4 @@
+export { default as Home } from './Home';
 export { default as Library } from './Library';
 export { default as NotFound } from './NotFound';
 export { default as Movies } from './Movies';

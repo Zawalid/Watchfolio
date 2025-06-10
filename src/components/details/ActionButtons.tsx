@@ -13,13 +13,13 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
   const { openModal } = useLibraryModal();
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
-  const toggleFavorite = useLibraryStore((state) => state.toggleFavorite);
+  const { toggleFavorite } = useLibraryStore();
 
   const isFavorite = libraryItem?.isFavorite || false;
   const currentStatus = libraryItem?.status || 'none';
 
   const handleToggleFavorite = () => {
-    toggleFavorite(media.media_type, media.id);
+    toggleFavorite({ mediaType: media.media_type, id: media.id }, media);
   };
 
   return (
@@ -50,9 +50,8 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
         <div className='grid grid-cols-2 gap-2'>
           <Button
             color='secondary'
-            className={`button-secondary transition-colors ${
-              isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
-            }`}
+            className={`button-secondary transition-colors ${isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
+              }`}
             onPress={handleToggleFavorite}
             startContent={<Heart className={`size-4 ${isFavorite ? 'fill-current text-pink-500' : ''}`} />}
           >
@@ -61,9 +60,8 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
 
           <Button
             color='secondary'
-            className={`button-secondary transition-colors ${
-              currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
-            }`}
+            className={`button-secondary transition-colors ${currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
+              }`}
             onPress={() => openModal(media)}
             startContent={currentStatus !== 'none' ? <Check className='size-4' /> : <LibraryBig className='size-4' />}
           >

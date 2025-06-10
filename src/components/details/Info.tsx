@@ -67,10 +67,10 @@ export default function Info({ media }: { media: Media }) {
             </div>
             <h1 className='mb-5 text-2xl font-bold text-white lg:text-3xl'>{title}</h1>
             <div className='flex flex-wrap gap-2'>
-              {genres.map((genre, index) => (
+              {genres?.map((genre, index) => (
                 <motion.span
                   key={genre.id}
-                  className='rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium text-gray-300 backdrop-blur-md transition-all duration-200 hover:bg-white/10'
+                  className='rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2, delay: index * 0.1 }}
@@ -91,7 +91,7 @@ export default function Info({ media }: { media: Media }) {
   );
 }
 
-function Rating({ rating }: { rating: number }) {
+export function Rating({ rating }: { rating: number }) {
   const getBgColor = (rating: number) => {
     if (rating >= 8) return 'bg-Success-500/20 border-Success-500/50 text-Success-400 ring-Success-500/30';
     if (rating >= 7) return 'bg-Success-500/20 border-Success-500/50 text-Success-400 ring-Success-500/30';
@@ -173,35 +173,4 @@ function Details({ media }: { media: Media }) {
   );
 }
 
-// function ActionButtons() {
-//   return (
-//     <motion.div
-//       className='flex w-full flex-col gap-2'
-//       initial={{ opacity: 0, y: 20 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{ duration: 0.3, delay: 0.1 }}
-//     >
-//       {/* Will probably redirect to https://broflix.ci/ */}
-//       {/* <Button
-//         color='primary'
-//         isDisabled
-//         className='transition-all! duration-200 hover:scale-105'
-//         startContent={<Play className='size-4' />}
-//       >
-//         Watch Now
-//       </Button> */}
-//       <Button className='button-secondary' isDisabled startContent={<Play className='size-4' />}>
-//         Watch Trailer
-//       </Button>
-//       <div className="grid grid-cols-2 gap-2">
 
-//       <Button className='button-secondary' isDisabled startContent={<Heart className='size-4' />}>
-//         Favorite
-//       </Button>
-//       <Button className='button-secondary' isDisabled startContent={<Bookmark className='size-4' />}>
-//         Watch Later
-//       </Button>
-//       </div>
-//     </motion.div>
-//   );
-// }

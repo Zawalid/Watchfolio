@@ -1,66 +1,165 @@
 import { Link } from 'react-router';
 import { getMediaType, getRating, getReleaseYear } from '@/utils/media';
-import { slugify } from '@/utils';
+import { slugify, cn } from '@/utils';
 import { GENRES } from '@/lib/api/TMDB/values';
 import { LazyImage } from '@/components/ui/LazyImage';
 import MediaCardActions from './MediaCardActions';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { Calendar, Film, Star, Tv } from 'lucide-react';
 
 const getLink = (type: string, id: number, title: string) => {
   return `/${type === 'tv' ? 'tv' : 'movies'}/details/${id}-${slugify(title)}`;
 };
 
+const cardVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+    scale: 0.95,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+  hover: {
+    y: -8,
+    scale: 1.02,
+    transition: {
+      duration: 0.3,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
+  },
+};
+
 export default function MediaCard({ media }: { media: Media }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   const { id, poster_path, vote_average, genre_ids } = media;
   const type = getMediaType(media);
   const title = (type === 'movie' ? (media as Movie).title : (media as TvShow).name) || 'Untitled';
+  const releaseYear = getReleaseYear(media);
+  const rating = getRating(vote_average || 0);
+
+  // Get top 2 genres for display
+  const displayGenres =
+    genre_ids
+      ?.slice(0, 2)
+      .map((id) => GENRES[id])
+      .filter(Boolean) || [];
+
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
 
   return (
-    <div className='group relative flex flex-col'>
+    <motion.div
+      variants={cardVariants}
+      initial='initial'
+      animate='animate'
+      whileHover='hover'
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className='group relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-white/[0.08] shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-black/20'
+    >
       <MediaCardActions media={media} />
-      <Link to={getLink(type, id, title)} className='mb-3 w-full rounded-2xl'>
-        <div className='relative h-[220px] w-full overflow-hidden rounded-2xl shadow-lg md:h-[250px] lg:h-[300px]'>
-          <LazyImage
-            src={poster_path ? `http://image.tmdb.org/t/p/w500${poster_path}` : '/images/placeholder.png'}
-            alt={title}
-            className='size-full object-cover object-center transition-transform duration-300 group-hover:scale-110'
-          />
+
+      <Link
+        to={getLink(type, id, title)}
+        className='relative block aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900'
+      >
+        <LazyImage
+          src={poster_path ? `http://image.tmdb.org/t/p/w500${poster_path}` : '/images/placeholder.png'}
+          alt={title}
+          className={cn(
+            'size-full object-cover transition-all duration-500 ease-out',
+            isHovered ? 'scale-110' : 'scale-100',
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          )}
+          onLoad={() => setImageLoaded(true)}
+        />
+
+        <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
+        <div
+          className={cn(
+            'absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent transition-opacity duration-300',
+            isHovered ? 'opacity-100' : 'opacity-0'
+          )}
+        />
+
+        <div className='absolute top-3 left-3 flex items-center gap-1 rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'>
+          {type === 'movie' ? <Film className='size-3' /> : <Tv className='size-3' />}
+          <span className='capitalize'>{type}</span>
+        </div>
+
+        <div className='absolute inset-x-0 bottom-0 space-y-2 p-4'>
+          <h3 className='line-clamp-2 text-lg leading-tight font-semibold text-white drop-shadow-lg'>{title}</h3>
+
+          <div className='flex items-center justify-between text-sm'>
+            <div className='flex items-center gap-2 text-white/80'>
+              {rating && (
+                <>
+                  <div className='flex items-center gap-1'>
+                    <Star className='size-4 fill-yellow-400 text-yellow-400' />
+                    <span>{rating}</span>
+                  </div>
+                </>
+              )}
+
+              {releaseYear && (
+                <>
+                  <span className='text-white/40'>•</span>
+                  <div className='flex items-center gap-1'>
+                    <Calendar className='size-3' />
+                    <span>{releaseYear}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {isHovered && displayGenres.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                className='flex flex-wrap gap-1.5'
+              >
+                {displayGenres.map((genre, index) => (
+                  <motion.span
+                    key={genre}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className='rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'
+                  >
+                    {genre}
+                  </motion.span>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </Link>
-      <div className='mb-2 flex items-center justify-between gap-1'>
-        <Link
-          to={getLink(type, id, title)}
-          className='text-Primary-50 hover:text-Primary-200 mb-1 line-clamp-1 cursor-pointer text-sm text-ellipsis sm:mb-2 md:text-base'
-        >
-          {title}
-        </Link>
-        <p className='text-Grey-300 text-xs md:text-sm'>{getReleaseYear(media) || 'N/A'}</p>
-      </div>
-      <div className='flex items-center justify-between'>
-        <p className='text-Grey-300 line-clamp-1 text-xs text-ellipsis md:text-sm'>
-          {genre_ids?.length ? genre_ids?.map((id) => GENRES.find((g) => g.id === id)?.name).join(', ') : 'N/A'}
-        </p>
-        <div className='flex items-center justify-between space-x-1'>
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='24'
-            height='24'
-            viewBox='0 0 24 24'
-            fill='none'
-            stroke='currentColor'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            className='-mt-[3px] w-3 text-yellow-500 md:w-4 dark:text-yellow-600'
-          >
-            <path
-              d='M8.243 7.34l-6.38 .925l-.113 .023a1 1 0 0 0 -.44 1.684l4.622 4.499l-1.09 6.355l-.013 .11a1 1 0 0 0 1.464 .944l5.706 -3l5.693 3l.1 .046a1 1 0 0 0 1.352 -1.1l-1.091 -6.355l4.624 -4.5l.078 -.085a1 1 0 0 0 -.633 -1.62l-6.38 -.926l-2.852 -5.78a1 1 0 0 0 -1.794 0l-2.853 5.78z'
-              fill='currentColor'
-              strokeWidth='0'
-            ></path>
-          </svg>
-          <p className='text-xs text-slate-600 md:text-sm dark:text-zinc-400'>{getRating(vote_average || 0)}</p>
-        </div>
-      </div>
-    </div>
+
+      <AnimatePresence>
+        {isHovered && (
+          <motion.div
+            initial={{ x: '-100%', opacity: 0 }}
+            animate={{ x: '100%', opacity: [0, 1, 0] }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
+            className='pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent'
+            style={{ transform: 'skewX(-20deg)' }}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

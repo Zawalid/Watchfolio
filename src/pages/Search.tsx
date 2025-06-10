@@ -28,6 +28,7 @@ export default function Search() {
           type='text'
           icon='search'
           parentClassname='flex-1'
+          className='pt-7'
           name='query'
           defaultValue={query}
           label='Search For Movies Or Tv Shows'

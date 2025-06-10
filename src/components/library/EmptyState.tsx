@@ -1,19 +1,23 @@
-import { Filter, Search, Heart, CheckCircle, Clock, Eye, AlertOctagon, XCircle } from 'lucide-react';
+import { Filter, Search, Heart } from 'lucide-react';
+import { USER_MEDIA_STATUS } from '@/utils/constants';
 
 const getFilterInfo = (filter: UserMediaFilter) => {
+  const statusOption = USER_MEDIA_STATUS.find((status) => status.value === filter);
+
+  if (statusOption) {
+    const IconComponent = statusOption.icon;
+    return {
+      icon: <IconComponent className='size-6' />,
+      label: statusOption.label,
+      color: statusOption.className.split(' ')[0], // Extract text color class
+    };
+  }
+
   switch (filter) {
-    case 'watched':
-      return { icon: <CheckCircle className='size-6' />, label: 'Completed', color: 'text-green-400' };
-    case 'watching':
-      return { icon: <Clock className='size-6' />, label: 'Currently Watching', color: 'text-blue-400' };
-    case 'will-watch':
-      return { icon: <Eye className='size-6' />, label: 'Plan to Watch', color: 'text-purple-400' };
-    case 'on-hold':
-      return { icon: <AlertOctagon className='size-6' />, label: 'On Hold', color: 'text-yellow-400' };
-    case 'dropped':
-      return { icon: <XCircle className='size-6' />, label: 'Dropped', color: 'text-red-400' };
-    default:
+    case 'favorites':
       return { icon: <Heart className='size-6' />, label: 'Favorites', color: 'text-red-400' };
+    default:
+      return { icon: <Filter className='size-6' />, label: 'Unknown', color: 'text-gray-400' };
   }
 };
 
@@ -32,9 +36,9 @@ export default function EmptyState({
         <div className='mb-6 rounded-full bg-white/5 p-6 backdrop-blur-md'>
           <Search className='text-Grey-400 size-12' />
         </div>
-        <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>No results found</h3>
+        <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>No matches found</h3>
         <p className='text-Grey-400 max-w-md'>
-          No items in your library match "{query}". Try adjusting your search terms.
+          Couldn't find any shows or movies matching "{query}". Try a different search term or check your spelling.
         </p>
       </div>
     );
@@ -46,43 +50,45 @@ export default function EmptyState({
     switch (filter) {
       case 'all':
         return {
-          title: 'Your library is empty',
-          message: 'Start building your collection by adding movies and TV shows to your library.',
+          title: 'Your watchlist awaits',
+          message:
+            'Ready to start your journey? Discover amazing movies and TV shows to build your personal collection.',
         };
       case 'watching':
         return {
-          title: 'Not watching anything yet',
-          message: 'Mark movies or TV shows as "Currently Watching" to see them here.',
+          title: 'Nothing on your screen yet',
+          message: "When you start watching something new, it'll appear here so you can track your progress.",
         };
       case 'watched':
         return {
-          title: 'No completed items',
-          message: 'Mark movies or TV shows as "Completed" when you finish watching them.',
+          title: 'Nothing completed yet',
+          message: 'Finished watching something? Mark it as "Watched" to keep track of your completed adventures.',
         };
-      case 'will-watch':
+      case 'willWatch':
         return {
           title: 'Nothing planned to watch',
-          message: 'Add movies or TV shows to your "Plan to Watch" list to keep track of what you want to see.',
+          message:
+            'Found something interesting? Add it to your "Plan to Watch" list so you never forget the good stuff.',
         };
-      case 'on-hold':
+      case 'onHold':
         return {
-          title: 'Nothing on hold',
-          message: 'Items you pause watching will appear here.',
+          title: 'No shows taking a break',
+          message: "Sometimes we need a pause. When you put something on hold, you'll find it here waiting for you.",
         };
       case 'dropped':
         return {
-          title: 'Nothing dropped',
-          message: 'Movies or TV shows you stop watching will appear here.',
+          title: 'No shows left behind... yet',
+          message: "Not every show is meant to be. When something doesn't click, it'll land here.",
         };
       case 'favorites':
         return {
-          title: 'No favorites yet',
-          message: 'Mark your favorite movies and TV shows with a heart to see them here.',
+          title: 'No favorites chosen',
+          message: 'Found something you absolutely love? Hit the heart button to save your all-time favorites here.',
         };
       default:
         return {
-          title: 'No items found',
-          message: 'This section is currently empty.',
+          title: 'Nothing here yet',
+          message: 'This section is waiting for some content to appear.',
         };
     }
   };
@@ -100,9 +106,9 @@ export default function EmptyState({
       </div>
       <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>{title}</h3>
       <p className='text-Grey-400 max-w-md'>{message}</p>
-      {status === 'all' && (
+      {filter === 'all' && (
         <button className='bg-Primary-600 hover:bg-Primary-700 mt-6 rounded-lg px-6 py-3 font-medium text-white transition-colors'>
-          Browse Movies & TV Shows
+          Start Exploring
         </button>
       )}
     </div>

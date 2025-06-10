@@ -97,7 +97,7 @@ declare interface BaseMedia {
  * Movie information - works for both basic and detailed responses
  */
 declare interface Movie extends BaseMedia {
-  media_type: 'movie';
+  media_type: 'movie' | 'tv';
   title: string;
   original_title: string;
   release_date: string | null;
@@ -122,7 +122,7 @@ declare interface Movie extends BaseMedia {
  * TV Show information - works for both basic and detailed responses
  */
 declare interface TvShow extends BaseMedia {
-  media_type: 'tv';
+  media_type: 'tv' | 'movie';
   name: string;
   original_name: string;
   first_air_date: string | null;

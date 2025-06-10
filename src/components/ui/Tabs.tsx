@@ -3,14 +3,15 @@ import { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/utils';
 
-type TabItem = { label: string; value: string; link: string; includes?: boolean };
+type TabItem = { label: string; icon?: React.JSX.Element; value: string; link: string; includes?: boolean };
 type TabsProps = {
   tabs: TabItem[];
   preserveSearchParams?: boolean;
   className?: string;
+  tabClassName?: string;
 };
 
-export default function Tabs({ tabs, preserveSearchParams = false, className = '' }: TabsProps) {
+export default function Tabs({ tabs, preserveSearchParams = false, className = '', tabClassName = '' }: TabsProps) {
   const [searchParams] = useSearchParams();
   const pathname = useLocation().pathname;
   const tabRefs = useRef<(HTMLLIElement | null)[]>([]);
@@ -25,11 +26,11 @@ export default function Tabs({ tabs, preserveSearchParams = false, className = '
     if (activeTabIndex !== -1 && tabRefs.current[activeTabIndex] && containerRef.current) {
       const tabElement = tabRefs.current[activeTabIndex];
       const containerElement = containerRef.current;
-      
+
       if (tabElement) {
         const tabRect = tabElement.getBoundingClientRect();
         const containerRect = containerElement.getBoundingClientRect();
-        
+
         setIndicator({
           left: tabRect.left - containerRect.left,
           top: tabRect.top - containerRect.top,
@@ -41,12 +42,12 @@ export default function Tabs({ tabs, preserveSearchParams = false, className = '
   }, [activeTabValue, tabs]);
 
   return (
-    <ul 
+    <ul
       ref={containerRef}
-      className={cn('relative flex  w-fit gap-5 rounded-xl bg-black/20 p-2 backdrop-blur-2xl', className)}
+      className={cn('relative flex w-fit gap-5 rounded-xl bg-black/20 p-2 backdrop-blur-2xl', className)}
     >
       <motion.li
-        className='absolute -z-10 rounded-lg bg-Primary-400'
+        className='bg-Primary-400 absolute -z-10 rounded-lg'
         animate={{
           left: indicator.left,
           top: indicator.top,
@@ -54,7 +55,7 @@ export default function Tabs({ tabs, preserveSearchParams = false, className = '
           height: indicator.height,
         }}
         transition={{
-          type: "spring",
+          type: 'spring',
           stiffness: 300,
           damping: 30,
         }}
@@ -71,10 +72,14 @@ export default function Tabs({ tabs, preserveSearchParams = false, className = '
               pathname: tab.link,
               search: preserveSearchParams ? searchParams.toString() : undefined,
             }}
-            className={`block size-full px-8 py-2 text-sm font-medium transition-colors duration-200 ${
-              activeTabValue === tab.value ? 'text-Primary-50' : 'text-Grey-300 hover:text-Grey-600'
-            }`}
+            className={cn(
+              'block size-full px-8 py-2 text-sm font-medium transition-colors duration-200',
+              activeTabValue === tab.value ? 'text-Primary-50' : 'text-Grey-300 hover:text-Grey-600',
+              tab.icon && 'flex items-center gap-2',
+              tabClassName
+            )}
           >
+            {tab.icon && tab.icon}
             {tab.label}
           </Link>
         </li>
