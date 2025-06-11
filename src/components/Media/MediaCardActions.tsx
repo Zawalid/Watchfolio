@@ -8,7 +8,7 @@ import { useLibraryModal } from '@/context/useLibraryModal';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { cn } from '@/utils';
-import { USER_MEDIA_STATUS } from '@/utils/constants';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 interface MediaCardActionsProps {
   media: Media;
@@ -27,7 +27,7 @@ export default function MediaCardActions({ media }: MediaCardActionsProps) {
   const itemStatus = libraryItem?.status;
   const isInLibrary = itemStatus && itemStatus !== 'none';
 
-  const currentStatus = USER_MEDIA_STATUS.find((s) => s.value === itemStatus) || null;
+  const currentStatus = LIBRARY_MEDIA_STATUS.find((s) => s.value === itemStatus) || null;
 
   const handleToggleFavorite = () => {
     setFavoriteClicked(true);

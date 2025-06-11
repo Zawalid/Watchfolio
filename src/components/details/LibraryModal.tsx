@@ -3,7 +3,7 @@ import { Button } from '@heroui/button';
 import { ModalBody } from '@heroui/modal';
 import Modal from '@/components/ui/Modal';
 import { Star } from 'lucide-react';
-import { RATING_LABELS, USER_MEDIA_STATUS } from '@/utils/constants';
+import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
 
@@ -27,7 +27,7 @@ export default function LibraryModal({ disclosure, media }: LibraryModalProps) {
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { addOrUpdateItem, removeItem } = useLibraryStore();
 
-  const handleStatusChange = (status: UserMediaStatus) => {
+  const handleStatusChange = (status: LibraryMediaStatus) => {
     if (status === 'none') removeItem(media.media_type, media.id);
     else addOrUpdateItem({ id: media.id, mediaType: media.media_type, status }, media);
   };
@@ -56,8 +56,8 @@ function StatusSection({
   selectedStatus,
   setSelectedStatus,
 }: {
-  selectedStatus: UserMediaStatus;
-  setSelectedStatus: (status: UserMediaStatus) => void;
+  selectedStatus: LibraryMediaStatus;
+  setSelectedStatus: (status: LibraryMediaStatus) => void;
 }) {
   return (
     <div className='space-y-5'>
@@ -77,12 +77,12 @@ function StatusSection({
         )}
       </div>
       <div className='grid grid-cols-1 gap-3'>
-        {USER_MEDIA_STATUS.map((option) => {
-          if(option.value === 'favorites') return null;
-          
+        {LIBRARY_MEDIA_STATUS.map((option) => {
+          if (option.value === 'favorites') return null;
+
           const isSelected = selectedStatus === option.value;
           const IconComponent = option.icon;
-          const textColorClass = option.className.split(' ')[0]; // Extract text color class
+          const textColorClass = option.className.split(' ')[0];
 
           return (
             <Button
@@ -113,7 +113,7 @@ function StatusSection({
                     isSelected ? 'text-gray-300' : 'text-gray-400'
                   }`}
                 >
-                  {option.description}
+                  {option.descriptions.modal}
                 </div>
               </div>
               {isSelected && (

@@ -1,19 +1,15 @@
 import { Link } from 'react-router';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '@heroui/button';
-import { Star, Heart, Calendar, Film, Tv, MoreHorizontal, Trash2, Edit3, GripVertical } from 'lucide-react';
-import { USER_MEDIA_STATUS } from '@/utils/constants';
+import { Star, Heart, Calendar, Film, Tv, MoreHorizontal, Trash2, Edit3 } from 'lucide-react';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useLibraryModal } from '@/context/useLibraryModal';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
 
-
-
 interface LibraryCardProps {
-  item: UserMediaData;
-  viewMode: 'grid' | 'list';
+  item: LibraryMediaData;
   tabIndex?: number;
 }
 
@@ -21,44 +17,15 @@ const getLink = (type: string, id: number, title: string) => {
   return `/${type === 'tv' ? 'tv' : 'movies'}/details/${id}-${slugify(title)}`;
 };
 
-const cardVariants = {
-  initial: { opacity: 0, y: 20, scale: 0.95 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-  hover: {
-    y: -4,
-    scale: 1.02,
-    transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const listCardVariants = {
-  initial: { opacity: 0, x: -20 },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-  hover: {
-    x: 4,
-    transition: { duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-export default function LibraryCard({ item, viewMode, tabIndex = 0 }: LibraryCardProps) {
+export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showActions, setShowActions] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   const { toggleFavorite, removeItem } = useLibraryStore();
   const { openModal } = useLibraryModal();
 
   const title = item.title || 'Untitled';
-  const status = USER_MEDIA_STATUS.find((s) => s.value === item.status);
+  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item.status);
   const releaseYear = item.releaseDate ? new Date(item.releaseDate).getFullYear() : null;
   const rating = item.userRating;
 
@@ -69,6 +36,7 @@ export default function LibraryCard({ item, viewMode, tabIndex = 0 }: LibraryCar
   const handleRemove = () => {
     removeItem(item.mediaType, item.id);
   };
+
   const handleEditStatus = () => {
     // Create a mock Media object for the modal
     const mockMedia: Media = {
@@ -149,156 +117,10 @@ export default function LibraryCard({ item, viewMode, tabIndex = 0 }: LibraryCar
         break;
     }
   };
-  if (viewMode === 'list') {
-    return (
-      <motion.div
-        variants={listCardVariants}
-        initial='initial'
-        animate='animate'
-        whileHover='hover'
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onKeyDown={handleKeyDown}
-        tabIndex={tabIndex}
-        role='article'
-        aria-label={`${title} - ${item.mediaType}`}
-        className='group focus:ring-Primary-500/50 focus:border-Primary-500/50 relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-r from-white/[0.03] to-white/[0.08] backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:shadow-lg focus:ring-2 focus:outline-none'
-      >
-        {' '}
-        <div className='flex items-center gap-3 p-3 sm:gap-4 sm:p-4'>
-          {/* Drag Handle */}
-          <div className='hidden cursor-grab opacity-0 transition-opacity duration-200 group-hover:opacity-100 active:cursor-grabbing sm:block'>
-            <GripVertical className='text-Grey-400 size-4' />
-          </div>
 
-          {/* Poster */}
-          <Link
-            to={getLink(item.mediaType, item.id, title)}
-            className='relative block h-16 w-11 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 sm:h-20 sm:w-14'
-          >
-            <LazyImage
-              src={item.posterPath ? `http://image.tmdb.org/t/p/w300${item.posterPath}` : '/images/placeholder.png'}
-              alt={title}
-              className='size-full object-cover transition-transform duration-300 group-hover:scale-105'
-              onLoad={() => setImageLoaded(true)}
-            />
-            {!imageLoaded && (
-              <div className='absolute inset-0 animate-pulse bg-gradient-to-br from-gray-700 to-gray-800' />
-            )}
-          </Link>
-
-          {/* Content */}
-          <div className='min-w-0 flex-1'>
-            <div className='flex items-start justify-between gap-4'>
-              <div className='min-w-0 flex-1'>
-                <Link to={getLink(item.mediaType, item.id, title)} className='group/title block'>
-                  <h3 className='text-Primary-50 group-hover/title:text-Primary-200 line-clamp-1 text-lg font-semibold transition-colors'>
-                    {title}
-                  </h3>
-                </Link>
-
-                <div className='text-Grey-400 mt-1 flex items-center gap-3 text-sm'>
-                  <div className='flex items-center gap-1'>
-                    {item.mediaType === 'movie' ? <Film className='size-3' /> : <Tv className='size-3' />}
-                    <span className='capitalize'>{item.mediaType}</span>
-                  </div>
-
-                  {releaseYear && (
-                    <>
-                      <span>•</span>
-                      <div className='flex items-center gap-1'>
-                        <Calendar className='size-3' />
-                        <span>{releaseYear}</span>
-                      </div>
-                    </>
-                  )}
-
-                  {item.genres && item.genres.length > 0 && (
-                    <>
-                      <span>•</span>
-                      <span className='line-clamp-1'>{item.genres.slice(0, 2).join(', ')}</span>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Status & Rating */}
-              <div className='flex flex-shrink-0 items-center gap-3'>
-                {status && (
-                  <div
-                    className={cn(
-                      'flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all duration-200',
-                      status.className,
-                      'border'
-                    )}
-                  >
-                    <status.icon className='size-3' />
-                    <span>{status.label}</span>
-                  </div>
-                )}
-
-                {rating && (
-                  <div className='flex items-center gap-1 rounded-full bg-yellow-500/20 px-2 py-1 text-xs font-medium text-yellow-400'>
-                    <Star className='size-3 fill-current' />
-                    <span>{rating}/10</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className='flex items-center gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100'>
-            <Button
-              isIconOnly
-              size='sm'
-              variant='ghost'
-              className={cn(
-                'h-8 w-8 transition-all duration-200 hover:scale-110',
-                item.isFavorite ? 'text-red-400 hover:text-red-300' : 'text-Grey-400 hover:text-red-400'
-              )}
-              onPress={handleToggleFavorite}
-              aria-label={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <Heart className={cn('size-4', item.isFavorite && 'fill-current')} />
-            </Button>
-
-            <Button
-              isIconOnly
-              size='sm'
-              variant='ghost'
-              className='text-Grey-400 hover:text-Primary-400 h-8 w-8 transition-all duration-200 hover:scale-110'
-              onPress={handleEditStatus}
-              aria-label='Edit status'
-            >
-              <Edit3 className='size-4' />
-            </Button>
-
-            <Button
-              isIconOnly
-              size='sm'
-              variant='ghost'
-              className='text-Grey-400 h-8 w-8 transition-all duration-200 hover:scale-110 hover:text-red-400'
-              onPress={handleRemove}
-              aria-label='Remove from library'
-            >
-              <Trash2 className='size-4' />
-            </Button>
-          </div>
-        </div>
-        {/* Hover glow effect */}
-        <div className='from-Primary-500/20 pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-20' />
-      </motion.div>
-    );
-  }
-
-  // Grid view
+  // Grid view only
   return (
-    <motion.div
-      variants={cardVariants}
-      initial='initial'
-      animate='animate'
-      whileHover='hover'
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onKeyDown={handleKeyDown}
@@ -336,38 +158,30 @@ export default function LibraryCard({ item, viewMode, tabIndex = 0 }: LibraryCar
       </div>
 
       {/* Actions Menu */}
-      <AnimatePresence>
-        {showActions && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: -10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className='absolute top-14 right-3 z-30 min-w-[160px] rounded-lg border border-white/20 bg-black/80 shadow-xl backdrop-blur-md'
-          >
-            <div className='space-y-1 p-2'>
-              <Button
-                size='sm'
-                variant='ghost'
-                className='w-full justify-start text-white hover:bg-white/10'
-                startContent={<Edit3 className='size-4' />}
-                onPress={handleEditStatus}
-              >
-                Edit Status
-              </Button>
-              <Button
-                size='sm'
-                variant='ghost'
-                className='w-full justify-start text-red-400 hover:bg-red-500/10'
-                startContent={<Trash2 className='size-4' />}
-                onPress={handleRemove}
-              >
-                Remove
-              </Button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showActions && (
+        <div className='absolute top-14 right-3 z-30 min-w-[160px] rounded-lg border border-white/20 bg-black/80 shadow-xl backdrop-blur-md'>
+          <div className='space-y-1 p-2'>
+            <Button
+              size='sm'
+              variant='ghost'
+              className='w-full justify-start text-white hover:bg-white/10'
+              startContent={<Edit3 className='size-4' />}
+              onPress={handleEditStatus}
+            >
+              Edit Status
+            </Button>
+            <Button
+              size='sm'
+              variant='ghost'
+              className='w-full justify-start text-red-400 hover:bg-red-500/10'
+              startContent={<Trash2 className='size-4' />}
+              onPress={handleRemove}
+            >
+              Remove
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Poster Link */}
       <Link
@@ -379,14 +193,9 @@ export default function LibraryCard({ item, viewMode, tabIndex = 0 }: LibraryCar
           alt={title}
           className={cn(
             'size-full object-cover transition-all duration-500 ease-out',
-            isHovered ? 'scale-110' : 'scale-100',
-            imageLoaded ? 'opacity-100' : 'opacity-0'
+            isHovered ? 'scale-110' : 'scale-100'
           )}
-          onLoad={() => setImageLoaded(true)}
         />
-
-        {/* Loading skeleton */}
-        {!imageLoaded && <div className='absolute inset-0 animate-pulse bg-gradient-to-br from-gray-700 to-gray-800' />}
 
         {/* Gradients */}
         <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent' />
@@ -442,44 +251,20 @@ export default function LibraryCard({ item, viewMode, tabIndex = 0 }: LibraryCar
           </div>
 
           {/* Genres */}
-          <AnimatePresence>
-            {isHovered && item.genres && item.genres.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.3 }}
-                className='flex flex-wrap gap-1.5'
-              >
-                {item.genres.slice(0, 3).map((genre: string, index: number) => (
-                  <motion.span
-                    key={genre}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
-                    className='rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'
-                  >
-                    {genre}
-                  </motion.span>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isHovered && item.genres && item.genres.length > 0 && (
+            <div className='flex flex-wrap gap-1.5'>
+              {item.genres.slice(0, 3).map((genre: string) => (
+                <span
+                  key={genre}
+                  className='rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'
+                >
+                  {genre}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </Link>
-
-      {/* Shimmer effect on hover */}
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ x: '-100%', opacity: 0 }}
-            animate={{ x: '100%', opacity: [0, 1, 0] }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
-            className='pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent'
-            style={{ transform: 'skewX(-20deg)' }}
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

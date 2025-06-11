@@ -3,7 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import LibraryCard from './LibraryCard';
 
 // Import types from the correct files
-type UserMediaData = {
+type LibraryMediaData = {
   id: number;
   mediaType: 'movie' | 'tv';
   title?: string;
@@ -25,42 +25,24 @@ type UserMediaData = {
 };
 
 interface SortableLibraryCardProps {
-  item: UserMediaData;
-  viewMode: 'grid' | 'list';
-  isDragOverlay?: boolean;
-  tabIndex?: number;
+  item: LibraryMediaData;
 }
 
-export default function SortableLibraryCard({
-  item,
-  viewMode,
-  isDragOverlay = false,
-  tabIndex = 0,
-}: SortableLibraryCardProps) {
+export default function SortableLibraryCard({ item }: SortableLibraryCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `${item.mediaType}-${item.id}`,
-    data: {
-      type: 'LibraryCard',
-      item,
-    },
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 100 : 1,
+    opacity: isDragging ? 0.8 : 1,
   };
-  if (isDragOverlay) {
-    return (
-      <div style={{ opacity: 0.8, transform: 'rotate(5deg)' }}>
-        <LibraryCard item={item} viewMode={viewMode} tabIndex={tabIndex} />
-      </div>
-    );
-  }
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className='touch-none'>
-      <LibraryCard item={item} viewMode={viewMode} tabIndex={tabIndex} />
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <LibraryCard item={item} />
     </div>
   );
 }

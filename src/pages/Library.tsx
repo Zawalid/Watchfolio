@@ -5,27 +5,32 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import LibraryCardsList from '@/components/library/LibraryCardsList';
 import Pagination from '@/components/library/Pagination';
 
-const sortItems = (items: UserMediaData[], sortBy: string): UserMediaData[] => {
+const sortItems = (items: LibraryMediaData[], sortBy: string, sortDir: string): LibraryMediaData[] => {
   return [...items].sort((a, b) => {
+    let comparison = 0;
     switch (sortBy) {
       case 'title':
-        return (a.title || '').localeCompare(b.title || '');
+        comparison = (a.title || '').localeCompare(b.title || '');
+        break;
       case 'rating':
-        return (b.userRating || 0) - (a.userRating || 0);
+        comparison = (b.userRating || 0) - (a.userRating || 0);
+        break;
       case 'date':
-        return new Date(b.releaseDate || '').getTime() - new Date(a.releaseDate || '').getTime();
+        comparison = new Date(b.releaseDate || '').getTime() - new Date(a.releaseDate || '').getTime();
+        break;
       case 'recent':
       default:
-        return new Date(b.addedToLibraryAt).getTime() - new Date(a.addedToLibraryAt).getTime();
+        comparison = new Date(b.addedToLibraryAt).getTime() - new Date(a.addedToLibraryAt).getTime();
     }
+    return sortDir === 'asc' ? comparison : -comparison;
   });
 };
 
 export default function Library() {
-  const { filter } = useParams<{ filter: UserMediaFilter }>();
+  const { status } = useParams<{ status: LibraryFilterStatus }>();
   const [query] = useQueryState('query', { defaultValue: '' });
   const [sortBy] = useQueryState('sort', { defaultValue: 'recent' });
-  const [viewMode] = useQueryState('view', { defaultValue: 'grid' });
+  const [sortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 24;
 
@@ -33,9 +38,9 @@ export default function Library() {
 
   // Get items based on current status
   const rawItems = (() => {
-    if (!filter || filter === 'all') return getAllItems();
-    if (filter === 'favorites') return getFavorites();
-    return getItemsByStatus(filter as UserMediaStatus);
+    if (!status || status === 'all') return getAllItems();
+    if (status === 'favorites') return getFavorites();
+    return getItemsByStatus(status as LibraryMediaStatus);
   })();
 
   // Filter items based on query
@@ -49,7 +54,7 @@ export default function Library() {
     );
   });
   // Sort filtered items
-  const sortedItems = sortItems(filteredItems, sortBy);
+  const sortedItems = sortItems(filteredItems, sortBy, sortDir);
 
   // Pagination logic
   const totalItems = sortedItems.length;
@@ -66,21 +71,20 @@ export default function Library() {
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filter, query, sortBy]);
+  }, [status, query, sortBy, sortDir]);
 
-  const handleReorder = (reorderedItems: UserMediaData[]) => {
+  const handleReorder = (reorderedItems: LibraryMediaData[]) => {
     // For now, just log the reordered items
     // In a real app, you'd save this custom order
     console.log('Items reordered:', reorderedItems);
   };
   return (
-    <div className='space-y-8'>
+    <div className='h-full space-y-8'>
       <LibraryCardsList
         items={paginatedItems}
         allItems={rawItems}
-        filter={filter || 'all'}
+        status={status || 'all'}
         query={query}
-        viewMode={viewMode as 'grid' | 'list'}
         onReorder={handleReorder}
       />
 

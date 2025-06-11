@@ -4,13 +4,15 @@ import { useMemo } from 'react';
 import { Star, Film, Tv, type LucideIcon, TrendingUp, Calendar, SquareArrowOutUpRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router';
-import { USER_MEDIA_STATUS } from '@/utils/constants';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { cn } from '@/utils';
 
 interface StatCardProps {
   label: string;
   value: string | number;
   icon: LucideIcon;
   className: string;
+  layoutClassName?: string;
   description?: string;
   delay?: number;
   link?: string;
@@ -20,7 +22,17 @@ interface StatCardProps {
   };
 }
 
-const StatCard = ({ label, value, icon: Icon, className, description, delay = 0, trend, link }: StatCardProps) => {
+const StatCard = ({
+  label,
+  value,
+  icon: Icon,
+  className,
+  layoutClassName,
+  description,
+  delay = 0,
+  trend,
+  link,
+}: StatCardProps) => {
   const [textColor, bgColor, borderColor] = className.split(' ');
 
   return (
@@ -39,44 +51,58 @@ const StatCard = ({ label, value, icon: Icon, className, description, delay = 0,
         y: -2,
         transition: { duration: 0.2 },
       }}
-      className={`group relative overflow-hidden rounded-2xl border bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 backdrop-blur-xl transition-all duration-300 hover:shadow-2xl hover:shadow-black/20 ${borderColor || 'border-white/10'}`}
+      className={cn(
+        'group relative overflow-hidden rounded-2xl border bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 backdrop-blur-xl transition-all duration-300 hover:shadow-2xl hover:shadow-black/20',
+        borderColor || 'border-white/10',
+        layoutClassName
+      )}
     >
       {/* Animated background gradient */}
       <div className='absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
 
       {/* Glow effect */}
       <div
-        className={`absolute -inset-1 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-20 ${bgColor}`}
+        className={cn(
+          'absolute -inset-1 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-20',
+          bgColor
+        )}
       />
 
       <div className='relative z-10'>
         <div className='mb-4 flex items-center justify-between'>
-          <div className={`relative rounded-xl p-3 ${bgColor || 'bg-white/10'} backdrop-blur-sm`}>
-            <Icon className={`size-6 ${textColor || 'text-Primary-300'}`} />
+          <div className={cn('relative rounded-xl p-3 backdrop-blur-sm', bgColor || 'bg-white/10')}>
+            <Icon className={cn('size-6', textColor || 'text-Primary-300')} />
             {/* Icon glow */}
             <div
-              className={`absolute inset-0 rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-30 ${bgColor}`}
+              className={cn(
+                'absolute inset-0 rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-30',
+                bgColor
+              )}
             />
           </div>
 
           {link ? (
             <Link
               to={link}
-              className={`flex h-8 w-8 items-center justify-center rounded-full ${bgColor} opacity-80 transition-all duration-300 hover:opacity-100`}
+              className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full opacity-80 transition-all duration-300 hover:opacity-100',
+                bgColor
+              )}
               aria-label={`View all ${label.toLowerCase()}`}
             >
-              <SquareArrowOutUpRight className={`size-4 ${textColor}`} />
+              <SquareArrowOutUpRight className={cn('size-4', textColor)} />
             </Link>
           ) : trend ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: delay * 0.1 + 0.3 }}
-              className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+              className={cn(
+                'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium',
                 trend.isPositive ? 'bg-Success-500/20 text-Success-400' : 'bg-Error-500/20 text-Error-400'
-              }`}
+              )}
             >
-              <TrendingUp className={`size-3 ${trend.isPositive ? '' : 'rotate-180'}`} />
+              <TrendingUp className={cn('size-3', trend.isPositive ? '' : 'rotate-180')} />
               {Math.abs(trend.value)}%
             </motion.div>
           ) : null}
@@ -116,7 +142,7 @@ const StatCard = ({ label, value, icon: Icon, className, description, delay = 0,
 };
 
 interface LibraryStatsProps {
-  items: UserMediaData[];
+  items: LibraryMediaData[];
 }
 
 export default function LibraryStats({ items }: LibraryStatsProps) {
@@ -156,13 +182,12 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
     };
   }, [items]);
 
-  // Build status cards from USER_MEDIA_STATUS constant
-  const statusCards = USER_MEDIA_STATUS.map((status) => ({
+  const statusCards = LIBRARY_MEDIA_STATUS.map((status) => ({
     label: status.label,
     value: stats[status.value as keyof typeof stats],
     icon: status.icon,
     className: status.className,
-    description: status.description,
+    description: status.descriptions.stats,
     link: `/library/${status.value}`,
     ...(status.value === 'watching' ? { trend: { value: 8, isPositive: true } } : {}),
     ...(status.value === 'watched' ? { trend: { value: 15, isPositive: true } } : {}),
@@ -191,6 +216,7 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
       value: stats.avgRating > 0 ? stats.avgRating.toFixed(1) : 'N/A',
       icon: Star,
       className: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
+      layoutClassName: 'xl:col-span-2 2xl:col-span-1',
       description: `${stats.ratedCount} rated items`,
     },
     {
@@ -198,6 +224,7 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
       value: stats.recentActivity,
       icon: Calendar,
       className: 'text-Secondary-400 bg-Secondary-500/20 border-Secondary-500/30',
+      layoutClassName: 'lg:col-span-3 xl:col-span-2 2xl:col-span-1',
       description: 'Last 30 days',
       trend: { value: 25, isPositive: true },
     },

@@ -1,8 +1,8 @@
 import { Filter, Search, Heart } from 'lucide-react';
-import { USER_MEDIA_STATUS } from '@/utils/constants';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
-const getFilterInfo = (filter: UserMediaFilter) => {
-  const statusOption = USER_MEDIA_STATUS.find((status) => status.value === filter);
+const getFilterInfo = (filter: LibraryFilterStatus) => {
+  const statusOption = LIBRARY_MEDIA_STATUS.find((status) => status.value === filter);
 
   if (statusOption) {
     const IconComponent = statusOption.icon;
@@ -22,11 +22,11 @@ const getFilterInfo = (filter: UserMediaFilter) => {
 };
 
 export default function EmptyState({
-  filter,
+  status,
   hasQuery,
   query,
 }: {
-  filter?: UserMediaFilter;
+  status?: LibraryFilterStatus;
   hasQuery: boolean;
   query: string;
 }) {
@@ -44,10 +44,10 @@ export default function EmptyState({
     );
   }
 
-  const filterInfo = filter ? getFilterInfo(filter) : null;
+  const statusInfo = status ? getFilterInfo(status) : null;
 
   const getEmptyMessage = () => {
-    switch (filter) {
+    switch (status) {
       case 'all':
         return {
           title: 'Your watchlist awaits',
@@ -98,15 +98,15 @@ export default function EmptyState({
   return (
     <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
       <div className='mb-6 rounded-full bg-white/5 p-6 backdrop-blur-md'>
-        {filterInfo ? (
-          <div className={filterInfo.color}>{filterInfo.icon}</div>
+        {statusInfo ? (
+          <div className={statusInfo.color}>{statusInfo.icon}</div>
         ) : (
           <Filter className='text-Grey-400 size-12' />
         )}
       </div>
       <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>{title}</h3>
       <p className='text-Grey-400 max-w-md'>{message}</p>
-      {filter === 'all' && (
+      {status === 'all' && (
         <button className='bg-Primary-600 hover:bg-Primary-700 mt-6 rounded-lg px-6 py-3 font-medium text-white transition-colors'>
           Start Exploring
         </button>

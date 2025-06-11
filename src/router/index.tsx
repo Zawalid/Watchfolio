@@ -23,7 +23,7 @@ export const router = createBrowserRouter([
                 element: <Navigate to='/library/all' />,
               },
               {
-                path: ':filter',
+                path: ':status',
 
                 Component: Library,
                 loader: tvShowsLoader,

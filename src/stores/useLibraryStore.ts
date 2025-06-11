@@ -6,26 +6,26 @@ interface LibraryState {
   library: LibraryCollection;
 
   // Actions
-  getItem: (mediaType: 'movie' | 'tv', id: number) => UserMediaData | undefined;
+  getItem: (mediaType: 'movie' | 'tv', id: number) => LibraryMediaData | undefined;
   addOrUpdateItem: (
-    mediaData: Partial<UserMediaData> & Pick<UserMediaData, 'id' | 'mediaType'>,
+    mediaData: Partial<LibraryMediaData> & Pick<LibraryMediaData, 'id' | 'mediaType'>,
     metadata?: Media
-  ) => UserMediaData | null;
+  ) => LibraryMediaData | null;
   removeItem: (mediaType: 'movie' | 'tv', id: number) => void;
   toggleFavorite: (
-    mediaData: Partial<UserMediaData> & Pick<UserMediaData, 'id' | 'mediaType'>,
+    mediaData: Partial<LibraryMediaData> & Pick<LibraryMediaData, 'id' | 'mediaType'>,
     metadata?: Media
-  ) => UserMediaData | null;
-  getAllItems: () => UserMediaData[];
-  getItemsByStatus: (status: UserMediaStatus) => UserMediaData[];
-  getFavorites: () => UserMediaData[];
-  getCount: (filter: UserMediaFilter) => number;
+  ) => LibraryMediaData | null;
+  getAllItems: () => LibraryMediaData[];
+  getItemsByStatus: (status: LibraryMediaStatus) => LibraryMediaData[];
+  getFavorites: () => LibraryMediaData[];
+  getCount: (filter: LibraryFilterStatus) => number;
 }
 
 const generateMediaKey = (mediaType: 'movie' | 'tv', id: number): string => `${mediaType}-${id}`;
 
 // Helper function to check if item should be removed
-const shouldRemoveItem = (item: UserMediaData): boolean => {
+const shouldRemoveItem = (item: LibraryMediaData): boolean => {
   return (
     !item.isFavorite &&
     !item.userRating &&
@@ -36,8 +36,8 @@ const shouldRemoveItem = (item: UserMediaData): boolean => {
   );
 };
 
-// Helper to transform TMDB Media to UserMediaData fields
-const transformMediaToUserData = (media: Media): Partial<UserMediaData> => {
+// Helper to transform TMDB Media to LibraryMediaData fields
+const transformMediaToUserData = (media: Media): Partial<LibraryMediaData> => {
   const title = (media as Movie).title || (media as TvShow).name;
   const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
 
@@ -69,7 +69,7 @@ export const useLibraryStore = create<LibraryState>()(
         // Transform any TMDB data that might be passed
         const transformedData = metadata && metadata ? transformMediaToUserData(metadata) : {};
 
-        const defaultItemData: UserMediaData = {
+        const defaultItemData: LibraryMediaData = {
           id: mediaData.id,
           mediaType: mediaData.mediaType,
           status: 'none',
@@ -78,7 +78,7 @@ export const useLibraryStore = create<LibraryState>()(
           lastUpdatedAt: now,
         };
 
-        const newItemData: UserMediaData = {
+        const newItemData: LibraryMediaData = {
           ...defaultItemData,
           ...existingItem,
           ...transformedData,
@@ -129,7 +129,7 @@ export const useLibraryStore = create<LibraryState>()(
         const item = library[key];
 
         if (item) {
-          const updatedItem = { ...item, status: 'none' as UserMediaStatus };
+          const updatedItem = { ...item, status: 'none' as LibraryMediaStatus };
 
           if (shouldRemoveItem(updatedItem)) {
             set((state) => {
@@ -167,9 +167,9 @@ export const useLibraryStore = create<LibraryState>()(
         return Object.values(library).filter((item) => item.isFavorite);
       },
 
-      getCount: (filter: UserMediaFilter) => {
+      getCount: (filter: LibraryFilterStatus) => {
         const { library } = get();
-        const counts: Record<UserMediaFilter, number> = {
+        const counts: Record<LibraryFilterStatus, number> = {
           all: 0,
           watching: 0,
           willWatch: 0,

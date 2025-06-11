@@ -1,8 +1,8 @@
-type UserMediaStatus = 'watched' | 'watching' | 'willWatch' | 'onHold' | 'dropped' | 'none';
+type LibraryMediaStatus = 'watched' | 'watching' | 'willWatch' | 'onHold' | 'dropped' | 'none';
 
-type UserMediaFilter = Exclude<UserMediaStatus, 'none'> | 'favorites' | 'all';
+type LibraryFilterStatus = Exclude<LibraryMediaStatus, 'none'> | 'favorites' | 'all';
 
-interface UserMediaData {
+interface LibraryMediaData {
   id: number; // TMDB ID
   mediaType: 'movie' | 'tv';
   // Optional: Store minimal TMDB data for offline/list display if needed
@@ -11,7 +11,7 @@ interface UserMediaData {
   releaseDate?: string;
   genres?: string[];
 
-  status: UserMediaStatus; // Default to 'none' if just favorited/rated without explicit status
+  status: LibraryMediaStatus; // Default to 'none' if just favorited/rated without explicit status
   isFavorite: boolean;
   userRating?: number; // User's personal rating (1-10)
   watchDates?: string[]; // Array of ISO date strings
@@ -25,4 +25,4 @@ interface UserMediaData {
   notes?: string;
 }
 
-type LibraryCollection = Record<string, UserMediaData>;
+type LibraryCollection = Record<string, LibraryMediaData>;
