@@ -7,12 +7,7 @@ import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
 
-interface Disclosure {
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-  onOpenChange: (isOpen: boolean) => void;
-}
+
 
 interface LibraryModalProps {
   disclosure: Disclosure;

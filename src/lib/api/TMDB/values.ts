@@ -28,6 +28,34 @@ export const GENRES: Record<number, string> = {
   10752: 'War'
 };
 
+export const PLATFORMS = [
+  {
+    id: 'netflix',
+    label: 'Netflix',
+    logo: 'https://media.themoviedb.org/t/p/h50_filter(negate,000,666)/wwemzKWzjKYJFfCeiB57q3r4Bcm.png',
+  },
+  {
+    id: 'amazon',
+    label: 'Amazon Prime',
+    logo: 'https://media.themoviedb.org/t/p/h50_filter(negate,000,666)/w7HfLNm9CWwRmAMU58udl2L7We7.png',
+  },
+  {
+    id: 'disney',
+    label: 'Disney+',
+    logo: 'https://media.themoviedb.org/t/p/h50_filter(negate,000,666)/gJ8VX6JSu3ciXHuC2dDGAo2lvwM.png',
+  },
+  {
+    id: 'hbo',
+    label: 'HBO',
+    logo: 'https://media.themoviedb.org/t/p/h50_filter(negate,000,666)/tuomPhY2UtuPTqqFnKMVHvSb724.png',
+  },
+  {
+    id: 'apple',
+    label: 'Apple TV+',
+    logo: 'https://media.themoviedb.org/t/p/h50_filter(negate,000,666)/4KAy34EHvRM25Ih8wb82AuGU7zJ.png',
+  },
+];
+
 export const LANGUAGES = [
   {
     iso_639_1: 'ay',

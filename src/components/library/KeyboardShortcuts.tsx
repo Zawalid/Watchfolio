@@ -1,4 +1,4 @@
-import { ModalBody } from '@heroui/modal';
+import { ModalBody, useDisclosure } from '@heroui/modal';
 import { Keyboard } from 'lucide-react';
 import { useEffect } from 'react';
 import Modal from '@/components/ui/Modal';
@@ -12,6 +12,7 @@ const shortcuts = [
   { key: '?', description: 'Show/hide keyboard shortcuts' },
   { key: 't', description: 'Show/hide tabs' },
   { key: '/', description: 'Focus search input' },
+  { key: 'Ctrl f', description: 'Show/hide filters' },
   { key: 'f', description: 'Toggle favorite (when card is focused)' },
   { key: 'e', description: 'Edit status (when card is focused)' },
   { key: 'Delete', description: 'Remove from library (when card is focused)' },
@@ -22,6 +23,8 @@ const shortcuts = [
 ];
 
 export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
+  const disclosure = useDisclosure({ isOpen, onClose });
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === '?' || (e.key === 'Escape' && isOpen)) {
@@ -35,16 +38,6 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
       return () => document.removeEventListener('keydown', handleKeyPress);
     }
   }, [isOpen, onClose]);
-
-  // Create disclosure object for Modal component
-  const disclosure = {
-    isOpen,
-    onOpen: () => {},
-    onClose,
-    onOpenChange: (open: boolean) => {
-      if (!open) onClose();
-    },
-  };
 
   return (
     <Modal disclosure={disclosure}>

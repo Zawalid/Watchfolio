@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDisclosure } from '@heroui/modal';
-import LibraryModal from '@/components/details/LibraryModal';
+import LibraryModal from '@/components/library/LibraryModal';
 import { LibraryModalContext } from '../hooks/useLibraryModal';
 
 export function LibraryModalProvider({ children }: { children: React.ReactNode }) {

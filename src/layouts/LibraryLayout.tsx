@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose } from 'lucide-react';
+import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter } from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Button } from '@heroui/button';
 import { useState, useEffect, useRef } from 'react';
@@ -9,12 +9,14 @@ import { useQueryState } from 'nuqs';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
+import FiltersModal from '@/components/library/FiltersModal';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
   const [sortBy, setSortBy] = useQueryState('sort', { defaultValue: 'recent' });
   const [sortDir, setSortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [showTabs, setShowTabs] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,12 +43,18 @@ export default function LibraryLayout() {
           e.preventDefault();
           setShowTabs(!showTabs);
           break;
+        case 'f':
+          if (e.ctrlKey) {
+            e.preventDefault();
+            setShowFilters(!showFilters);
+          }
+          break;
       }
     };
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [showKeyboardShortcuts, showTabs]);
+  }, [showKeyboardShortcuts, showTabs, showFilters]);
 
   return (
     <div className='relative flex h-full flex-col gap-6 overflow-hidden lg:flex-row lg:gap-10'>
@@ -84,7 +92,7 @@ export default function LibraryLayout() {
             name='search'
             defaultValue={query}
             label='Search Your Library'
-            placeholder='Search by title...'
+            placeholder='Search  by title, genre, or status...'
             ref={searchInputRef}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -97,6 +105,17 @@ export default function LibraryLayout() {
             >
               {showTabs ? <PanelLeftClose className='size-4' /> : <PanelLeftClose className='size-4 rotate-180' />}
             </Button>
+
+            {/* Filter button */}
+            <Button
+              isIconOnly
+              className='button-secondary'
+              onPress={() => setShowFilters(true)}
+              aria-label='Show filters'
+            >
+              <Filter className='size-4' />
+            </Button>
+
             <Select
               placeholder='Sort by'
               classNames={{
@@ -156,6 +175,9 @@ export default function LibraryLayout() {
 
       {/* Keyboard shortcuts modal */}
       <KeyboardShortcuts isOpen={showKeyboardShortcuts} onClose={() => setShowKeyboardShortcuts(false)} />
+
+      {/* Filters modal */}
+      <FiltersModal isOpen={showFilters} onClose={() => setShowFilters(false)} />
     </div>
   );
 }
