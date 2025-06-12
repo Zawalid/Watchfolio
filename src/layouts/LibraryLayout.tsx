@@ -2,7 +2,7 @@ import { Outlet } from 'react-router';
 import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter } from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Button } from '@heroui/button';
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import Input from '@/components/ui/Input';
 import Tabs from '@/components/ui/Tabs';
 import { useQueryState } from 'nuqs';
@@ -10,56 +10,32 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import FiltersModal from '@/components/library/FiltersModal';
+import useLocalStorageState from '@/hooks/useLocalStorageState';
+import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
+import { useDisclosure } from '@heroui/modal';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
   const [sortBy, setSortBy] = useQueryState('sort', { defaultValue: 'recent' });
   const [sortDir, setSortDir] = useQueryState('dir', { defaultValue: 'desc' });
-  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [showTabs, setShowTabs] = useState(true);
+  const [showTabs, setShowTabs] = useLocalStorageState('show-tabs', true);
+  const filtersDisclosure = useDisclosure();
+  const keyboardShortcutsDisclosure = useDisclosure();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { getCount } = useLibraryStore();
 
-  // Global keyboard shortcuts
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
-
-      switch (e.key) {
-        case '?':
-          e.preventDefault();
-          setShowKeyboardShortcuts(!showKeyboardShortcuts);
-          break;
-        case '/':
-          e.preventDefault();
-          searchInputRef.current?.focus();
-          break;
-        case 't':
-          e.preventDefault();
-          setShowTabs(!showTabs);
-          break;
-        case 'f':
-          if (e.ctrlKey) {
-            e.preventDefault();
-            setShowFilters(!showFilters);
-          }
-          break;
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyPress);
-    return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [showKeyboardShortcuts, showTabs, showFilters]);
+  useKeyboardShortcuts([
+    { key: '/', description: 'Focus search input', callback: () => searchInputRef.current?.focus() },
+    { key: 't', description: 'Show/hide tabs', callback: () => setShowTabs(!showTabs) },
+  ]);
 
   return (
     <div className='relative flex h-full flex-col gap-6 overflow-hidden lg:flex-row lg:gap-10'>
       <Tabs
-        className={`absolute z-20 flex-col bg-transparent transition-transform duration-300 lg:flex-col ${showTabs ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`absolute z-20 flex-col bg-transparent transition-transform duration-300 lg:flex-col ${
+          showTabs ? 'translate-x-0' : '-translate-x-full'
+        }`}
         tabClassName='px-3 lg:px-4 text-sm lg:text-base'
         tabs={[
           {
@@ -82,7 +58,9 @@ export default function LibraryLayout() {
       />
 
       <div
-        className={`flex flex-col gap-8 transition-all duration-300 ${showTabs ? 'w-[calc(100%-260px)] translate-x-[260px]' : 'w-full translate-x-0'}`}
+        className={`flex flex-col gap-8 transition-all duration-300 ${
+          showTabs ? 'w-[calc(100%-260px)] translate-x-[260px]' : 'w-full translate-x-0'
+        }`}
       >
         <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>
           <Input
@@ -92,7 +70,7 @@ export default function LibraryLayout() {
             name='search'
             defaultValue={query}
             label='Search Your Library'
-            placeholder='Search  by title, genre, or status...'
+            placeholder='Search by title, genre, or status...'
             ref={searchInputRef}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -110,7 +88,7 @@ export default function LibraryLayout() {
             <Button
               isIconOnly
               className='button-secondary'
-              onPress={() => setShowFilters(true)}
+              onPress={() => filtersDisclosure.onOpen()}
               aria-label='Show filters'
             >
               <Filter className='size-4' />
@@ -161,7 +139,7 @@ export default function LibraryLayout() {
             <Button
               isIconOnly
               className='button-secondary'
-              onPress={() => setShowKeyboardShortcuts(true)}
+              onPress={() => keyboardShortcutsDisclosure.onOpen()}
               aria-label='Show keyboard shortcuts'
             >
               <HelpCircle className='size-4' />
@@ -173,11 +151,8 @@ export default function LibraryLayout() {
         </div>
       </div>
 
-      {/* Keyboard shortcuts modal */}
-      <KeyboardShortcuts isOpen={showKeyboardShortcuts} onClose={() => setShowKeyboardShortcuts(false)} />
-
-      {/* Filters modal */}
-      <FiltersModal isOpen={showFilters} onClose={() => setShowFilters(false)} />
+      <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
+      <FiltersModal disclosure={filtersDisclosure} />
     </div>
   );
 }

@@ -1,14 +1,13 @@
-import { ModalBody, useDisclosure } from '@heroui/modal';
+import { ModalBody } from '@heroui/modal';
 import { Keyboard } from 'lucide-react';
-import { useEffect } from 'react';
 import Modal from '@/components/ui/Modal';
+import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 
 interface KeyboardShortcutsProps {
-  isOpen: boolean;
-  onClose: () => void;
+  disclosure: Disclosure;
 }
 
-const shortcuts = [
+const SHORTCUTS = [
   { key: '?', description: 'Show/hide keyboard shortcuts' },
   { key: 't', description: 'Show/hide tabs' },
   { key: '/', description: 'Focus search input' },
@@ -22,27 +21,21 @@ const shortcuts = [
   { key: '↑ ↓', description: 'Navigate between items' },
 ];
 
-export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcutsProps) {
-  const disclosure = useDisclosure({ isOpen, onClose });
+export default function KeyboardShortcuts({ disclosure }: KeyboardShortcutsProps) {
+  const { isOpen, onOpen, onClose } = disclosure;
 
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === '?' || (e.key === 'Escape' && isOpen)) {
-        e.preventDefault();
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyPress);
-      return () => document.removeEventListener('keydown', handleKeyPress);
-    }
-  }, [isOpen, onClose]);
+  useKeyboardShortcuts([
+    {
+      key: '?',
+      callback: () => (isOpen ? onClose() : onOpen()),
+      description: 'Toggle keyboard shortcuts modal',
+    },
+    { key: 'Escape', callback: () => isOpen && onClose(), description: 'Close keyboard shortcuts modal' },
+  ]);
 
   return (
     <Modal disclosure={disclosure}>
       <ModalBody className='space-y-6 p-6'>
-        {/* Header */}
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>
             <Keyboard className='text-Primary-400 size-5' />
@@ -50,9 +43,8 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
           <h2 className='text-Primary-50 text-xl font-semibold'>Keyboard Shortcuts</h2>
         </div>
 
-        {/* Shortcuts list */}
         <div className='max-h-96 space-y-3 overflow-y-auto py-2'>
-          {shortcuts.map((shortcut) => (
+          {SHORTCUTS.map((shortcut) => (
             <div
               key={shortcut.key}
               className='flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 transition-colors hover:bg-white/10'
@@ -71,7 +63,6 @@ export default function KeyboardShortcuts({ isOpen, onClose }: KeyboardShortcuts
           ))}
         </div>
 
-        {/* Footer */}
         <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border p-3'>
           <p className='text-Primary-300 text-xs'>
             <span className='font-medium'>Tip:</span> Press{' '}

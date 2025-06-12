@@ -1,46 +1,39 @@
-import { ModalBody, useDisclosure } from '@heroui/modal';
+import { ModalBody } from '@heroui/modal';
 import { CircleCheck, FunnelX, Filter as FilterIcon } from 'lucide-react';
-import { useEffect } from 'react';
 import Modal from '@/components/ui/Modal';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { Button } from '@heroui/button';
 import { cn } from '@/utils';
-import { GENRES,PLATFORMS } from '@/lib/api/TMDB/values';
+import { GENRES, PLATFORMS } from '@/lib/api/TMDB/values';
+import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 
 interface FiltersModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  disclosure: Disclosure;
 }
-
-
 
 const getClassName = (isSelected: boolean) =>
   isSelected
     ? 'border-Secondary-400 bg-Secondary-500/20 text-Secondary-50'
     : 'text-Grey-300 border-white/10 bg-gray-800/40 hover:border-white/20 hover:bg-white/10';
 
-export default function FiltersModal({ isOpen, onClose }: FiltersModalProps) {
-  const disclosure = useDisclosure({ isOpen, onClose });
+export default function FiltersModal({ disclosure }: FiltersModalProps) {
+  const { isOpen, onClose, onOpen } = disclosure;
   const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
   const [selectedPlatforms, setSelectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
 
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'f' && e.ctrlKey && isOpen) {
-        e.preventDefault();
-        onClose();
-      }
-      if (e.key === 'Escape' && isOpen) {
-        e.preventDefault();
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleKeyPress);
-      return () => document.removeEventListener('keydown', handleKeyPress);
-    }
-  }, [isOpen, onClose]);
+  useKeyboardShortcuts([
+    {
+      key: 'f',
+      ctrlKey: true,
+      callback: () => (isOpen ? onClose() : onOpen()),
+      description: 'Toggle filters modal',
+    },
+    {
+      key: 'Escape',
+      callback: () => isOpen && onClose(),
+      description: 'Close filters modal',
+    },
+  ]);
 
   const toggleGenre = (genreId: string) => {
     const currentGenres = selectedGenres || [];

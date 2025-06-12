@@ -72,7 +72,7 @@ export default function ConfirmationModal({ disclosure, options, onConfirm, onCa
           <div className='flex items-center'>
             <Checkbox isSelected={dontAskAgain} onValueChange={setDontAskAgain} id='dont-ask-again' color='primary' />
             <label htmlFor='dont-ask-again' className='text-Grey-300 ml-2 cursor-pointer text-sm'>
-              Don't ask again
+              Don&apos;t show this message again
             </label>
           </div>
         )}
