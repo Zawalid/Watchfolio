@@ -1,31 +1,32 @@
-import { GENRES } from '@/lib/api/TMDB/values';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { GENRES } from '@/lib/api/TMDB/values';
+import { getRating } from '@/utils/media';
 
 interface LibraryState {
   library: LibraryCollection;
 
   // Actions
-  getItem: (mediaType: 'movie' | 'tv', id: number) => LibraryMediaData | undefined;
+  getItem: (mediaType: 'movie' | 'tv', id: number) => LibraryMedia | undefined;
   addOrUpdateItem: (
-    mediaData: Partial<LibraryMediaData> & Pick<LibraryMediaData, 'id' | 'mediaType'>,
+    media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id' | 'media_type'>,
     metadata?: Media
-  ) => LibraryMediaData | null;
+  ) => LibraryMedia | null;
   removeItem: (mediaType: 'movie' | 'tv', id: number) => void;
   toggleFavorite: (
-    mediaData: Partial<LibraryMediaData> & Pick<LibraryMediaData, 'id' | 'mediaType'>,
+    media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id' | 'media_type'>,
     metadata?: Media
-  ) => LibraryMediaData | null;
-  getAllItems: () => LibraryMediaData[];
-  getItemsByStatus: (status: LibraryMediaStatus) => LibraryMediaData[];
-  getFavorites: () => LibraryMediaData[];
+  ) => LibraryMedia | null;
+  getAllItems: () => LibraryMedia[];
+  getItemsByStatus: (status: LibraryMediaStatus) => LibraryMedia[];
+  getFavorites: () => LibraryMedia[];
   getCount: (filter: LibraryFilterStatus) => number;
 }
 
 const generateMediaKey = (mediaType: 'movie' | 'tv', id: number): string => `${mediaType}-${id}`;
 
 // Helper function to check if item should be removed
-const shouldRemoveItem = (item: LibraryMediaData): boolean => {
+const shouldRemoveItem = (item: LibraryMedia): boolean => {
   return (
     !item.isFavorite &&
     !item.userRating &&
@@ -36,8 +37,8 @@ const shouldRemoveItem = (item: LibraryMediaData): boolean => {
   );
 };
 
-// Helper to transform TMDB Media to LibraryMediaData fields
-const transformMediaToUserData = (media: Media): Partial<LibraryMediaData> => {
+// Helper to transform TMDB Media to LibraryMedia fields
+const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
   const title = (media as Movie).title || (media as TvShow).name;
   const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
 
@@ -47,6 +48,7 @@ const transformMediaToUserData = (media: Media): Partial<LibraryMediaData> => {
     releaseDate,
     genres:
       media.genres?.map((g: { id: number; name: string }) => g.name) || media.genre_ids?.map((id) => GENRES[id]) || [],
+    rating: +getRating(media.vote_average),
   };
 };
 
@@ -60,29 +62,29 @@ export const useLibraryStore = create<LibraryState>()(
         return library[generateMediaKey(mediaType, id)];
       },
 
-      addOrUpdateItem: (mediaData, metadata) => {
+      addOrUpdateItem: (media, metadata) => {
         const { library } = get();
-        const key = generateMediaKey(mediaData.mediaType, mediaData.id);
+        const key = generateMediaKey(media.media_type, media.id);
         const now = new Date().toISOString();
         const existingItem = library[key];
 
         // Transform any TMDB data that might be passed
         const transformedData = metadata && metadata ? transformMediaToUserData(metadata) : {};
 
-        const defaultItemData: LibraryMediaData = {
-          id: mediaData.id,
-          mediaType: mediaData.mediaType,
+        const defaultItemData: LibraryMedia = {
+          id: media.id,
+          media_type: media.media_type,
           status: 'none',
           isFavorite: false,
           addedToLibraryAt: existingItem?.addedToLibraryAt || now,
           lastUpdatedAt: now,
         };
 
-        const newItemData: LibraryMediaData = {
+        const newItemData: LibraryMedia = {
           ...defaultItemData,
           ...existingItem,
           ...transformedData,
-          ...mediaData,
+          ...media,
           lastUpdatedAt: now,
         };
 
@@ -111,12 +113,12 @@ export const useLibraryStore = create<LibraryState>()(
         return newItemData;
       },
 
-      toggleFavorite: (mediaData, metadata) => {
-        const currentItem = get().getItem(mediaData.mediaType, mediaData.id);
+      toggleFavorite: (media, metadata) => {
+        const currentItem = get().getItem(media.media_type, media.id);
         return get().addOrUpdateItem(
           {
-            mediaType: mediaData.mediaType,
-            id: mediaData.id,
+            media_type: media.media_type,
+            id: media.id,
             isFavorite: !(currentItem?.isFavorite || false),
           },
           metadata

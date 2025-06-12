@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useDisclosure } from '@heroui/modal';
 import LibraryModal from '@/components/details/LibraryModal';
-import { LibraryModalContext } from './useLibraryModal';
+import { LibraryModalContext } from '../hooks/useLibraryModal';
 
 export function LibraryModalProvider({ children }: { children: React.ReactNode }) {
   const modalDisclosure = useDisclosure();
-  const [currentMedia, setCurrentMedia] = useState<Media | null>(null);
+  const [currentMedia, setCurrentMedia] = useState<Media | LibraryMedia | null>(null);
 
-  const openModal = (media: Media) => {
+  const openModal = (media: Media | LibraryMedia) => {
     setCurrentMedia(media);
     modalDisclosure.onOpen();
   };

@@ -16,11 +16,11 @@ import EmptyState from './EmptyState';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 interface LibraryCardsListProps {
-  items: LibraryMediaData[];
-  allItems: LibraryMediaData[];
+  items: LibraryMedia[];
+  allItems: LibraryMedia[];
   status: LibraryFilterStatus;
   query: string;
-  onReorder?: (reorderedItems: LibraryMediaData[]) => void;
+  onReorder?: (reorderedItems: LibraryMedia[]) => void;
 }
 
 export default function LibraryCardsList({ items, status, query, onReorder }: LibraryCardsListProps) {
@@ -47,8 +47,8 @@ export default function LibraryCardsList({ items, status, query, onReorder }: Li
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      const oldIndex = sortableItems.findIndex((item) => `${item.mediaType}-${item.id}` === active.id);
-      const newIndex = sortableItems.findIndex((item) => `${item.mediaType}-${item.id}` === over.id);
+      const oldIndex = sortableItems.findIndex((item) => `${item.media_type}-${item.id}` === active.id);
+      const newIndex = sortableItems.findIndex((item) => `${item.media_type}-${item.id}` === over.id);
 
       const reorderedItems = arrayMove(sortableItems, oldIndex, newIndex);
       setSortableItems(reorderedItems);
@@ -59,7 +59,7 @@ export default function LibraryCardsList({ items, status, query, onReorder }: Li
   if (items.length === 0) return <EmptyState status={status} hasQuery={!!query} query={query} />;
 
   return (
-    <div className='space-y-8'>
+    <>
       {/* Results header */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>
@@ -100,21 +100,18 @@ export default function LibraryCardsList({ items, status, query, onReorder }: Li
       {/* Items grid with Drag & Drop */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
-          items={sortableItems.map((item) => `${item.mediaType}-${item.id}`)}
+          items={sortableItems.map((item) => `${item.media_type}-${item.id}`)}
           strategy={rectSortingStrategy}
         >
-          <div
-            ref={parent}
-            className='grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-[repeat(auto-fill,minmax(190px,1fr))] lg:gap-6'
-          >
+          <div ref={parent} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
             {sortableItems.map((item) => (
-              <div key={`${item.id}-${item.mediaType}`}>
+              <div key={`${item.id}-${item.media_type}`}>
                 <SortableLibraryCard item={item} />
               </div>
             ))}
           </div>
         </SortableContext>
       </DndContext>
-    </div>
+    </>
   );
 }

@@ -1,15 +1,16 @@
 import { Link } from 'react-router';
 import { useState } from 'react';
 import { Button } from '@heroui/button';
-import { Star, Heart, Calendar, Film, Tv, MoreHorizontal, Trash2, Edit3 } from 'lucide-react';
+import { Star, Heart, Calendar, Film, Tv, Trash2, Edit3 } from 'lucide-react';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useLibraryModal } from '@/context/useLibraryModal';
+import { useLibraryModal } from '@/hooks/useLibraryModal';
+import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
 
 interface LibraryCardProps {
-  item: LibraryMediaData;
+  item: LibraryMedia;
   tabIndex?: number;
 }
 
@@ -19,106 +20,60 @@ const getLink = (type: string, id: number, title: string) => {
 
 export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
   const [isHovered, setIsHovered] = useState(false);
-  const [showActions, setShowActions] = useState(false);
 
   const { toggleFavorite, removeItem } = useLibraryStore();
   const { openModal } = useLibraryModal();
+  const { confirm } = useConfirmationModal();
 
   const title = item.title || 'Untitled';
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item.status);
   const releaseYear = item.releaseDate ? new Date(item.releaseDate).getFullYear() : null;
-  const rating = item.userRating;
 
-  const handleToggleFavorite = () => {
-    toggleFavorite({ mediaType: item.mediaType, id: item.id });
-  };
+  const handleToggleFavorite = () => toggleFavorite({ media_type: item.media_type, id: item.id });
+  const handleRemove = async () => {
+    const confirmed = await confirm({
+      title: 'Remove from Library',
+      message: `Are you sure you want to remove "${item.title || 'this item'}" from your library?`,
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      confirmVariant: 'danger',
+      confirmationKey: 'remove_media',
+    });
 
-  const handleRemove = () => {
-    removeItem(item.mediaType, item.id);
+    if (confirmed) {
+      removeItem(item.media_type, item.id);
+    }
   };
-
-  const handleEditStatus = () => {
-    // Create a mock Media object for the modal
-    const mockMedia: Media = {
-      id: item.id,
-      media_type: item.mediaType,
-      title: item.title ?? 'Untitled',
-      poster_path: item.posterPath ?? null,
-      backdrop_path: null,
-      overview: '',
-      original_language: 'en',
-      adult: false,
-      popularity: 0,
-      vote_average: 0,
-      vote_count: 0,
-      // Movie-specific fields
-      original_title: item.title ?? 'Untitled',
-      release_date: item.releaseDate ?? null,
-      genre_ids: [],
-      // TV-specific fields
-      name: item.title ?? 'Untitled',
-      original_name: item.title ?? 'Untitled',
-      first_air_date: item.releaseDate ?? null,
-      origin_country: [],
-    } as Media;
-    openModal(mockMedia);
-  };
+  const handleEditStatus = () => openModal(item);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'Enter':
       case ' ':
         e.preventDefault();
-        window.location.href = getLink(item.mediaType, item.id, title);
+        window.location.href = getLink(item.media_type, item.id, title);
         break;
       case 'f':
       case 'F': {
         e.preventDefault();
-        toggleFavorite({ mediaType: item.mediaType, id: item.id });
+        handleToggleFavorite();
         break;
       }
       case 'e':
       case 'E': {
         e.preventDefault();
-        const mockMedia: Media = {
-          id: item.id,
-          media_type: item.mediaType,
-          title: item.title ?? 'Untitled',
-          poster_path: item.posterPath ?? null,
-          backdrop_path: null,
-          overview: '',
-          original_language: 'en',
-          adult: false,
-          popularity: 0,
-          vote_average: 0,
-          vote_count: 0,
-          // Movie-specific fields
-          original_title: item.title ?? 'Untitled',
-          release_date: item.releaseDate ?? null,
-          genre_ids: [],
-          // TV-specific fields
-          name: item.title ?? 'Untitled',
-          original_name: item.title ?? 'Untitled',
-          first_air_date: item.releaseDate ?? null,
-          origin_country: [],
-        } as Media;
-        openModal(mockMedia);
+        handleEditStatus();
         break;
       }
       case 'Delete':
       case 'Backspace': {
         e.preventDefault();
-        removeItem(item.mediaType, item.id);
+        handleRemove();
         break;
       }
-      case 'Escape':
-        setShowActions(false);
-        (e.target as HTMLElement).blur?.();
-        break;
     }
   };
 
-  // Grid view only
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -126,7 +81,7 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
       onKeyDown={handleKeyDown}
       tabIndex={tabIndex}
       role='article'
-      aria-label={`${title} - ${item.mediaType}`}
+      aria-label={`${title} - ${item.media_type}`}
       className='group focus:ring-Primary-500/50 focus:border-Primary-500/50 relative overflow-hidden rounded-xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-white/[0.08] shadow-lg backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:shadow-2xl hover:shadow-black/20 focus:ring-2 focus:outline-none'
     >
       {/* Quick Actions */}
@@ -135,10 +90,10 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
           isIconOnly
           size='sm'
           className={cn(
-            'h-8 w-8 border shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110',
+            'border shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110',
             item.isFavorite
-              ? 'border-red-400/50 bg-red-500/30 text-red-300 hover:bg-red-500/40'
-              : 'border-white/30 bg-white/20 text-white hover:border-red-400/50 hover:bg-red-500/30 hover:text-red-300'
+              ? 'border-pink-400/50 bg-pink-500/30 text-pink-300 hover:bg-pink-500/40'
+              : 'border-white/30 bg-white/20 text-white hover:border-pink-400/50 hover:bg-pink-500/30 hover:text-pink-300'
           )}
           onPress={handleToggleFavorite}
           aria-label={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -149,43 +104,48 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
         <Button
           isIconOnly
           size='sm'
-          className='h-8 w-8 border border-white/30 bg-white/20 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-blue-400/50 hover:bg-blue-500/30 hover:text-blue-300'
-          onPress={() => setShowActions(!showActions)}
+          className='border border-white/30 bg-white/20 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-blue-400/50 hover:bg-blue-500/30 hover:text-blue-300'
+          onPress={handleEditStatus}
           aria-label='More actions'
         >
-          <MoreHorizontal className='size-4' />
+          <Edit3 className='size-4' />
+        </Button>
+
+        <Button
+          isIconOnly
+          size='sm'
+          className='border border-white/30 bg-white/20 text-white shadow-lg backdrop-blur-md transition-all duration-300 hover:scale-110 hover:border-red-400/50 hover:bg-red-500/30 hover:text-red-300'
+          onPress={handleRemove}
+          aria-label='More actions'
+        >
+          <Trash2 className='size-4' />
         </Button>
       </div>
 
-      {/* Actions Menu */}
-      {showActions && (
-        <div className='absolute top-14 right-3 z-30 min-w-[160px] rounded-lg border border-white/20 bg-black/80 shadow-xl backdrop-blur-md'>
-          <div className='space-y-1 p-2'>
-            <Button
-              size='sm'
-              variant='ghost'
-              className='w-full justify-start text-white hover:bg-white/10'
-              startContent={<Edit3 className='size-4' />}
-              onPress={handleEditStatus}
-            >
-              Edit Status
-            </Button>
-            <Button
-              size='sm'
-              variant='ghost'
-              className='w-full justify-start text-red-400 hover:bg-red-500/10'
-              startContent={<Trash2 className='size-4' />}
-              onPress={handleRemove}
-            >
-              Remove
-            </Button>
-          </div>
+      <div className='absolute top-3 left-3 z-20 flex flex-col items-start gap-2 opacity-100 transition-all duration-200 group-hover:z-0 group-hover:opacity-0'>
+        {/* Media type badge */}
+        <div className='flex items-center gap-1 rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'>
+          {item.media_type === 'movie' ? <Film className='size-3' /> : <Tv className='size-3' />}
+          <span className='capitalize'>{item.media_type}</span>
         </div>
-      )}
+
+        {/* Status badge */}
+        {status && (
+          <div
+            className={cn(
+              'flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm',
+              status.className
+            )}
+          >
+            <status.icon className='size-4' />
+            <span>{status.label}</span>
+          </div>
+        )}
+      </div>
 
       {/* Poster Link */}
       <Link
-        to={getLink(item.mediaType, item.id, title)}
+        to={getLink(item.media_type, item.id, title)}
         className='relative block aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900'
       >
         <LazyImage
@@ -206,41 +166,22 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
           )}
         />
 
-        {/* Media type badge */}
-        <div className='absolute top-3 left-3 flex items-center gap-1 rounded-full border border-white/30 bg-white/20 px-2.5 py-1 text-xs font-medium text-white/90 backdrop-blur-sm'>
-          {item.mediaType === 'movie' ? <Film className='size-3' /> : <Tv className='size-3' />}
-          <span className='capitalize'>{item.mediaType}</span>
-        </div>
-
-        {/* Status badge */}
-        {status && (
-          <div
-            className={cn(
-              'absolute top-3 left-3 mt-8 flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm',
-              status.className
-            )}
-          >
-            <status.icon className='size-3' />
-            <span>{status.label}</span>
-          </div>
-        )}
-
         {/* Content overlay */}
         <div className='absolute inset-x-0 bottom-0 space-y-3 p-4'>
           <h3 className='line-clamp-2 text-lg leading-tight font-semibold text-white drop-shadow-lg'>{title}</h3>
 
           <div className='flex items-center justify-between text-sm'>
             <div className='flex items-center gap-2 text-white/80'>
-              {rating && (
+              {item.rating && (
                 <div className='flex items-center gap-1'>
                   <Star className='size-4 fill-yellow-400 text-yellow-400' />
-                  <span>{rating}/10</span>
+                  <span>{item.rating}/10</span>
                 </div>
               )}
 
               {releaseYear && (
                 <>
-                  {rating && <span className='text-white/40'>•</span>}
+                  {item.rating && <span className='text-white/40'>•</span>}
                   <div className='flex items-center gap-1'>
                     <Calendar className='size-3' />
                     <span>{releaseYear}</span>

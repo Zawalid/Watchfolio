@@ -5,7 +5,7 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import LibraryCardsList from '@/components/library/LibraryCardsList';
 import Pagination from '@/components/library/Pagination';
 
-const sortItems = (items: LibraryMediaData[], sortBy: string, sortDir: string): LibraryMediaData[] => {
+const sortItems = (items: LibraryMedia[], sortBy: string, sortDir: string): LibraryMedia[] => {
   return [...items].sort((a, b) => {
     let comparison = 0;
     switch (sortBy) {
@@ -73,7 +73,7 @@ export default function Library() {
     setCurrentPage(1);
   }, [status, query, sortBy, sortDir]);
 
-  const handleReorder = (reorderedItems: LibraryMediaData[]) => {
+  const handleReorder = (reorderedItems: LibraryMedia[]) => {
     // For now, just log the reordered items
     // In a real app, you'd save this custom order
     console.log('Items reordered:', reorderedItems);

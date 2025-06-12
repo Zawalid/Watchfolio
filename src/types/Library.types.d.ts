@@ -2,14 +2,15 @@ type LibraryMediaStatus = 'watched' | 'watching' | 'willWatch' | 'onHold' | 'dro
 
 type LibraryFilterStatus = Exclude<LibraryMediaStatus, 'none'> | 'favorites' | 'all';
 
-interface LibraryMediaData {
+interface LibraryMedia {
   id: number; // TMDB ID
-  mediaType: 'movie' | 'tv';
+  media_type: 'movie' | 'tv';
   // Optional: Store minimal TMDB data for offline/list display if needed
   title?: string;
   posterPath?: string | null;
   releaseDate?: string;
   genres?: string[];
+  rating?: number;
 
   status: LibraryMediaStatus; // Default to 'none' if just favorited/rated without explicit status
   isFavorite: boolean;
@@ -25,4 +26,4 @@ interface LibraryMediaData {
   notes?: string;
 }
 
-type LibraryCollection = Record<string, LibraryMediaData>;
+type LibraryCollection = Record<string, LibraryMedia>;

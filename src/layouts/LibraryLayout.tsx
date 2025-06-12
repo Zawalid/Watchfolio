@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown } from 'lucide-react';
+import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose } from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Button } from '@heroui/button';
 import { useState, useEffect, useRef } from 'react';
@@ -15,6 +15,7 @@ export default function LibraryLayout() {
   const [sortBy, setSortBy] = useQueryState('sort', { defaultValue: 'recent' });
   const [sortDir, setSortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showTabs, setShowTabs] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { getCount } = useLibraryStore();
@@ -36,17 +37,21 @@ export default function LibraryLayout() {
           e.preventDefault();
           searchInputRef.current?.focus();
           break;
+        case 't':
+          e.preventDefault();
+          setShowTabs(!showTabs);
+          break;
       }
     };
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [showKeyboardShortcuts]);
+  }, [showKeyboardShortcuts, showTabs]);
 
   return (
-    <div className='flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>
+    <div className='relative flex h-full flex-col gap-6 overflow-hidden lg:flex-row lg:gap-10'>
       <Tabs
-        className='flex-col bg-transparent lg:flex-col'
+        className={`absolute z-20 flex-col bg-transparent transition-transform duration-300 lg:flex-col ${showTabs ? 'translate-x-0' : '-translate-x-full'}`}
         tabClassName='px-3 lg:px-4 text-sm lg:text-base'
         tabs={[
           {
@@ -68,12 +73,14 @@ export default function LibraryLayout() {
         ]}
       />
 
-      <div className='flex flex-1 flex-col gap-8'>
-        <div className='sticky top-0 z-10 flex flex-col gap-5 backdrop-blur-md lg:flex-row lg:items-center lg:justify-between'>
+      <div
+        className={`flex flex-col gap-8 transition-all duration-300 ${showTabs ? 'w-[calc(100%-260px)] translate-x-[260px]' : 'w-full translate-x-0'}`}
+      >
+        <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>
           <Input
             type='text'
             icon='search'
-            parentClassname='w-full lg:w-1/2'
+            parentClassname='w-full lg:w-1/3'
             name='search'
             defaultValue={query}
             label='Search Your Library'
@@ -81,8 +88,15 @@ export default function LibraryLayout() {
             ref={searchInputRef}
             onChange={(e) => setQuery(e.target.value)}
           />
-
           <div className='flex w-full gap-2 lg:w-auto lg:min-w-fit'>
+            <Button
+              isIconOnly
+              className='button-secondary'
+              onPress={() => setShowTabs(!showTabs)}
+              aria-label='Toggle tabs visibility'
+            >
+              {showTabs ? <PanelLeftClose className='size-4' /> : <PanelLeftClose className='size-4 rotate-180' />}
+            </Button>
             <Select
               placeholder='Sort by'
               classNames={{
@@ -112,11 +126,7 @@ export default function LibraryLayout() {
               </SelectSection>
 
               <SelectSection title='Direction'>
-                <SelectItem
-                  key='asc'
-                  onPress={() => setSortDir('asc')}
-                  startContent={<ArrowUp className='size-3.5' />}
-                >
+                <SelectItem key='asc' onPress={() => setSortDir('asc')} startContent={<ArrowUp className='size-3.5' />}>
                   Ascending (A-Z, Oldest First)
                 </SelectItem>
                 <SelectItem
@@ -131,8 +141,7 @@ export default function LibraryLayout() {
 
             <Button
               isIconOnly
-              variant='ghost'
-              className='text-Grey-400 hover:text-Primary-400 h-10 w-10 transition-all duration-200 hover:bg-white/5'
+              className='button-secondary'
               onPress={() => setShowKeyboardShortcuts(true)}
               aria-label='Show keyboard shortcuts'
             >

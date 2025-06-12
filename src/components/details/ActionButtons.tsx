@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useLibraryModal } from '@/context/useLibraryModal';
+import { useLibraryModal } from '@/hooks/useLibraryModal';
 
 interface ActionButtonsProps {
   media: Media;
@@ -19,7 +19,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
   const currentStatus = libraryItem?.status || 'none';
 
   const handleToggleFavorite = () => {
-    toggleFavorite({ mediaType: media.media_type, id: media.id }, media);
+    toggleFavorite({ media_type: media.media_type, id: media.id }, media);
   };
 
   return (
@@ -50,8 +50,9 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
         <div className='grid grid-cols-2 gap-2'>
           <Button
             color='secondary'
-            className={`button-secondary transition-colors ${isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
-              }`}
+            className={`button-secondary transition-colors ${
+              isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
+            }`}
             onPress={handleToggleFavorite}
             startContent={<Heart className={`size-4 ${isFavorite ? 'fill-current text-pink-500' : ''}`} />}
           >
@@ -60,8 +61,9 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
 
           <Button
             color='secondary'
-            className={`button-secondary transition-colors ${currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
-              }`}
+            className={`button-secondary transition-colors ${
+              currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
+            }`}
             onPress={() => openModal(media)}
             startContent={currentStatus !== 'none' ? <Check className='size-4' /> : <LibraryBig className='size-4' />}
           >

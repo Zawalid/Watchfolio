@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@heroui/button';
 import { ModalBody } from '@heroui/modal';
 import Modal from '@/components/ui/Modal';
-import { Star } from 'lucide-react';
+import { Library, Star } from 'lucide-react';
 import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
@@ -16,24 +16,27 @@ interface Disclosure {
 
 interface LibraryModalProps {
   disclosure: Disclosure;
-  media: Media;
+  media: Media | LibraryMedia;
 }
+
+const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'overview' in obj);
 
 export default function LibraryModal({ disclosure, media }: LibraryModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);
-
-  console.log(media);
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { addOrUpdateItem, removeItem } = useLibraryStore();
 
   const handleStatusChange = (status: LibraryMediaStatus) => {
     if (status === 'none') removeItem(media.media_type, media.id);
-    else addOrUpdateItem({ id: media.id, mediaType: media.media_type, status }, media);
+    else addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
   };
 
   const handleRatingChange = (rating: number | undefined) =>
-    addOrUpdateItem({ id: media.id, mediaType: media.media_type, userRating: rating }, media);
+    addOrUpdateItem(
+      { id: media.id, media_type: media.media_type, userRating: rating },
+      isMedia(media) ? media : undefined
+    );
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
 
   return (
@@ -60,9 +63,18 @@ function StatusSection({
   setSelectedStatus: (status: LibraryMediaStatus) => void;
 }) {
   return (
-    <div className='space-y-5'>
+    <div className='space-y-8'>
       <div className='flex items-center justify-between'>
-        <h3 className='text-lg font-semibold text-white'>Status</h3>
+        {/* <h3 className='text-lg font-semibold text-white'>Status</h3> */}
+        {/* Header */}
+         <div className='flex items-center gap-3'>
+          <div className='bg-Primary-500/20 rounded-lg p-2'>
+            <Library className='text-Primary-400 size-5' />
+          </div>
+          <h2 className='text-Primary-50 text-xl font-semibold'>
+            Library Status
+          </h2>
+        </div>
         {selectedStatus !== 'none' && (
           <div className='flex justify-end pt-2'>
             <Button
@@ -141,9 +153,15 @@ function RatingSection({
   getRatingLabel: (rating: number) => string;
 }) {
   return (
-    <div className='space-y-5'>
+    <div className='space-y-8'>
       <div className='flex items-center justify-between'>
-        <h3 className='text-lg font-semibold text-white'>Your Rating</h3>
+        {/* <h3 className='text-lg font-semibold text-white'>Your Rating</h3> */}
+        <div className='flex items-center gap-3'>
+          <div className='bg-Primary-500/20 rounded-lg p-2'>
+            <Star className='text-Primary-400 size-5' />
+          </div>
+          <h2 className='text-Primary-50 text-xl font-semibold'>Your Rating</h2>
+        </div>
         {currentRating !== undefined && (
           <Button
             variant='ghost'

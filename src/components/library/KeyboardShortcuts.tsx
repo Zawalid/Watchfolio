@@ -10,6 +10,7 @@ interface KeyboardShortcutsProps {
 
 const shortcuts = [
   { key: '?', description: 'Show/hide keyboard shortcuts' },
+  { key: 't', description: 'Show/hide tabs' },
   { key: '/', description: 'Focus search input' },
   { key: 'f', description: 'Toggle favorite (when card is focused)' },
   { key: 'e', description: 'Edit status (when card is focused)' },

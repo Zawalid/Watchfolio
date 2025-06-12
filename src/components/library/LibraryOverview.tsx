@@ -41,7 +41,7 @@ export default function LibraryOverview() {
 
   return (
     <motion.div variants={containerVariants} initial='hidden' animate='visible' className='space-y-8 py-8'>
-      <motion.div variants={itemVariants} className='flex flex-col sm:flex-row justify-between'>
+      <motion.div variants={itemVariants} className='flex flex-col justify-between sm:flex-row'>
         <div className='space-y-3'>
           <h1 className='text-Primary-50 text-3xl font-bold tracking-tight'>{greeting}, Walid</h1>
           <p className='text-Grey-300 text-lg'>
@@ -58,7 +58,7 @@ export default function LibraryOverview() {
             as={Link}
             to='/discover'
             // variant='glow'
-            className='bg-gradient-to-r from-Primary-600 to-Secondary-600 hover:from-Primary-500 hover:to-Secondary-500 text-white shadow-lg'
+            className='from-Primary-600 to-Secondary-600 hover:from-Primary-500 hover:to-Secondary-500 bg-gradient-to-r text-white shadow-lg'
             startContent={<Sparkles className='size-4' />}
           >
             Discover New Content
@@ -91,14 +91,14 @@ export default function LibraryOverview() {
           >
             {recentItems.map((item, index) => (
               <motion.div
-                key={`${item.mediaType}-${item.id}`}
+                key={`${item.media_type}-${item.id}`}
                 variants={itemVariants}
                 custom={index}
                 initial='hidden'
                 animate='visible'
                 transition={{ delay: index * 0.1 }}
               >
-                <LibraryCard item={item} viewMode='grid' tabIndex={0} />
+                <LibraryCard item={item}  tabIndex={0} />
               </motion.div>
             ))}
           </motion.div>

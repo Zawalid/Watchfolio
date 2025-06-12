@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
 interface LibraryModalContextType {
-  openModal: (media: Media) => void;
+  openModal: (media: Media | LibraryMedia) => void;
 }
 
 export const LibraryModalContext = createContext<LibraryModalContextType | null>(null);

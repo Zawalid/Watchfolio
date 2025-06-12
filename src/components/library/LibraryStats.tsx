@@ -142,7 +142,7 @@ const StatCard = ({
 };
 
 interface LibraryStatsProps {
-  items: LibraryMediaData[];
+  items: LibraryMedia[];
 }
 
 export default function LibraryStats({ items }: LibraryStatsProps) {
@@ -151,8 +151,8 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
     const avgRating =
       ratedItems.length > 0 ? ratedItems.reduce((sum, item) => sum + (item.userRating || 0), 0) / ratedItems.length : 0;
 
-    const movies = items.filter((item) => item.mediaType === 'movie');
-    const tvShows = items.filter((item) => item.mediaType === 'tv');
+    const movies = items.filter((item) => item.media_type === 'movie');
+    const tvShows = items.filter((item) => item.media_type === 'tv');
 
     // Status counts
     const watching = items.filter((item) => item.status === 'watching');
