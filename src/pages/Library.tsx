@@ -2,6 +2,7 @@ import { useParams } from 'react-router';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import LibraryCardsList from '@/components/library/LibraryCardsList';
+import { slugify } from '@/utils';
 
 const sortItems = (items: LibraryMedia[], sortBy: string, sortDir: string): LibraryMedia[] => {
   return [...items].sort((a, b) => {
@@ -25,12 +26,14 @@ const sortItems = (items: LibraryMedia[], sortBy: string, sortDir: string): Libr
 };
 
 export default function Library() {
-  const { status } = useParams<{ status: LibraryFilterStatus }>();
+  let { status } = useParams<{ status: LibraryFilterStatus }>();
   const [query] = useQueryState('query', { defaultValue: '' });
   const [sortBy] = useQueryState('sort', { defaultValue: 'recent' });
   const [sortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [selectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
   const [selectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
+
+  status = slugify(status || 'all', { reverse: true, reverseType: 'camelCase' }) as LibraryFilterStatus;
 
   const { getAllItems, getFavorites, getItemsByStatus } = useLibraryStore();
 

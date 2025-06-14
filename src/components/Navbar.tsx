@@ -17,7 +17,12 @@ const links: Links = {
     { label: 'Suggestions', href: '/suggestions' },
   ],
   unauthenticated: [
-    { label: 'My Library', icon: HOME_ICON, href: '/library' },
+    {
+      label: 'My Library',
+      icon: HOME_ICON,
+      href: '/library',
+      checks: ['all', 'watching', 'will-watch', 'watched', 'on-hold', 'dropped', 'favorites'],
+    },
     {
       label: 'Movies',
       icon: MOVIES_ICON,

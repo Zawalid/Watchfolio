@@ -13,6 +13,7 @@ import FiltersModal from '@/components/library/FiltersModal';
 import useLocalStorageState from '@/hooks/useLocalStorageState';
 import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 import { useDisclosure } from '@heroui/modal';
+import { slugify } from '@/utils';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -31,10 +32,10 @@ export default function LibraryLayout() {
   ]);
 
   return (
-    <div className='relative flex h-full flex-col gap-6 overflow-hidden lg:flex-row lg:gap-10'>
+    <div className='relative flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>
       <Tabs
         className={`absolute z-20 flex-col bg-transparent transition-transform duration-300 lg:flex-col ${
-          showTabs ? 'translate-x-0' : '-translate-x-full'
+          showTabs ? 'translate-x-0' : '-translate-x-[200%]'
         }`}
         tabClassName='px-3 lg:px-4 text-sm lg:text-base'
         tabs={[
@@ -51,7 +52,7 @@ export default function LibraryLayout() {
               label: `${status.label} (${getCount(status.value)})`,
               icon: <IconComponent className='size-4' />,
               value: status.value,
-              link: `/library/${status.value}`,
+              link: `/library/${slugify(status.value)}`,
             };
           }),
         ]}

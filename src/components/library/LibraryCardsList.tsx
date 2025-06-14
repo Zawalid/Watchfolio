@@ -1,19 +1,12 @@
-import { useAutoAnimate } from '@formkit/auto-animate/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-} from '@dnd-kit/core';
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
-import SortableLibraryCard from './SortableLibraryCard';
 import EmptyState from './EmptyState';
+import LibraryCard from './LibraryCard';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
+
+const CARD_WIDTH = 200;
+const CARDS_GAP = 16;
 
 interface LibraryCardsListProps {
   items: LibraryMedia[];
@@ -23,44 +16,79 @@ interface LibraryCardsListProps {
   onReorder?: (reorderedItems: LibraryMedia[]) => void;
 }
 
-export default function LibraryCardsList({ items, status, query, onReorder }: LibraryCardsListProps) {
-  const [parent] = useAutoAnimate({ duration: 300 });
-  const [sortableItems, setSortableItems] = useState(items);
+export default function LibraryCardsList({ items, status, query }: LibraryCardsListProps) {
+  const [displayedItems, setDisplayedItems] = useState(items);
+  const [focusIndex, setFocusIndex] = useState<number>(-1);
+  const cardsRef = useRef<HTMLDivElement>(null);
 
-  // Update sortable items when items prop changes
   useEffect(() => {
-    setSortableItems(items);
+    setDisplayedItems(items);
   }, [items]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8,
+  useKeyboardShortcuts(
+    [
+      {
+        key: 'ArrowRight',
+        callback: () => {
+          if (focusIndex < displayedItems.length - 1) setFocusIndex(focusIndex + 1);
+        },
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
+      {
+        key: 'ArrowLeft',
+        callback: () => {
+          if (focusIndex > 0) setFocusIndex(focusIndex - 1);
+        },
+      },
+      {
+        key: 'ArrowDown',
+        callback: () => {
+          const itemsPerRow = getApproximateItemsPerRow();
+          if (focusIndex + itemsPerRow < displayedItems.length) setFocusIndex(focusIndex + itemsPerRow);
+          else setFocusIndex(displayedItems.length - 1);
+        },
+      },
+      {
+        key: 'ArrowUp',
+        callback: () => {
+          const itemsPerRow = getApproximateItemsPerRow();
+          if (focusIndex - itemsPerRow >= 0) setFocusIndex(focusIndex - itemsPerRow);
+          else setFocusIndex(0);
+        },
+      },
+      {
+        key: 'Home',
+        callback: () => setFocusIndex(0),
+      },
+      {
+        key: 'End',
+        callback: () => setFocusIndex(displayedItems.length - 1),
+      },
+    ],
+    { enabled: displayedItems.length > 0 }
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const getApproximateItemsPerRow = () => {
+    if (!cardsRef.current) return 5;
 
-    if (over && active.id !== over.id) {
-      const oldIndex = sortableItems.findIndex((item) => `${item.media_type}-${item.id}` === active.id);
-      const newIndex = sortableItems.findIndex((item) => `${item.media_type}-${item.id}` === over.id);
-
-      const reorderedItems = arrayMove(sortableItems, oldIndex, newIndex);
-      setSortableItems(reorderedItems);
-      onReorder?.(reorderedItems);
-    }
+    const containerWidth = cardsRef.current.clientWidth;
+    return Math.max(1, Math.floor(containerWidth / (CARD_WIDTH + CARDS_GAP)));
   };
+
+  useEffect(() => {
+    if (focusIndex >= 0 && cardsRef.current) {
+      const cards = cardsRef.current.querySelectorAll('[role="article"]');
+      if (cards[focusIndex]) (cards[focusIndex] as HTMLElement).focus();
+    }
+  }, [focusIndex]);
+
+  useEffect(() => {
+    setFocusIndex(-1);
+  }, [items]);
 
   if (items.length === 0) return <EmptyState status={status} hasQuery={!!query} query={query} />;
 
   return (
     <>
-      {/* Results header */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-3'>
           <h2 className='text-Primary-50 text-xl font-semibold'>
@@ -71,12 +99,11 @@ export default function LibraryCardsList({ items, status, query, onReorder }: Li
                 : LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label || 'Library'}
           </h2>
           <div className='bg-Primary-500/20 text-Primary-300 flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium'>
-            <span>{sortableItems.length}</span>
-            <span className='text-Primary-400/60'>{sortableItems.length === 1 ? 'item' : 'items'}</span>
+            <span>{displayedItems.length}</span>
+            <span className='text-Primary-400/60'>{displayedItems.length === 1 ? 'item' : 'items'}</span>
           </div>
         </div>
 
-        {/* Search indicator */}
         {query && (
           <div className='border-Primary-400/30 bg-Primary-500/10 text-Primary-300 flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm'>
             <Search className='size-4' />
@@ -97,21 +124,11 @@ export default function LibraryCardsList({ items, status, query, onReorder }: Li
         )}
       </div>
 
-      {/* Items grid with Drag & Drop */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={sortableItems.map((item) => `${item.media_type}-${item.id}`)}
-          strategy={rectSortingStrategy}
-        >
-          <div ref={parent} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
-            {sortableItems.map((item) => (
-              <div key={`${item.id}-${item.media_type}`}>
-                <SortableLibraryCard item={item} />
-              </div>
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <div ref={cardsRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
+        {displayedItems.map((item, index) => (
+          <LibraryCard key={`${item.id}-${item.media_type}`} item={item} tabIndex={focusIndex === index ? 0 : -1} />
+        ))}
+      </div>
     </>
   );
 }

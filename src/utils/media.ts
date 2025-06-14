@@ -27,14 +27,13 @@ export const getMediaType = (media: Media): 'movie' | 'tv' => {
 export const getFormattedRuntime = (media: Media): string => {
   const runtime = (media as Movie).runtime || (media as TvShow).episode_run_time?.[0];
 
-  console.log(runtime);
 
   if (!runtime) return 'N/A';
 
   const hours = Math.floor(runtime / 60);
   const minutes = runtime % 60;
 
-  return `${hours > 0 ? `${hours}h ` : ''}${minutes}m ${getMediaType(media) === 'tv' ? '/Episode' : ''}`;
+  return `${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${getMediaType(media) === 'tv' ? '/Episode' : ''}`;
 };
 
 export const getDirectorOrCreator = (media: Media): Person | null => {

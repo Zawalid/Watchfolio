@@ -15,9 +15,27 @@ export const getQueryString = (params: Record<string, string>): string => {
   return query ? `?${query}` : '';
 };
 
-export const slugify = (text: string) => {
+export const slugify = (text: string, options: { reverse?: boolean; reverseType?: 'camelCase' | 'spaced' } = {}) => {
+  const { reverse = false, reverseType = 'spaced' } = options;
+
   if (!text) return '';
+
+  if (reverse) {
+    const words = text.split('-');
+
+    if (reverseType === 'camelCase') {
+      return words
+        .map((word, index) =>
+          index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join('');
+    }
+
+    return words.map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  }
+
   return text
+    .replace(/([a-z])([A-Z])/g, '$1-$2')
     .toLowerCase()
     .replace(/ /g, '-')
     .replace(/[^a-z0-9-]/g, '');
