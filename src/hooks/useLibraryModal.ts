@@ -1,10 +1,5 @@
-import { createContext, useContext } from 'react';
-
-interface LibraryModalContextType {
-  openModal: (media: Media | LibraryMedia) => void;
-}
-
-export const LibraryModalContext = createContext<LibraryModalContextType | null>(null);
+import { useContext } from 'react';
+import { LibraryModalContext } from '@/contexts/LibraryModalContext';
 
 export const useLibraryModal = () => {
   const context = useContext(LibraryModalContext);

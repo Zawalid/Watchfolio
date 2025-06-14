@@ -2,8 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NuqsAdapter } from 'nuqs/adapters/react';
 import { Toaster } from 'sonner';
-import { LibraryModalProvider } from '@/contexts/LibraryModalContext';
-import { ConfirmationModalProvider } from '@/contexts/ConfirmationModalContext';
+import { LibraryModalProvider, ConfirmationModalProvider } from '@/contexts/providers';
 
 const queryClient = new QueryClient();
 

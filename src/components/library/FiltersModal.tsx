@@ -1,11 +1,11 @@
-import { ModalBody } from '@heroui/modal';
-import { CircleCheck, FunnelX, Filter as FilterIcon } from 'lucide-react';
-import Modal from '@/components/ui/Modal';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
+import { CircleCheck, FunnelX, Filter as FilterIcon } from 'lucide-react';
+import { ModalBody } from '@heroui/modal';
+import Modal from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { cn } from '@/utils';
 import { GENRES, PLATFORMS } from '@/lib/api/TMDB/values';
-import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 
 interface FiltersModalProps {
   disclosure: Disclosure;
@@ -21,19 +21,8 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
   const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
   const [selectedPlatforms, setSelectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
 
-  useKeyboardShortcuts([
-    {
-      key: 'f',
-      ctrlKey: true,
-      callback: () => (isOpen ? onClose() : onOpen()),
-      description: 'Toggle filters modal',
-    },
-    {
-      key: 'Escape',
-      callback: () => isOpen && onClose(),
-      description: 'Close filters modal',
-    },
-  ]);
+  useHotkeys('ctrl+shift+f', () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useHotkeys('esc', onClose, { enabled: isOpen });
 
   const toggleGenre = (genreId: string) => {
     const currentGenres = selectedGenres || [];

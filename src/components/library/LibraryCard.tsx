@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { Button } from '@heroui/button';
 import { Star, Heart, Calendar, Film, Tv, Trash2, Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +10,6 @@ import { useLibraryModal } from '@/hooks/useLibraryModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
-import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 
 interface LibraryCardProps {
   item: LibraryMedia;
@@ -28,7 +28,6 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
   const { toggleFavorite, removeItem } = useLibraryStore();
   const { openModal } = useLibraryModal();
   const { confirm } = useConfirmationModal();
-  const navigate = useNavigate();
 
   const title = item.title || 'Untitled';
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item.status);
@@ -50,38 +49,10 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
     }
   };
   const handleEditStatus = () => openModal(item);
-  const handleOpenDetails = () => navigate(getLink(item.media_type, item.id, title));
 
-  useKeyboardShortcuts(
-    [
-      {
-        key: 'f',
-        callback: handleToggleFavorite,
-        description: 'Toggle favorite',
-      },
-      {
-        key: 'e',
-        callback: handleEditStatus,
-        description: 'Edit library status',
-      },
-      {
-        key: 'Delete',
-        callback: handleRemove,
-        description: 'Remove from library',
-      },
-      {
-        key: 'Enter',
-        callback: handleOpenDetails,
-        description: 'Open details',
-      },
-      {
-        key: ' ',
-        callback: handleOpenDetails,
-        description: 'Open details',
-      },
-    ],
-    { enabled: isFocused }
-  );
+  useHotkeys('f', handleToggleFavorite, { enabled: isFocused });
+  useHotkeys('e', handleEditStatus, { enabled: isFocused });
+  useHotkeys('delete', handleRemove, { enabled: isFocused });
 
   const isInteractive = isHovered || isFocused;
 
@@ -99,7 +70,6 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
         isFocused &&
           'border-blue-400/70 shadow-2xl ring-2 shadow-blue-500/25 ring-blue-400/50 ring-offset-2 ring-offset-gray-900'
       )}
-      onClick={handleOpenDetails}
       whileHover={{
         scale: 1.02,
         y: -6,
@@ -112,6 +82,8 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
       }}
       whileTap={{ scale: 0.98 }}
     >
+      <Link className='absolute inset-0 z-10' to={getLink(item.media_type, item.id, title)} />
+
       {/* Subtle glow effect for focus */}
       <AnimatePresence>
         {isFocused && (

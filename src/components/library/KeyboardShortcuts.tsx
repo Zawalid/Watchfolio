@@ -1,7 +1,7 @@
-import { ModalBody } from '@heroui/modal';
 import { Keyboard } from 'lucide-react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { ModalBody } from '@heroui/modal';
 import Modal from '@/components/ui/Modal';
-import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
 
 interface KeyboardShortcutsProps {
   disclosure: Disclosure;
@@ -11,7 +11,7 @@ const SHORTCUTS = [
   { key: '?', description: 'Show/hide keyboard shortcuts' },
   { key: 't', description: 'Show/hide tabs' },
   { key: '/', description: 'Focus search input' },
-  { key: 'Ctrl f', description: 'Show/hide filters' },
+  { key: 'Ctrl Shift f', description: 'Show/hide filters' },
   { key: 'f', description: 'Toggle favorite (when card is focused)' },
   { key: 'e', description: 'Edit status (when card is focused)' },
   { key: 'Delete', description: 'Remove from library (when card is focused)' },
@@ -24,14 +24,8 @@ const SHORTCUTS = [
 export default function KeyboardShortcuts({ disclosure }: KeyboardShortcutsProps) {
   const { isOpen, onOpen, onClose } = disclosure;
 
-  useKeyboardShortcuts([
-    {
-      key: '?',
-      callback: () => (isOpen ? onClose() : onOpen()),
-      description: 'Toggle keyboard shortcuts modal',
-    },
-    { key: 'Escape', callback: () => isOpen && onClose(), description: 'Close keyboard shortcuts modal' },
-  ]);
+  useHotkeys('?', () => (isOpen ? onClose() : onOpen()), [isOpen], { useKey: true });
+  useHotkeys('esc', onClose, { enabled: isOpen });
 
   return (
     <Modal disclosure={disclosure}>

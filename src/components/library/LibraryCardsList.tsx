@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router';
 import { Search, X } from 'lucide-react';
 import EmptyState from './EmptyState';
 import LibraryCard from './LibraryCard';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
-
-const CARD_WIDTH = 200;
-const CARDS_GAP = 16;
+import { useListNavigator } from '@/hooks/useListNavigator';
+import { slugify } from '@/utils';
 
 interface LibraryCardsListProps {
   items: LibraryMedia[];
@@ -16,74 +15,36 @@ interface LibraryCardsListProps {
   onReorder?: (reorderedItems: LibraryMedia[]) => void;
 }
 
+const getLink = (item: LibraryMedia) => {
+  const title = item.title || 'Untitled';
+  return `/${item.media_type === 'tv' ? 'tv' : 'movies'}/details/${item.id}-${slugify(title)}`;
+};
+
 export default function LibraryCardsList({ items, status, query }: LibraryCardsListProps) {
   const [displayedItems, setDisplayedItems] = useState(items);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const cardsRef = useRef<HTMLDivElement>(null);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setDisplayedItems(items);
-  }, [items]);
-
-  useKeyboardShortcuts(
-    [
-      {
-        key: 'ArrowRight',
-        callback: () => {
-          if (focusIndex < displayedItems.length - 1) setFocusIndex(focusIndex + 1);
-        },
-      },
-      {
-        key: 'ArrowLeft',
-        callback: () => {
-          if (focusIndex > 0) setFocusIndex(focusIndex - 1);
-        },
-      },
-      {
-        key: 'ArrowDown',
-        callback: () => {
-          const itemsPerRow = getApproximateItemsPerRow();
-          if (focusIndex + itemsPerRow < displayedItems.length) setFocusIndex(focusIndex + itemsPerRow);
-          else setFocusIndex(displayedItems.length - 1);
-        },
-      },
-      {
-        key: 'ArrowUp',
-        callback: () => {
-          const itemsPerRow = getApproximateItemsPerRow();
-          if (focusIndex - itemsPerRow >= 0) setFocusIndex(focusIndex - itemsPerRow);
-          else setFocusIndex(0);
-        },
-      },
-      {
-        key: 'Home',
-        callback: () => setFocusIndex(0),
-      },
-      {
-        key: 'End',
-        callback: () => setFocusIndex(displayedItems.length - 1),
-      },
-    ],
-    { enabled: displayedItems.length > 0 }
-  );
-
-  const getApproximateItemsPerRow = () => {
-    if (!cardsRef.current) return 5;
-
-    const containerWidth = cardsRef.current.clientWidth;
-    return Math.max(1, Math.floor(containerWidth / (CARD_WIDTH + CARDS_GAP)));
-  };
-
-  useEffect(() => {
-    if (focusIndex >= 0 && cardsRef.current) {
-      const cards = cardsRef.current.querySelectorAll('[role="article"]');
-      if (cards[focusIndex]) (cards[focusIndex] as HTMLElement).focus();
-    }
-  }, [focusIndex]);
-
-  useEffect(() => {
     setFocusIndex(-1);
-  }, [items]);
+  }, [items, query, status]);
+
+  useListNavigator({
+    containerRef: cardsContainerRef,
+    itemSelector: '[role="article"]',
+    itemCount: displayedItems.length,
+    currentIndex: focusIndex,
+    onNavigate: setFocusIndex,
+    onSelect: (index) => {
+      if (index >= 0 && displayedItems[index]) navigate(getLink(displayedItems[index]));
+    },
+    orientation: 'grid',
+    enabled: displayedItems.length > 0,
+    loop: true,
+    autoFocus: true,
+  });
 
   if (items.length === 0) return <EmptyState status={status} hasQuery={!!query} query={query} />;
 
@@ -124,7 +85,7 @@ export default function LibraryCardsList({ items, status, query }: LibraryCardsL
         )}
       </div>
 
-      <div ref={cardsRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
+      <div ref={cardsContainerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
         {displayedItems.map((item, index) => (
           <LibraryCard key={`${item.id}-${item.media_type}`} item={item} tabIndex={focusIndex === index ? 0 : -1} />
         ))}

@@ -1,18 +1,18 @@
+import { useRef } from 'react';
 import { Outlet } from 'react-router';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { useQueryState } from 'nuqs';
 import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter } from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Button } from '@heroui/button';
-import { useRef } from 'react';
+import { useDisclosure } from '@heroui/modal';
 import Input from '@/components/ui/Input';
 import Tabs from '@/components/ui/Tabs';
-import { useQueryState } from 'nuqs';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import FiltersModal from '@/components/library/FiltersModal';
 import useLocalStorageState from '@/hooks/useLocalStorageState';
-import useKeyboardShortcuts from '@/hooks/useKeyboardShortcuts';
-import { useDisclosure } from '@heroui/modal';
 import { slugify } from '@/utils';
 
 export default function LibraryLayout() {
@@ -26,10 +26,16 @@ export default function LibraryLayout() {
 
   const { getCount } = useLibraryStore();
 
-  useKeyboardShortcuts([
-    { key: '/', description: 'Focus search input', callback: () => searchInputRef.current?.focus() },
-    { key: 't', description: 'Show/hide tabs', callback: () => setShowTabs(!showTabs) },
-  ]);
+  useHotkeys(
+    '/',
+    (e) => {
+      e.preventDefault();
+      searchInputRef.current?.focus();
+    },
+    { useKey: true }
+  );
+
+  useHotkeys('t', () => setShowTabs(!showTabs), [showTabs]);
 
   return (
     <div className='relative flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>

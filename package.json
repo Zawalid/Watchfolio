@@ -36,6 +36,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.56.4",
+    "react-hotkeys-hook": "^5.1.0",
     "react-rough-notation": "^1.0.5",
     "react-router": "^7.6.0",
     "sonner": "^1.7.4",
