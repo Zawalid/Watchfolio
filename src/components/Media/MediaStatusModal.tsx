@@ -111,7 +111,7 @@ function StatusSection({
           <div className='bg-Primary-500/20 rounded-lg p-2'>
             <Library className='text-Primary-400 size-5' />
           </div>
-          <h2 className='text-Primary-50 text-xl font-semibold'>Library Status</h2>
+          <h2 className='text-Primary-50 text-xl font-semibold'>Media Status</h2>
         </div>
         {selectedStatus !== 'none' && (
           <div className='flex justify-end pt-2'>

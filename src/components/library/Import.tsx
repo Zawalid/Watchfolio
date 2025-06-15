@@ -7,8 +7,10 @@ import { Tooltip } from '@heroui/tooltip';
 import { FileDropper } from '@/components/ui/FileDropper';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
-import { generateMediaKey, parseImportContent } from '@/utils/library';
+import { generateMediaKey } from '@/utils/library';
 import { addToast } from '@heroui/toast';
+import { useImportParser } from '@/hooks/useImportParser';
+import { LIBRARY_IMPORT_MAX_SIZE } from '@/utils/constants';
 
 interface ImportProps {
   onClose: () => void;
@@ -34,12 +36,58 @@ export default function Import({ onClose }: ImportProps) {
     mergeStrategy: 'smart' as 'smart' | 'overwrite' | 'skip',
     keepExistingFavorites: true,
   });
-  const [isProcessing, setIsProcessing] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileContent, setFileContent] = useState<string | null>(null);
+  const [parsedItems, setParsedItems] = useState<LibraryMedia[] | null>(null);
 
   const library = useLibraryStore((state) => state.library);
   const { importLibrary } = useLibraryStore();
+
+  // Use the import parser hook for WebWorker processing
+  const { parseContent, isProcessing } = useImportParser({
+    onSuccess: (items) => {
+      setParsedItems(items as LibraryMedia[]);
+
+      // Calculate preview information
+      const movieCount = items.filter((item) => item.media_type === 'movie').length;
+      const tvCount = items.filter((item) => item.media_type === 'tv').length;
+
+      const currentLibrary = library || {};
+      let newItemsCount = 0;
+      let updatedItemsCount = 0;
+
+      for (const item of items) {
+        const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
+        if (currentLibrary[key]) updatedItemsCount++;
+        else newItemsCount++;
+      }
+
+      // Validate that we're actually importing something useful
+      if (newItemsCount === 0 && updatedItemsCount === 0) {
+        addToast({
+          title: 'No new items found.',
+          description: 'The import file contains no new items for your library.',
+          color: 'warning',
+        });
+      }
+
+      setImportPreview({
+        totalItems: items.length,
+        movies: movieCount,
+        tvShows: tvCount,
+        newItems: newItemsCount,
+        updatedItems: updatedItemsCount,
+      });
+
+      setImportStage('preview');
+    },
+    onError: (errorMsg) => {
+      addToast({
+        title: 'File parsing error',
+        description: errorMsg || 'The selected file is invalid.',
+        color: 'danger',
+      });
+    },
+  });
 
   // Add better file validation before processing
   const handleFileSelect = (files: File[]) => {
@@ -47,21 +95,18 @@ export default function Import({ onClose }: ImportProps) {
 
     const file = files[0];
 
-    // Check file extension more explicitly
+    // Double Check
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
     if (!fileExtension || !['json', 'csv'].includes(fileExtension)) {
       addToast({ title: 'Invalid file format.', description: 'Please select a JSON or CSV file.', color: 'danger' });
       return;
     }
 
-    // Add additional validation for file size
-    if (file.size > 10 * 1024 * 1024) {
-      // 10MB limit
+    if (file.size > LIBRARY_IMPORT_MAX_SIZE) {
       addToast({ title: 'File is too large.', description: 'Maximum size is 10MB.', color: 'danger' });
       return;
     }
 
-    // Check for empty files
     if (file.size === 0) {
       addToast({ title: 'The file is empty.', description: 'Please select a non-empty file.', color: 'danger' });
       return;
@@ -72,7 +117,6 @@ export default function Import({ onClose }: ImportProps) {
 
   const processFile = useCallback(
     (file: File) => {
-      setIsProcessing(true);
       setSelectedFile(file);
 
       const reader = new FileReader();
@@ -80,106 +124,60 @@ export default function Import({ onClose }: ImportProps) {
         try {
           const content = e.target?.result as string;
 
-          // Check for empty content
-          if (!content || content.trim() === '') {
-            throw new Error('The file appears to be empty');
-          }
+          if (!content || content.trim() === '') throw new Error('The file appears to be empty');
 
-          setFileContent(content);
+          // Determine format from file extension
+          const fileExtension = file.name.split('.').pop()?.toLowerCase();
+          const format = fileExtension === 'json' ? 'json' : 'csv';
 
-          // Try to parse the content to see if it's valid
-          const importedItems = parseImportContent(content);
-
-          // Additional validation - ensure we have at least some items
-          if (!importedItems || importedItems.length === 0) {
-            throw new Error('No valid items found in the import file');
-          }
-
-          // Categorize and count items
-          const movieCount = importedItems.filter((item) => item.media_type === 'movie').length;
-          const tvCount = importedItems.filter((item) => item.media_type === 'tv').length;
-
-          const currentLibrary = library || {};
-          let newItemsCount = 0;
-          let updatedItemsCount = 0;
-
-          for (const item of importedItems) {
-            const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
-            if (currentLibrary[key]) updatedItemsCount++;
-            else newItemsCount++;
-          }
-
-          // Validate that we're actually importing something useful
-          if (newItemsCount === 0 && updatedItemsCount === 0) {
-            addToast({
-              title: 'No new items found.',
-              description: 'The import file contains no new items for your library.',
-              color: 'warning',
-            });
-          }
-
-          setImportPreview({
-            totalItems: importedItems.length,
-            movies: movieCount,
-            tvShows: tvCount,
-            newItems: newItemsCount,
-            updatedItems: updatedItemsCount,
-          });
-
-          setImportStage('preview');
+          // Use WebWorker to parse the content
+          parseContent(content, format);
         } catch (error) {
-          console.error('File parsing error:', error);
+          console.error('File reading error:', error);
           addToast({
-            title: 'File parsing error',
-            description:
-              error instanceof Error ? `Error parsing file: ${error.message}` : 'The selected file is invalid.',
+            title: 'File reading error',
+            description: error instanceof Error ? error.message : 'Error reading file',
             color: 'danger',
           });
-        } finally {
-          setIsProcessing(false);
         }
       };
 
-      reader.onerror = (event) => {
-        console.error('File reading error:', event);
+      reader.onerror = () => {
         addToast({
           title: 'File reading error',
           description: 'Failed to read the file. It may be corrupted or inaccessible.',
           color: 'danger',
         });
-        setIsProcessing(false);
       };
 
       reader.readAsText(file);
     },
-    [library]
+    [parseContent]
   );
 
   const handleImport = useCallback(() => {
-    if (!fileContent) {
-      addToast({ title: 'No file selected', description: 'Please select a file to import.', color: 'warning' });
+    if (!parsedItems) {
+      addToast({ title: 'No data to import', description: 'Please select a valid file to import.', color: 'warning' });
       return;
     }
 
-    setIsProcessing(true);
     try {
-      // Try to validate import options
+      // Validate import options
       if (!importOptions.mergeStrategy || !['smart', 'overwrite', 'skip'].includes(importOptions.mergeStrategy)) {
         throw new Error('Invalid merge strategy selected');
       }
 
       // Confirmation for overwrite strategy
       if (importOptions.mergeStrategy === 'overwrite' && Object.keys(library || {}).length > 0) {
-        // This is where you might want to add a confirmation dialog in a real app
         console.info('Overwriting existing library...');
       }
 
-      const importedCount = importLibrary(fileContent, importOptions);
+      // Use already parsed items for import
+      const importedCount = importLibrary(parsedItems, importOptions);
 
       // Validate the result
       if (importedCount === 0) {
         addToast({ title: 'No items imported', description: 'No items were imported or updated', color: 'warning' });
-        setIsProcessing(false);
         return;
       }
 
@@ -200,14 +198,11 @@ export default function Import({ onClose }: ImportProps) {
         description: `Failed to import library: ${error instanceof Error ? error.message : 'Unknown error'}`,
         color: 'danger',
       });
-    } finally {
-      setIsProcessing(false);
     }
-  }, [fileContent, importLibrary, importOptions, library, onClose]);
+  }, [parsedItems, importOptions, library, importLibrary, onClose]);
 
   const handleReset = () => {
     setSelectedFile(null);
-    setFileContent(null);
     setImportStage('select');
     setImportPreview(null);
   };
@@ -239,6 +234,7 @@ export default function Import({ onClose }: ImportProps) {
                 'application/json': ['.json'],
                 'text/csv': ['.csv'],
               }}
+              maxSize={LIBRARY_IMPORT_MAX_SIZE}
               maxFiles={1}
               multiple={false}
               onFileSelect={handleFileSelect}

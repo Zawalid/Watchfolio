@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { GENRES } from '@/lib/api/TMDB/values';
 import { getRating } from '@/utils/media';
-import { serializeToJSON, serializeToCSV, parseImportContent, mergeLibraryItems } from '@/utils/library';
+import { serializeToJSON, serializeToCSV, mergeLibraryItems } from '@/utils/library';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -23,7 +23,7 @@ interface LibraryState {
   getCount: (filter: LibraryFilterStatus, mediaType?: 'movie' | 'tv') => number;
   exportLibrary: (items: LibraryMedia[], format: 'json' | 'csv') => string;
   importLibrary: (
-    libraryAsString: string,
+    parsedItems: LibraryMedia[],
     options: { mergeStrategy: 'smart' | 'overwrite' | 'skip'; keepExistingFavorites: boolean }
   ) => number;
 }
@@ -207,7 +207,7 @@ export const useLibraryStore = create<LibraryState>()(
         return format === 'csv' ? serializeToCSV(libraryItems) : serializeToJSON(libraryItems);
       },
 
-      importLibrary: (libraryAsString: string, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
+      importLibrary: (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
         try {
           // Validate options
           if (!options.mergeStrategy || !['smart', 'overwrite', 'skip'].includes(options.mergeStrategy)) {
@@ -218,24 +218,16 @@ export const useLibraryStore = create<LibraryState>()(
             options.keepExistingFavorites = true; // Default to true if invalid
           }
 
-          // Validate input string
-          if (!libraryAsString || typeof libraryAsString !== 'string') {
-            throw new Error('Invalid import data: content must be a non-empty string');
-          }
-
-          // Parse the imported data
-          const importedItems = parseImportContent(libraryAsString);
-
-          // Safety check - make sure we don't try to process empty array
-          if (!importedItems || importedItems.length === 0) {
+          // Validate parsedItems
+          if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
             return 0; // No items to import
           }
 
           // Get current library, ensure it's not null
           const currentLibrary = get().library || {};
 
-          // Merge the libraries
-          const { mergedLibrary, importCount } = mergeLibraryItems(importedItems, currentLibrary, options);
+          // Merge the libraries using already parsed items
+          const { mergedLibrary, importCount } = mergeLibraryItems(parsedItems, currentLibrary, options);
 
           // Update the store only if we have something to update
           if (importCount > 0) {

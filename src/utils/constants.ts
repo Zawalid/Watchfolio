@@ -81,3 +81,7 @@ export const LIBRARY_MEDIA_STATUS = [
     shortcut: 'setStatusFavorite',
   },
 ] as const;
+
+
+
+export const LIBRARY_IMPORT_MAX_SIZE = 10 * 1024 * 1024 ; // 10 MB
