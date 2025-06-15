@@ -1,2 +1,2 @@
-export { LibraryModalProvider } from './LibraryModalProvider';
+export { MediaStatusModalProvider } from './MediaStatusModalProvider';
 export { ConfirmationModalProvider } from './ConfirmationModalProvider';

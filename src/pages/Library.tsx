@@ -36,12 +36,11 @@ export default function Library() {
 
   status = slugify(status || 'all', { reverse: true, reverseType: 'camelCase' }) as LibraryFilterStatus;
 
-  const { getAllItems, getFavorites, getItemsByStatus } = useLibraryStore();
+  const { getAllItems,  getItemsByStatus } = useLibraryStore();
 
   const rawItems = (() => {
     if (!status || status === 'all') return getAllItems();
-    if (status === 'favorites') return getFavorites();
-    return getItemsByStatus(status as LibraryMediaStatus);
+    return getItemsByStatus(status);
   })();
 
   const filteredItems = rawItems.filter((item) => {

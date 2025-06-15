@@ -2,13 +2,13 @@ import { useRef } from 'react';
 import { Outlet } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
-import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter } from 'lucide-react';
+import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter, FileJson } from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Button } from '@heroui/button';
 import { useDisclosure } from '@heroui/modal';
 import { Tooltip } from '@heroui/tooltip';
 import Input from '@/components/ui/Input';
-import Tabs from '@/components/ui/Tabs';
+import { Tabs } from '@/components/ui/Tabs';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
@@ -17,6 +17,8 @@ import useLocalStorageState from '@/hooks/useLocalStorageState';
 import { cn, slugify } from '@/utils';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
+import ImportExportModal from '@/components/library/ImportExportModal';
+import { SELECT_CLASSNAMES } from '@/styles/heroui';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -27,9 +29,11 @@ export default function LibraryLayout() {
   const [selectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
   const [selectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const filtersDisclosure = useDisclosure();
   const keyboardShortcutsDisclosure = useDisclosure();
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const importExportDisclosure = useDisclosure();
 
   const { getCount } = useLibraryStore();
 
@@ -72,7 +76,6 @@ export default function LibraryLayout() {
           }),
         ]}
       />
-
       <div
         className={`flex flex-col gap-8 transition-all duration-300 ${
           showTabs ? 'w-[calc(100%-260px)] translate-x-[260px]' : 'w-full translate-x-0'
@@ -126,45 +129,43 @@ export default function LibraryLayout() {
 
             <Select
               placeholder='Sort by'
-              classNames={{
-                trigger: 'bg-white/5 border-2 border-white/5 w-54 backdrop-blur-md hover:bg-white/10!',
-                popoverContent: 'text-default-500 bg-blur backdrop-blur-md',
-                selectorIcon: 'text-Grey-600',
-                listbox: '[&:>li]-data-[hover=true]:bg-blur!',
-                label: 'text-white/60 font-medium text-xs uppercase border-b border-white/10 pb-1.5 mb-1.5',
-              }}
+              classNames={SELECT_CLASSNAMES}
               aria-label='Sort options'
               selectedKeys={[sortBy, sortDir]}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (['asc', 'desc'].includes(val)) setSortDir(val);
+                else setSortBy(val);
+              }}
               value={sortBy}
             >
               <SelectSection title='Sort By' showDivider>
-                <SelectItem key='recent' onPress={() => setSortBy('recent')}>
-                  Recently Added
-                </SelectItem>
-                <SelectItem key='title' onPress={() => setSortBy('title')}>
-                  Title
-                </SelectItem>
-                <SelectItem key='rating' onPress={() => setSortBy('rating')}>
-                  Your Rating
-                </SelectItem>
-                <SelectItem key='date' onPress={() => setSortBy('date')}>
-                  Release Date
-                </SelectItem>
+                <SelectItem key='recent'>Recently Added</SelectItem>
+                <SelectItem key='title'>Title</SelectItem>
+                <SelectItem key='rating'>Your Rating</SelectItem>
+                <SelectItem key='date'>Release Date</SelectItem>
               </SelectSection>
 
               <SelectSection title='Direction'>
-                <SelectItem key='asc' onPress={() => setSortDir('asc')} startContent={<ArrowUp className='size-3.5' />}>
+                <SelectItem key='asc' startContent={<ArrowUp className='size-3.5' />}>
                   Ascending (A-Z, Oldest First)
                 </SelectItem>
-                <SelectItem
-                  key='desc'
-                  onPress={() => setSortDir('desc')}
-                  startContent={<ArrowDown className='size-3.5' />}
-                >
+                <SelectItem key='desc' startContent={<ArrowDown className='size-3.5' />}>
                   Descending (Z-A, Newest First)
                 </SelectItem>
               </SelectSection>
             </Select>
+
+            <Tooltip content={<ShortcutTooltip shortcutName='toggleImportExport' />} className='tooltip-secondary'>
+              <Button
+                isIconOnly
+                className='button-secondary'
+                onPress={() => importExportDisclosure.onOpen()}
+                aria-label='Import or export library'
+              >
+                <FileJson className='size-4' />
+              </Button>
+            </Tooltip>
 
             <Tooltip content={<ShortcutTooltip shortcutName='toggleShortcutsHelp' />} className='tooltip-secondary'>
               <Button
@@ -182,9 +183,9 @@ export default function LibraryLayout() {
           <Outlet />
         </div>
       </div>
-
       <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
       <FiltersModal disclosure={filtersDisclosure} />
+      <ImportExportModal disclosure={importExportDisclosure} /> {/* Render the new modal */}
     </div>
   );
 }

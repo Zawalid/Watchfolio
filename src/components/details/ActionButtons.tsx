@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useLibraryModal } from '@/hooks/useLibraryModal';
+import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 
 interface ActionButtonsProps {
   media: Media;
@@ -10,7 +10,7 @@ interface ActionButtonsProps {
 }
 
 export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsProps) {
-  const { openModal } = useLibraryModal();
+  const { openModal } = useMediaStatusModal();
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { toggleFavorite } = useLibraryStore();

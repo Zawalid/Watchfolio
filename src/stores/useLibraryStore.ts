@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { GENRES } from '@/lib/api/TMDB/values';
 import { getRating } from '@/utils/media';
+import { serializeToJSON, serializeToCSV, parseImportContent, mergeLibraryItems } from '@/utils/library';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -18,9 +19,13 @@ interface LibraryState {
     metadata?: Media
   ) => LibraryMedia | null;
   getAllItems: () => LibraryMedia[];
-  getItemsByStatus: (status: LibraryMediaStatus) => LibraryMedia[];
-  getFavorites: () => LibraryMedia[];
-  getCount: (filter: LibraryFilterStatus) => number;
+  getItemsByStatus: (status: LibraryFilterStatus, mediaType?: 'movie' | 'tv') => LibraryMedia[];
+  getCount: (filter: LibraryFilterStatus, mediaType?: 'movie' | 'tv') => number;
+  exportLibrary: (items: LibraryMedia[], format: 'json' | 'csv') => string;
+  importLibrary: (
+    libraryAsString: string,
+    options: { mergeStrategy: 'smart' | 'overwrite' | 'skip'; keepExistingFavorites: boolean }
+  ) => number;
 }
 
 const generateMediaKey = (mediaType: 'movie' | 'tv', id: number): string => `${mediaType}-${id}`;
@@ -159,17 +164,17 @@ export const useLibraryStore = create<LibraryState>()(
         return Object.values(library);
       },
 
-      getItemsByStatus: (status) => {
+      getItemsByStatus: (status, mediaType) => {
         const { library } = get();
-        return Object.values(library).filter((item) => item.status === status);
+        return Object.values(library).filter((item) => {
+          if (mediaType && item.media_type !== mediaType) return false;
+          if (status === 'all') return true;
+          if (status === 'favorites') return item.isFavorite;
+          return item.status === status;
+        });
       },
 
-      getFavorites: () => {
-        const { library } = get();
-        return Object.values(library).filter((item) => item.isFavorite);
-      },
-
-      getCount: (filter: LibraryFilterStatus) => {
+      getCount: (filter: LibraryFilterStatus, mediaType) => {
         const { library } = get();
         const counts: Record<LibraryFilterStatus, number> = {
           all: 0,
@@ -182,6 +187,8 @@ export const useLibraryStore = create<LibraryState>()(
         };
 
         Object.values(library).forEach((item) => {
+          if (mediaType && item.media_type !== mediaType) return;
+
           counts.all++;
           if (item.status === 'watching') counts.watching++;
           else if (item.status === 'willWatch') counts['willWatch']++;
@@ -193,7 +200,56 @@ export const useLibraryStore = create<LibraryState>()(
 
         return counts[filter] || 0;
       },
+
+      exportLibrary: (items, format = 'json') => {
+        const libraryItems = items.length > 0 ? items : Object.values(get().library);
+
+        return format === 'csv' ? serializeToCSV(libraryItems) : serializeToJSON(libraryItems);
+      },
+
+      importLibrary: (libraryAsString: string, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
+        try {
+          // Validate options
+          if (!options.mergeStrategy || !['smart', 'overwrite', 'skip'].includes(options.mergeStrategy)) {
+            throw new Error('Invalid merge strategy');
+          }
+
+          if (typeof options.keepExistingFavorites !== 'boolean') {
+            options.keepExistingFavorites = true; // Default to true if invalid
+          }
+
+          // Validate input string
+          if (!libraryAsString || typeof libraryAsString !== 'string') {
+            throw new Error('Invalid import data: content must be a non-empty string');
+          }
+
+          // Parse the imported data
+          const importedItems = parseImportContent(libraryAsString);
+
+          // Safety check - make sure we don't try to process empty array
+          if (!importedItems || importedItems.length === 0) {
+            return 0; // No items to import
+          }
+
+          // Get current library, ensure it's not null
+          const currentLibrary = get().library || {};
+
+          // Merge the libraries
+          const { mergedLibrary, importCount } = mergeLibraryItems(importedItems, currentLibrary, options);
+
+          // Update the store only if we have something to update
+          if (importCount > 0) {
+            set({ library: mergedLibrary });
+          }
+
+          return importCount;
+        } catch (error) {
+          console.error('Import error:', error);
+          throw new Error(`Failed to import library: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      },
     }),
+
     {
       name: 'watchfolio-library',
       storage: createJSONStorage(() => localStorage),

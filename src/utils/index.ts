@@ -1,5 +1,4 @@
 import { clsx, type ClassValue } from 'clsx';
-import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -53,23 +52,6 @@ export function getUrl() {
 
   return `${protocol}://${host}`;
 }
-
-export const actionToast = async (
-  action: () => Promise<unknown>,
-  loadingMessage: string,
-  successMessage: string,
-  errorMessage?: string
-) => {
-  let id;
-  try {
-    id = toast.loading(loadingMessage);
-    await action();
-    toast.success(successMessage, { id });
-  } catch (error) {
-    console.log('error', error);
-    if (errorMessage) toast.error(errorMessage, { id });
-  }
-};
 
 export function formatDate(dateString: string | null): string {
   if (!dateString) return 'Unknown date';

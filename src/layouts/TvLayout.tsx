@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import Tabs from '@/components/ui/Tabs';
+import { Tabs } from '@/components/ui/Tabs';
 
 export default function TvLayout() {
   return (

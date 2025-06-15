@@ -6,7 +6,7 @@ import { Star, Heart, Calendar, Film, Tv, Trash2, Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useLibraryModal } from '@/hooks/useLibraryModal';
+import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
@@ -29,7 +29,7 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   const { toggleFavorite, removeItem } = useLibraryStore();
-  const { openModal } = useLibraryModal();
+  const { openModal } = useMediaStatusModal();
   const { confirm } = useConfirmationModal();
 
   const title = item.title || 'Untitled';

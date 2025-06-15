@@ -4,7 +4,7 @@ import { Button } from '@heroui/button';
 import { Heart, Plus } from 'lucide-react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { getMediaType } from '@/utils/media';
-import { useLibraryModal } from '@/hooks/useLibraryModal';
+import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { cn } from '@/utils';
@@ -18,7 +18,7 @@ export default function MediaCardActions({ media }: MediaCardActionsProps) {
   const [favoriteClicked, setFavoriteClicked] = useState(false);
 
   const media_type = getMediaType(media);
-  const { openModal } = useLibraryModal();
+  const { openModal } = useMediaStatusModal();
 
   const libraryItem = useLibraryStore((state) => state.getItem(media_type, media.id));
   const { toggleFavorite } = useLibraryStore();

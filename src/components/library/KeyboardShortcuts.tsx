@@ -13,8 +13,8 @@ interface KeyboardShortcutsProps {
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
   library: 'Library',
-  cardFocus: 'Card Actions (When focused)',
-  modal: 'Modal',
+  cardFocus: 'Media Actions (When focused)',
+  modal: 'Media Status',
   filters: 'Filters',
 };
 

@@ -27,3 +27,10 @@ interface LibraryMedia {
 }
 
 type LibraryCollection = Record<string, LibraryMedia>;
+
+// Export options
+interface ExportOptions {
+  format: 'json' | 'csv';
+  includeMetadata?: boolean;
+}
+

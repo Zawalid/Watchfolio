@@ -11,14 +11,14 @@ import { useListNavigator } from '@/hooks/useListNavigator';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 
-interface LibraryModalProps {
+interface MediaStatusModalProps {
   disclosure: Disclosure;
   media: Media | LibraryMedia;
 }
 
 const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'overview' in obj);
 
-export default function LibraryModal({ disclosure, media }: LibraryModalProps) {
+export default function MediaStatusModal({ disclosure, media }: MediaStatusModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
@@ -91,7 +91,7 @@ function StatusSection({
     loop: true,
   });
 
-  useHotkeys(getShortcut('removeFromLibraryModal').hotkey, removeItem);
+  useHotkeys(getShortcut('removeFromMediaStatusModal').hotkey, removeItem);
 
   useHotkeys(
     getShortcut('rateMedia').hotkey,
@@ -121,8 +121,8 @@ function StatusSection({
               className='rounded-full border border-red-500/20 px-4 py-2 text-xs text-red-400 backdrop-blur-sm transition-all duration-300 hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300'
               onPress={removeItem}
             >
-              {getShortcut('removeFromLibraryModal').description}
-              <ShortcutKey shortcutName='removeFromLibraryModal' className='kbd-sm' />
+              {getShortcut('removeFromMediaStatusModal').description}
+              <ShortcutKey shortcutName='removeFromMediaStatusModal' className='kbd-sm' />
             </Button>
           </div>
         )}

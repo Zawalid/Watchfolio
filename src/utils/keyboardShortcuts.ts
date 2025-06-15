@@ -21,11 +21,16 @@ export const KEYBOARD_SHORTCUTS = {
   },
   escape: { hotkey: 'escape', label: 'Esc', description: 'Close modal / clear focus', category: 'general' },
 
-  // Navigation shortcuts
   navigate: {
     hotkey: 'up,down,left,right',
     label: '↑ ↓ ← →',
     description: 'Navigate between library cards',
+    category: 'general',
+  },
+  toggleImportExport: {
+    hotkey: 'ctrl+i',
+    label: 'Ctrl I',
+    description: 'Open Import/Export modal',
     category: 'general',
   },
 
@@ -63,27 +68,42 @@ export const KEYBOARD_SHORTCUTS = {
   clearFilters: { hotkey: 'alt+0', label: 'Alt 0', description: 'Clear all filters', category: 'filters' },
 
   // Modal shortcuts (when library modal is open)
-  setStatusWatching: { hotkey: 'alt+w', label: 'Alt W', description: 'Set status to "Watching"', category: 'modal' },
+  setStatusWatching: {
+    hotkey: 'alt+w',
+    label: 'Alt W',
+    description: 'Set status to "Watching"',
+    category: 'mediaStatus',
+  },
   setStatusPlanToWatch: {
     hotkey: 'alt+p',
     label: 'Alt P',
     description: 'Set status to "Plan to Watch"',
-    category: 'modal',
+    category: 'mediaStatus',
   },
-  setStatusWatched: { hotkey: 'alt+c', label: 'Alt C', description: 'Set status to "Watched"', category: 'modal' },
-  setStatusOnHold: { hotkey: 'alt+h', label: 'Alt H', description: 'Set status to "On Hold"', category: 'modal' },
-  setStatusDropped: { hotkey: 'alt+d', label: 'Alt D', description: 'Set status to "Dropped"', category: 'modal' },
-  removeFromLibraryModal: {
+  setStatusWatched: {
+    hotkey: 'alt+c',
+    label: 'Alt C',
+    description: 'Set status to "Watched"',
+    category: 'mediaStatus',
+  },
+  setStatusOnHold: { hotkey: 'alt+h', label: 'Alt H', description: 'Set status to "On Hold"', category: 'mediaStatus' },
+  setStatusDropped: {
+    hotkey: 'alt+d',
+    label: 'Alt D',
+    description: 'Set status to "Dropped"',
+    category: 'mediaStatus',
+  },
+  removeFromMediaStatusModal: {
     hotkey: 'delete',
     label: 'Delete',
     description: 'Remove from library',
-    category: 'modal',
+    category: 'mediaStatus',
   },
   rateMedia: {
     hotkey: '1,2,3,4,5,6,7,8,9',
     label: '1-10',
     description: 'Rate (1-10) stars',
-    category: 'modal',
+    category: 'mediaStatus',
   },
   rateMedia10: { hotkey: '1+0', label: null, description: null, category: null },
   clearRating: { hotkey: 'x', label: 'X', description: 'Clear rating', category: 'modal' },

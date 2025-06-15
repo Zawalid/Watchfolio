@@ -8,11 +8,12 @@ interface Props extends ModalProps {
 
 const defaultClassNames = {
   wrapper: 'overflow-hidden',
-  body: 'max-h-[90vh] overflow-auto bg-blur py-6',
+  body: 'max-h-[90vh] overflow-auto blur-bg py-6',
   backdrop: 'bg-black/50 backdrop-blur-[3px]',
-  base: 'border-border blur-bg text-[#a8b0d3]',
+  base: 'border-border  text-[#a8b0d3]',
   header: 'bg-blur border-b-[1px] border-border',
   footer: 'bg-blur border-t-[1px] border-border',
+  closeButton: 'border border-transparent hover:border-white/10 hover:bg-white/5',
 };
 
 export default function Modal({ children, disclosure, classNames = {}, ...props }: Props) {
@@ -26,6 +27,7 @@ export default function Modal({ children, disclosure, classNames = {}, ...props 
     base: cn(defaultClassNames.base, classNames.base),
     header: cn(defaultClassNames.header, classNames.header),
     footer: cn(defaultClassNames.footer, classNames.footer),
+    closeButton: cn(defaultClassNames.closeButton, classNames.closeButton),
   };
 
   return (
