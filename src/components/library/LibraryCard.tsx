@@ -10,6 +10,9 @@ import { useLibraryModal } from '@/hooks/useLibraryModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
+import { Tooltip } from '@heroui/tooltip';
+import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
+import { getShortcut } from '@/utils/keyboardShortcuts';
 
 interface LibraryCardProps {
   item: LibraryMedia;
@@ -50,9 +53,9 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
   };
   const handleEditStatus = () => openModal(item);
 
-  useHotkeys('f', handleToggleFavorite, { enabled: isFocused });
-  useHotkeys('e', handleEditStatus, { enabled: isFocused });
-  useHotkeys('delete', handleRemove, { enabled: isFocused });
+  useHotkeys(getShortcut('toggleFavorite').hotkey, handleToggleFavorite, { enabled: isFocused });
+  useHotkeys(getShortcut('editStatus').hotkey, handleEditStatus, { enabled: isFocused });
+  useHotkeys(getShortcut('removeFromLibrary').hotkey, handleRemove, { enabled: isFocused });
 
   const isInteractive = isHovered || isFocused;
 
@@ -112,22 +115,24 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <Button
-                isIconOnly
-                size='sm'
-                tabIndex={-1}
-                className={cn(
-                  'h-8 w-8 border backdrop-blur-xl transition-all duration-300',
-                  'hover:scale-110 active:scale-95',
-                  item.isFavorite
-                    ? 'border-pink-400/60 bg-pink-500/30 text-pink-200 shadow-lg shadow-pink-500/25'
-                    : 'border-white/30 bg-white/15 text-white hover:border-pink-400/60 hover:bg-pink-500/30 hover:text-pink-200'
-                )}
-                onPress={handleToggleFavorite}
-                aria-label={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-              >
-                <Heart className={cn('size-3.5 transition-all duration-300', item.isFavorite && 'fill-current')} />
-              </Button>
+              <Tooltip content={<ShortcutTooltip shortcutName='toggleFavorite' />} className='tooltip-secondary'>
+                <Button
+                  isIconOnly
+                  size='sm'
+                  tabIndex={-1}
+                  className={cn(
+                    'h-8 w-8 border backdrop-blur-xl transition-all duration-300',
+                    'hover:scale-110 active:scale-95',
+                    item.isFavorite
+                      ? 'border-pink-400/60 bg-pink-500/30 text-pink-200 shadow-lg shadow-pink-500/25'
+                      : 'border-white/30 bg-white/15 text-white hover:border-pink-400/60 hover:bg-pink-500/30 hover:text-pink-200'
+                  )}
+                  onPress={handleToggleFavorite}
+                  aria-label={item.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  <Heart className={cn('size-3.5 transition-all duration-300', item.isFavorite && 'fill-current')} />
+                </Button>
+              </Tooltip>
             </motion.div>
 
             <motion.div
@@ -135,16 +140,18 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.15 }}
             >
-              <Button
-                isIconOnly
-                size='sm'
-                tabIndex={-1}
-                className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-blue-400/60 hover:bg-blue-500/30 hover:text-blue-200 active:scale-95'
-                onPress={handleEditStatus}
-                aria-label='Edit library status'
-              >
-                <Edit3 className='size-3.5' />
-              </Button>
+              <Tooltip content={<ShortcutTooltip shortcutName='editStatus' />} className='tooltip-secondary'>
+                <Button
+                  isIconOnly
+                  size='sm'
+                  tabIndex={-1}
+                  className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-blue-400/60 hover:bg-blue-500/30 hover:text-blue-200 active:scale-95'
+                  onPress={handleEditStatus}
+                  aria-label='Edit library status'
+                >
+                  <Edit3 className='size-3.5' />
+                </Button>
+              </Tooltip>
             </motion.div>
 
             <motion.div
@@ -152,16 +159,18 @@ export default function LibraryCard({ item, tabIndex = 0 }: LibraryCardProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
             >
-              <Button
-                isIconOnly
-                size='sm'
-                tabIndex={-1}
-                className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-red-400/60 hover:bg-red-500/30 hover:text-red-200 active:scale-95'
-                onPress={handleRemove}
-                aria-label='Remove from library'
-              >
-                <Trash2 className='size-3.5' />
-              </Button>
+              <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary'>
+                <Button
+                  isIconOnly
+                  size='sm'
+                  tabIndex={-1}
+                  className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-red-400/60 hover:bg-red-500/30 hover:text-red-200 active:scale-95'
+                  onPress={handleRemove}
+                  aria-label='Remove from library'
+                >
+                  <Trash2 className='size-3.5' />
+                </Button>
+              </Tooltip>
             </motion.div>
           </motion.div>
         )}

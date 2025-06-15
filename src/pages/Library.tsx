@@ -32,6 +32,7 @@ export default function Library() {
   const [sortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [selectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
   const [selectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
+  const [selectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
   status = slugify(status || 'all', { reverse: true, reverseType: 'camelCase' }) as LibraryFilterStatus;
 
@@ -75,26 +76,21 @@ export default function Library() {
       // }
     }
 
+    // Filter by media types (movie, tv, anime)
+    if (selectedTypes && selectedTypes.length > 0) {
+      if (!selectedTypes.includes(item.media_type)) {
+        return false;
+      }
+    }
+
     return true;
   });
 
   const sortedItems = sortItems(filteredItems, sortBy, sortDir);
 
-  const handleReorder = (reorderedItems: LibraryMedia[]) => {
-    // For now, just log the reordered items
-    // In a real app, you'd save this custom order
-    console.log('Items reordered:', reorderedItems);
-  };
-
   return (
     <div className='h-full space-y-8'>
-      <LibraryCardsList
-        items={sortedItems}
-        allItems={rawItems}
-        status={status || 'all'}
-        query={query}
-        onReorder={handleReorder}
-      />
+      <LibraryCardsList items={sortedItems} allItems={rawItems} status={status || 'all'} query={query} />
     </div>
   );
 }

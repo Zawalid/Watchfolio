@@ -23,6 +23,7 @@ export const LIBRARY_MEDIA_STATUS = [
     },
     icon: MonitorPlay,
     className: 'text-blue-400 bg-blue-500/20 border-blue-500/30',
+    shortcut: 'setStatusWatching',
   },
   {
     value: 'willWatch',
@@ -33,6 +34,7 @@ export const LIBRARY_MEDIA_STATUS = [
     },
     icon: Bookmark,
     className: 'text-purple-400 bg-purple-500/20 border-purple-500/30',
+    shortcut: 'setStatusPlanToWatch',
   },
   {
     value: 'watched',
@@ -43,6 +45,7 @@ export const LIBRARY_MEDIA_STATUS = [
     },
     icon: MonitorCheck,
     className: 'text-green-400 bg-green-500/20 border-green-500/30',
+    shortcut: 'setStatusWatched',
   },
   {
     value: 'onHold',
@@ -53,6 +56,7 @@ export const LIBRARY_MEDIA_STATUS = [
     },
     icon: MonitorPause,
     className: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
+    shortcut: 'setStatusOnHold',
   },
   {
     value: 'dropped',
@@ -63,6 +67,7 @@ export const LIBRARY_MEDIA_STATUS = [
     },
     icon: MonitorX,
     className: 'text-red-400 bg-red-500/20 border-red-500/30',
+    shortcut: 'setStatusDropped',
   },
   {
     value: 'favorites',
@@ -73,5 +78,6 @@ export const LIBRARY_MEDIA_STATUS = [
     },
     icon: Heart,
     className: 'text-pink-400 bg-pink-500/20 border-pink-500/30',
+    shortcut: 'setStatusFavorite',
   },
 ] as const;

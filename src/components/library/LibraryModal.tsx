@@ -1,12 +1,15 @@
 import { useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { Library, Star } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { ModalBody } from '@heroui/modal';
 import Modal from '@/components/ui/Modal';
-import { Library, Star } from 'lucide-react';
 import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
 import { useListNavigator } from '@/hooks/useListNavigator';
+import { ShortcutKey } from '@/components/ui/ShortcutKey';
+import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 
 interface LibraryModalProps {
   disclosure: Disclosure;
@@ -34,12 +37,13 @@ export default function LibraryModal({ disclosure, media }: LibraryModalProps) {
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
 
   return (
-    <Modal disclosure={disclosure}>
+    <Modal disclosure={disclosure} size='lg'>
       <ModalBody className='space-y-8 p-8'>
         <StatusSection
           selectedStatus={libraryItem?.status || 'none'}
           setSelectedStatus={handleStatusChange}
           onClose={disclosure.onClose}
+          setCurrentRating={handleRatingChange}
         />
         <RatingSection
           currentRating={libraryItem?.userRating}
@@ -57,15 +61,22 @@ function StatusSection({
   selectedStatus,
   setSelectedStatus,
   onClose,
+  setCurrentRating,
 }: {
   selectedStatus: LibraryMediaStatus;
   setSelectedStatus: (status: LibraryMediaStatus) => void;
   onClose: () => void;
+  setCurrentRating: (rating: number | undefined) => void;
 }) {
   const statusOptions = LIBRARY_MEDIA_STATUS.filter((o) => o.value !== 'favorites');
   const initialIndex = statusOptions.findIndex((o) => o.value === selectedStatus);
   const [focusIndex, setFocusIndex] = useState(initialIndex > -1 ? initialIndex : 0);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const removeItem = () => {
+    setSelectedStatus('none');
+    onClose();
+  };
 
   useListNavigator({
     containerRef: containerRef,
@@ -79,6 +90,19 @@ function StatusSection({
     orientation: 'vertical',
     loop: true,
   });
+
+  useHotkeys(getShortcut('removeFromLibraryModal').hotkey, removeItem);
+
+  useHotkeys(
+    getShortcut('rateMedia').hotkey,
+    (e) => {
+      const rating = parseInt(e.key);
+      if (!isNaN(rating) && rating > 0) setCurrentRating(rating);
+    },
+    [setSelectedStatus, onClose]
+  );
+  useHotkeys(getShortcut('rateMedia10').hotkey, () => setCurrentRating(10));
+  useHotkeys(getShortcut('clearRating').hotkey, () => setCurrentRating(undefined));
 
   return (
     <div className='space-y-8'>
@@ -95,65 +119,78 @@ function StatusSection({
               variant='ghost'
               size='sm'
               className='rounded-full border border-red-500/20 px-4 py-2 text-xs text-red-400 backdrop-blur-sm transition-all duration-300 hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300'
-              onPress={() => {
-                setSelectedStatus('none');
-                onClose();
-              }}
+              onPress={removeItem}
             >
-              Remove from library
+              {getShortcut('removeFromLibraryModal').description}
+              <ShortcutKey shortcutName='removeFromLibraryModal' className='kbd-sm' />
             </Button>
           </div>
         )}
       </div>
       <div className='grid grid-cols-1 gap-3' ref={containerRef}>
-        {statusOptions.map((option) => {
-          const isSelected = selectedStatus === option.value;
-          const IconComponent = option.icon;
-          const textColorClass = option.className.split(' ')[0];
-
-          return (
-            <Button
-              key={option.value}
-              className={cn(
-                'group relative h-auto w-full justify-start gap-4 px-6 py-3 text-left transition-all duration-300',
-                // Add focus styles for keyboard navigation
-                'focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none',
-                isSelected
-                  ? 'border border-gray-600 bg-gray-700 text-white'
-                  : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white hover:shadow-lg hover:shadow-gray-700/20'
-              )}
-              onPress={() => setSelectedStatus(option.value as LibraryMediaStatus)}
-              role='button'
-            >
-              <div
-                className={`rounded-full p-2 transition-all duration-300 ${
-                  isSelected ? 'bg-gray-600' : 'bg-gray-700/50 group-hover:bg-gray-600/60'
-                }`}
-              >
-                <IconComponent className={`size-5 ${textColorClass}`} />
-              </div>
-              <div className='flex-1'>
-                <div
-                  className={`font-semibold transition-all duration-300 ${isSelected ? 'text-white' : 'text-gray-200'}`}
-                >
-                  {option.label}
-                </div>
-                <div
-                  className={`mt-1 text-sm transition-all duration-300 ${
-                    isSelected ? 'text-gray-300' : 'text-gray-400'
-                  }`}
-                >
-                  {option.descriptions.modal}
-                </div>
-              </div>
-              {isSelected && (
-                <div className='ml-auto rounded-full bg-gray-600 px-3 py-1 text-xs font-medium text-white'>Added</div>
-              )}
-            </Button>
-          );
-        })}
+        {statusOptions.map((option) => (
+          <StatusButton
+            key={option.value}
+            status={option}
+            isSelected={selectedStatus === option.value}
+            onClick={() => {
+              setSelectedStatus(option.value as LibraryMediaStatus);
+              onClose();
+            }}
+          />
+        ))}
       </div>
     </div>
+  );
+}
+
+function StatusButton({
+  status,
+  isSelected,
+  onClick,
+}: {
+  status: (typeof LIBRARY_MEDIA_STATUS)[number];
+  isSelected: boolean;
+  onClick: () => void;
+}) {
+  useHotkeys(getShortcut(status.shortcut as ShortcutName).hotkey, onClick);
+
+  const IconComponent = status.icon;
+  const textColorClass = status.className.split(' ')[0];
+
+  return (
+    <Button
+      className={cn(
+        'group relative h-auto w-full justify-start gap-4 px-6 py-3 text-left transition-all duration-300',
+        'focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none',
+        isSelected
+          ? 'border border-gray-600 bg-gray-700 text-white'
+          : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white hover:shadow-lg hover:shadow-gray-700/20'
+      )}
+      onPress={onClick}
+      role='button'
+    >
+      <div
+        className={`rounded-full p-2 transition-all duration-300 ${
+          isSelected ? 'bg-gray-600' : 'bg-gray-700/50 group-hover:bg-gray-600/60'
+        }`}
+      >
+        <IconComponent className={`size-5 ${textColorClass}`} />
+      </div>
+      <div className='flex-1'>
+        <div className={`font-semibold transition-all duration-300 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+          {status.label}
+        </div>
+        <div className={`mt-1 text-sm transition-all duration-300 ${isSelected ? 'text-gray-300' : 'text-gray-400'}`}>
+          {status.descriptions.modal}
+        </div>
+      </div>
+      {isSelected ? (
+        <div className='ml-auto rounded-full bg-gray-600 px-3 py-1 text-xs font-medium text-white'>Added</div>
+      ) : (
+        <ShortcutKey shortcutName={status.shortcut as ShortcutName} />
+      )}
+    </Button>
   );
 }
 
@@ -173,7 +210,6 @@ function RatingSection({
   return (
     <div className='space-y-8'>
       <div className='flex items-center justify-between'>
-        {/* <h3 className='text-lg font-semibold text-white'>Your Rating</h3> */}
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>
             <Star className='text-Primary-400 size-5' />
@@ -181,13 +217,9 @@ function RatingSection({
           <h2 className='text-Primary-50 text-xl font-semibold'>Your Rating</h2>
         </div>
         {currentRating !== undefined && (
-          <Button
-            variant='ghost'
-            size='sm'
-            className='mt-2 text-xs text-red-400 hover:bg-red-500/10'
-            onPress={() => setCurrentRating(undefined)}
-          >
-            Clear Rating
+          <Button size='sm' className='button-secondary' onPress={() => setCurrentRating(undefined)}>
+            {getShortcut('clearRating').description}
+            <ShortcutKey shortcutName='clearRating' className='kbd-sm' />
           </Button>
         )}
       </div>
@@ -225,7 +257,7 @@ function RatingSection({
             </div>
           )}
           {currentRating === undefined && hoverRating === undefined && (
-            <div className='text-sm text-gray-500'>Click stars to rate</div>
+            <div className='text-sm text-gray-500'>Click stars to rate, or press a number key </div>
           )}
         </div>
       </div>

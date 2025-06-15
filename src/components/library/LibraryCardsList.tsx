@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
 import { Search, X } from 'lucide-react';
 import EmptyState from './EmptyState';
@@ -20,10 +21,12 @@ const getLink = (item: LibraryMedia) => {
   return `/${item.media_type === 'tv' ? 'tv' : 'movies'}/details/${item.id}-${slugify(title)}`;
 };
 
-export default function LibraryCardsList({ items, status, query }: LibraryCardsListProps) {
+export default function LibraryCardsList({ items, status }: LibraryCardsListProps) {
   const [displayedItems, setDisplayedItems] = useState(items);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useQueryState('query');
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,7 +49,7 @@ export default function LibraryCardsList({ items, status, query }: LibraryCardsL
     autoFocus: true,
   });
 
-  if (items.length === 0) return <EmptyState status={status} hasQuery={!!query} query={query} />;
+  if (items.length === 0) return <EmptyState status={status} />;
 
   return (
     <>
@@ -70,12 +73,7 @@ export default function LibraryCardsList({ items, status, query }: LibraryCardsL
             <Search className='size-4' />
             <span>"{query}"</span>
             <button
-              onClick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.delete('query');
-                window.history.replaceState(null, '', url.toString());
-                window.location.reload();
-              }}
+              onClick={() => setQuery(null)}
               className='text-Primary-400 hover:bg-Primary-400/20 hover:text-Primary-300 ml-1 rounded-full p-0.5 transition-colors'
               aria-label='Clear search'
             >

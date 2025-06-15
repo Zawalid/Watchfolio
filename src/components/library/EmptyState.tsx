@@ -1,5 +1,9 @@
-import { Filter, Search, Heart } from 'lucide-react';
+import { Filter, Search, Heart, FunnelX } from 'lucide-react';
+import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
+import { Button } from '@heroui/button';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { ShortcutTooltip } from '../ui/ShortcutKey';
+import { Tooltip } from '@heroui/tooltip';
 
 const getFilterInfo = (filter: LibraryFilterStatus) => {
   const statusOption = LIBRARY_MEDIA_STATUS.find((status) => status.value === filter);
@@ -9,7 +13,7 @@ const getFilterInfo = (filter: LibraryFilterStatus) => {
     return {
       icon: <IconComponent className='size-6' />,
       label: statusOption.label,
-      color: statusOption.className.split(' ')[0], // Extract text color class
+      color: statusOption.className.split(' ')[0],
     };
   }
 
@@ -21,29 +25,50 @@ const getFilterInfo = (filter: LibraryFilterStatus) => {
   }
 };
 
-export default function EmptyState({
-  status,
-  hasQuery,
-  query,
-}: {
-  status?: LibraryFilterStatus;
-  hasQuery: boolean;
-  query: string;
-}) {
-  if (hasQuery) {
+export default function EmptyState({ status }: { status?: LibraryFilterStatus }) {
+  const [query, setQuery] = useQueryState('query');
+  const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
+  const [selectedPlatforms, setSelectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
+  const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
+
+  const hasFilters = Boolean(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
+  const hasQuery = !!query && query.trim() !== '';
+
+  if (hasFilters || hasQuery) {
     return (
       <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
         <div className='mb-6 rounded-full bg-white/5 p-6 backdrop-blur-md'>
-          <Search className='text-Grey-400 size-12' />
+          {hasFilters ? <FunnelX className='size-12 text-amber-400' /> : <Search className='text-Grey-400 size-12' />}
         </div>
-        <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>No matches found</h3>
+        <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>
+          {hasFilters ? 'No matches found with current filters' : 'No matches found'}
+        </h3>
         <p className='text-Grey-400 max-w-md'>
-          Couldn't find any shows or movies matching "{query}". Try a different search term or check your spelling.
+          {hasFilters
+            ? 'Your current filters are too specific. Try adjusting them to see more content.'
+            : `Couldn't find any shows or movies matching "${query}". Try a different search term or check your spelling.`}
         </p>
+        <div className='mt-6 flex gap-3'>
+          <Tooltip content={<ShortcutTooltip shortcutName={hasFilters ? 'clearFilters' : 'clearSearch'} className='kbd-sm'/>} className='tooltip-secondary'>
+            <Button
+              className='button-secondary'
+              onPress={() => {
+                if (hasFilters) {
+                  setSelectedGenres(null);
+                  setSelectedPlatforms(null);
+                  setSelectedTypes(null);
+                } else setQuery(null);
+              }}
+            >
+              {hasFilters ? 'Clear Filters' : 'Clear Search'}
+            </Button>
+          </Tooltip>
+        </div>
       </div>
     );
   }
 
+  // Handle status-based empty state
   const statusInfo = status ? getFilterInfo(status) : null;
 
   const getEmptyMessage = () => {

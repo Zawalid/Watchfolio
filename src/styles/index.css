@@ -179,6 +179,17 @@
   @apply  rounded-lg border border-white/10 bg-white/5! py-2.5 text-sm font-medium text-white backdrop-blur-md transition-all! duration-200  hover:bg-white/10!;
 }
 
+@utility tooltip-secondary {
+  @apply text-xs! font-medium text-default-500 bg-white/5! border border-white/5 backdrop-blur-md;
+}
+
+@utility kbd {
+  @apply inline-flex items-center justify-center rounded border border-white/10 bg-white/5 px-2 py-1 text-xs font-medium text-white backdrop-blur-sm;
+}
+@utility kbd-sm {
+  @apply kbd px-1! py-0.5! text-[10px]!; 
+}
+
 
 body {
   @apply dark blur-bg bg-[url('/images/Background.svg')] antialiased;

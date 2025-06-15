@@ -1,11 +1,12 @@
 import { useRef } from 'react';
 import { Outlet } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useQueryState } from 'nuqs';
+import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter } from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Button } from '@heroui/button';
 import { useDisclosure } from '@heroui/modal';
+import { Tooltip } from '@heroui/tooltip';
 import Input from '@/components/ui/Input';
 import Tabs from '@/components/ui/Tabs';
 import { useLibraryStore } from '@/stores/useLibraryStore';
@@ -13,29 +14,37 @@ import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import FiltersModal from '@/components/library/FiltersModal';
 import useLocalStorageState from '@/hooks/useLocalStorageState';
-import { slugify } from '@/utils';
+import { cn, slugify } from '@/utils';
+import { getShortcut } from '@/utils/keyboardShortcuts';
+import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
   const [sortBy, setSortBy] = useQueryState('sort', { defaultValue: 'recent' });
   const [sortDir, setSortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [showTabs, setShowTabs] = useLocalStorageState('show-tabs', true);
+  const [selectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
+  const [selectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
+  const [selectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
+
   const filtersDisclosure = useDisclosure();
   const keyboardShortcutsDisclosure = useDisclosure();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { getCount } = useLibraryStore();
 
+  useHotkeys(getShortcut('toggleSidebar').hotkey, () => setShowTabs(!showTabs), [showTabs], { useKey: true });
   useHotkeys(
-    '/',
+    getShortcut('focusSearch').hotkey,
     (e) => {
       e.preventDefault();
       searchInputRef.current?.focus();
     },
     { useKey: true }
   );
+  useHotkeys(getShortcut('clearSearch').hotkey, () => setQuery(null), { useKey: true });
 
-  useHotkeys('t', () => setShowTabs(!showTabs), [showTabs]);
+  const hasActiveFilters = !!(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
 
   return (
     <div className='relative flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>
@@ -75,31 +84,45 @@ export default function LibraryLayout() {
             icon='search'
             parentClassname='w-full lg:w-1/3'
             name='search'
-            defaultValue={query}
+            value={query}
             label='Search Your Library'
             placeholder='Search by title, genre, or status...'
             ref={searchInputRef}
             onChange={(e) => setQuery(e.target.value)}
           />
           <div className='flex w-full gap-2 lg:w-auto lg:min-w-fit'>
-            <Button
-              isIconOnly
-              className='button-secondary'
-              onPress={() => setShowTabs(!showTabs)}
-              aria-label='Toggle tabs visibility'
-            >
-              {showTabs ? <PanelLeftClose className='size-4' /> : <PanelLeftClose className='size-4 rotate-180' />}
-            </Button>
+            <Tooltip content={<ShortcutTooltip shortcutName='toggleSidebar' />} className='tooltip-secondary'>
+              <Button
+                isIconOnly
+                className='button-secondary'
+                onPress={() => setShowTabs(!showTabs)}
+                aria-label='Toggle tabs visibility'
+              >
+                {showTabs ? <PanelLeftClose className='size-4' /> : <PanelLeftClose className='size-4 rotate-180' />}
+              </Button>
+            </Tooltip>
 
-            {/* Filter button */}
-            <Button
-              isIconOnly
-              className='button-secondary'
-              onPress={() => filtersDisclosure.onOpen()}
-              aria-label='Show filters'
-            >
-              <Filter className='size-4' />
-            </Button>
+            {/* Filter button with indicator */}
+            <Tooltip content={<ShortcutTooltip shortcutName='toggleFilters' />} className='tooltip-secondary'>
+              <Button
+                isIconOnly
+                className={cn(
+                  'button-secondary relative overflow-visible',
+                  hasActiveFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20'
+                )}
+                onPress={() => filtersDisclosure.onOpen()}
+                aria-label='Show filters'
+              >
+                <Filter className={cn('size-4', hasActiveFilters && 'text-amber-400')} />
+
+                {/* Filter indicator dot */}
+                {hasActiveFilters && (
+                  <div className='absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black/80'>
+                    {(selectedGenres?.length || 0) + (selectedPlatforms?.length || 0) + (selectedTypes?.length || 0)}
+                  </div>
+                )}
+              </Button>
+            </Tooltip>
 
             <Select
               placeholder='Sort by'
@@ -143,14 +166,16 @@ export default function LibraryLayout() {
               </SelectSection>
             </Select>
 
-            <Button
-              isIconOnly
-              className='button-secondary'
-              onPress={() => keyboardShortcutsDisclosure.onOpen()}
-              aria-label='Show keyboard shortcuts'
-            >
-              <HelpCircle className='size-4' />
-            </Button>
+            <Tooltip content={<ShortcutTooltip shortcutName='toggleShortcutsHelp' />} className='tooltip-secondary'>
+              <Button
+                isIconOnly
+                className='button-secondary'
+                onPress={() => keyboardShortcutsDisclosure.onOpen()}
+                aria-label='Show keyboard shortcuts'
+              >
+                <HelpCircle className='size-4' />
+              </Button>
+            </Tooltip>
           </div>
         </div>
         <div className='flex-1'>

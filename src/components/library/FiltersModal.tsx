@@ -1,15 +1,24 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
-import { CircleCheck, FunnelX, Filter as FilterIcon } from 'lucide-react';
+import { FunnelX, Filter as FilterIcon, Film, Tv, Clapperboard } from 'lucide-react';
 import { ModalBody } from '@heroui/modal';
 import Modal from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
+import { Tooltip } from '@heroui/tooltip';
 import { cn } from '@/utils';
 import { GENRES, PLATFORMS } from '@/lib/api/TMDB/values';
+import { ShortcutKey } from '@/components/ui/ShortcutKey';
+import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 
 interface FiltersModalProps {
   disclosure: Disclosure;
 }
+
+const MEDIA_TYPES = [
+  { id: 'movie', label: 'Movies', icon: Film, shortcut: 'filterMovies' },
+  { id: 'tv', label: 'TV Shows', icon: Tv, shortcut: 'filterTvShows' },
+  { id: 'anime', label: 'Anime', icon: Clapperboard, shortcut: 'filterAnime' },
+];
 
 const getClassName = (isSelected: boolean) =>
   isSelected
@@ -20,9 +29,31 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
   const { isOpen, onClose, onOpen } = disclosure;
   const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
   const [selectedPlatforms, setSelectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
+  const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
-  useHotkeys('ctrl+shift+f', () => (isOpen ? onClose() : onOpen()), [isOpen]);
-  useHotkeys('esc', onClose, { enabled: isOpen });
+  const hasFilters = Boolean(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
+
+  useHotkeys(getShortcut('toggleFilters').hotkey, () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useHotkeys(getShortcut('escape').hotkey, onClose, { enabled: isOpen });
+
+  useHotkeys(getShortcut('filterMovies').hotkey, () => toggleMediaType('movie'), [selectedTypes]);
+  useHotkeys(getShortcut('filterTvShows').hotkey, () => toggleMediaType('tv'), [selectedTypes]);
+  useHotkeys(getShortcut('filterAnime').hotkey, () => toggleMediaType('anime'), [selectedTypes]);
+
+  // Clear all filters with Alt+0
+  useHotkeys(
+    getShortcut('clearFilters').hotkey,
+    () => {
+      if (hasFilters) {
+        setSelectedGenres(null);
+        setSelectedPlatforms(null);
+        setSelectedTypes(null);
+      }
+    },
+    [selectedGenres, selectedPlatforms, selectedTypes]
+  );
+
+  // Media type keyboard shortcuts
 
   const toggleGenre = (genreId: string) => {
     const currentGenres = selectedGenres || [];
@@ -42,6 +73,17 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
     }
   };
 
+  const toggleMediaType = (typeId: string) => {
+    const currentTypes = selectedTypes || [];
+    if (currentTypes.includes(typeId)) {
+      setSelectedTypes(currentTypes.length > 1 ? currentTypes.filter((t) => t !== typeId) : null);
+    } else {
+      setSelectedTypes([...currentTypes, typeId]);
+    }
+    // If all types are selected, clear selection
+    if (currentTypes.length === MEDIA_TYPES.length - 1) setSelectedTypes(null);
+  };
+
   return (
     <Modal disclosure={disclosure} classNames={{ base: 'max-w-4xl' }}>
       <ModalBody className='space-y-6 p-6'>
@@ -53,16 +95,12 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
           <h2 className='text-Primary-50 text-xl font-semibold'>Apply Filters</h2>
         </div>
 
-        <div className='grid grid-cols-2 gap-8'>
+        <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>
           {/* Genres */}
-          <div className='space-y-5'>
+          <div className='space-y-3'>
             <div className='flex items-center justify-between'>
               <h3 className='text-Primary-50 text-lg font-medium'>Genres</h3>
-              {selectedGenres?.length ? (
-                <Button isIconOnly size='sm' className='button-secondary' onPress={() => setSelectedGenres(null)}>
-                  <FunnelX className='size-4' />
-                </Button>
-              ) : null}
+              {selectedGenres?.length ? <ClearFilter onClear={() => setSelectedGenres(null)} /> : null}
             </div>
             <div className='flex flex-wrap gap-2'>
               {Object.entries(GENRES).map(([id, label]) => {
@@ -74,53 +112,79 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
                     onPress={() => toggleGenre(label)}
                   >
                     {label}
-                    {isSelected && <CircleCheck className='ml-1.5 inline-block size-4 opacity-70' />}
                   </Button>
                 );
               })}
             </div>
           </div>
 
-          {/* Streaming Platforms */}
-          <div className='space-y-5'>
-            <div className='flex items-center justify-between'>
-              <h3 className='text-Primary-50 text-lg font-medium'>Streaming Platforms</h3>
-              {selectedPlatforms?.length ? (
-                <Button isIconOnly size='sm' className='button-secondary' onPress={() => setSelectedPlatforms(null)}>
-                  <FunnelX className='size-4' />
-                </Button>
-              ) : null}
+          <div className='space-y-6'>
+            {/* Streaming Platforms */}
+            <div className='space-y-3'>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-Primary-50 text-lg font-medium'>Streaming Platforms</h3>
+                {selectedPlatforms?.length ? <ClearFilter onClear={() => setSelectedPlatforms(null)} /> : null}
+              </div>
+              <div className='flex flex-wrap gap-2'>
+                {PLATFORMS.map((platform) => {
+                  const isSelected = selectedPlatforms?.includes(platform.id) || false;
+                  return (
+                    <Button
+                      key={platform.id}
+                      className={cn(
+                        'grid size-28 place-content-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-200',
+                        getClassName(isSelected)
+                      )}
+                      onPress={() => togglePlatform(platform.id)}
+                    >
+                      {platform.logo ? (
+                        <img src={platform.logo} alt={platform.label} className='mr-1 inline-block' loading='lazy' />
+                      ) : (
+                        platform.label
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
-            <div className='flex flex-wrap gap-2'>
-              {PLATFORMS.map((platform) => {
-                const isSelected = selectedPlatforms?.includes(platform.id) || false;
-                return (
-                  <Button
-                    key={platform.id}
-                    className={cn(
-                      'grid size-28 place-content-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-200',
-                      getClassName(isSelected)
-                    )}
-                    onPress={() => togglePlatform(platform.id)}
-                  >
-                    {platform.logo ? (
-                      <img src={platform.logo} alt={platform.label} className='mr-1 inline-block' loading='lazy' />
-                    ) : (
-                      platform.label
-                    )}
-                  </Button>
-                );
-              })}
+
+            {/* Media Types */}
+            <div className='space-y-3'>
+              <div className='flex items-center justify-between'>
+                <h3 className='text-Primary-50 text-lg font-medium'>Types</h3>
+                {selectedTypes?.length ? <ClearFilter onClear={() => setSelectedTypes(null)} /> : null}
+              </div>
+              <div className='flex flex-wrap gap-3'>
+                {MEDIA_TYPES.map((type) => {
+                  const isSelected = selectedTypes?.includes(type.id) || false;
+                  const IconComponent = type.icon;
+                  return (
+                    <Button
+                      key={type.id}
+                      className={cn(
+                        'pill-bg flex items-center justify-center gap-2 px-4 py-2 font-medium transition-colors duration-200',
+                        getClassName(isSelected)
+                      )}
+                      onPress={() => toggleMediaType(type.id)}
+                    >
+                      <IconComponent className='size-4' />
+                      {type.label}
+                      <ShortcutKey shortcutName={type.shortcut as ShortcutName} className='kbd-sm opacity-60' />
+                    </Button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
 
-        {(selectedGenres?.length || selectedPlatforms?.length) && (
+        {(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length) && (
           <Button
             className='button-secondary'
             onPress={() => {
               setSelectedGenres(null);
               setSelectedPlatforms(null);
+              setSelectedTypes(null);
             }}
           >
             Clear All Filters
@@ -129,12 +193,21 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
 
         <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border p-3'>
           <p className='text-Primary-300 text-xs'>
-            <span className='font-medium'>Tip:</span> Press{' '}
-            <kbd className='bg-Primary-500/20 rounded px-1 py-0.5 text-xs'>Ctrl</kbd> +
-            <kbd className='bg-Primary-500/20 ml-1 rounded px-1 py-0.5 text-xs'>F</kbd> to toggle filters
+            <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='toggleFilters' /> to toggle
+            filters
           </p>
         </div>
       </ModalBody>
     </Modal>
   );
 }
+
+const ClearFilter = ({ onClear }: { onClear: () => void }) => {
+  return (
+    <Tooltip content='Clear Filter' className='tooltip-secondary'>
+      <Button isIconOnly className='button-secondary' onPress={onClear}>
+        <FunnelX className='size-4' />
+      </Button>
+    </Tooltip>
+  );
+};
