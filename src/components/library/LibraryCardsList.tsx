@@ -6,7 +6,7 @@ import EmptyState from './EmptyState';
 import LibraryCard from './LibraryCard';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useListNavigator } from '@/hooks/useListNavigator';
-import { slugify } from '@/utils';
+import { generateMediaLink } from '@/utils/media';
 
 interface LibraryCardsListProps {
   items: LibraryMedia[];
@@ -15,11 +15,6 @@ interface LibraryCardsListProps {
   query: string;
   onReorder?: (reorderedItems: LibraryMedia[]) => void;
 }
-
-const getLink = (item: LibraryMedia) => {
-  const title = item.title || 'Untitled';
-  return `/${item.media_type === 'tv' ? 'tv' : 'movies'}/details/${item.id}-${slugify(title)}`;
-};
 
 export default function LibraryCardsList({ items, status }: LibraryCardsListProps) {
   const [displayedItems, setDisplayedItems] = useState(items);
@@ -41,7 +36,9 @@ export default function LibraryCardsList({ items, status }: LibraryCardsListProp
     currentIndex: focusIndex,
     onNavigate: setFocusIndex,
     onSelect: (index) => {
-      if (index >= 0 && displayedItems[index]) navigate(getLink(displayedItems[index]));
+      const item = displayedItems[index];
+      if (index >= 0 && displayedItems[index])
+        navigate(generateMediaLink(item.media_type, item.id, item.title || 'Untitled'));
     },
     orientation: 'grid',
     enabled: displayedItems.length > 0,

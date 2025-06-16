@@ -1,4 +1,4 @@
-import { formatDate } from '.';
+import { formatDate, slugify } from '.';
 
 export const getRating = (rating: number) => (rating % 1 === 0 ? rating : rating.toFixed(1));
 
@@ -27,7 +27,6 @@ export const getMediaType = (media: Media): 'movie' | 'tv' => {
 export const getFormattedRuntime = (media: Media): string => {
   const runtime = (media as Movie).runtime || (media as TvShow).episode_run_time?.[0];
 
-
   if (!runtime) return 'N/A';
 
   const hours = Math.floor(runtime / 60);
@@ -46,4 +45,8 @@ export const getDirectorOrCreator = (media: Media): Person | null => {
     const tvMedia = media as TvShow;
     return tvMedia.created_by?.[0] || null;
   }
+};
+
+export const generateMediaLink = (type: string, id: number, title: string) => {
+  return `/${type === 'tv' ? 'tv' : 'movies'}/details/${id}-${slugify(title)}`;
 };
