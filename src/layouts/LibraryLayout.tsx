@@ -2,8 +2,19 @@ import { useRef } from 'react';
 import { Outlet } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
-import { GalleryVerticalEnd, HelpCircle, ArrowUp, ArrowDown, PanelLeftClose, Filter, FileJson } from 'lucide-react';
+import {
+  GalleryVerticalEnd,
+  HelpCircle,
+  ArrowUp,
+  ArrowDown,
+  PanelLeftClose,
+  Filter,
+  FileJson,
+  MoreVertical,
+  Trash2,
+} from 'lucide-react';
 import { Select, SelectItem, SelectSection } from '@heroui/select';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
 import { Button } from '@heroui/button';
 import { useDisclosure } from '@heroui/modal';
 import { Tooltip } from '@heroui/tooltip';
@@ -16,9 +27,10 @@ import FiltersModal from '@/components/library/FiltersModal';
 import useLocalStorageState from '@/hooks/useLocalStorageState';
 import { cn, slugify } from '@/utils';
 import { getShortcut } from '@/utils/keyboardShortcuts';
-import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
+import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
+import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -35,8 +47,22 @@ export default function LibraryLayout() {
   const keyboardShortcutsDisclosure = useDisclosure();
   const importExportDisclosure = useDisclosure();
 
-  const { getCount } = useLibraryStore();
+  const { confirm } = useConfirmationModal();
 
+  const { getCount, clearLibrary } = useLibraryStore();
+
+  const handleClearLibrary = async () => {
+    const confirmed = await confirm({
+      title: 'Clear Library',
+      message: 'Are you sure you want to clear your entire library? This action cannot be undone.',
+      confirmText: 'Clear',
+      cancelText: 'Cancel',
+      confirmVariant: 'danger',
+      confirmationKey: 'clear_library',
+    });
+
+    if (confirmed) clearLibrary();
+  };
   useHotkeys(getShortcut('toggleSidebar').hotkey, () => setShowTabs(!showTabs), [showTabs], { useKey: true });
   useHotkeys(
     getShortcut('focusSearch').hotkey,
@@ -47,78 +73,102 @@ export default function LibraryLayout() {
     { useKey: true }
   );
   useHotkeys(getShortcut('clearSearch').hotkey, () => setQuery(null), { useKey: true });
+  useHotkeys(getShortcut('clearLibrary').hotkey, handleClearLibrary, { useKey: true });
 
   const hasActiveFilters = !!(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
 
   return (
     <div className='relative flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>
-      <Tabs
-        className={`absolute z-20 flex-col bg-transparent transition-transform duration-300 lg:flex-col ${
+      <div
+        className={cn(
+          'fixed z-20 h-[calc(100vh-120px)] flex-col transition-transform duration-300',
           showTabs ? 'translate-x-0' : '-translate-x-[200%]'
-        }`}
-        tabClassName='px-3 lg:px-4 text-sm lg:text-base'
-        tabs={[
-          {
-            label: `All (${getCount('all')})`,
-            icon: <GalleryVerticalEnd className='size-4' />,
-            includes: true,
-            value: 'all',
-            link: '/library/all',
-          },
-          ...LIBRARY_MEDIA_STATUS.map((status) => {
-            const IconComponent = status.icon;
-            return {
-              label: `${status.label} (${getCount(status.value)})`,
-              icon: <IconComponent className='size-4' />,
-              value: status.value,
-              link: `/library/${slugify(status.value)}`,
-            };
-          }),
-        ]}
-      />
+        )}
+      >
+        <div className='mb-6 flex items-center justify-between px-4'>
+          <h2 className='text-lg font-semibold text-white'>Library</h2>
+          <Tooltip content={<ShortcutTooltip shortcutName='toggleSidebar' />} className='tooltip-secondary'>
+            <Button
+              isIconOnly
+              size='sm'
+              className='button-secondary'
+              onPress={() => setShowTabs(false)}
+              aria-label='Close sidebar'
+            >
+              <PanelLeftClose className='size-4' />
+            </Button>
+          </Tooltip>
+        </div>
+        <Tabs
+          className='flex-col bg-transparent'
+          tabClassName='px-3 lg:px-4 text-sm lg:text-base'
+          tabs={[
+            {
+              label: `All (${getCount('all')})`,
+              icon: <GalleryVerticalEnd className='size-4' />,
+              includes: true,
+              value: 'all',
+              link: '/library/all',
+            },
+            ...LIBRARY_MEDIA_STATUS.map((status) => {
+              const IconComponent = status.icon;
+              return {
+                label: `${status.label} (${getCount(status.value)})`,
+                icon: <IconComponent className='size-4' />,
+                value: status.value,
+                link: `/library/${slugify(status.value)}`,
+              };
+            }),
+          ]}
+        />
+      </div>
       <div
         className={`flex flex-col gap-8 transition-all duration-300 ${
           showTabs ? 'w-[calc(100%-260px)] translate-x-[260px]' : 'w-full translate-x-0'
         }`}
       >
         <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>
-          <Input
-            type='text'
-            icon='search'
-            parentClassname='w-full lg:w-1/3'
-            name='search'
-            value={query}
-            label='Search Your Library'
-            placeholder='Search by title, genre, or status...'
-            ref={searchInputRef}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          <div className='flex w-full gap-2 lg:w-auto lg:min-w-fit'>
-            <Tooltip content={<ShortcutTooltip shortcutName='toggleSidebar' />} className='tooltip-secondary'>
-              <Button
-                isIconOnly
-                className='button-secondary'
-                onPress={() => setShowTabs(!showTabs)}
-                aria-label='Toggle tabs visibility'
+          <div className='flex items-center gap-2'>
+            {!showTabs && (
+              <Tooltip
+                content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
+                className='tooltip-secondary'
               >
-                {showTabs ? <PanelLeftClose className='size-4' /> : <PanelLeftClose className='size-4 rotate-180' />}
-              </Button>
-            </Tooltip>
-
-            {/* Filter button with indicator */}
+                <Button
+                  isIconOnly
+                  className='button-secondary h-full'
+                  onPress={() => setShowTabs(true)}
+                  aria-label='Show sidebar'
+                >
+                  <PanelLeftClose className='size-4 rotate-180' />
+                </Button>
+              </Tooltip>
+            )}
+            <Input
+              type='text'
+              icon='search'
+              parentClassname='w-80'
+              name='search'
+              value={query}
+              label='Search Your Library'
+              placeholder='Search by title, genre, or status...'
+              ref={searchInputRef}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className='flex items-center gap-3'>
+            {/* Filter button */}
             <Tooltip content={<ShortcutTooltip shortcutName='toggleFilters' />} className='tooltip-secondary'>
               <Button
                 isIconOnly
                 className={cn(
-                  'button-secondary relative overflow-visible',
+                  'button-secondary relative',
                   hasActiveFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20'
                 )}
                 onPress={() => filtersDisclosure.onOpen()}
                 aria-label='Show filters'
               >
                 <Filter className={cn('size-4', hasActiveFilters && 'text-amber-400')} />
-
-                {/* Filter indicator dot */}
                 {hasActiveFilters && (
                   <div className='absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black/80'>
                     {(selectedGenres?.length || 0) + (selectedPlatforms?.length || 0) + (selectedTypes?.length || 0)}
@@ -127,9 +177,10 @@ export default function LibraryLayout() {
               </Button>
             </Tooltip>
 
+            {/* Sort */}
             <Select
               placeholder='Sort by'
-              classNames={SELECT_CLASSNAMES}
+              classNames={{ ...SELECT_CLASSNAMES, listboxWrapper: 'max-h-none!' }}
               aria-label='Sort options'
               selectedKeys={[sortBy, sortDir]}
               onChange={(e) => {
@@ -145,38 +196,70 @@ export default function LibraryLayout() {
                 <SelectItem key='rating'>Your Rating</SelectItem>
                 <SelectItem key='date'>Release Date</SelectItem>
               </SelectSection>
-
               <SelectSection title='Direction'>
                 <SelectItem key='asc' startContent={<ArrowUp className='size-3.5' />}>
-                  Ascending (A-Z, Oldest First)
+                  Ascending
                 </SelectItem>
                 <SelectItem key='desc' startContent={<ArrowDown className='size-3.5' />}>
-                  Descending (Z-A, Newest First)
+                  Descending
                 </SelectItem>
               </SelectSection>
             </Select>
 
-            <Tooltip content={<ShortcutTooltip shortcutName='toggleImportExport' />} className='tooltip-secondary'>
-              <Button
-                isIconOnly
-                className='button-secondary'
-                onPress={() => importExportDisclosure.onOpen()}
-                aria-label='Import or export library'
-              >
-                <FileJson className='size-4' />
-              </Button>
-            </Tooltip>
+            {/* More options dropdown */}
+            <Dropdown
+              placement='bottom-end'
+              backdrop='opaque'
+              classNames={{ base: 'w-86', content: 'bg-blur backdrop-blur-md text-default-500 border border-white/5' }}
+            >
+              <DropdownTrigger>
+                <Button isIconOnly className='relative button-secondary' aria-label='More options'>
+                <Tooltip content="More options" className='tooltip-secondary'>
+                  <div className="absolute size-full inset-0"></div>
+                </Tooltip>
+                  <MoreVertical className='size-4' />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label='Library actions'>
+                <DropdownSection title='Library Management' showDivider>
+                  <DropdownItem
+                    key='import-export'
+                    startContent={<FileJson className='size-4 shrink-0' />}
+                    onPress={() => importExportDisclosure.onOpen()}
+                    description='Import or export your library'
+                    classNames={{ shortcut: 'p-0 border-none' }}
+                    shortcut={<ShortcutKey shortcutName='toggleImportExport' className='kbd-sm opacity-80' />}
+                  >
+                    Import / Export
+                  </DropdownItem>
+                  <DropdownItem
+                    key='clear-library'
+                    startContent={<Trash2 className='size-4 shrink-0' />}
+                    onPress={handleClearLibrary}
+                    className='text-danger'
+                    color='danger'
+                    description='Permanently delete all items'
+                    classNames={{ shortcut: 'p-0 border-none' }}
+                    shortcut={<ShortcutKey shortcutName='clearLibrary' className='kbd-sm opacity-80' />}
+                  >
+                    Clear Library
+                  </DropdownItem>
+                </DropdownSection>
 
-            <Tooltip content={<ShortcutTooltip shortcutName='toggleShortcutsHelp' />} className='tooltip-secondary'>
-              <Button
-                isIconOnly
-                className='button-secondary'
-                onPress={() => keyboardShortcutsDisclosure.onOpen()}
-                aria-label='Show keyboard shortcuts'
-              >
-                <HelpCircle className='size-4' />
-              </Button>
-            </Tooltip>
+                <DropdownSection title='Help & Settings'>
+                  <DropdownItem
+                    key='shortcuts'
+                    startContent={<HelpCircle className='size-4 shrink-0' />}
+                    onPress={() => keyboardShortcutsDisclosure.onOpen()}
+                    description='View keyboard shortcuts'
+                    classNames={{ shortcut: 'p-0 border-none' }}
+                    shortcut={<ShortcutKey shortcutName='toggleShortcutsHelp' className='kbd-sm opacity-80' />}
+                  >
+                    Keyboard Shortcuts
+                  </DropdownItem>
+                </DropdownSection>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
         <div className='flex-1'>
@@ -185,7 +268,7 @@ export default function LibraryLayout() {
       </div>
       <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
       <FiltersModal disclosure={filtersDisclosure} />
-      <ImportExportModal disclosure={importExportDisclosure} /> {/* Render the new modal */}
+      <ImportExportModal disclosure={importExportDisclosure} />
     </div>
   );
 }

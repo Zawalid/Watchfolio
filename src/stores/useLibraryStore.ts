@@ -26,6 +26,7 @@ interface LibraryState {
     parsedItems: LibraryMedia[],
     options: { mergeStrategy: 'smart' | 'overwrite' | 'skip'; keepExistingFavorites: boolean }
   ) => number;
+  clearLibrary: () => void;
 }
 
 const generateMediaKey = (mediaType: 'movie' | 'tv', id: number): string => `${mediaType}-${id}`;
@@ -239,6 +240,9 @@ export const useLibraryStore = create<LibraryState>()(
           console.error('Import error:', error);
           throw new Error(`Failed to import library: ${error instanceof Error ? error.message : String(error)}`);
         }
+      },
+      clearLibrary: () => {
+        set({ library: {} });
       },
     }),
 

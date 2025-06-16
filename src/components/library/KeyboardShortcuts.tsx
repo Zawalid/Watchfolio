@@ -18,7 +18,7 @@ const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   filters: 'Filters',
 };
 
-const CATEGORY_ORDER: ShortcutCategory[] = ['general',  'cardFocus', 'filters', 'modal', 'library'];
+const CATEGORY_ORDER: ShortcutCategory[] = ['general','library',  'cardFocus', 'filters', 'modal', ];
 
 export default function KeyboardShortcuts({ disclosure }: KeyboardShortcutsProps) {
   const { isOpen, onOpen, onClose } = disclosure;

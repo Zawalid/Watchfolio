@@ -27,11 +27,19 @@ export const KEYBOARD_SHORTCUTS = {
     description: 'Navigate between library cards',
     category: 'general',
   },
+
+  // library
   toggleImportExport: {
     hotkey: 'ctrl+i',
     label: 'Ctrl I',
     description: 'Open Import/Export modal',
-    category: 'general',
+    category: 'library',
+  },
+  clearLibrary: {
+    hotkey: 'shift+delete',
+    label: 'Shift Delete',
+    description: 'Clear entire library',
+    category: 'library',
   },
 
   // Library card focus shortcuts

@@ -12,7 +12,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <NuqsAdapter>
         <ToastProvider
           placement='top-right'
-          toastOffset={40}
+          toastOffset={60}
           toastProps={{ classNames: { base: 'bg-blur backdrop-blur-sm border border-white/10' } }}
         />
         <ReactQueryDevtools initialIsOpen={false} />
