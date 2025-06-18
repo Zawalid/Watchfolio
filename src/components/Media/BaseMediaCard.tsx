@@ -174,24 +174,26 @@ export default function BaseMediaCard({
               </Tooltip>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary'>
-                <Button
-                  isIconOnly
-                  size='sm'
-                  tabIndex={-1}
-                  className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-red-400/60 hover:bg-red-500/30 hover:text-red-200 active:scale-95'
-                  onPress={handleRemove}
-                  aria-label='Remove from library'
-                >
-                  <Trash2 className='size-3.5' />
-                </Button>
-              </Tooltip>
-            </motion.div>
+            {status && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary'>
+                  <Button
+                    isIconOnly
+                    size='sm'
+                    tabIndex={-1}
+                    className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-red-400/60 hover:bg-red-500/30 hover:text-red-200 active:scale-95'
+                    onPress={handleRemove}
+                    aria-label='Remove from library'
+                  >
+                    <Trash2 className='size-3.5' />
+                  </Button>
+                </Tooltip>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

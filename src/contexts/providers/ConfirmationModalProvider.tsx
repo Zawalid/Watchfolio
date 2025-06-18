@@ -21,7 +21,7 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
       // Check if "don't ask again" was previously set for this confirmation
       const confirmationKey = options.confirmationKey;
       if (confirmationKey) {
-        const dontAskAgainValue = localStorage.getItem(`confirmation_${confirmationKey}`);
+        const dontAskAgainValue = localStorage.getItem(`watchfolio-confirmation-${confirmationKey}`);
         if (dontAskAgainValue === 'true') {
           return Promise.resolve(true); // Auto-confirm if "don't ask again" was selected
         }
@@ -43,7 +43,7 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
     if (resolveRef.current) {
       // If "don't ask again" is checked, store the preference
       if (dontAskAgain && options.confirmationKey) {
-        localStorage.setItem(`confirmation_${options.confirmationKey}`, 'true');
+        localStorage.setItem(`watchfolio-confirmation-${options.confirmationKey}`, 'true');
       }
 
       // Resolve the promise with the user's choice

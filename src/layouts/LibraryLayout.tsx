@@ -3,34 +3,35 @@ import { Outlet } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
 import {
+  ArrowDown,
+  ArrowUp,
+  FileJson,
+  Filter,
   GalleryVerticalEnd,
   HelpCircle,
-  ArrowUp,
-  ArrowDown,
-  PanelLeftClose,
-  Filter,
-  FileJson,
   MoreVertical,
+  PanelLeftClose,
   Trash2,
 } from 'lucide-react';
-import { Select, SelectItem, SelectSection } from '@heroui/select';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
 import { Button } from '@heroui/button';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
 import { useDisclosure } from '@heroui/modal';
+import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Tooltip } from '@heroui/tooltip';
-import Input from '@/components/ui/Input';
-import { Tabs } from '@/components/ui/Tabs';
-import { useLibraryStore } from '@/stores/useLibraryStore';
-import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
-import FiltersModal from '@/components/library/FiltersModal';
-import useLocalStorageState from '@/hooks/useLocalStorageState';
-import { cn, slugify } from '@/utils';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { Input } from '@/components/ui/Input';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
+import { Tabs } from '@/components/ui/Tabs';
+import FiltersModal from '@/components/library/FiltersModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
-import { SELECT_CLASSNAMES } from '@/styles/heroui';
+import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
+import { SyncStatus } from '@/components/library/SyncStatus';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { useLibraryStore } from '@/stores/useLibraryStore';
+import { SELECT_CLASSNAMES } from '@/styles/heroui';
+import { cn, slugify } from '@/utils';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { getShortcut } from '@/utils/keyboardShortcuts';
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -42,7 +43,6 @@ export default function LibraryLayout() {
   const [selectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
   const searchInputRef = useRef<HTMLInputElement>(null);
-
   const filtersDisclosure = useDisclosure();
   const keyboardShortcutsDisclosure = useDisclosure();
   const importExportDisclosure = useDisclosure();
@@ -81,7 +81,7 @@ export default function LibraryLayout() {
     <div className='relative flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>
       <div
         className={cn(
-          'fixed z-20 h-[calc(100vh-120px)] flex-col transition-transform duration-300',
+          'fixed z-20 flex h-[calc(100vh-120px)] flex-col transition-transform duration-300',
           showTabs ? 'translate-x-0' : '-translate-x-[200%]'
         )}
       >
@@ -121,6 +121,8 @@ export default function LibraryLayout() {
             }),
           ]}
         />
+
+        <SyncStatus className='mt-auto mb-3' />
       </div>
       <div
         className={`flex flex-col gap-8 transition-all duration-300 ${
@@ -213,10 +215,10 @@ export default function LibraryLayout() {
               classNames={{ base: 'w-86', content: 'bg-blur backdrop-blur-md text-default-500 border border-white/5' }}
             >
               <DropdownTrigger>
-                <Button isIconOnly className='relative button-secondary' aria-label='More options'>
-                <Tooltip content="More options" className='tooltip-secondary'>
-                  <div className="absolute size-full inset-0"></div>
-                </Tooltip>
+                <Button isIconOnly className='button-secondary relative' aria-label='More options'>
+                  <Tooltip content='More options' className='tooltip-secondary'>
+                    <div className='absolute inset-0 size-full'></div>
+                  </Tooltip>
                   <MoreVertical className='size-4' />
                 </Button>
               </DropdownTrigger>
@@ -242,6 +244,7 @@ export default function LibraryLayout() {
                     classNames={{ shortcut: 'p-0 border-none' }}
                     shortcut={<ShortcutKey shortcutName='clearLibrary' className='kbd-sm opacity-80' />}
                   >
+                    {' '}
                     Clear Library
                   </DropdownItem>
                 </DropdownSection>
@@ -264,8 +267,8 @@ export default function LibraryLayout() {
         </div>
         <div className='flex-1'>
           <Outlet />
-        </div>
-      </div>
+        </div>{' '}
+      </div>{' '}
       <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
       <FiltersModal disclosure={filtersDisclosure} />
       <ImportExportModal disclosure={importExportDisclosure} />

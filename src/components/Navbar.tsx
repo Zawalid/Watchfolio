@@ -1,20 +1,32 @@
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
-import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON } from './ui/Icons';
+import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, SIGN_IN_ICON } from './ui/Icons';
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
-
-const explore: Link = {
-  label: 'Explore',
-  href: '/',
-  checks: ['popular', 'top-rated', 'now-playing', 'upcoming', 'airing-today', 'on-tv', 'search'],
-};
+import { useLocation, Link } from 'react-router';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { Button } from '@heroui/button';
 
 const links: Links = {
   authenticated: [
-    explore,
-    { label: 'Watchlist', href: '/watchlist', checks: ['watchlist'] },
-    { label: 'Suggestions', href: '/suggestions' },
+    {
+      label: 'My Library',
+      icon: HOME_ICON,
+      href: '/library',
+      checks: ['all', 'watching', 'will-watch', 'watched', 'on-hold', 'dropped', 'favorites'],
+    },
+    {
+      label: 'Movies',
+      icon: MOVIES_ICON,
+      href: '/movies',
+      checks: ['popular', 'top-rated', 'now-playing', 'upcoming'],
+    },
+    {
+      label: 'Tv Shows',
+      icon: TV_ICON,
+      href: '/tv',
+      checks: ['popular', 'top-rated', 'airing-today', 'on-tv'],
+    },
+    { label: 'Search', icon: SEARCH_ICON, href: '/search' },
   ],
   unauthenticated: [
     {
@@ -40,7 +52,7 @@ const links: Links = {
 };
 
 export default function Navbar() {
-  const isAuthenticated: boolean = false;
+  const { isAuthenticated, user } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
   const pathname = useLocation().pathname;
 
@@ -66,13 +78,27 @@ export default function Navbar() {
       }`}
     >
       <div className='container flex items-center justify-between'>
-        <img src='/images/logo.svg' alt='watchfolio' width={40} height={20} />
+        <img src='/images/logo.svg' alt='watchfolio' width={40} height={20} />{' '}
         <ul className='flex items-center gap-8'>
           {links[isAuthenticated ? 'authenticated' : 'unauthenticated'].map((link) => (
             <NavItem key={link.href} link={link} />
           ))}
         </ul>
-        {isAuthenticated && <UserDropdown user={{} as User} />}
+        {isAuthenticated ? (
+          <UserDropdown user={user?.profile || null} />
+        ) : (
+          <Button
+            as={Link}
+            to='/signin'
+            size='sm'
+            variant='flat'
+            color='primary'
+            startContent={SIGN_IN_ICON}
+            className='font-medium'
+          >
+            Sign In
+          </Button>
+        )}
       </div>
     </nav>
   );

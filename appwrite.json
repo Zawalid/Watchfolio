@@ -11,11 +11,16 @@
     "collections": [
         {
             "$id": "685060c20030c375747e",
-            "$permissions": [],
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
             "databaseId": "68505e9b003074668c0c",
             "name": "users",
             "enabled": true,
-            "documentSecurity": false,
+            "documentSecurity": true,
             "attributes": [
                 {
                     "key": "name",
@@ -109,11 +114,16 @@
         },
         {
             "$id": "685060dd003abef0254f",
-            "$permissions": [],
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
             "databaseId": "68505e9b003074668c0c",
             "name": "user_preferences",
             "enabled": true,
-            "documentSecurity": false,
+            "documentSecurity": true,
             "attributes": [
                 {
                     "key": "signOutConfirmation",
@@ -165,11 +175,16 @@
         },
         {
             "$id": "685083f50035559b8c41",
-            "$permissions": [],
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
             "databaseId": "68505e9b003074668c0c",
             "name": "libraries",
             "enabled": true,
-            "documentSecurity": false,
+            "documentSecurity": true,
             "attributes": [
                 {
                     "key": "averageRating",
@@ -209,11 +224,16 @@
         },
         {
             "$id": "68508402002d5329f64a",
-            "$permissions": [],
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
             "databaseId": "68505e9b003074668c0c",
             "name": "library_items",
             "enabled": true,
-            "documentSecurity": false,
+            "documentSecurity": true,
             "attributes": [
                 {
                     "key": "status",
@@ -326,7 +346,12 @@
         },
         {
             "$id": "6850840e000c60f5ca13",
-            "$permissions": [],
+            "$permissions": [
+                "create(\"users\")",
+                "read(\"users\")",
+                "update(\"users\")",
+                "delete(\"users\")"
+            ],
             "databaseId": "68505e9b003074668c0c",
             "name": "tmdb_media",
             "enabled": true,
@@ -374,7 +399,7 @@
                     "type": "string",
                     "required": false,
                     "array": false,
-                    "format": "url",
+                    "size": 50,
                     "default": null
                 },
                 {

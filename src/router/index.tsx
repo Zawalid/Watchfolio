@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-import { Layout, LibraryLayout, MoviesLayout, TvLayout } from '@/layouts';
-import { Home, Library, NotFound, Movies, TV, Details, Search } from '@/pages';
+import { AuthLayout, Layout, LibraryLayout, MoviesLayout, TvLayout } from '@/layouts';
+import { Home, Library, NotFound, Movies, TV, Details, Search, Signin, Signup } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 
 export const router = createBrowserRouter([
@@ -83,6 +83,19 @@ export const router = createBrowserRouter([
       {
         path: 'search',
         Component: Search,
+      },
+      {
+        Component: AuthLayout,
+        children: [
+          {
+            path: 'signin',
+            Component: Signin,
+          },
+          {
+            path: 'signup',
+            Component: Signup,
+          },
+        ],
       },
       {
         path: '*',

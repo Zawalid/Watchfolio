@@ -1,7 +1,7 @@
 import { useIsFetching } from '@tanstack/react-query';
 import { Button } from '@heroui/button';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import Input from '@/components/ui/Input';
+import { Input } from '@/components/ui/Input';
 import { search } from '@/lib/api/TMDB';
 import MediaCardsList from '@/components/Media/MediaCardsList';
 import { queryKeys } from '@/lib/react-query';

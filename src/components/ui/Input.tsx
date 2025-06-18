@@ -25,7 +25,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   error?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ children, type, icon, label, parentClassname, error, ...props }, ref) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ children, type, icon, label, parentClassname, error, ...props }, ref) {
   const { placeholder } = props;
   const [parent] = useAutoAnimate();
 
@@ -59,4 +59,3 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ children
   );
 });
 
-export default Input;

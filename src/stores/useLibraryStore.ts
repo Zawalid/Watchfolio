@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { GENRES } from '@/lib/api/TMDB/values';
 import { getRating } from '@/utils/media';
 import { serializeToJSON, serializeToCSV, mergeLibraryItems } from '@/utils/library';
+import { useSyncStore } from './useSyncStore';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -58,6 +59,31 @@ const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
   };
 };
 
+// Sync triggers - safely call sync operations without blocking the UI
+const triggerSyncForItem = (item: LibraryMedia) => {
+  try {
+    // Queue sync operation in the background
+    const syncStore = useSyncStore.getState();
+    syncStore.syncSingleItem(item).catch((error) => {
+      console.warn('Background sync failed:', error);
+      // Non-blocking - error is already handled in sync store
+    });
+  } catch (error) {
+    console.warn('Could not trigger sync:', error);
+  }
+};
+
+const triggerRemoveFromCloud = (mediaType: 'movie' | 'tv', id: number) => {
+  try {
+    const syncStore = useSyncStore.getState();
+    syncStore.removeFromCloud(mediaType, id).catch((error) => {
+      console.warn('Background remove sync failed:', error);
+    });
+  } catch (error) {
+    console.warn('Could not trigger remove sync:', error);
+  }
+};
+
 export const useLibraryStore = create<LibraryState>()(
   persist(
     (set, get) => ({
@@ -67,7 +93,6 @@ export const useLibraryStore = create<LibraryState>()(
         const { library } = get();
         return library[generateMediaKey(mediaType, id)];
       },
-
       addOrUpdateItem: (media, metadata) => {
         const { library } = get();
         const key = generateMediaKey(media.media_type, media.id);
@@ -106,6 +131,10 @@ export const useLibraryStore = create<LibraryState>()(
             delete newLibrary[key];
             return { library: newLibrary };
           });
+
+          // Trigger removal from cloud
+          triggerRemoveFromCloud(media.media_type, media.id);
+
           return null;
         }
 
@@ -115,6 +144,9 @@ export const useLibraryStore = create<LibraryState>()(
             [key]: newItemData,
           },
         }));
+
+        // Trigger sync to cloud for the updated item
+        triggerSyncForItem(newItemData);
 
         return newItemData;
       },
@@ -130,7 +162,6 @@ export const useLibraryStore = create<LibraryState>()(
           metadata
         );
       },
-
       removeItem: (mediaType, id) => {
         const { library } = get();
         const key = generateMediaKey(mediaType, id);
@@ -145,17 +176,25 @@ export const useLibraryStore = create<LibraryState>()(
               delete newLibrary[key];
               return { library: newLibrary };
             });
+
+            // Trigger removal from cloud
+            triggerRemoveFromCloud(mediaType, id);
           } else {
+            const newItem: LibraryMedia = {
+              ...item,
+              status: 'none' as LibraryMediaStatus,
+              lastUpdatedAt: new Date().toISOString(),
+            };
+
             set((state) => ({
               library: {
                 ...state.library,
-                [key]: {
-                  ...item,
-                  status: 'none',
-                  lastUpdatedAt: new Date().toISOString(),
-                },
+                [key]: newItem,
               },
             }));
+
+            // Trigger sync for the updated item
+            triggerSyncForItem(newItem);
           }
         }
       },
@@ -207,7 +246,6 @@ export const useLibraryStore = create<LibraryState>()(
 
         return format === 'csv' ? serializeToCSV(libraryItems) : serializeToJSON(libraryItems);
       },
-
       importLibrary: (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
         try {
           // Validate options
@@ -233,6 +271,16 @@ export const useLibraryStore = create<LibraryState>()(
           // Update the store only if we have something to update
           if (importCount > 0) {
             set({ library: mergedLibrary });
+
+            // Trigger full library sync to cloud after import
+            try {
+              const syncStore = useSyncStore.getState();
+              syncStore.syncToCloud(mergedLibrary).catch((error) => {
+                console.warn('Background sync after import failed:', error);
+              });
+            } catch (error) {
+              console.warn('Could not trigger sync after import:', error);
+            }
           }
 
           return importCount;
@@ -243,6 +291,16 @@ export const useLibraryStore = create<LibraryState>()(
       },
       clearLibrary: () => {
         set({ library: {} });
+
+        // Trigger full library sync to cloud after clearing
+        try {
+          const syncStore = useSyncStore.getState();
+          syncStore.syncToCloud({}).catch((error) => {
+            console.warn('Background sync after clear failed:', error);
+          });
+        } catch (error) {
+          console.warn('Could not trigger sync after clear:', error);
+        }
       },
     }),
 
