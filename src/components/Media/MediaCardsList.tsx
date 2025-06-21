@@ -3,7 +3,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
 import MediaCard from './MediaCard';
-import Pagination from '@/components/ui/Pagination';
+import { Pagination } from '@/components/ui/Pagination';
 import MediaCardsListSkeleton from '@/components/skeletons/MediaCardsListSkeleton';
 import { Error, NoResults } from '@/components/Status';
 import { Slider } from '@/components/ui/slider';

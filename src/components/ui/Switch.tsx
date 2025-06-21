@@ -1,6 +1,6 @@
 import { cn } from '@/utils';
 
-export default function Switch({ className, disabled, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
+export  function Switch({ className, disabled, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className='relative inline-flex items-center'>
       <input type='checkbox' className='peer sr-only' {...props} />

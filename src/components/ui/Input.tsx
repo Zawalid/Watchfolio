@@ -48,7 +48,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ c
             props.className
           )}
         />
-        <label className='text-Grey-600 peer-focus:text-Grey-400 peer-not-placeholder-shown:text-Grey-400 absolute top-1/2 left-14 z-0 -translate-y-1/2 cursor-text text-sm transition-all duration-300 peer-not-placeholder-shown:z-10 peer-not-placeholder-shown:-translate-y-5 peer-not-placeholder-shown:text-xs peer-focus:z-10 peer-focus:-translate-y-5 peer-focus:text-xs focus:text-white'>
+        <label className='text-Grey-400  absolute top-1/2 left-14 z-0 -translate-y-1/2 cursor-text text-sm transition-all duration-300 peer-not-placeholder-shown:z-10 peer-not-placeholder-shown:-translate-y-5 peer-not-placeholder-shown:text-xs peer-focus:z-10 peer-focus:-translate-y-5 peer-focus:text-xs focus:text-white'>
           {label}
         </label>
 

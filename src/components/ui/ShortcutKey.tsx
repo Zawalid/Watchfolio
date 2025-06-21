@@ -7,13 +7,13 @@ export const ShortcutKey: FC<{ shortcutName: ShortcutName; className?: string }>
   const keys = shortcut.label?.split(' ');
 
   return (
-    <div className='inline-flex items-center gap-1'>
+    <span className='inline-flex items-center gap-1'>
       {keys?.map((key, index) => (
         <kbd key={index} className={cn('kbd', className)}>
           {key}
         </kbd>
       ))}
-    </div>
+    </span>
   );
 };
 

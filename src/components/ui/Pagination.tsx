@@ -3,7 +3,7 @@ import { parseAsInteger, useQueryState } from 'nuqs';
 
 const className = 'bg-black/20  backdrop-blur-2xl w-fit px-2 [&[data-hover=true]:not([data-active=true])]:bg-black/40';
 
-export default function Pagination(props: PaginationProps) {
+export function Pagination(props: PaginationProps) {
   const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
   return (

@@ -3,7 +3,7 @@ import { Button } from '@heroui/button';
 import { ModalBody, ModalFooter } from '@heroui/modal';
 import { Checkbox } from '@heroui/checkbox';
 import { AlertTriangle } from 'lucide-react';
-import Modal from '@/components/ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { type ConfirmationOptions } from '@/contexts/ConfirmationModalContext';
 import { cn } from '@/utils';
 

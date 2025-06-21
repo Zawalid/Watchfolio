@@ -24,7 +24,7 @@ export default function AuthLayout() {
 
   return (
     <div className='grid h-full items-center gap-5 md:grid-cols-2'>
-      <div className='relative hidden h-full md:block'>
+      <div className='relative hidden h-full  place-content-center md:grid'>
         <img src='/images/signin.svg' alt='image' />
       </div>
       <div className='flex flex-col gap-2'>

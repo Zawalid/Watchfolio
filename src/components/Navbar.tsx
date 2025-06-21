@@ -52,7 +52,7 @@ const links: Links = {
 };
 
 export default function Navbar() {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
   const pathname = useLocation().pathname;
 
@@ -85,7 +85,7 @@ export default function Navbar() {
           ))}
         </ul>
         {isAuthenticated ? (
-          <UserDropdown user={user?.profile || null} />
+          <UserDropdown />
         ) : (
           <Button
             as={Link}

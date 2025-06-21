@@ -8,7 +8,7 @@ export interface InputProps extends React.TextareaHTMLAttributes<HTMLTextAreaEle
   error?: string;
 }
 
-export default function Textarea({ children, label, ...props }: InputProps) {
+export function Textarea({ children, label, ...props }: InputProps) {
   const { parentclassname, error } = props;
   const [parent] = useAutoAnimate();
 
@@ -18,20 +18,20 @@ export default function Textarea({ children, label, ...props }: InputProps) {
         <textarea
           {...props}
           className={cn(
-            'peer relative z-10 w-full overflow-hidden rounded-xl border-2 bg-black/10 px-4 pb-3 pt-7 text-sm text-Grey-100 outline-hidden placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:placeholder:text-Grey-600',
+            'peer text-Grey-100 focus:placeholder:text-Grey-600 pb-1. relative z-10 w-full rounded-xl border-2 bg-white/5 px-5 pb-1.5 pt-4.5 text-sm outline-hidden transition-colors duration-200 placeholder:text-sm placeholder:text-transparent read-only:bg-transparent focus:bg-transparent min-h-14 max-h-64',
             error
               ? 'border-Error-500 focus:border-Error-500'
-              : 'border-Grey-800 focus:border-Primary-500 read-only:focus:border-Primary-300',
+              : 'focus:border-Primary-500 read-only:focus:border-Primary-300 border-white/5',
             props.className
           )}
         />
-        <label className='absolute left-4 top-1/2 z-0 -translate-y-1/2 cursor-text text-sm text-Grey-600 transition-all duration-300 focus:text-white peer-focus:top-1 peer-focus:z-10 peer-focus:translate-y-0 peer-focus:text-Grey-400 peer-not-placeholder-shown:top-1 peer-not-placeholder-shown:z-10 peer-not-placeholder-shown:translate-y-0 peer-not-placeholder-shown:text-Grey-400'>
+        <label className='text-Grey-400 absolute top-1/2 left-5 z-0 -translate-y-1/2 cursor-text text-sm transition-all duration-300 peer-not-placeholder-shown:top-3 peer-not-placeholder-shown:z-10 peer-not-placeholder-shown:text-xs peer-focus:top-3 peer-focus:z-10 peer-focus:text-xs focus:text-white'>
           {label}
         </label>
 
         {children}
       </div>
-      {error && <span className='text-sm text-Error-500'>{error}</span>}
+      {error && <span className='text-Error-500 text-sm'>{error}</span>}
     </div>
   );
 }

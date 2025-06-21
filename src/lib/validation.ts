@@ -29,7 +29,10 @@ export const resetPasswordSchema = z
 
 export const profileSchema = z.object({
   name: common.name,
-  preference: z.string(),
+  preference: z.enum(['movies', 'series', 'both'], {
+    required_error: 'Please select a preference',
+    invalid_type_error: 'Please select a valid preference',
+  }),
   bio: z
     .string()
     .min(1, { message: 'Please enter your bio' })

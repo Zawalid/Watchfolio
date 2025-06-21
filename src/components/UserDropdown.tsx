@@ -1,19 +1,20 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from '@heroui/dropdown';
 import { Avatar } from '@heroui/avatar';
-import { useDisclosure } from '@heroui/modal';
 import { SETTINGS_ICON, SIGN_OUT_ICON } from './ui/Icons';
 import { useNavigate } from 'react-router';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { addToast } from '@heroui/toast';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { ChevronDownIcon } from 'lucide-react';
+import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 
-export default function UserDropdown({ user }: { user: User | null }) {
-  const disclosure = useDisclosure();
+export default function UserDropdown() {
   const navigate = useNavigate();
-  const { signOut: authSignOut } = useAuthStore();
+  const { user, signOut: authSignOut } = useAuthStore();
   const { confirm } = useConfirmationModal();
 
   if (!user) return null;
+
   const signOut = async () => {
     try {
       const confirmed = await confirm({
@@ -26,7 +27,7 @@ export default function UserDropdown({ user }: { user: User | null }) {
       if (!confirmed) return;
       await authSignOut();
       addToast({ title: 'Signed out successfully', description: 'You have been signed out.', color: 'success' });
-      navigate('/');
+      if (['settings'].includes(window.location.pathname)) navigate('/');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       addToast({ title: 'Sign out failed', description: errorMessage, color: 'danger' });
@@ -34,67 +35,46 @@ export default function UserDropdown({ user }: { user: User | null }) {
     }
   };
 
+  const avatarUrl = user.profile.avatarUrl || `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user.name}`;
+
   return (
     <>
-      <Dropdown
-        classNames={{ content: 'blur-bg backdrop-blur-2xl' }}
-        backdrop='opaque'
-        radius='sm'
-        placement='bottom-end'
-      >
-        <DropdownTrigger>
-          <Avatar
-            src={user.image || ''}
-            isBordered
-            classNames={{
-              base: 'bg-transparent',
-              icon: 'text-Primary-100',
-            }}
-            color='secondary'
-            size='sm'
-            showFallback
-            as='button'
-          />
+      <Dropdown classNames={DROPDOWN_CLASSNAMES} backdrop='opaque' radius='sm' placement='bottom-end'>
+        <DropdownTrigger className='cursor-pointer'>
+          <div className='flex items-center gap-3 rounded-xl border border-white/10 px-3 py-2 transition-colors duration-200 hover:border-white/20 hover:bg-white/5'>
+            <Avatar src={avatarUrl} isBordered classNames={{ base: 'size-6' }} color='secondary' />
+            <span className='text-Primary-50 text-sm font-bold'>{user.name.split(' ')[0]}</span>
+            <ChevronDownIcon className='text-Grey-300 size-4' />
+          </div>
         </DropdownTrigger>
-        <DropdownMenu
-          aria-label='User Actions'
-          variant='faded'
-          itemClasses={{
-            base: [
-              'rounded-md',
-              'border-none',
-              'text-default-500',
-              'data-[hover=true]:text-foreground data-[disabled=true]:opacity-100',
-            ],
-          }}
-          disabledKeys={['profile']}
-          onAction={(key) => {
-            if (key === 'sign out') {
-              if (user.preferences?.signOutConfirmation === 'disabled') signOut();
-              else disclosure.onOpen();
-            }
-          }}
-        >
+        <DropdownMenu aria-label='User Actions' disabledKeys={['profile']}>
           <DropdownSection showDivider>
-            <DropdownItem key='profile' className='cursor-auto data-[hover=true]:bg-transparent'>
-              <h5 className='text-Primary-100 text-base font-bold'>{user.name}</h5>
-              <h6 className='text-Primary-200 font-medium'>{user.email}</h6>
+            <DropdownItem
+              key='profile'
+              classNames={{ title: 'flex items-center gap-3', base: 'data-[disabled=true]:opacity-100' }}
+              className='cursor-auto data-[hover=true]:bg-transparent'
+            >
+              <Avatar src={avatarUrl} isBordered color='secondary' size='sm' />
+              <div className='flex-1'>
+                <h5 className='text-Primary-100 text-base font-bold'>{user.name}</h5>
+                <h6 className='text-Primary-200 font-medium'>{user.email}</h6>
+              </div>
             </DropdownItem>
           </DropdownSection>
           <DropdownItem
             key='settings'
             href='/settings'
-            className='data-[hover=true]:bg-black/20'
             startContent={SETTINGS_ICON}
+            onPress={() => navigate('/settings')}
           >
             Settings
           </DropdownItem>
           <DropdownItem
             key='sign out'
             color='danger'
-            variant='solid'
-            className='data-[focus-visible=true]:ring-danger-700'
+            className='text-danger'
             startContent={SIGN_OUT_ICON}
+            onPress={signOut}
           >
             Sign Out
           </DropdownItem>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Upload, Download, FileJson } from 'lucide-react';
 import { ModalBody } from '@heroui/modal';
-import Modal from '@/components/ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { Tabs } from '@/components/ui/Tabs';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import Import from './Import';
@@ -55,10 +55,10 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
         {activeTab === 'import' && <Import onClose={onClose} />}
 
         <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border p-3'>
-          <div className='text-Primary-300 text-xs'>
+          <p className='text-Primary-300 text-xs'>
             <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='toggleImportExport' /> to toggle
             this panel
-          </div>
+          </p>
         </div>
       </ModalBody>
     </Modal>

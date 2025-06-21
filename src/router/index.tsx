@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-import { AuthLayout, Layout, LibraryLayout, MoviesLayout, TvLayout } from '@/layouts';
-import { Home, Library, NotFound, Movies, TV, Details, Search, Signin, Signup } from '@/pages';
+import { AuthLayout, Layout, LibraryLayout, MoviesLayout, SettingsLayout, TvLayout } from '@/layouts';
+import { Home, Library, NotFound, Movies, TV, Details, Search, Signin, Signup, Account, General } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 
 export const router = createBrowserRouter([
@@ -95,6 +95,25 @@ export const router = createBrowserRouter([
           {
             path: 'signup',
             Component: Signup,
+          },
+        ],
+      },
+      // TODO : Prevent unauthenticated users from accessing auth routes
+      {
+        path: 'settings',
+        Component: SettingsLayout,
+        children: [
+          {
+            index: true,
+            element: <Navigate to='/settings/account' />,
+          },
+          {
+            path: 'account',
+            Component: Account,
+          },
+          {
+            path: 'general',
+            Component: General,
           },
         ],
       },

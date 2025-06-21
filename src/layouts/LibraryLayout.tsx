@@ -28,7 +28,7 @@ import { SyncStatus } from '@/components/library/SyncStatus';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { SELECT_CLASSNAMES } from '@/styles/heroui';
+import { DROPDOWN_CLASSNAMES, SELECT_CLASSNAMES } from '@/styles/heroui';
 import { cn, slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
@@ -212,7 +212,7 @@ export default function LibraryLayout() {
             <Dropdown
               placement='bottom-end'
               backdrop='opaque'
-              classNames={{ base: 'w-86', content: 'bg-blur backdrop-blur-md text-default-500 border border-white/5' }}
+              classNames={DROPDOWN_CLASSNAMES}
             >
               <DropdownTrigger>
                 <Button isIconOnly className='button-secondary relative' aria-label='More options'>

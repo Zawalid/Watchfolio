@@ -4,6 +4,7 @@ import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { ConfirmationModalContext, type ConfirmationOptions } from '../ConfirmationModalContext';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 
+// TODO : sync the prefrences with the user's
 export function ConfirmationModalProvider({ children }: { children: React.ReactNode }) {
   const modalDisclosure = useDisclosure();
   const [options, setOptions] = useState<ConfirmationOptions>({

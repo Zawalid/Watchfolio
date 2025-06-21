@@ -1,14 +1,25 @@
-import { type Models } from 'appwrite';
-
-type Theme = 'light' | 'dark' | 'system';
-type ConfirmationSetting = 'enabled' | 'disabled';
-type MediaType = 'movie' | 'tv';
-type WatchStatus = 'watching' | 'willWatch' | 'watched' | 'onHold' | 'dropped' | 'none';
+import { Models } from 'appwrite';
 
 declare global {
-  interface User extends Models.Document {
+  type Theme = 'light' | 'dark' | 'system';
+  type ConfirmationSetting = 'enabled' | 'disabled';
+  type MediaType = 'movie' | 'tv';
+  type WatchStatus = 'watching' | 'willWatch' | 'watched' | 'onHold' | 'dropped' | 'none';
+  type MediaPreferenceType = 'movies' | 'series' | 'both';
+
+  interface Document {
+    $id: string;
+    $collectionId: string;
+    $databaseId: string;
+    $createdAt: string;
+    $updatedAt: string;
+    $permissions: string[];
+  }
+
+  interface Profile extends Document {
     name: string;
     email: string;
+    mediaPreference: MediaPreferenceType;
     bio?: string;
     avatarUrl?: string;
     username?: string;
@@ -16,21 +27,20 @@ declare global {
     library?: Library;
   }
 
-  //  TODO : No need for User preferences table use auth's prefs
-  interface UserPreferences extends Models.Document {
+  interface UserPreferences extends Document {
     signOutConfirmation: ConfirmationSetting;
     removeFromWatchlistConfirmation: ConfirmationSetting;
     theme: Theme;
     language: string;
   }
 
-  interface Library extends Models.Document {
+  interface Library extends Document {
     averageRating?: number;
     items?: LibraryItem[];
-    user?: User;
+    user?: Profile;
   }
 
-  interface LibraryItem extends Models.Document {
+  interface LibraryItem extends Document {
     status: WatchStatus;
     isFavorite: boolean;
     userRating?: number;
@@ -40,7 +50,7 @@ declare global {
     media?: TmdbMedia;
   }
 
-  interface TmdbMedia extends Models.Document {
+  interface TmdbMedia extends Document {
     id: number;
     mediaType: MediaType;
     title: string;
@@ -51,29 +61,44 @@ declare global {
     rating?: number;
   }
 
-  type CreateUserInput = Omit<User, keyof Models.Document | 'preferences' | 'library'>;
-  type CreateUserPreferencesInput = Omit<UserPreferences, keyof Models.Document>;
-  type CreateLibraryInput = Omit<Library, keyof Models.Document | 'items' | 'user'>;
-  type CreateLibraryItemInput = Omit<LibraryItem, keyof Models.Document | 'library' | 'media'> & {
+  type CreateProfileInput = Omit<Profile, keyof Document | 'preferences' | 'library'>;
+  type CreateUserPreferencesInput = Omit<UserPreferences, keyof Document>;
+  type CreateLibraryInput = Omit<Library, keyof Document | 'items' | 'user'>;
+  type CreateLibraryItemInput = Omit<LibraryItem, keyof Document | 'library' | 'media'> & {
     libraryId: string;
     mediaId: string;
   };
-  type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Models.Document>;
+  type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Document>;
 
-  type UpdateUserInput = Partial<CreateUserInput>;
+  type UpdateProfileInput = Partial<CreateProfileInput>;
   type UpdateUserPreferencesInput = Partial<CreateUserPreferencesInput>;
   type UpdateLibraryInput = Partial<CreateLibraryInput>;
   type UpdateLibraryItemInput = Partial<Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>>;
   type UpdateTmdbMediaInput = Partial<CreateTmdbMediaInput>;
 
-  interface UserWithRelations extends User {
+  // User location data from Appwrite Locale API
+  interface UserLocation {
+    country: string;
+    countryCode: string;
+    continent: string;
+    continentCode: string;
+  }
+
+  // Combined user type that merges auth, profile, preferences, and location
+  interface UserWithProfile extends Models.User<Models.Preferences> {
+    profile: Profile;
+    preferences: UserPreferences;
+    location: UserLocation;
+  }
+
+  interface ProfileWithRelations extends Profile {
     preferences?: UserPreferences;
     library?: LibraryWithItems;
   }
 
   interface LibraryWithItems extends Library {
     items?: LibraryItemWithMedia[];
-    user?: User;
+    user?: Profile;
   }
 
   interface LibraryItemWithMedia extends LibraryItem {
@@ -86,7 +111,7 @@ declare global {
     documents: T[];
   }
 
-  type UserDocumentList = DocumentList<User>;
+  type ProfileDocumentList = DocumentList<Profile>;
   type LibraryItemDocumentList = DocumentList<LibraryItem>;
   type TmdbMediaDocumentList = DocumentList<TmdbMedia>;
 }

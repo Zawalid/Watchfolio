@@ -1,7 +1,7 @@
 import { Keyboard } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { ModalBody } from '@heroui/modal';
-import Modal from '@/components/ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { getShortcut, getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 
@@ -18,7 +18,7 @@ const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   filters: 'Filters',
 };
 
-const CATEGORY_ORDER: ShortcutCategory[] = ['general','library',  'cardFocus', 'filters', 'modal', ];
+const CATEGORY_ORDER: ShortcutCategory[] = ['general', 'library', 'cardFocus', 'filters', 'modal'];
 
 export default function KeyboardShortcuts({ disclosure }: KeyboardShortcutsProps) {
   const { isOpen, onOpen, onClose } = disclosure;

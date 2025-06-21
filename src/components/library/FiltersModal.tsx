@@ -2,7 +2,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { FunnelX, Filter as FilterIcon, Film, Tv, Clapperboard } from 'lucide-react';
 import { ModalBody } from '@heroui/modal';
-import Modal from '@/components/ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
 import { cn } from '@/utils';
@@ -81,7 +81,7 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
       setSelectedTypes([...currentTypes, typeId]);
     }
     // If all types are selected, clear selection
-    if (currentTypes.length === MEDIA_TYPES.length - 1) setSelectedTypes(null);
+    if (currentTypes.length === MEDIA_TYPES.length) setSelectedTypes(null);
   };
 
   return (

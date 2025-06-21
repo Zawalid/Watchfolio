@@ -1,7 +1,7 @@
 import { Button } from '@heroui/button';
 import { Checkbox } from '@heroui/checkbox';
 import { ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-import Modal from './ui/Modal';
+import { Modal } from './ui/Modal';
 
 type List = {
   name: string;
@@ -29,17 +29,17 @@ export default function AddToList({ disclosure }: { disclosure: Disclosure }) {
   return (
     <Modal disclosure={disclosure}>
       <ModalHeader className='flex justify-center'>
-        <h4 className='text-xl font-semibold text-Primary-100'>Add to list</h4>
+        <h4 className='text-Primary-100 text-xl font-semibold'>Add to list</h4>
       </ModalHeader>
       <ModalBody>
         {sampleData.length ? (
           sampleData.map((list) => <List key={list.name} list={list} />)
         ) : (
-          <p className='text-center text-Grey-300'>
+          <p className='text-Grey-300 text-center'>
             No lists found. It looks like you haven&apos;t created any lists yet. Start by adding a new list.
           </p>
         )}
-        <Button className='mt-5 border-border text-white hover:border-Primary-500' variant='ghost' color='primary'>
+        <Button className='border-border hover:border-Primary-500 mt-5 text-white' variant='ghost' color='primary'>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
@@ -69,7 +69,7 @@ function List({ list }: { list: List }) {
   return (
     <div className='flex justify-between'>
       <Checkbox defaultSelected>{list.name}</Checkbox>
-      <span className='rounded-md bg-Grey-800 px-2 py-1.5 text-sm text-Grey-100'>{list.items.length} Items</span>
+      <span className='bg-Grey-800 text-Grey-100 rounded-md px-2 py-1.5 text-sm'>{list.items.length} Items</span>
     </div>
   );
 }

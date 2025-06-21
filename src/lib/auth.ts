@@ -1,4 +1,3 @@
-import { Models } from 'appwrite';
 import { appwriteService } from './api/appwrite-service';
 
 export interface CreateUserAccount {
@@ -21,7 +20,7 @@ class AuthService {
   /**
    * Create new user account with profile and library
    */
-  async createAccount({ name, email, password }: CreateUserAccount): Promise<Models.User<Models.Preferences>> {
+  async createAccount({ name, email, password }: CreateUserAccount) {
     try {
       // 1. Create Appwrite auth account
       const newAccount = await appwriteService.auth.createAccount(email, password, name);
@@ -46,7 +45,7 @@ class AuthService {
   /**
    * Sign in user with email and password
    */
-  async signIn({ email, password }: SignInAccount): Promise<Models.Session> {
+  async signIn({ email, password }: SignInAccount) {
     try {
       const session = await appwriteService.auth.createEmailSession(email, password);
       return session;
@@ -59,7 +58,7 @@ class AuthService {
   /**
    * Sign out current user
    */
-  async signOut(): Promise<void> {
+  async signOut() {
     try {
       await appwriteService.auth.deleteCurrentSession();
     } catch (error) {
@@ -69,34 +68,49 @@ class AuthService {
   }
 
   /**
-   * Get current authenticated user with profile
+   * Get current authenticated user with profile, preferences, and location
    */
-  async getCurrentUser(): Promise<(Models.User<Models.Preferences> & { profile?: User }) | null> {
+  async getCurrentUser(): Promise<UserWithProfile | null> {
     try {
       const currentAccount = await appwriteService.auth.getCurrentUser();
       if (!currentAccount) return null;
 
-      // Get user profile from database
       try {
-        const userProfile = await appwriteService.users.get(currentAccount.$id);
+        // Get user profile from database
+        const userProfile = await appwriteService.profiles.get(currentAccount.$id);
+
+        // Get or create user preferences using the userId
+        let userPreferences: UserPreferences;
+        try {
+          userPreferences = await appwriteService.userPreferences.get(currentAccount.$id);
+        } catch {
+          // Preferences don't exist, create default ones
+          userPreferences = await this.createDefaultUserPreferences(currentAccount.$id);
+        }
+
+        // Get user location
+        const userLocation = await appwriteService.locale.getUserLocation();
 
         return {
           ...currentAccount,
           profile: userProfile,
+          preferences: userPreferences,
+          location: userLocation,
         };
       } catch {
-        // Profile might not exist yet, return account without profile
-        return currentAccount;
+        // Profile might not exist yet, return null
+        return null;
       }
     } catch (error) {
       console.error('Get current user error:', error);
       return null;
     }
   }
+
   /**
    * Get user's library ID
    */
-  async getUserLibraryId(userId: string): Promise<string | null> {
+  async getUserLibraryId(userId: string) {
     try {
       const userLibrary = await appwriteService.libraries.getByUser(userId);
       return userLibrary?.$id || null;
@@ -109,7 +123,7 @@ class AuthService {
   /**
    * Reset password via email
    */
-  async resetPassword(email: string): Promise<Models.Token> {
+  async resetPassword(email: string) {
     try {
       return await appwriteService.auth.createRecovery(email, `${window.location.origin}/reset-password`);
     } catch (error) {
@@ -121,26 +135,143 @@ class AuthService {
   /**
    * Update password with recovery token
    */
-  async updatePassword(userId: string, secret: string, password: string): Promise<Models.Token> {
+  async updatePassword(userId: string, secret: string, password: string) {
     try {
       return await appwriteService.auth.updateRecovery(userId, secret, password);
     } catch (error) {
       console.error('Update password error:', error);
       throw this.formatError(error);
     }
-  } /**
+  }
+
+  /**
+   * Create default user preferences
+   */
+  private async createDefaultUserPreferences(userId: string) {
+    try {
+      const defaultPreferences = {
+        signOutConfirmation: 'enabled' as ConfirmationSetting,
+        removeFromWatchlistConfirmation: 'enabled' as ConfirmationSetting,
+        theme: 'system' as Theme,
+        language: 'en',
+        userId,
+      };
+
+      // Use the userId as the document ID to make the relationship simpler
+      return await appwriteService.userPreferences.create(defaultPreferences, userId);
+    } catch (error) {
+      console.error('Create default user preferences error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Update user name in both auth and profile
+   */
+  async updateUserName(name: string) {
+    try {
+      return await appwriteService.auth.updateName(name);
+    } catch (error) {
+      console.error('Update user name error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Update user email in both auth and profile
+   */
+  async updateUserEmail(userId: string, email: string, password: string): Promise<UserWithProfile | null> {
+    try {
+      // Update email in Appwrite Auth
+      await appwriteService.auth.updateEmail(email, password);
+
+      // Update email in profile
+      await appwriteService.profiles.update(userId, { email });
+
+      // Return updated user
+      return await this.getCurrentUser();
+    } catch (error) {
+      console.error('Update user email error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Update user password in Appwrite Auth
+   */
+  async updateUserPassword(newPassword: string, oldPassword: string) {
+    try {
+      await appwriteService.auth.updatePassword(newPassword, oldPassword);
+    } catch (error) {
+      console.error('Update user password error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Update user profile data
+   */
+  async updateUserProfile(userId: string, profileData: UpdateProfileInput): Promise<UserWithProfile | null> {
+    try {
+      if (profileData.name) await this.updateUserName(profileData.name);
+      await appwriteService.profiles.update(userId, profileData);
+      return await this.getCurrentUser();
+    } catch (error) {
+      console.error('Update user profile error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Update user preferences
+   */
+  async updateUserPreferences(
+    preferencesId: string,
+    preferencesData: UpdateUserPreferencesInput
+  ): Promise<UserWithProfile | null> {
+    try {
+      await appwriteService.userPreferences.update(preferencesId, preferencesData);
+      return await this.getCurrentUser();
+    } catch (error) {
+      console.error('Update user preferences error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Delete user account - removes auth account, profile, preferences, and library
+   */
+  async deleteUserAccount(userId: string) {
+    try {
+      // Delete profile (this will also delete library, preferences, items, etc. due to cascade delete)
+      await appwriteService.profiles.delete(userId);
+      await appwriteService.auth.deleteAllSessions();
+    } catch (error) {
+      console.error('Delete user account error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
    * Create user profile in database with proper permissions
    */
-  private async createUserProfile(userId: string, name: string, email: string): Promise<User> {
+  private async createUserProfile(userId: string, name: string, email: string) {
     try {
+      // First create default user preferences with the same ID as the user
+      await this.createDefaultUserPreferences(userId);
+
       const userData = {
         name,
         email,
-        username: email.split('@')[0], // Generate username from email
-        id: userId, // Include the userId for permissions
+        username: email.split('@')[0],
+        id: userId,
+        avatarUrl: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`,
+        mediaPreference: 'both' as MediaPreferenceType,
       };
 
-      return await appwriteService.users.create(userData, userId);
+      const profile = await appwriteService.profiles.create(userData, userId);
+
+      return profile;
     } catch (error) {
       console.error('Create user profile error:', error);
       throw error;
@@ -150,7 +281,7 @@ class AuthService {
   /**
    * Create empty library for user with proper permissions
    */
-  private async createUserLibrary(userId: string): Promise<Library> {
+  async createUserLibrary(userId: string) {
     try {
       const libraryData = {
         user: userId,
@@ -162,7 +293,9 @@ class AuthService {
       console.error('Create user library error:', error);
       throw error;
     }
-  } /**
+  }
+
+  /**
    * Format Appwrite errors to user-friendly messages
    */
   private formatError(error: unknown): AuthError {
@@ -222,7 +355,7 @@ class AuthService {
   /**
    * Get current user ID (helper for other services)
    */
-  async getCurrentUserId(): Promise<string | null> {
+  async getCurrentUserId() {
     try {
       const currentUser = await appwriteService.auth.getCurrentUser();
       return currentUser?.$id || null;

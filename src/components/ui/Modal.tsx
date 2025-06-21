@@ -8,17 +8,16 @@ interface Props extends ModalProps {
 
 const defaultClassNames = {
   wrapper: 'overflow-hidden',
-  body: 'max-h-[90vh] overflow-auto blur-bg py-6',
+  body: 'max-h-[90vh] overflow-auto  py-6',
   backdrop: 'bg-black/50 backdrop-blur-[3px]',
-  base: 'border-border  text-[#a8b0d3]',
-  header: 'bg-blur border-b-[1px] border-border',
-  footer: 'bg-blur border-t-[1px] border-border',
+  base: 'border-border backdrop-blur-xl bg-blur blur-bg text-[#a8b0d3]',
+  header: 'border-b-[1px] border-border',
+  footer: 'border-t-[1px] border-border',
   closeButton: 'border border-transparent hover:border-white/10 hover:bg-white/5',
 };
 
-export default function Modal({ children, disclosure, classNames = {}, ...props }: Props) {
+export function Modal({ children, disclosure, classNames = {}, ...props }: Props) {
   const { isOpen, onOpenChange } = disclosure;
-
 
   const mergedClassNames = {
     wrapper: cn(defaultClassNames.wrapper, classNames.wrapper),
