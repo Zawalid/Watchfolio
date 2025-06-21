@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useDisclosure } from '@heroui/modal';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { ConfirmationModalContext, type ConfirmationOptions } from '../ConfirmationModalContext';
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 
 export function ConfirmationModalProvider({ children }: { children: React.ReactNode }) {
   const modalDisclosure = useDisclosure();
@@ -21,7 +22,7 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
       // Check if "don't ask again" was previously set for this confirmation
       const confirmationKey = options.confirmationKey;
       if (confirmationKey) {
-        const dontAskAgainValue = localStorage.getItem(`watchfolio-confirmation-${confirmationKey}`);
+        const dontAskAgainValue = localStorage.getItem(`${LOCAL_STORAGE_PREFIX}confirmation-${confirmationKey}`);
         if (dontAskAgainValue === 'true') {
           return Promise.resolve(true); // Auto-confirm if "don't ask again" was selected
         }
@@ -43,7 +44,7 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
     if (resolveRef.current) {
       // If "don't ask again" is checked, store the preference
       if (dontAskAgain && options.confirmationKey) {
-        localStorage.setItem(`watchfolio-confirmation-${options.confirmationKey}`, 'true');
+        localStorage.setItem(`${LOCAL_STORAGE_PREFIX}confirmation-${options.confirmationKey}`, 'true');
       }
 
       // Resolve the promise with the user's choice

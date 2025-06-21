@@ -55,10 +55,10 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
         {activeTab === 'import' && <Import onClose={onClose} />}
 
         <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border p-3'>
-          <p className='text-Primary-300 text-xs'>
+          <div className='text-Primary-300 text-xs'>
             <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='toggleImportExport' /> to toggle
             this panel
-          </p>
+          </div>
         </div>
       </ModalBody>
     </Modal>

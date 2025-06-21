@@ -1,12 +1,9 @@
-/**
- * Authentication Store for Watchfolio
- * Manages user authentication state and operations
- */
-
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import { Models } from 'appwrite';
+import { create } from 'zustand';
 import { authService } from '@/lib/auth';
+import { persistAndSync } from '@/utils/persistAndSync';
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { setupZustandDevtools } from '@/utils';
 
 interface AuthUser extends Models.User<Models.Preferences> {
   profile?: User;
@@ -27,7 +24,7 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()(
-  persist(
+  persistAndSync(
     (set, get) => ({
       user: null,
       isLoading: false,
@@ -117,11 +114,11 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: 'auth-store',
-      partialize: (state) => ({
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
+      name: `${LOCAL_STORAGE_PREFIX}auth`,
+      include: ['user', 'isAuthenticated'],
+      storage: 'cookie',
     }
   )
 );
+
+setupZustandDevtools('AuthStore', useAuthStore);

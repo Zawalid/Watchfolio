@@ -2,10 +2,12 @@ import { useLayoutEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import Navbar from '@/components/Navbar';
 import { Providers } from '@/providers';
-
+import { useLibrarySync } from '@/hooks/useLibrarySync';
 
 export default function Layout() {
   const location = useLocation();
+
+  useLibrarySync();
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });

@@ -1,3 +1,4 @@
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { useState, useEffect } from 'react';
 
 /**
@@ -10,7 +11,7 @@ export function useLocalStorageState<T>(
   key: string,
   initialValue: T | (() => T)
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const KEY = `watchfolio-${key}`;
+  const KEY = `${LOCAL_STORAGE_PREFIX}${key}`;
   // Get initial value from localStorage or use provided initialValue
   const [state, setState] = useState<T>(() => {
     try {

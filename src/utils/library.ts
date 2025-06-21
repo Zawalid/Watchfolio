@@ -189,3 +189,146 @@ export const mergeLibraryItems = (
 
   return { mergedLibrary, importCount };
 };
+
+/**
+ * Compare local and cloud libraries to determine sync differences
+ */
+export interface LibrarySyncDiff {
+  localOnly: LibraryMedia[];
+  cloudOnly: LibraryMedia[];
+  conflicts: { local: LibraryMedia; cloud: LibraryMedia; key: string }[];
+  identical: LibraryMedia[];
+  needsLocalUpdate: LibraryMedia[];
+  needsCloudUpdate: LibraryMedia[];
+}
+
+export function compareLibraries(localLibrary: LibraryCollection, cloudLibrary: LibraryCollection): LibrarySyncDiff {
+  const diff: LibrarySyncDiff = {
+    localOnly: [],
+    cloudOnly: [],
+    conflicts: [],
+    identical: [],
+    needsLocalUpdate: [],
+    needsCloudUpdate: [],
+  };
+
+  const allKeys = new Set([...Object.keys(localLibrary), ...Object.keys(cloudLibrary)]);
+
+  allKeys.forEach((key) => {
+    const localItem = localLibrary[key];
+    const cloudItem = cloudLibrary[key];
+
+    if (!localItem && cloudItem) {
+      // Only in cloud
+      diff.cloudOnly.push(cloudItem);
+    } else if (localItem && !cloudItem) {
+      // Only local
+      diff.localOnly.push(localItem);
+    } else if (localItem && cloudItem) {
+      // Both exist - compare timestamps and content
+      const localTime = new Date(localItem.lastUpdatedAt).getTime();
+      const cloudTime = new Date(cloudItem.lastUpdatedAt).getTime();
+
+      // Check if content is meaningfully different
+      const isDifferent =
+        localItem.status !== cloudItem.status ||
+        localItem.isFavorite !== cloudItem.isFavorite ||
+        localItem.userRating !== cloudItem.userRating ||
+        JSON.stringify(localItem.watchDates) !== JSON.stringify(cloudItem.watchDates) ||
+        localItem.notes !== cloudItem.notes ||
+        localItem.lastWatchedEpisode !== cloudItem.lastWatchedEpisode;
+
+      if (!isDifferent) {
+        diff.identical.push(localItem);
+      } else if (Math.abs(localTime - cloudTime) < 1000) {
+        // Very close timestamps - treat as conflict
+        diff.conflicts.push({ local: localItem, cloud: cloudItem, key });
+      } else if (localTime > cloudTime) {
+        // Local is newer
+        diff.needsCloudUpdate.push(localItem);
+      } else {
+        // Cloud is newer
+        diff.needsLocalUpdate.push(cloudItem);
+      }
+    }
+  });
+
+  return diff;
+}
+
+/**
+ * Smart merge strategy that preserves user intent and newer data
+ */
+export function smartMergeLibraries(
+  localLibrary: LibraryCollection,
+  cloudLibrary: LibraryCollection,
+  options: {
+    preserveLocalFavorites?: boolean;
+    preserveCloudFavorites?: boolean;
+    conflictResolution?: 'newer' | 'local' | 'cloud';
+  } = {}
+): { mergedLibrary: LibraryCollection; changes: string[] } {
+  const { preserveLocalFavorites = true, conflictResolution = 'newer' } = options;
+
+  const diff = compareLibraries(localLibrary, cloudLibrary);
+  const mergedLibrary: LibraryCollection = { ...localLibrary };
+  const changes: string[] = [];
+
+  // Add cloud-only items
+  diff.cloudOnly.forEach((item) => {
+    const key = generateMediaKey(item.media_type, item.id);
+    mergedLibrary[key] = item;
+    changes.push(`Added from cloud: ${item.title || `${item.media_type}-${item.id}`}`);
+  });
+
+  // Update items where cloud is newer
+  diff.needsLocalUpdate.forEach((cloudItem) => {
+    const key = generateMediaKey(cloudItem.media_type, cloudItem.id);
+    const localItem = localLibrary[key];
+
+    // Smart merge preserving certain local preferences
+    const mergedItem: LibraryMedia = {
+      ...cloudItem,
+      // Preserve local favorites if option is enabled
+      isFavorite: preserveLocalFavorites && localItem?.isFavorite ? true : cloudItem.isFavorite,
+    };
+
+    mergedLibrary[key] = mergedItem;
+    changes.push(`Updated from cloud: ${cloudItem.title || `${cloudItem.media_type}-${cloudItem.id}`}`);
+  });
+
+  // Handle conflicts based on resolution strategy
+  diff.conflicts.forEach(({ local, cloud, key }) => {
+    let resolvedItem: LibraryMedia;
+
+    switch (conflictResolution) {
+      case 'local':
+        resolvedItem = local;
+        break;
+      case 'cloud':
+        resolvedItem = cloud;
+        break;
+      case 'newer':
+      default: {
+        const localTime = new Date(local.lastUpdatedAt).getTime();
+        const cloudTime = new Date(cloud.lastUpdatedAt).getTime();
+
+        if (localTime >= cloudTime) {
+          resolvedItem = local;
+        } else {
+          resolvedItem = cloud;
+          // Still preserve certain local preferences
+          if (preserveLocalFavorites && local.isFavorite) {
+            resolvedItem = { ...cloud, isFavorite: true };
+          }
+        }
+        break;
+      }
+    }
+
+    mergedLibrary[key] = resolvedItem;
+    changes.push(`Resolved conflict: ${resolvedItem.title || `${resolvedItem.media_type}-${resolvedItem.id}`}`);
+  });
+
+  return { mergedLibrary, changes };
+}

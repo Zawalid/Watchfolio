@@ -34,6 +34,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
           color='primary'
           className='w-full transition-all duration-200 hover:scale-[1.03]'
           startContent={<Play className='size-4' />}
+          isDisabled
         >
           {currentStatus === 'watching' ? 'Continue Watching' : 'Watch Now'}
         </Button>

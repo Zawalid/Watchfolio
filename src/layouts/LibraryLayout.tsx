@@ -267,8 +267,8 @@ export default function LibraryLayout() {
         </div>
         <div className='flex-1'>
           <Outlet />
-        </div>{' '}
-      </div>{' '}
+        </div>
+      </div>
       <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
       <FiltersModal disclosure={filtersDisclosure} />
       <ImportExportModal disclosure={importExportDisclosure} />

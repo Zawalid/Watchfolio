@@ -1,5 +1,5 @@
 import { Models } from 'appwrite';
-import { appwriteService } from './api/appwrite';
+import { appwriteService } from './api/appwrite-service';
 
 export interface CreateUserAccount {
   name: string;

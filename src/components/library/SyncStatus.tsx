@@ -1,105 +1,88 @@
-// Clickable sync status component for library layout
-import { Button } from '@heroui/button';
+import { useNavigate } from 'react-router';
 import { Tooltip } from '@heroui/tooltip';
-import { WifiOff, RefreshCw, AlertCircle, Check, Upload, CloudOff } from 'lucide-react';
-import { useSyncStatus, useLibrarySync } from '@/hooks/useLibrarySync';
-import { useLibraryStore } from '@/stores/useLibraryStore';
+import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
+import { useSyncStore } from '@/stores/useSyncStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { cn } from '@/utils';
 
 export function SyncStatus({ className }: { className?: string }) {
-  const { statusColor, isOnline, isSyncing, hasError, pendingOperations } = useSyncStatus();
-  const { syncToCloud, syncFromCloud, clearError, lastSyncTime } = useLibrarySync();
-  const { getAllItems } = useLibraryStore();
-  const getIcon = () => {
-    if (hasError) return <AlertCircle className='size-4' />;
-    if (!isOnline) return <WifiOff className='size-4' />;
-    if (isSyncing) return <RefreshCw className='size-4 animate-spin' />;
-    if (pendingOperations > 0) return <Upload className='size-4' />;
+  const status = useSyncStore((state) => state.status);
+  const setError = useSyncStore((state) => state.setError);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { isOnline, isSyncing, error, lastSyncTime } = status;
 
-    // Show CloudOff for new users who haven't synced yet
-    if (!lastSyncTime) return <CloudOff className='size-4' />;
+  const navigate = useNavigate();
 
-    return <Check className='size-4' />;
-  };
-  const getAction = () => {
+  const hasError = !!error;
+
+  const getStatusInfo = () => {
     if (hasError) {
       return {
-        onClick: () => {
-          clearError();
-          syncToCloud();
-        },
-        tooltip: 'Clear error and retry sync',
-        text: 'Retry Sync',
+        color: 'text-red-400',
+        icon: <AlertCircle className='size-4' />,
+        text: 'Sync Error',
+        tooltip: `Sync error: ${error}. Click to retry.`,
+        onClick: () => setError(null),
       };
     }
+
+    if (!isAuthenticated) {
+      return {
+        color: 'text-gray-400',
+        icon: <CloudOff className='size-4' />,
+        text: 'Sign in to sync',
+        tooltip: 'Sign in to sync your library across devices',
+        onClick: () => navigate('/signin'),
+      };
+    }
+
     if (!isOnline) {
       return {
-        onClick: null,
-        tooltip: 'You are offline. Sync will resume when connection is restored.',
+        color: 'text-gray-400',
+        icon: <WifiOff className='size-4' />,
         text: 'Offline',
+        tooltip: 'You are offline. Sync will resume when connection is restored.',
+        onClick: null,
       };
     }
 
     if (isSyncing) {
       return {
-        onClick: null,
-        tooltip: 'Sync in progress...',
+        color: 'text-blue-400',
+        icon: <RefreshCw className='size-4 animate-spin' />,
         text: 'Syncing...',
-      };
-    }
-
-    if (pendingOperations > 0) {
-      return {
-        onClick: syncToCloud,
-        tooltip: `Upload ${pendingOperations} pending changes to cloud`,
-        text: `Sync ${pendingOperations} items`,
-      };
-    } // Check if this is a new user (never synced before)
-    if (!lastSyncTime) {
-      const localItems = getAllItems();
-
-      // If user has local items but never synced, encourage them to sync to cloud
-      if (localItems.length > 0) {
-        return {
-          onClick: syncToCloud,
-          tooltip: `Upload your ${localItems.length} items to cloud`,
-          text: `Sync ${localItems.length} items`,
-        };
-      }
-
-      // New user with no items - show neutral state
-      return {
+        tooltip: 'Sync in progress...',
         onClick: null,
-        tooltip: 'New account - start adding items to your library to sync',
-        text: 'Not synced',
       };
     }
 
     return {
-      onClick: syncFromCloud,
-      tooltip: 'Pull latest data from cloud',
-      text: 'Pull from Cloud',
+      color: 'text-green-400',
+      icon: <Check className='size-4' />,
+      text: 'Synced',
+      tooltip: lastSyncTime
+        ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}`
+        : 'Your library is automatically synced across devices',
+      onClick: null,
     };
   };
-  const action = getAction();
-  const isClickable = !!action.onClick;
+
+  const statusInfo = getStatusInfo();
 
   return (
-    <Tooltip content={action.tooltip} className='tooltip-secondary'>
-      <Button
-        size='sm'
+    <Tooltip content={statusInfo.tooltip} className='tooltip-secondary'>
+      <div
         className={cn(
-          'flex items-center gap-2 bg-white/5 px-3 py-1 text-xs font-medium transition-colors duration-200',
-          statusColor,
-          isClickable ? 'cursor-pointer hover:bg-white/10' : 'cursor-default',
+          'flex items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-1 text-xs font-medium transition-colors duration-200',
+          statusInfo.color,
+          statusInfo.onClick ? 'cursor-pointer hover:bg-white/10' : 'cursor-default',
           className
         )}
-        onPress={isClickable ? action.onClick : undefined}
-        disabled={!isClickable}
+        onClick={statusInfo.onClick || undefined}
       >
-        {getIcon()}
-        <span>{action.text}</span>
-      </Button>
+        {statusInfo.icon}
+        <span>{statusInfo.text}</span>
+      </div>
     </Tooltip>
   );
 }

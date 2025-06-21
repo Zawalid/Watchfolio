@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import { syncAPI, type SyncStatus, type SyncOperation } from '../lib/api/sync-service';
+import { mountStoreDevtool } from 'simple-zustand-devtools';
+import { syncAPI } from '@/lib/api/sync-service';
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 
 interface SyncStore {
   // State
@@ -10,12 +12,17 @@ interface SyncStore {
   addToQueue: (operation: SyncOperation) => void;
   removeFromQueue: (index: number) => void;
   clearQueue: () => void;
-
   // Sync operations
   syncToCloud: (library: LibraryCollection) => Promise<void>;
   syncFromCloud: () => Promise<LibraryCollection>;
-  syncSingleItem: (media: LibraryMedia) => Promise<void>;
-  removeFromCloud: (mediaType: 'movie' | 'tv', id: number) => Promise<void>;
+
+  // Enhanced sync operations
+  checkSyncStatus: (library: LibraryCollection) => Promise<SyncComparison | null>;
+  smartSync: (library: LibraryCollection) => Promise<{
+    mergedLibrary: LibraryCollection;
+    changes: string[];
+    uploadedCount: number;
+  }>;
 
   // Status management
   setOnlineStatus: (isOnline: boolean) => void;
@@ -29,7 +36,7 @@ export const useSyncStore = create<SyncStore>((set, get) => ({
   status: {
     isOnline: navigator.onLine,
     isSyncing: false,
-    lastSyncTime: localStorage.getItem('watchfolio-last-sync'),
+    lastSyncTime: localStorage.getItem(`${LOCAL_STORAGE_PREFIX}last-sync`),
     pendingOperations: 0,
     error: null,
   },
@@ -39,10 +46,7 @@ export const useSyncStore = create<SyncStore>((set, get) => ({
   addToQueue: (operation) => {
     set((state) => ({
       queue: [...state.queue, operation],
-      status: {
-        ...state.status,
-        pendingOperations: state.queue.length + 1,
-      },
+      status: { ...state.status, pendingOperations: state.queue.length + 1 },
     }));
   },
 
@@ -51,10 +55,7 @@ export const useSyncStore = create<SyncStore>((set, get) => ({
       const newQueue = state.queue.filter((_, i) => i !== index);
       return {
         queue: newQueue,
-        status: {
-          ...state.status,
-          pendingOperations: newQueue.length,
-        },
+        status: { ...state.status, pendingOperations: newQueue.length },
       };
     });
   },
@@ -62,13 +63,9 @@ export const useSyncStore = create<SyncStore>((set, get) => ({
   clearQueue: () => {
     set((state) => ({
       queue: [],
-      status: {
-        ...state.status,
-        pendingOperations: 0,
-      },
+      status: { ...state.status, pendingOperations: 0 },
     }));
   },
-
   // Sync operations
   syncToCloud: async (library) => {
     const { setSyncStatus, setError, updateLastSyncTime } = get();
@@ -113,89 +110,62 @@ export const useSyncStore = create<SyncStore>((set, get) => ({
     }
   },
 
-  syncSingleItem: async (media) => {
-    const { setError } = get();
-
+  checkSyncStatus: async (library) => {
     try {
-      setError(null);
-      await syncAPI.syncItemToCloud(media);
-      console.log(`✅ Item ${media.media_type}-${media.id} synced to cloud`);
+      return await syncAPI.compareWithCloud(library);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Item sync failed';
-      setError(errorMessage);
-      console.error(`❌ Item sync failed for ${media.media_type}-${media.id}:`, error);
-
-      // Add to queue for retry
-      get().addToQueue({
-        type: 'update',
-        key: `${media.media_type}-${media.id}`,
-        data: media,
-        timestamp: new Date().toISOString(),
-      });
-
-      throw error;
+      console.error('Failed to check sync status:', error);
+      return null;
     }
   },
 
-  removeFromCloud: async (mediaType, id) => {
-    const { setError } = get();
+  smartSync: async (library) => {
+    const { setSyncStatus, setError, updateLastSyncTime } = get();
 
     try {
+      setSyncStatus(true);
       setError(null);
-      await syncAPI.removeFromCloud(mediaType, id);
-      console.log(`✅ Item ${mediaType}-${id} removed from cloud`);
+
+      const result = await syncAPI.smartSync(library);
+
+      updateLastSyncTime();
+      console.log(`✅ Smart sync completed: ${result.changes.length} changes, ${result.uploadedCount} uploaded`);
+
+      return result;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Remove failed';
+      const errorMessage = error instanceof Error ? error.message : 'Smart sync failed';
       setError(errorMessage);
-      console.error(`❌ Remove failed for ${mediaType}-${id}:`, error);
-
-      // Add to queue for retry
-      get().addToQueue({
-        type: 'delete',
-        key: `${mediaType}-${id}`,
-        timestamp: new Date().toISOString(),
-      });
-
+      console.error('❌ Smart sync failed:', error);
       throw error;
+    } finally {
+      setSyncStatus(false);
     }
   },
 
   // Status management
   setOnlineStatus: (isOnline) => {
     set((state) => ({
-      status: {
-        ...state.status,
-        isOnline,
-      },
+      status: { ...state.status, isOnline },
     }));
   },
 
   setSyncStatus: (isSyncing) => {
     set((state) => ({
-      status: {
-        ...state.status,
-        isSyncing,
-      },
+      status: { ...state.status, isSyncing },
     }));
   },
 
   setError: (error) => {
     set((state) => ({
-      status: {
-        ...state.status,
-        error,
-      },
+      status: { ...state.status, error },
     }));
   },
 
   updateLastSyncTime: () => {
     const now = new Date().toISOString();
-    localStorage.setItem('watchfolio-last-sync', now);
+    localStorage.setItem(`${LOCAL_STORAGE_PREFIX}last-sync`, now);
     set((state) => ({
-      status: {
-        ...state.status,
-        lastSyncTime: now,
-      },
+      status: { ...state.status, lastSyncTime: now },
     }));
   },
 }));
@@ -210,3 +180,5 @@ if (typeof window !== 'undefined') {
     useSyncStore.getState().setOnlineStatus(false);
   });
 }
+
+if (import.meta.env.DEV) mountStoreDevtool('SyncStore', useSyncStore);

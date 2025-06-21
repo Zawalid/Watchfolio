@@ -34,3 +34,30 @@ interface ExportOptions {
   includeMetadata?: boolean;
 }
 
+
+
+// Sync Types
+
+ interface SyncStatus {
+  isOnline: boolean;
+  isSyncing: boolean;
+  lastSyncTime: string | null;
+  pendingOperations: number;
+  error: string | null;
+}
+
+ interface SyncComparison {
+  isInSync: boolean;
+  cloudItemCount: number;
+  localItemCount: number;
+  needsUpload: number;
+  needsDownload: number;
+  conflicts: number;
+}
+
+type SyncOperation = {
+  type: 'create' | 'update' | 'delete';
+  key: string; // media key like "movie-123"
+  data?: LibraryMedia;
+  timestamp: string;
+};

@@ -1,23 +1,6 @@
 import { Query } from 'appwrite';
-import { appwriteService } from './appwrite';
-
-// Types for mapping between local and cloud data
-export type SyncOperation = {
-  type: 'create' | 'update' | 'delete';
-  key: string; // media key like "movie-123"
-  data?: LibraryMedia;
-  timestamp: string;
-};
-
-export type SyncQueue = SyncOperation[];
-
-export interface SyncStatus {
-  isOnline: boolean;
-  isSyncing: boolean;
-  lastSyncTime: string | null;
-  pendingOperations: number;
-  error: string | null;
-}
+import { appwriteService } from './appwrite-service';
+import { compareLibraries, smartMergeLibraries } from '@/utils/library';
 
 // Map LibraryMedia to Appwrite LibraryItem + TmdbMedia
 const mapToAppwriteData = async (
@@ -66,10 +49,6 @@ const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): L
   };
 };
 
-/**
- * Sync API Class - handles all cloud sync operations using Appwrite Service
- * Integrated with user authentication (no anonymous sessions)
- */
 export class LibrarySyncAPI {
   private libraryId: string | null = null;
 
@@ -109,7 +88,7 @@ export class LibrarySyncAPI {
     }
   }
   /**
-   * Sync single item to cloud (only if user is authenticated)
+   * Sync single item to cloud
    */
   async syncItemToCloud(media: LibraryMedia): Promise<void> {
     try {
@@ -151,35 +130,63 @@ export class LibrarySyncAPI {
       console.error('Failed to sync item to cloud:', error);
       throw error;
     }
-  }
-  /**
-   * Sync entire library to cloud (only if user is authenticated)
+  } /**
+   * Intelligent incremental sync to cloud - only syncs changes
    */
   async syncToCloud(library: LibraryCollection): Promise<void> {
     try {
       const libraryId = await this.getOrCreateLibrary();
 
       // If no library ID, user is not authenticated - skip sync
-      if (!libraryId) {
-        console.log('Skipping library sync - no authenticated user');
+      if (!libraryId) return;
+
+      // Get current cloud state for comparison
+      const cloudLibrary = await this.getLibraryFromCloud();
+
+      // Calculate what needs to be synced
+      const diff = compareLibraries(library, cloudLibrary);
+
+      const totalChanges = diff.localOnly.length + diff.needsCloudUpdate.length + diff.cloudOnly.length;
+
+      if (totalChanges === 0) {
+        console.log('✅ Already in sync - no changes needed');
         return;
       }
 
-      for (const [key, media] of Object.entries(library)) {
+      console.log(
+        `🔄 Incremental sync: ${diff.localOnly.length} new, ${diff.needsCloudUpdate.length} updated, ${diff.cloudOnly.length} to remove`
+      );
+
+      // Upload new and updated items
+      const itemsToUpload = [...diff.localOnly, ...diff.needsCloudUpdate];
+      for (const item of itemsToUpload) {
         try {
-          await this.syncItemToCloud(media);
+          await this.syncItemToCloud(item);
         } catch (error) {
-          console.error(`Failed to sync ${key}:`, error);
+          console.error(`Failed to sync ${item.media_type}-${item.id}:`, error);
           // Continue with other items even if one fails
         }
       }
 
-      console.log('Library sync to cloud completed');
+      // Remove items that exist in cloud but not locally
+      for (const item of diff.cloudOnly) {
+        try {
+          await this.removeFromCloud(item.media_type, item.id);
+        } catch (error) {
+          console.error(`Failed to remove ${item.media_type}-${item.id}:`, error);
+        }
+      }
+
+      console.log(`✅ Incremental sync completed: ${itemsToUpload.length} uploaded, ${diff.cloudOnly.length} removed`);
     } catch (error) {
       console.error('Failed to sync library to cloud:', error);
       throw error;
     }
   }
+  /**
+   * Clear cloud library
+   */
+  async clearLibraryInCloud(): Promise<void> {}
 
   /**
    * Get library from cloud (returns empty if user is not authenticated)
@@ -223,7 +230,7 @@ export class LibrarySyncAPI {
       throw error;
     }
   } /**
-   * Remove item from cloud (only if user is authenticated)
+   * Remove item from cloud
    */
   async removeFromCloud(mediaType: 'movie' | 'tv', tmdbId: number): Promise<void> {
     try {
@@ -276,13 +283,89 @@ export class LibrarySyncAPI {
   clearSession(): void {
     this.libraryId = null;
   }
+
   /**
-   * Transfer local library to authenticated user (for after login/signup)
+   * Compare local library with cloud to get sync status
    */
-  async transferLocalLibraryToUser(localLibrary: LibraryCollection): Promise<void> {
-    console.log('Transferring local library to authenticated user...');
-    await this.syncToCloud(localLibrary);
-    console.log('Local library transfer completed');
+  async compareWithCloud(localLibrary: LibraryCollection): Promise<SyncComparison | null> {
+    try {
+      const cloudLibrary = await this.getLibraryFromCloud();
+      const localItemCount = Object.keys(localLibrary).length;
+      const cloudItemCount = Object.keys(cloudLibrary).length;
+
+      // Quick check for empty libraries
+      if (localItemCount === 0 && cloudItemCount === 0) {
+        return {
+          isInSync: true,
+          cloudItemCount: 0,
+          localItemCount: 0,
+          needsUpload: 0,
+          needsDownload: 0,
+          conflicts: 0,
+        };
+      }
+
+      const diff = compareLibraries(localLibrary, cloudLibrary);
+
+      return {
+        isInSync:
+          diff.localOnly.length === 0 &&
+          diff.cloudOnly.length === 0 &&
+          diff.needsLocalUpdate.length === 0 &&
+          diff.needsCloudUpdate.length === 0 &&
+          diff.conflicts.length === 0,
+        cloudItemCount,
+        localItemCount,
+        needsUpload: diff.localOnly.length + diff.needsCloudUpdate.length,
+        needsDownload: diff.cloudOnly.length + diff.needsLocalUpdate.length,
+        conflicts: diff.conflicts.length,
+      };
+    } catch (error) {
+      console.error('Failed to compare with cloud:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Perform intelligent sync between local and cloud
+   */
+  async smartSync(localLibrary: LibraryCollection): Promise<{
+    mergedLibrary: LibraryCollection;
+    changes: string[];
+    uploadedCount: number;
+  }> {
+    try {
+      const cloudLibrary = await this.getLibraryFromCloud();
+
+      // Use smart merge utility
+      const { mergedLibrary, changes } = smartMergeLibraries(localLibrary, cloudLibrary, {
+        preserveLocalFavorites: true,
+        conflictResolution: 'newer',
+      });
+
+      // Upload any items that need to be synced to cloud
+      const diff = compareLibraries(localLibrary, cloudLibrary);
+
+      const itemsToUpload = [...diff.localOnly, ...diff.needsCloudUpdate];
+
+      for (const item of itemsToUpload) {
+        try {
+          await this.syncItemToCloud(item);
+        } catch (error) {
+          console.error(`Failed to upload ${item.media_type}-${item.id}:`, error);
+          // Continue with other items
+        }
+      }
+
+      return {
+        mergedLibrary,
+        changes,
+        uploadedCount: itemsToUpload.length,
+      };
+    } catch (error) {
+      console.error('Smart sync failed:', error);
+      throw error;
+    }
   }
 }
 

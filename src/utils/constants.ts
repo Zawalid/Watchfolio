@@ -82,6 +82,7 @@ export const LIBRARY_MEDIA_STATUS = [
   },
 ] as const;
 
+export const LIBRARY_IMPORT_MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+export const LIBRARY_SYNC_DELAY = 5000; 
 
-
-export const LIBRARY_IMPORT_MAX_SIZE = 10 * 1024 * 1024 ; // 10 MB
+export const LOCAL_STORAGE_PREFIX = 'watchfolio-';

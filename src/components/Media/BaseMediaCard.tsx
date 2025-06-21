@@ -28,6 +28,8 @@ interface BaseMediaCardProps {
   tabIndex?: number;
 }
 
+// TODO : Better design for user-rating / rating
+
 export default function BaseMediaCard({
   id,
   title,

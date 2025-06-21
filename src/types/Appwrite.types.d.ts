@@ -16,6 +16,7 @@ declare global {
     library?: Library;
   }
 
+  //  TODO : No need for User preferences table use auth's prefs
   interface UserPreferences extends Models.Document {
     signOutConfirmation: ConfirmationSetting;
     removeFromWatchlistConfirmation: ConfirmationSetting;

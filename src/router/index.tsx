@@ -86,6 +86,7 @@ export const router = createBrowserRouter([
       },
       {
         Component: AuthLayout,
+        // TODO : Prevent authenticated users from accessing auth routes
         children: [
           {
             path: 'signin',

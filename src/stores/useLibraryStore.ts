@@ -1,9 +1,10 @@
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { GENRES } from '@/lib/api/TMDB/values';
 import { getRating } from '@/utils/media';
-import { serializeToJSON, serializeToCSV, mergeLibraryItems } from '@/utils/library';
-import { useSyncStore } from './useSyncStore';
+import { serializeToJSON, serializeToCSV, mergeLibraryItems, generateMediaKey } from '@/utils/library';
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { persistAndSync } from '@/utils/persistAndSync';
+import { setupZustandDevtools } from '@/utils';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -30,17 +31,14 @@ interface LibraryState {
   clearLibrary: () => void;
 }
 
-const generateMediaKey = (mediaType: 'movie' | 'tv', id: number): string => `${mediaType}-${id}`;
-
 // Helper function to check if item should be removed
 const shouldRemoveItem = (item: LibraryMedia): boolean => {
   return (
-    !item.isFavorite &&
-    !item.userRating &&
-    (item.status === 'none' || !item.status) &&
-    !item.notes &&
-    (!item.watchDates || item.watchDates.length === 0) &&
-    !item.lastWatchedEpisode
+    !item.isFavorite && (item.status === 'none' || !item.status)
+    // && !item.userRating &&
+    // !item.notes &&
+    // (!item.watchDates || item.watchDates.length === 0) &&
+    // !item.lastWatchedEpisode
   );
 };
 
@@ -59,33 +57,8 @@ const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
   };
 };
 
-// Sync triggers - safely call sync operations without blocking the UI
-const triggerSyncForItem = (item: LibraryMedia) => {
-  try {
-    // Queue sync operation in the background
-    const syncStore = useSyncStore.getState();
-    syncStore.syncSingleItem(item).catch((error) => {
-      console.warn('Background sync failed:', error);
-      // Non-blocking - error is already handled in sync store
-    });
-  } catch (error) {
-    console.warn('Could not trigger sync:', error);
-  }
-};
-
-const triggerRemoveFromCloud = (mediaType: 'movie' | 'tv', id: number) => {
-  try {
-    const syncStore = useSyncStore.getState();
-    syncStore.removeFromCloud(mediaType, id).catch((error) => {
-      console.warn('Background remove sync failed:', error);
-    });
-  } catch (error) {
-    console.warn('Could not trigger remove sync:', error);
-  }
-};
-
 export const useLibraryStore = create<LibraryState>()(
-  persist(
+  persistAndSync(
     (set, get) => ({
       library: {},
 
@@ -122,18 +95,15 @@ export const useLibraryStore = create<LibraryState>()(
         // Only set addedToLibraryAt for truly new meaningful additions
         if (!existingItem && (newItemData.isFavorite || newItemData.userRating || newItemData.status !== 'none')) {
           newItemData.addedToLibraryAt = now;
-        }
-
-        // Check if item should be removed after update
+        } // Check if item should be removed after update
         if (shouldRemoveItem(newItemData)) {
+          console.log('YES');
+
           set((state) => {
             const newLibrary = { ...state.library };
             delete newLibrary[key];
             return { library: newLibrary };
           });
-
-          // Trigger removal from cloud
-          triggerRemoveFromCloud(media.media_type, media.id);
 
           return null;
         }
@@ -144,9 +114,6 @@ export const useLibraryStore = create<LibraryState>()(
             [key]: newItemData,
           },
         }));
-
-        // Trigger sync to cloud for the updated item
-        triggerSyncForItem(newItemData);
 
         return newItemData;
       },
@@ -169,16 +136,12 @@ export const useLibraryStore = create<LibraryState>()(
 
         if (item) {
           const updatedItem = { ...item, status: 'none' as LibraryMediaStatus };
-
           if (shouldRemoveItem(updatedItem)) {
             set((state) => {
               const newLibrary = { ...state.library };
               delete newLibrary[key];
               return { library: newLibrary };
             });
-
-            // Trigger removal from cloud
-            triggerRemoveFromCloud(mediaType, id);
           } else {
             const newItem: LibraryMedia = {
               ...item,
@@ -192,9 +155,6 @@ export const useLibraryStore = create<LibraryState>()(
                 [key]: newItem,
               },
             }));
-
-            // Trigger sync for the updated item
-            triggerSyncForItem(newItem);
           }
         }
       },
@@ -243,7 +203,6 @@ export const useLibraryStore = create<LibraryState>()(
 
       exportLibrary: (items, format = 'json') => {
         const libraryItems = items.length > 0 ? items : Object.values(get().library);
-
         return format === 'csv' ? serializeToCSV(libraryItems) : serializeToJSON(libraryItems);
       },
       importLibrary: (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
@@ -252,36 +211,17 @@ export const useLibraryStore = create<LibraryState>()(
           if (!options.mergeStrategy || !['smart', 'overwrite', 'skip'].includes(options.mergeStrategy)) {
             throw new Error('Invalid merge strategy');
           }
-
-          if (typeof options.keepExistingFavorites !== 'boolean') {
-            options.keepExistingFavorites = true; // Default to true if invalid
-          }
+          if (typeof options.keepExistingFavorites !== 'boolean') options.keepExistingFavorites = true;
 
           // Validate parsedItems
-          if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
-            return 0; // No items to import
-          }
+          if (!Array.isArray(parsedItems) || parsedItems.length === 0) return 0;
 
           // Get current library, ensure it's not null
           const currentLibrary = get().library || {};
 
           // Merge the libraries using already parsed items
           const { mergedLibrary, importCount } = mergeLibraryItems(parsedItems, currentLibrary, options);
-
-          // Update the store only if we have something to update
-          if (importCount > 0) {
-            set({ library: mergedLibrary });
-
-            // Trigger full library sync to cloud after import
-            try {
-              const syncStore = useSyncStore.getState();
-              syncStore.syncToCloud(mergedLibrary).catch((error) => {
-                console.warn('Background sync after import failed:', error);
-              });
-            } catch (error) {
-              console.warn('Could not trigger sync after import:', error);
-            }
-          }
+          if (importCount > 0) set({ library: mergedLibrary });
 
           return importCount;
         } catch (error) {
@@ -291,27 +231,13 @@ export const useLibraryStore = create<LibraryState>()(
       },
       clearLibrary: () => {
         set({ library: {} });
-
-        // Trigger full library sync to cloud after clearing
-        try {
-          const syncStore = useSyncStore.getState();
-          syncStore.syncToCloud({}).catch((error) => {
-            console.warn('Background sync after clear failed:', error);
-          });
-        } catch (error) {
-          console.warn('Could not trigger sync after clear:', error);
-        }
+        console.log('🗑️ Library cleared - will auto-sync via hook');
       },
     }),
-
     {
-      name: 'watchfolio-library',
-      storage: createJSONStorage(() => localStorage),
+      name: `${LOCAL_STORAGE_PREFIX}library`,
     }
   )
 );
 
-export const useIsLibraryHydrated = () => {
-  const library = useLibraryStore((state) => state.library);
-  return Object.keys(library).length > 0;
-};
+setupZustandDevtools('LibraryStore', useLibraryStore);
