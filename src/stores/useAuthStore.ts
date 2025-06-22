@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { authService } from '@/lib/auth';
 import { persistAndSync } from '@/utils/persistAndSync';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
-import { setupZustandDevtools } from '@/utils';
 
 interface AuthState {
   user: UserWithProfile | null;
@@ -83,6 +82,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
           });
+          // useLibraryStore.getState().clearLibrary(); 
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -210,4 +210,3 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-setupZustandDevtools('AuthStore', useAuthStore);

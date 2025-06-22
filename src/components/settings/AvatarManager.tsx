@@ -119,7 +119,7 @@ export default function AvatarManager({ currentAvatarUrl, userName, onAvatarChan
           {/* Avatar Styles */}
           <div className='space-y-3'>
             <h5 className='text-Grey-200 font-medium'>Generate Avatar</h5>
-            <div className='grid grid-cols-3 gap-2'>
+            <div className='grid grid-cols-4 gap-2'>
               {Object.entries(AVATAR_STYLES).map(([key, label]) => (
                 <Button
                   key={key}

@@ -56,6 +56,7 @@ type PersistAndSyncOptions<T> = {
   partialize?: (state: T) => Partial<T>;
   debounceMs?: number;
   storage?: 'localStorage' | 'sessionStorage' | 'cookie';
+  onRehydrate?: (state: T, store: T, set: (partial: Partial<T>) => void) => Promise<void> | void;
 };
 
 type PersistAndSync = <
@@ -68,7 +69,7 @@ type PersistAndSync = <
 ) => StateCreator<T, Mps, Mcs>;
 
 export const persistAndSync: PersistAndSync = (f, options) => (set, get, api) => {
-  const { name, include, partialize, debounceMs = 30, storage: storageType = 'localStorage' } = options;
+  const { name, include, partialize, debounceMs = 30, storage: storageType = 'localStorage', onRehydrate } = options;
   const storage = createStorage(storageType);
   let saveTimeout: NodeJS.Timeout | null = null;
 
@@ -108,24 +109,33 @@ export const persistAndSync: PersistAndSync = (f, options) => (set, get, api) =>
     }
     saveTimeout = setTimeout(saveToStorage, debounceMs);
   }; // Load from storage
-  const loadFromStorage = () => {
+  const loadFromStorage = async () => {
     try {
       const stored = storage.getItem(name);
       if (stored) {
         const parsedState = JSON.parse(stored);
         set((currentState) => ({ ...currentState, ...parsedState }));
       }
+      // Always call onRehydrate callback if provided (for both cached and fresh states)
+      if (onRehydrate) {
+        const currentStore = get();
+        await onRehydrate(currentStore, currentStore, set);
+      }
     } catch (error) {
       console.warn('Failed to load from storage:', error);
     }
   };
-
   // Handle storage events (cross-tab sync) - only works with localStorage
-  const handleStorageChange = (e: StorageEvent) => {
+  const handleStorageChange = async (e: StorageEvent) => {
     if (e.key === name && e.newValue && storageType === 'localStorage') {
       try {
         const newState = JSON.parse(e.newValue);
         set(newState, false);
+        // Call onRehydrate callback if provided (for cross-tab validation)
+        if (onRehydrate) {
+          const currentStore = get();
+          await onRehydrate(currentStore, currentStore, set);
+        }
       } catch (error) {
         console.warn('Failed to sync from storage event:', error);
       }
@@ -151,8 +161,7 @@ export const persistAndSync: PersistAndSync = (f, options) => (set, get, api) =>
       saveTimeout = null;
     }
     saveToStorage();
-  };
-  // Set up cross-tab sync (only for localStorage)
+  }; // Set up cross-tab sync (only for localStorage)
   if (typeof window !== 'undefined') {
     // Load initial state after a microtask to ensure store is fully initialized
     Promise.resolve().then(() => {

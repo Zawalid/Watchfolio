@@ -1,7 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { UseBoundStore } from 'zustand';
-import { mountStoreDevtool } from 'simple-zustand-devtools';
 
 
 export function cn(...inputs: ClassValue[]) {
@@ -72,14 +70,3 @@ export function formatDate(dateString: string | null): string {
 }
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const setupZustandDevtools = (storeName: string, store: UseBoundStore<any>) => {
-  if (import.meta.env.DEV && typeof window !== 'undefined') {
-    let devtoolsMounted = false;
-
-    if (!devtoolsMounted) {
-      mountStoreDevtool(storeName, store);
-      devtoolsMounted = true;
-    }
-  }
-};

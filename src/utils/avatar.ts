@@ -5,8 +5,10 @@ export const AVATAR_STYLES = {
   avataaars: 'Avataaars',
   initials: 'Initials',
   'pixel-art': 'Pixel Art',
-  bottts: 'Robots',
   identicon: 'Identicon',
+  'lorelei-neutral': 'Lorelei',
+  'notionists-neutral': 'Notionists',
+  'bottts-neutral': 'Robots',
 } as const;
 
 export type AvatarStyle = keyof typeof AVATAR_STYLES;

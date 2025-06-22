@@ -53,7 +53,7 @@ export default function BaseMediaCard({
   const handleEditStatus = () => {
     const target = item || media;
     if (!target) return;
-    openModal(target);
+    openModal({ ...target, media_type: mediaType });
   };
 
   const handleRemove = async () => {

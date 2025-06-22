@@ -4,7 +4,6 @@ import { getRating } from '@/utils/media';
 import { serializeToJSON, serializeToCSV, mergeLibraryItems, generateMediaKey } from '@/utils/library';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { persistAndSync } from '@/utils/persistAndSync';
-import { setupZustandDevtools } from '@/utils';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -240,4 +239,3 @@ export const useLibraryStore = create<LibraryState>()(
   )
 );
 
-setupZustandDevtools('LibraryStore', useLibraryStore);

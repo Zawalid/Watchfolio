@@ -185,6 +185,7 @@ export class LibrarySyncAPI {
       const currentUser = await appwriteService.auth.getCurrentUser();
       if (!currentUser) return;
 
+      // TODO : FIX : Deleting the library deletes the profile as well
       await appwriteService.libraries.delete(libraryId);
       await authService.createUserLibrary(currentUser.$id);
 

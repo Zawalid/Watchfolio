@@ -3,10 +3,12 @@ import { Outlet, useLocation } from 'react-router';
 import Navbar from '@/components/Navbar';
 import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
+import { useInitialAuth } from '@/hooks/useInitialAuth';
 
 export default function Layout() {
   const location = useLocation();
 
+  useInitialAuth();
   useLibrarySync();
 
   useLayoutEffect(() => {
