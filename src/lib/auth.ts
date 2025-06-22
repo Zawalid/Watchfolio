@@ -151,7 +151,8 @@ class AuthService {
     try {
       const defaultPreferences = {
         signOutConfirmation: 'enabled' as ConfirmationSetting,
-        removeFromWatchlistConfirmation: 'enabled' as ConfirmationSetting,
+        removeFromLibraryConfirmation: 'enabled' as ConfirmationSetting,
+        clearLibraryConfirmation: 'enabled' as ConfirmationSetting,
         theme: 'system' as Theme,
         language: 'en',
         userId,

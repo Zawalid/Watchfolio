@@ -126,7 +126,16 @@
           "default": "enabled"
         },
         {
-          "key": "removeFromWatchlistConfirmation",
+          "key": "removeFromLibraryConfirmation",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["enabled", "disabled"],
+          "format": "enum",
+          "default": "enabled"
+        },
+        {
+          "key": "clearLibraryConfirmation",
           "type": "string",
           "required": false,
           "array": false,

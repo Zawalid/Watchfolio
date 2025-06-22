@@ -7,16 +7,16 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
+import { useClearLibrary } from '@/hooks/useClearLibrary';
 
 export default function Library() {
-  const { isAuthenticated } = useAuthStore();
-  const { library, clearLibrary } = useLibraryStore();
-  const syncStore = useSyncStore();
-  const { confirm } = useConfirmationModal();
-  const importExportDisclosure = useDisclosure();
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(localStorage.getItem('watchfolio-auto-sync') !== 'false');
+  const { isAuthenticated } = useAuthStore();
+  const { library } = useLibraryStore();
+  const syncStore = useSyncStore();
+  const { handleClearLibrary } = useClearLibrary();
+  const importExportDisclosure = useDisclosure();
 
   const handleAutoSyncToggle = (enabled: boolean) => {
     if (!isAuthenticated) {
@@ -52,50 +52,6 @@ export default function Library() {
         description: 'Failed to sync your library',
         color: 'danger',
       });
-    }
-  };
-
-  const handleClearLibrary = async () => {
-    const confirmed = await confirm({
-      title: 'Clear Library',
-      message: isAuthenticated
-        ? 'Are you sure you want to clear your entire library? This will clear both your local library and cloud backup. This action cannot be undone.'
-        : 'Are you sure you want to clear your entire library? This action cannot be undone.',
-      confirmVariant: 'danger',
-      confirmationKey: 'clear-library',
-      confirmText: 'Clear All',
-    });
-
-    if (confirmed) {
-      try {
-        // Always clear local library
-        clearLibrary();
-
-        // Only clear cloud if authenticated
-        if (isAuthenticated) {
-          await syncStore.clearCloudLibrary();
-          addToast({
-            title: 'Library cleared',
-            description: 'Your local library and cloud backup have been cleared successfully',
-            color: 'success',
-          });
-        } else {
-          addToast({
-            title: 'Library cleared',
-            description: 'Your library has been cleared successfully',
-            color: 'success',
-          });
-        }
-      } catch (error) {
-        console.error('Failed to clear library:', error);
-        addToast({
-          title: 'Failed to clear library',
-          description: isAuthenticated
-            ? 'Local library cleared, but failed to clear cloud backup'
-            : 'Failed to clear library. Please try again.',
-          color: 'danger',
-        });
-      }
     }
   };
 

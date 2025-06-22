@@ -1,12 +1,14 @@
+import { useLocation, useNavigate } from 'react-router';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from '@heroui/dropdown';
 import { Avatar } from '@heroui/avatar';
-import { SETTINGS_ICON, SIGN_OUT_ICON } from './ui/Icons';
-import { useLocation, useNavigate } from 'react-router';
-import { useAuthStore } from '@/stores/useAuthStore';
+import { ChevronDownIcon, UserIcon } from 'lucide-react';
 import { addToast } from '@heroui/toast';
+import { SETTINGS_ICON, SIGN_OUT_ICON } from './ui/Icons';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
-import { ChevronDownIcon } from 'lucide-react';
 import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
+
+// TODO : Use better design
 
 export default function UserDropdown() {
   const { user, signOut: authSignOut } = useAuthStore();
@@ -48,10 +50,10 @@ export default function UserDropdown() {
             <ChevronDownIcon className='text-Grey-300 size-4' />
           </div>
         </DropdownTrigger>
-        <DropdownMenu aria-label='User Actions' disabledKeys={['profile']}>
+        <DropdownMenu aria-label='User Actions' disabledKeys={['info']}>
           <DropdownSection showDivider>
             <DropdownItem
-              key='profile'
+              key='info'
               classNames={{ title: 'flex items-center gap-3', base: 'data-[disabled=true]:opacity-100' }}
               className='cursor-auto data-[hover=true]:bg-transparent'
             >
@@ -63,13 +65,20 @@ export default function UserDropdown() {
             </DropdownItem>
           </DropdownSection>
           <DropdownItem
+            key='profile'
+            startContent={<UserIcon />}
+            onPress={() => navigate('/settings/profile')}
+          >
+            Profile
+          </DropdownItem>
+          <DropdownItem
             key='settings'
-            href='/settings'
             startContent={SETTINGS_ICON}
             onPress={() => navigate('/settings')}
           >
             Settings
           </DropdownItem>
+
           <DropdownItem
             key='sign out'
             color='danger'

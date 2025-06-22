@@ -64,7 +64,7 @@ export default function BaseMediaCard({
         confirmText: 'Remove',
         cancelText: 'Cancel',
         confirmVariant: 'danger',
-        confirmationKey: 'remove_media',
+        confirmationKey: 'remove-from-library',
       });
 
       if (confirmed) {

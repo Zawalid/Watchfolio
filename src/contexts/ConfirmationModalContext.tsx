@@ -6,7 +6,7 @@ export interface ConfirmationOptions {
   confirmText?: string;
   cancelText?: string;
   confirmVariant?: 'primary' | 'danger' | 'warning';
-  confirmationKey?: string; // Used for "don't ask again" persistence
+  confirmationKey?: ConfirmationKeys;
 }
 
 export interface ConfirmationModalContextType {

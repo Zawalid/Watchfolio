@@ -25,13 +25,15 @@ import FiltersModal from '@/components/library/FiltersModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import { SyncStatus } from '@/components/library/SyncStatus';
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { DROPDOWN_CLASSNAMES, SELECT_CLASSNAMES } from '@/styles/heroui';
 import { cn, slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useClearLibrary } from '@/hooks/useClearLibrary';
+
+// TODO : Display the syn status somewhere else when the sidebar is hidden
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -46,23 +48,9 @@ export default function LibraryLayout() {
   const filtersDisclosure = useDisclosure();
   const keyboardShortcutsDisclosure = useDisclosure();
   const importExportDisclosure = useDisclosure();
+  const { getCount } = useLibraryStore();
+  const { handleClearLibrary } = useClearLibrary();
 
-  const { confirm } = useConfirmationModal();
-
-  const { getCount, clearLibrary } = useLibraryStore();
-
-  const handleClearLibrary = async () => {
-    const confirmed = await confirm({
-      title: 'Clear Library',
-      message: 'Are you sure you want to clear your entire library? This action cannot be undone.',
-      confirmText: 'Clear',
-      cancelText: 'Cancel',
-      confirmVariant: 'danger',
-      confirmationKey: 'clear_library',
-    });
-
-    if (confirmed) clearLibrary();
-  };
   useHotkeys(getShortcut('toggleSidebar').hotkey, () => setShowTabs(!showTabs), [showTabs], { useKey: true });
   useHotkeys(
     getShortcut('focusSearch').hotkey,
@@ -78,10 +66,10 @@ export default function LibraryLayout() {
   const hasActiveFilters = !!(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
 
   return (
-    <div className='relative flex h-full flex-col gap-6 lg:flex-row lg:gap-10'>
+    <div className='relative flex h-full flex-col gap-6 pb-3.5 lg:flex-row lg:gap-10'>
       <div
         className={cn(
-          'fixed z-20 flex h-[calc(100vh-120px)] flex-col transition-transform duration-300',
+          'fixed z-20 flex h-[calc(100vh-120px)] flex-col pb-3.5 transition-transform duration-300',
           showTabs ? 'translate-x-0' : '-translate-x-[200%]'
         )}
       >

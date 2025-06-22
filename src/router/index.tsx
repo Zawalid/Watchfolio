@@ -105,7 +105,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to='/settings/profile' />,
+            element: <Navigate to='/settings/preferences' />,
           },
           {
             path: 'profile',

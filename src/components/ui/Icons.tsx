@@ -1,3 +1,5 @@
+// TODO : delete this file and use lucide-icons instead
+
 // Input
 export const NAME_ICON = (
   <svg

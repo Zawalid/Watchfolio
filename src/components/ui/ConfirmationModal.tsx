@@ -21,7 +21,7 @@ interface ConfirmationModalProps {
   onCancel: (dontAskAgain: boolean) => void;
 }
 
-export default function ConfirmationModal({ disclosure, options, onConfirm, onCancel }: ConfirmationModalProps) {
+export  function ConfirmationModal({ disclosure, options, onConfirm, onCancel }: ConfirmationModalProps) {
   const [dontAskAgain, setDontAskAgain] = useState(false);
 
   // Reset "don't ask again" when modal opens

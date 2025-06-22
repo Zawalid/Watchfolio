@@ -8,10 +8,7 @@ import { cn } from '@/utils';
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading } = useAuthStore();
 
-  const handleConfirmationToggle = async (
-    setting: 'signOutConfirmation' | 'removeFromWatchlistConfirmation',
-    enabled: boolean
-  ) => {
+  const handleConfirmationToggle = async (setting: ConfirmationPreferences, enabled: boolean) => {
     if (!user?.preferences) return;
 
     try {
@@ -38,9 +35,7 @@ export default function Preferences() {
           <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-2'>
             <Settings className='text-Primary-400 size-4' />
           </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>
-            Preferences
-          </h3>
+          <h3 className='text-Primary-100 text-xl font-semibold'>Preferences</h3>
         </div>
         <div className='space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
           <SettingItem
@@ -49,8 +44,8 @@ export default function Preferences() {
             isDisabled={isLoading}
           >
             <Switch
-              checked={user?.preferences?.removeFromWatchlistConfirmation === 'enabled'}
-              onChange={(e) => handleConfirmationToggle('removeFromWatchlistConfirmation', e.target.checked)}
+              checked={user?.preferences?.removeFromLibraryConfirmation === 'enabled'}
+              onChange={(e) => handleConfirmationToggle('removeFromLibraryConfirmation', e.target.checked)}
               disabled={isLoading}
             />
           </SettingItem>
@@ -61,8 +56,8 @@ export default function Preferences() {
             isDisabled={isLoading}
           >
             <Switch
-              checked={user?.preferences?.removeFromWatchlistConfirmation === 'enabled'}
-              onChange={(e) => handleConfirmationToggle('removeFromWatchlistConfirmation', e.target.checked)}
+              checked={user?.preferences?.clearLibraryConfirmation === 'enabled'}
+              onChange={(e) => handleConfirmationToggle('clearLibraryConfirmation', e.target.checked)}
               disabled={isLoading}
             />
           </SettingItem>
@@ -98,7 +93,12 @@ export default function Preferences() {
             </div>
           </SettingItem>
 
-          <SettingItem title='Compact view' description='Use a more dense layout for lists and cards' isDisabled={true} comingSoon={true}>
+          <SettingItem
+            title='Compact view'
+            description='Use a more dense layout for lists and cards'
+            isDisabled={true}
+            comingSoon={true}
+          >
             <Switch checked={false} onChange={() => {}} disabled={true} />
           </SettingItem>
         </div>
@@ -113,13 +113,23 @@ export default function Preferences() {
           <h3 className='text-Primary-100 text-xl font-semibold'>Localization</h3>
         </div>
         <div className='space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
-          <SettingItem title='Language' description='Choose your preferred language' isDisabled={true} comingSoon={true}>
+          <SettingItem
+            title='Language'
+            description='Choose your preferred language'
+            isDisabled={true}
+            comingSoon={true}
+          >
             <div className='flex items-center gap-2'>
               <span className='text-Grey-300 text-sm'>English</span>
             </div>
           </SettingItem>
 
-          <SettingItem title='Region' description='Your current region for content availability' isDisabled={true} comingSoon={true}>
+          <SettingItem
+            title='Region'
+            description='Your current region for content availability'
+            isDisabled={true}
+            comingSoon={true}
+          >
             <div className='flex items-center gap-2'>
               <img
                 src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${user?.location.countryCode}.svg`}
