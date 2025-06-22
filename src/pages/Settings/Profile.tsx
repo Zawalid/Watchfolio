@@ -1,6 +1,4 @@
-import { Link } from 'react-router';
 import { Cloud, User } from 'lucide-react';
-import { Button } from '@heroui/button';
 import Details from '@/components/settings/Details';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -22,10 +20,6 @@ export default function Profile() {
               Sign in to personalize your Watchfolio experience and keep your data synced across all devices.
             </p>
           </div>
-
-          <Button as={Link} to='/signin' color='primary' size='lg' className='px-8'>
-            Sign In to Continue
-          </Button>
         </div>
 
         <div className='grid gap-4 md:grid-cols-2'>

@@ -9,7 +9,6 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
-import SettingGuard from '@/components/settings/SettingGuard';
 
 export default function Library() {
   const { isAuthenticated } = useAuthStore();
@@ -20,6 +19,10 @@ export default function Library() {
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(localStorage.getItem('watchfolio-auto-sync') !== 'false');
 
   const handleAutoSyncToggle = (enabled: boolean) => {
+    if (!isAuthenticated) {
+      addToast({ title: 'Sign in required', description: 'Please sign in to sync your library', color: 'warning' });
+      return;
+    }
     // TODO : Add it as a user preference
     localStorage.setItem('watchfolio-auto-sync', enabled.toString());
     setIsAutoSyncEnabled(enabled);
@@ -32,11 +35,7 @@ export default function Library() {
 
   const handleManualSync = async () => {
     if (!isAuthenticated) {
-      addToast({
-        title: 'Sign in required',
-        description: 'Please sign in to sync your library',
-        color: 'warning',
-      });
+      addToast({ title: 'Sign in required', description: 'Please sign in to sync your library', color: 'warning' });
       return;
     }
 
@@ -55,64 +54,54 @@ export default function Library() {
       });
     }
   };
-  const handleClearCloudLibrary = async () => {
-    if (!isAuthenticated) {
-      addToast({
-        title: 'Sign in required',
-        description: 'Please sign in to manage your cloud library',
-        color: 'warning',
-      });
-      return;
-    }
 
+  const handleClearLibrary = async () => {
     const confirmed = await confirm({
-      title: 'Clear Cloud Library',
-      message: 'Are you sure you want to clear your cloud library? This will not affect your local library.',
-      confirmText: 'Clear Cloud',
+      title: 'Clear Library',
+      message: isAuthenticated
+        ? 'Are you sure you want to clear your entire library? This will clear both your local library and cloud backup. This action cannot be undone.'
+        : 'Are you sure you want to clear your entire library? This action cannot be undone.',
       confirmVariant: 'danger',
-      confirmationKey: 'clear-cloud-library',
+      confirmationKey: 'clear-library',
+      confirmText: 'Clear All',
     });
 
     if (confirmed) {
       try {
-        await syncStore.clearCloudLibrary();
+        // Always clear local library
+        clearLibrary();
+
+        // Only clear cloud if authenticated
+        if (isAuthenticated) {
+          await syncStore.clearCloudLibrary();
+          addToast({
+            title: 'Library cleared',
+            description: 'Your local library and cloud backup have been cleared successfully',
+            color: 'success',
+          });
+        } else {
+          addToast({
+            title: 'Library cleared',
+            description: 'Your library has been cleared successfully',
+            color: 'success',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to clear library:', error);
         addToast({
-          title: 'Cloud library cleared',
-          description: 'Your cloud library has been cleared successfully',
-          color: 'success',
-        });
-      } catch {
-        addToast({
-          title: 'Failed to clear cloud library',
-          description: 'An error occurred while clearing your cloud library',
+          title: 'Failed to clear library',
+          description: isAuthenticated
+            ? 'Local library cleared, but failed to clear cloud backup'
+            : 'Failed to clear library. Please try again.',
           color: 'danger',
         });
       }
     }
   };
 
-  const handleClearLibrary = async () => {
-    const confirmed = await confirm({
-      title: 'Clear Library',
-      message: 'Are you sure you want to clear your entire library? This action cannot be undone.',
-      confirmText: 'Clear Library',
-      confirmVariant: 'danger',
-      confirmationKey: 'clear-library',
-    });
-
-    if (confirmed) {
-      clearLibrary();
-      addToast({
-        title: 'Library cleared',
-        description: 'Your library has been cleared successfully',
-        color: 'success',
-      });
-    }
-  };
-
   return (
     <div className='flex flex-col gap-8'>
-        {/* Sync Settings */}
+      {/* Sync Settings */}
       <section className='space-y-4'>
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-2'>
@@ -120,22 +109,22 @@ export default function Library() {
           </div>
           <h3 className='text-Primary-100 text-xl font-semibold'>Cloud Sync</h3>
         </div>
-        
-        <SettingGuard
-          isDisabled={isAuthenticated}
-          title="Authentication Required"
-          description="Sign in to sync your library across devices and keep your data backed up in the cloud."
-          icon={Cloud}
-          actionText="Sign In"
-          onAction={() => {
-            addToast({
-              title: 'Sign in required',
-              description: 'Please sign in to access cloud sync features',
-              color: 'warning',
-            });
-          }}
-        >
-          <div className='space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
+
+        <div className='relative'>
+          {!isAuthenticated && (
+            <div className='absolute inset-0 z-10 flex items-center justify-center rounded-xl'>
+              <p className='text-Grey-300 text-center text-sm'>
+                Sign in to sync your library across devices and
+                <br />
+                keep your data backed up in the cloud.
+              </p>
+            </div>
+          )}
+          <div
+            className={`space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm transition-all duration-300 ${
+              !isAuthenticated ? 'pointer-events-none opacity-40 blur-[1px]' : ''
+            }`}
+          >
             <div className='grid grid-cols-[1fr_auto] items-center gap-6'>
               <div>
                 <h4 className='text-Grey-200 font-semibold'>Auto-sync</h4>
@@ -153,7 +142,9 @@ export default function Library() {
                       : 'Never synced'}
                   </p>
                   {syncStore.status.pendingOperations > 0 && (
-                    <p className='mt-1 text-xs text-amber-300'>{syncStore.status.pendingOperations} pending operations</p>
+                    <p className='mt-1 text-xs text-amber-300'>
+                      {syncStore.status.pendingOperations} pending operations
+                    </p>
                   )}
                 </div>
                 <Button
@@ -169,7 +160,7 @@ export default function Library() {
               </div>
             </div>
           </div>
-        </SettingGuard>
+        </div>
       </section>
 
       {/* Library Management */}
@@ -221,37 +212,15 @@ export default function Library() {
         <div className='space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
           <div className='flex items-center justify-between'>
             <div>
-              <h4 className='font-semibold text-red-200'>Clear Local Library</h4>
+              <h4 className='font-semibold text-red-200'>Clear Library</h4>
               <p className='text-Grey-400 mt-1 text-sm'>
-                Permanently delete all items from your local library. This action cannot be undone.
+                Permanently delete all items from your library. This action cannot be undone.
               </p>
             </div>
             <Button color='danger' size='sm' onPress={handleClearLibrary} startContent={<Trash2 className='size-4' />}>
               Clear Library
             </Button>
           </div>
-
-          {isAuthenticated && (
-            <div className='border-t border-white/5 pt-6'>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <h4 className='font-semibold text-red-200'>Clear Cloud Library</h4>
-                  <p className='text-Grey-400 mt-1 text-sm'>
-                    Clear your synced library in the cloud. Your local library will remain unchanged.
-                  </p>
-                </div>
-                <Button
-                  color='danger'
-                  variant='bordered'
-                  size='sm'
-                  onPress={handleClearCloudLibrary}
-                  startContent={<Cloud className='size-4' />}
-                >
-                  Clear Cloud
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -259,7 +228,3 @@ export default function Library() {
     </div>
   );
 }
-
-
-
-

@@ -18,7 +18,6 @@ interface AuthState {
   resetPassword: (email: string) => Promise<Models.Token>;
 
   // User Management Actions
-  updateUserName: (name: string) => Promise<void>;
   updateUserEmail: (email: string, password: string) => Promise<void>;
   updateUserPassword: (newPassword: string, oldPassword: string) => Promise<void>;
   updateUserProfile: (profileData: UpdateProfileInput) => Promise<void>;
@@ -111,20 +110,6 @@ export const useAuthStore = create<AuthState>()(
 
       resetPassword: async (email: string) => {
         return await authService.resetPassword(email);
-      },
-
-      updateUserName: async (name: string) => {
-        const { user } = get();
-        if (!user) throw new Error('No user authenticated');
-
-        set({ isLoading: true });
-        try {
-          const updatedUser = await authService.updateUserName(user.profile.$id, name);
-          set({ user: updatedUser, isLoading: false });
-        } catch (error) {
-          set({ isLoading: false });
-          throw error;
-        }
       },
 
       updateUserEmail: async (email: string, password: string) => {

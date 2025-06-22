@@ -1,7 +1,7 @@
 import { Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from '@heroui/dropdown';
 import { Avatar } from '@heroui/avatar';
 import { SETTINGS_ICON, SIGN_OUT_ICON } from './ui/Icons';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { addToast } from '@heroui/toast';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
@@ -9,9 +9,10 @@ import { ChevronDownIcon } from 'lucide-react';
 import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 
 export default function UserDropdown() {
-  const navigate = useNavigate();
   const { user, signOut: authSignOut } = useAuthStore();
   const { confirm } = useConfirmationModal();
+  const navigate = useNavigate();
+  const location = useLocation()
 
   if (!user) return null;
 
@@ -27,7 +28,7 @@ export default function UserDropdown() {
       if (!confirmed) return;
       await authSignOut();
       addToast({ title: 'Signed out successfully', description: 'You have been signed out.', color: 'success' });
-      if (['settings'].includes(window.location.pathname)) navigate('/');
+      if (location.pathname.includes('settings')) navigate('/');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       addToast({ title: 'Sign out failed', description: errorMessage, color: 'danger' });

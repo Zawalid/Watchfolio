@@ -18,7 +18,7 @@ class BaseAPI {
     data: Omit<T, keyof Models.Document>,
     documentId?: string,
     permissions?: string[]
-  ): Promise<T> {
+  ) {
     return (await databases.createDocument(
       DATABASE_ID,
       collectionId,
@@ -32,7 +32,7 @@ class BaseAPI {
     collectionId: string,
     documentId: string,
     queries?: string[]
-  ): Promise<T> {
+  ) {
     return (await databases.getDocument(DATABASE_ID, collectionId, documentId, queries)) as T;
   }
 
@@ -40,18 +40,18 @@ class BaseAPI {
     collectionId: string,
     documentId: string,
     data: Partial<Omit<T, keyof Models.Document>>
-  ): Promise<T> {
+  ) {
     return (await databases.updateDocument(DATABASE_ID, collectionId, documentId, data)) as T;
   }
 
-  protected async deleteDocument(collectionId: string, documentId: string): Promise<void> {
+  protected async deleteDocument(collectionId: string, documentId: string) {
     await databases.deleteDocument(DATABASE_ID, collectionId, documentId);
   }
 
   protected async listDocuments<T extends Models.Document>(
     collectionId: string,
     queries?: string[]
-  ): Promise<DocumentList<T>> {
+  ) {
     const response = await databases.listDocuments(DATABASE_ID, collectionId, queries);
 
     return {
@@ -65,30 +65,30 @@ class BaseAPI {
  * Profile API - handles profile management
  */
 export class ProfileAPI extends BaseAPI {
-  async create(profileData: CreateProfileInput & { id: string }, documentId?: string): Promise<Profile> {
+  async create(profileData: CreateProfileInput & { id: string }, documentId?: string) {
     const permissions = setPermissions(profileData.id);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...cleanProfileData } = profileData;
     return this.createDocument<Profile>(COLLECTIONS.PROFILES, cleanProfileData, documentId, permissions);
   }
 
-  async get(userId: string): Promise<Profile> {
+  async get(userId: string) {
     return this.getDocument<Profile>(COLLECTIONS.PROFILES, userId, [Query.select(['*', 'preferences.*', 'library.*'])]);
   }
 
-  async update(userId: string, profileData: UpdateProfileInput): Promise<Profile> {
+  async update(userId: string, profileData: UpdateProfileInput) {
     return this.updateDocument<Profile>(COLLECTIONS.PROFILES, userId, profileData);
   }
 
-  async delete(userId: string): Promise<void> {
+  async delete(userId: string) {
     return this.deleteDocument(COLLECTIONS.PROFILES, userId);
   }
 
-  async list(queries?: string[]): Promise<DocumentList<Profile>> {
+  async list(queries?: string[]) {
     return this.listDocuments<Profile>(COLLECTIONS.PROFILES, queries);
   }
 
-  async getByEmail(email: string): Promise<Profile | null> {
+  async getByEmail(email: string) {
     const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
       Query.equal('email', email),
       Query.limit(1),
@@ -96,7 +96,7 @@ export class ProfileAPI extends BaseAPI {
     return result.documents[0] || null;
   }
 
-  async getByUsername(username: string): Promise<Profile | null> {
+  async getByUsername(username: string) {
     const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
       Query.equal('username', username),
       Query.limit(1),
@@ -112,18 +112,18 @@ export class UserPreferencesAPI extends BaseAPI {
   async create(
     preferencesData: CreateUserPreferencesInput & { userId?: string },
     documentId?: string
-  ): Promise<UserPreferences> {
+  ) {
     const permissions = preferencesData.userId ? setPermissions(preferencesData.userId) : undefined;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId, ...cleanData } = preferencesData;
     return this.createDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, cleanData, documentId, permissions);
   }
 
-  async get(preferencesId: string): Promise<UserPreferences> {
+  async get(preferencesId: string) {
     return this.getDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesId);
   }
 
-  async getByUserId(userId: string): Promise<UserPreferences | null> {
+  async getByUserId(userId: string) {
     const result = await this.listDocuments<UserPreferences>(COLLECTIONS.USER_PREFERENCES, [
       Query.equal('$id', userId), // Assuming preferences use the same ID as user
       Query.limit(1),
@@ -131,11 +131,11 @@ export class UserPreferencesAPI extends BaseAPI {
     return result.documents[0] || null;
   }
 
-  async update(preferencesId: string, preferencesData: UpdateUserPreferencesInput): Promise<UserPreferences> {
+  async update(preferencesId: string, preferencesData: UpdateUserPreferencesInput) {
     return this.updateDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesId, preferencesData);
   }
 
-  async delete(preferencesId: string): Promise<void> {
+  async delete(preferencesId: string) {
     return this.deleteDocument(COLLECTIONS.USER_PREFERENCES, preferencesId);
   }
 }
@@ -144,7 +144,7 @@ export class UserPreferencesAPI extends BaseAPI {
  * Library API
  */
 export class LibraryAPI extends BaseAPI {
-  async create(libraryData: CreateLibraryInput & { user: string }, documentId?: string): Promise<Library> {
+  async create(libraryData: CreateLibraryInput & { user: string }, documentId?: string) {
     return this.createDocument<Library>(
       COLLECTIONS.LIBRARIES,
       libraryData,
@@ -153,25 +153,25 @@ export class LibraryAPI extends BaseAPI {
     );
   }
 
-  async get(libraryId: string): Promise<Library> {
+  async get(libraryId: string) {
     return this.getDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, [
       Query.select(['*', 'items.*', 'items.media.*', 'user.*']),
     ]);
   }
 
-  async update(libraryId: string, libraryData: UpdateLibraryInput): Promise<Library> {
+  async update(libraryId: string, libraryData: UpdateLibraryInput) {
     return this.updateDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, libraryData);
   }
 
-  async delete(libraryId: string): Promise<void> {
+  async delete(libraryId: string) {
     return this.deleteDocument(COLLECTIONS.LIBRARIES, libraryId);
   }
 
-  async list(queries?: string[]): Promise<DocumentList<Library>> {
+  async list(queries?: string[]) {
     return this.listDocuments<Library>(COLLECTIONS.LIBRARIES, queries);
   }
 
-  async getByUser(userId: string): Promise<Library | null> {
+  async getByUser(userId: string) {
     const result = await this.listDocuments<Library>(COLLECTIONS.LIBRARIES, [
       Query.equal('user', userId),
       Query.limit(1),
@@ -184,7 +184,7 @@ export class LibraryAPI extends BaseAPI {
  * Library Items API
  */
 export class LibraryItemsAPI extends BaseAPI {
-  async create(itemData: CreateLibraryItemInput & { userId?: string }, documentId?: string): Promise<LibraryItem> {
+  async create(itemData: CreateLibraryItemInput & { userId?: string }, documentId?: string) {
     const permissions = itemData.userId ? setPermissions(itemData.userId) : undefined;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId, libraryId, mediaId, ...cleanItemData } = itemData;
@@ -199,30 +199,30 @@ export class LibraryItemsAPI extends BaseAPI {
     return this.createDocument<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, appwriteData, documentId, permissions);
   }
 
-  async get(itemId: string): Promise<LibraryItem> {
+  async get(itemId: string) {
     return this.getDocument<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, itemId, [
       Query.select(['*', 'library.*', 'media.*']),
     ]);
   }
 
-  async update(itemId: string, itemData: UpdateLibraryItemInput): Promise<LibraryItem> {
+  async update(itemId: string, itemData: UpdateLibraryItemInput) {
     return this.updateDocument<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, itemId, itemData);
   }
 
-  async delete(itemId: string): Promise<void> {
+  async delete(itemId: string) {
     return this.deleteDocument(COLLECTIONS.LIBRARY_ITEMS, itemId);
   }
 
-  async list(queries?: string[]): Promise<DocumentList<LibraryItem>> {
+  async list(queries?: string[]) {
     return this.listDocuments<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, queries);
   }
 
-  async getByLibrary(libraryId: string, queries?: string[]): Promise<DocumentList<LibraryItem>> {
+  async getByLibrary(libraryId: string, queries?: string[]) {
     const baseQueries = [Query.equal('library', libraryId), Query.select(['*', 'media.*'])];
     return this.listDocuments<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, [...baseQueries, ...(queries || [])]);
   }
 
-  async getByLibraryAndMedia(libraryId: string, mediaId: string): Promise<LibraryItem | null> {
+  async getByLibraryAndMedia(libraryId: string, mediaId: string) {
     const result = await this.listDocuments<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, [
       Query.equal('library', libraryId),
       Query.equal('media', mediaId),
@@ -231,11 +231,11 @@ export class LibraryItemsAPI extends BaseAPI {
     return result.documents[0] || null;
   }
 
-  async getByStatus(libraryId: string, status: string): Promise<DocumentList<LibraryItem>> {
+  async getByStatus(libraryId: string, status: string) {
     return this.getByLibrary(libraryId, [Query.equal('status', status)]);
   }
 
-  async getFavorites(libraryId: string): Promise<DocumentList<LibraryItem>> {
+  async getFavorites(libraryId: string) {
     return this.getByLibrary(libraryId, [Query.equal('isFavorite', true)]);
   }
 }
@@ -244,27 +244,27 @@ export class LibraryItemsAPI extends BaseAPI {
  * TMDB Media API
  */
 export class TmdbMediaAPI extends BaseAPI {
-  async create(mediaData: CreateTmdbMediaInput, documentId?: string): Promise<TmdbMedia> {
+  async create(mediaData: CreateTmdbMediaInput, documentId?: string) {
     return this.createDocument<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, mediaData, documentId);
   }
 
-  async get(mediaId: string): Promise<TmdbMedia> {
+  async get(mediaId: string) {
     return this.getDocument<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, mediaId);
   }
 
-  async update(mediaId: string, mediaData: UpdateTmdbMediaInput): Promise<TmdbMedia> {
+  async update(mediaId: string, mediaData: UpdateTmdbMediaInput) {
     return this.updateDocument<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, mediaId, mediaData);
   }
 
-  async delete(mediaId: string): Promise<void> {
+  async delete(mediaId: string) {
     return this.deleteDocument(COLLECTIONS.TMDB_MEDIA, mediaId);
   }
 
-  async list(queries?: string[]): Promise<DocumentList<TmdbMedia>> {
+  async list(queries?: string[]) {
     return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, queries);
   }
 
-  async getByTmdbId(tmdbId: number, mediaType: 'movie' | 'tv'): Promise<TmdbMedia | null> {
+  async getByTmdbId(tmdbId: number, mediaType: 'movie' | 'tv') {
     const result = await this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [
       Query.equal('id', tmdbId),
       Query.equal('mediaType', mediaType),
@@ -273,11 +273,11 @@ export class TmdbMediaAPI extends BaseAPI {
     return result.documents[0] || null;
   }
 
-  async search(title: string, limit: number = 20): Promise<DocumentList<TmdbMedia>> {
+  async search(title: string, limit: number = 20) {
     return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [Query.search('title', title), Query.limit(limit)]);
   }
 
-  async getByGenres(genres: string[], limit: number = 20): Promise<DocumentList<TmdbMedia>> {
+  async getByGenres(genres: string[], limit: number = 20) {
     return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [Query.equal('genres', genres), Query.limit(limit)]);
   }
 }
@@ -286,7 +286,7 @@ export class TmdbMediaAPI extends BaseAPI {
  * Authentication API
  */
 export class AuthAPI {
-  async getCurrentUser(): Promise<Models.User<Models.Preferences> | null> {
+  async getCurrentUser() {
     try {
       return await account.get();
     } catch {
@@ -294,15 +294,15 @@ export class AuthAPI {
     }
   }
 
-  async createEmailSession(email: string, password: string): Promise<Models.Session> {
+  async createEmailSession(email: string, password: string) {
     return await account.createEmailPasswordSession(email, password);
   }
 
-  async deleteCurrentSession(): Promise<void> {
+  async deleteCurrentSession() {
     await account.deleteSession('current');
   }
 
-  async deleteAllSessions(): Promise<void> {
+  async deleteAllSessions() {
     await account.deleteSessions();
   }
 
@@ -311,31 +311,31 @@ export class AuthAPI {
     password: string,
     name: string,
     userId?: string
-  ): Promise<Models.User<Models.Preferences>> {
+  ) {
     return await account.create(userId || ID.unique(), email, password, name);
   }
 
-  async updateName(name: string): Promise<Models.User<Models.Preferences>> {
+  async updateName(name: string) {
     return await account.updateName(name);
   }
 
-  async updateEmail(email: string, password: string): Promise<Models.User<Models.Preferences>> {
+  async updateEmail(email: string, password: string) {
     return await account.updateEmail(email, password);
   }
 
-  async updatePassword(password: string, oldPassword: string): Promise<Models.User<Models.Preferences>> {
+  async updatePassword(password: string, oldPassword: string) {
     return await account.updatePassword(password, oldPassword);
   }
 
-  async createRecovery(email: string, url: string): Promise<Models.Token> {
+  async createRecovery(email: string, url: string) {
     return await account.createRecovery(email, url);
   }
 
-  async updateRecovery(userId: string, secret: string, password: string): Promise<Models.Token> {
+  async updateRecovery(userId: string, secret: string, password: string) {
     return await account.updateRecovery(userId, secret, password);
   }
 
-  async createAnonymousSession(): Promise<Models.Session> {
+  async createAnonymousSession() {
     return await account.createAnonymousSession();
   }
 }
@@ -344,15 +344,15 @@ export class AuthAPI {
  * Storage API
  */
 export class StorageAPI {
-  async uploadFile(bucketId: string, file: File, fileId?: string, permissions?: string[]): Promise<Models.File> {
+  async uploadFile(bucketId: string, file: File, fileId?: string, permissions?: string[]) {
     return await storage.createFile(bucketId, fileId || ID.unique(), file, permissions);
   }
 
-  async getFile(bucketId: string, fileId: string): Promise<Models.File> {
+  async getFile(bucketId: string, fileId: string) {
     return await storage.getFile(bucketId, fileId);
   }
 
-  async deleteFile(bucketId: string, fileId: string): Promise<void> {
+  async deleteFile(bucketId: string, fileId: string) {
     await storage.deleteFile(bucketId, fileId);
   }
 
@@ -370,7 +370,7 @@ export class StorageAPI {
     rotation?: number,
     background?: string,
     output?: ImageFormat
-  ): Promise<URL> {
+  ) {
     return new URL(
       storage.getFilePreview(
         bucketId,
@@ -390,16 +390,16 @@ export class StorageAPI {
     );
   }
 
-  async listFiles(bucketId: string, queries?: string[]): Promise<Models.FileList> {
+  async listFiles(bucketId: string, queries?: string[]) {
     return await storage.listFiles(bucketId, queries);
   }
 
   // Avatar specific methods
-  async uploadAvatar(file: File, fileId?: string): Promise<Models.File> {
+  async uploadAvatar(file: File, fileId?: string) {
     return this.uploadFile(BUCKETS.AVATARS, file, fileId);
   }
 
-  async getAvatarPreview(fileId: string, size: number = 100): Promise<URL> {
+  async getAvatarPreview(fileId: string, size: number = 100) {
     return this.getFilePreview(BUCKETS.AVATARS, fileId, size, size, undefined, 90);
   }
 }
@@ -408,7 +408,7 @@ export class StorageAPI {
  * Locale API - handles user location and locale information
  */
 export class LocaleAPI {
-  async get(): Promise<Models.Locale> {
+  async get() {
     return await locale.get();
   }
 
@@ -439,7 +439,7 @@ export class AppwriteService {
   /**
    * Health check - test if Appwrite is accessible
    */
-  async healthCheck(): Promise<boolean> {
+  async healthCheck() {
     try {
       await databases.listDocuments(DATABASE_ID, COLLECTIONS.PROFILES, [Query.limit(1)]);
       return true;

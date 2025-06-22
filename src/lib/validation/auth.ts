@@ -40,6 +40,7 @@ export const profileSchema = z.object({
     .max(500, { message: 'Bio must be less than 500 characters' })
     .optional()
     .or(z.literal('')),
+  avatarUrl: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
 });
 
 export const changeEmailSchema = z

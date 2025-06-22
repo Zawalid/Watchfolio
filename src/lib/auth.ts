@@ -1,4 +1,3 @@
-import { Models } from 'appwrite';
 import { appwriteService } from './api/appwrite-service';
 
 export interface CreateUserAccount {
@@ -21,7 +20,7 @@ class AuthService {
   /**
    * Create new user account with profile and library
    */
-  async createAccount({ name, email, password }: CreateUserAccount): Promise<Models.User<Models.Preferences>> {
+  async createAccount({ name, email, password }: CreateUserAccount) {
     try {
       // 1. Create Appwrite auth account
       const newAccount = await appwriteService.auth.createAccount(email, password, name);
@@ -46,7 +45,7 @@ class AuthService {
   /**
    * Sign in user with email and password
    */
-  async signIn({ email, password }: SignInAccount): Promise<Models.Session> {
+  async signIn({ email, password }: SignInAccount) {
     try {
       const session = await appwriteService.auth.createEmailSession(email, password);
       return session;
@@ -59,14 +58,16 @@ class AuthService {
   /**
    * Sign out current user
    */
-  async signOut(): Promise<void> {
+  async signOut() {
     try {
       await appwriteService.auth.deleteCurrentSession();
     } catch (error) {
       console.error('Sign out error:', error);
       throw this.formatError(error);
     }
-  }  /**
+  }
+
+  /**
    * Get current authenticated user with profile, preferences, and location
    */
   async getCurrentUser(): Promise<UserWithProfile | null> {
@@ -77,7 +78,7 @@ class AuthService {
       try {
         // Get user profile from database
         const userProfile = await appwriteService.profiles.get(currentAccount.$id);
-        
+
         // Get or create user preferences using the userId
         let userPreferences: UserPreferences;
         try {
@@ -105,10 +106,11 @@ class AuthService {
       return null;
     }
   }
+
   /**
    * Get user's library ID
    */
-  async getUserLibraryId(userId: string): Promise<string | null> {
+  async getUserLibraryId(userId: string) {
     try {
       const userLibrary = await appwriteService.libraries.getByUser(userId);
       return userLibrary?.$id || null;
@@ -121,7 +123,7 @@ class AuthService {
   /**
    * Reset password via email
    */
-  async resetPassword(email: string): Promise<Models.Token> {
+  async resetPassword(email: string) {
     try {
       return await appwriteService.auth.createRecovery(email, `${window.location.origin}/reset-password`);
     } catch (error) {
@@ -133,17 +135,19 @@ class AuthService {
   /**
    * Update password with recovery token
    */
-  async updatePassword(userId: string, secret: string, password: string): Promise<Models.Token> {
+  async updatePassword(userId: string, secret: string, password: string) {
     try {
       return await appwriteService.auth.updateRecovery(userId, secret, password);
-    } catch (error) {      console.error('Update password error:', error);
+    } catch (error) {
+      console.error('Update password error:', error);
       throw this.formatError(error);
     }
-  }  
+  }
+
   /**
    * Create default user preferences
    */
-  private async createDefaultUserPreferences(userId: string): Promise<UserPreferences> {
+  private async createDefaultUserPreferences(userId: string) {
     try {
       const defaultPreferences = {
         signOutConfirmation: 'enabled' as ConfirmationSetting,
@@ -164,16 +168,9 @@ class AuthService {
   /**
    * Update user name in both auth and profile
    */
-  async updateUserName(userId: string, name: string): Promise<UserWithProfile | null> {
+  async updateUserName(name: string) {
     try {
-      // Update name in Appwrite Auth
-      await appwriteService.auth.updateName(name);
-      
-      // Update name in profile
-      await appwriteService.profiles.update(userId, { name });
-      
-      // Return updated user
-      return await this.getCurrentUser();
+      return await appwriteService.auth.updateName(name);
     } catch (error) {
       console.error('Update user name error:', error);
       throw this.formatError(error);
@@ -187,10 +184,10 @@ class AuthService {
     try {
       // Update email in Appwrite Auth
       await appwriteService.auth.updateEmail(email, password);
-      
+
       // Update email in profile
       await appwriteService.profiles.update(userId, { email });
-      
+
       // Return updated user
       return await this.getCurrentUser();
     } catch (error) {
@@ -202,7 +199,7 @@ class AuthService {
   /**
    * Update user password in Appwrite Auth
    */
-  async updateUserPassword(newPassword: string, oldPassword: string): Promise<void> {
+  async updateUserPassword(newPassword: string, oldPassword: string) {
     try {
       await appwriteService.auth.updatePassword(newPassword, oldPassword);
     } catch (error) {
@@ -216,6 +213,7 @@ class AuthService {
    */
   async updateUserProfile(userId: string, profileData: UpdateProfileInput): Promise<UserWithProfile | null> {
     try {
+      if (profileData.name) await this.updateUserName(profileData.name);
       await appwriteService.profiles.update(userId, profileData);
       return await this.getCurrentUser();
     } catch (error) {
@@ -227,7 +225,10 @@ class AuthService {
   /**
    * Update user preferences
    */
-  async updateUserPreferences(preferencesId: string, preferencesData: UpdateUserPreferencesInput): Promise<UserWithProfile | null> {
+  async updateUserPreferences(
+    preferencesId: string,
+    preferencesData: UpdateUserPreferencesInput
+  ): Promise<UserWithProfile | null> {
     try {
       await appwriteService.userPreferences.update(preferencesId, preferencesData);
       return await this.getCurrentUser();
@@ -236,45 +237,25 @@ class AuthService {
       throw this.formatError(error);
     }
   }
+
   /**
    * Delete user account - removes auth account, profile, preferences, and library
    */
-  async deleteUserAccount(userId: string): Promise<void> {
+  async deleteUserAccount(userId: string) {
     try {
-      // Get user's library to delete it
-      const userLibrary = await appwriteService.libraries.getByUser(userId);
-      
-      // Delete library items first (to avoid foreign key constraints)
-      if (userLibrary) {
-        const libraryItems = await appwriteService.libraryItems.getByLibrary(userLibrary.$id);
-        for (const item of libraryItems.documents) {
-          await appwriteService.libraryItems.delete(item.$id);
-        }
-        
-        // Delete library
-        await appwriteService.libraries.delete(userLibrary.$id);
-      }
-
-      // Delete user preferences (using userId as preference ID)
-      try {
-        await appwriteService.userPreferences.delete(userId);
-      } catch {
-        // Preferences might not exist, continue
-      }
-
-      // Delete profile
+      // Delete profile (this will also delete library, preferences, items, etc. due to cascade delete)
       await appwriteService.profiles.delete(userId);
-
-      // Finally, delete the auth account
       await appwriteService.auth.deleteAllSessions();
     } catch (error) {
       console.error('Delete user account error:', error);
       throw this.formatError(error);
     }
-  }/**
+  }
+
+  /**
    * Create user profile in database with proper permissions
    */
-  private async createUserProfile(userId: string, name: string, email: string): Promise<Profile> {
+  private async createUserProfile(userId: string, name: string, email: string) {
     try {
       // First create default user preferences with the same ID as the user
       await this.createDefaultUserPreferences(userId);
@@ -289,7 +270,7 @@ class AuthService {
       };
 
       const profile = await appwriteService.profiles.create(userData, userId);
-      
+
       return profile;
     } catch (error) {
       console.error('Create user profile error:', error);
@@ -300,7 +281,7 @@ class AuthService {
   /**
    * Create empty library for user with proper permissions
    */
-  private async createUserLibrary(userId: string): Promise<Library> {
+  async createUserLibrary(userId: string) {
     try {
       const libraryData = {
         user: userId,
@@ -312,7 +293,9 @@ class AuthService {
       console.error('Create user library error:', error);
       throw error;
     }
-  } /**
+  }
+
+  /**
    * Format Appwrite errors to user-friendly messages
    */
   private formatError(error: unknown): AuthError {
@@ -372,7 +355,7 @@ class AuthService {
   /**
    * Get current user ID (helper for other services)
    */
-  async getCurrentUserId(): Promise<string | null> {
+  async getCurrentUserId() {
     try {
       const currentUser = await appwriteService.auth.getCurrentUser();
       return currentUser?.$id || null;

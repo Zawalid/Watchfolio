@@ -46,7 +46,7 @@ export default function ConfirmationModal({ disclosure, options, onConfirm, onCa
   };
 
   return (
-    <Modal disclosure={{ ...disclosure, onOpenChange: handleOpenChange }} hideCloseButton>
+    <Modal size='lg' disclosure={{ ...disclosure, onOpenChange: handleOpenChange }} hideCloseButton>
       <ModalBody className='p-6'>
         <div className='flex items-start gap-4'>
           <div
