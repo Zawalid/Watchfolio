@@ -33,8 +33,6 @@ const StatCard = ({
   trend,
   link,
 }: StatCardProps) => {
-  const [textColor, bgColor, borderColor] = className.split(' ');
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -52,94 +50,77 @@ const StatCard = ({
         transition: { duration: 0.2 },
       }}
       className={cn(
-        'group relative overflow-hidden rounded-2xl border bg-gradient-to-br from-white/[0.08] to-white/[0.02] p-6 backdrop-blur-xl transition-all duration-300 hover:shadow-2xl hover:shadow-black/20',
-        borderColor || 'border-white/10',
+        'group relative overflow-hidden rounded-xl border p-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-lg',
+        className,
         layoutClassName
       )}
     >
-      {/* Animated background gradient */}
-      <div className='absolute inset-0 bg-gradient-to-br from-white/[0.02] via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100' />
-
-      {/* Glow effect */}
-      <div
-        className={cn(
-          'absolute -inset-1 rounded-2xl opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-20',
-          bgColor
-        )}
-      />
-
-      <div className='relative z-10'>
-        <div className='mb-4 flex items-center justify-between'>
-          <div className={cn('relative rounded-xl p-3 backdrop-blur-sm', bgColor || 'bg-white/10')}>
-            <Icon className={cn('size-6', textColor || 'text-Primary-300')} />
-            {/* Icon glow */}
-            <div
-              className={cn(
-                'absolute inset-0 rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-30',
-                bgColor
-              )}
-            />
+      <div className='flex items-start justify-between'>
+        <div className='flex-1'>
+          <div className='mb-1 flex items-center gap-2'>
+            <Icon className='size-4' />
+            <span className='text-Grey-200 text-sm font-medium'>{label}</span>
           </div>
+          
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: delay * 0.1 + 0.2 }}
+            className='mb-1 text-2xl leading-tight font-bold'
+          >
+            {value}
+          </motion.div>
+          
+          {description && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: delay * 0.1 + 0.3 }}
+              className='text-Grey-400 text-xs leading-tight'
+            >
+              {description}
+            </motion.p>
+          )}
+        </div>
 
-          {link ? (
+        <div className='flex flex-col items-end gap-2'>
+          {link && (
             <Link
               to={link}
               className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-full opacity-80 transition-all duration-300 hover:opacity-100',
-                bgColor
+                'flex relative z-10 h-8 w-8 items-center justify-center rounded-full opacity-80 transition-all duration-300 hover:opacity-100',
+                className
               )}
               aria-label={`View all ${label.toLowerCase()}`}
             >
-              <SquareArrowOutUpRight className={cn('size-4', textColor)} />
+              <SquareArrowOutUpRight className='size-3' />
             </Link>
-          ) : trend ? (
+          )}
+          
+          {trend && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: delay * 0.1 + 0.3 }}
               className={cn(
                 'flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium',
-                trend.isPositive ? 'bg-Success-500/20 text-Success-400' : 'bg-Error-500/20 text-Error-400'
+                trend.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
               )}
             >
               <TrendingUp className={cn('size-3', trend.isPositive ? '' : 'rotate-180')} />
               {Math.abs(trend.value)}%
             </motion.div>
-          ) : null}
-        </div>
-
-        <div className='space-y-1'>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: delay * 0.1 + 0.2 }}
-            className='text-Primary-50 text-3xl font-bold transition-colors duration-300 group-hover:text-white'
-          >
-            {value}
-          </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: delay * 0.1 + 0.25 }}
-            className='text-Grey-300 group-hover:text-Primary-50 text-sm font-medium transition-colors duration-300'
-          >
-            {label}
-          </motion.p>
-          {description && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: delay * 0.1 + 0.3 }}
-              className='text-Grey-500 group-hover:text-Grey-400 text-xs transition-colors duration-300'
-            >
-              {description}
-            </motion.p>
           )}
         </div>
       </div>
+
+      {/* Simple background pattern */}
+      <div className='absolute -top-4 -right-4 opacity-5'>
+        <Icon className='size-16' />
+      </div>
     </motion.div>
   );
-};
+};;
 
 interface LibraryStatsProps {
   items: LibraryMedia[];

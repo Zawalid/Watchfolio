@@ -49,9 +49,12 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
             : `Couldn't find any shows or movies matching "${query}". Try a different search term or check your spelling.`}
         </p>
         <div className='mt-6 flex gap-3'>
-          <Tooltip content={<ShortcutTooltip shortcutName={hasFilters ? 'clearFilters' : 'clearSearch'} className='kbd-sm'/>} className='tooltip-secondary'>
+          <Tooltip
+            content={<ShortcutTooltip shortcutName={hasFilters ? 'clearFilters' : 'clearSearch'} className='kbd-sm!' />}
+            className='tooltip-secondary!'
+          >
             <Button
-              className='button-secondary'
+              className='button-secondary!'
               onPress={() => {
                 if (hasFilters) {
                   setSelectedGenres(null);

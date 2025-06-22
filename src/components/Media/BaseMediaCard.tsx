@@ -137,7 +137,7 @@ export default function BaseMediaCard({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 }}
             >
-              <Tooltip content={<ShortcutTooltip shortcutName='toggleFavorite' />} className='tooltip-secondary'>
+              <Tooltip content={<ShortcutTooltip shortcutName='toggleFavorite' />} className='tooltip-secondary!'>
                 <Button
                   isIconOnly
                   size='sm'
@@ -162,7 +162,7 @@ export default function BaseMediaCard({
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.15 }}
             >
-              <Tooltip content={<ShortcutTooltip shortcutName='editStatus' />} className='tooltip-secondary'>
+              <Tooltip content={<ShortcutTooltip shortcutName='editStatus' />} className='tooltip-secondary!'>
                 <Button
                   isIconOnly
                   size='sm'
@@ -182,7 +182,7 @@ export default function BaseMediaCard({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary'>
+                <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary!'>
                   <Button
                     isIconOnly
                     size='sm'

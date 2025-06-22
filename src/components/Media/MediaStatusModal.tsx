@@ -122,7 +122,7 @@ function StatusSection({
               onPress={removeItem}
             >
               {getShortcut('removeFromMediaStatusModal').description}
-              <ShortcutKey shortcutName='removeFromMediaStatusModal' className='kbd-sm' />
+              <ShortcutKey shortcutName='removeFromMediaStatusModal' className='kbd-sm!' />
             </Button>
           </div>
         )}
@@ -217,9 +217,9 @@ function RatingSection({
           <h2 className='text-Primary-50 text-xl font-semibold'>Your Rating</h2>
         </div>
         {currentRating !== undefined && (
-          <Button size='sm' className='button-secondary' onPress={() => setCurrentRating(undefined)}>
+          <Button size='sm' className='button-secondary!' onPress={() => setCurrentRating(undefined)}>
             {getShortcut('clearRating').description}
-            <ShortcutKey shortcutName='clearRating' className='kbd-sm' />
+            <ShortcutKey shortcutName='clearRating' className='kbd-sm!' />
           </Button>
         )}
       </div>

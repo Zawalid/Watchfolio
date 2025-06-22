@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { Button } from '@heroui/button';
-import { signInSchema, signUpSchema } from '@/lib/validation';
+import { signInSchema, signUpSchema } from '@/lib/validation/auth';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { addToast } from '@heroui/toast';
 

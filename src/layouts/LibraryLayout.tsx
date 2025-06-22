@@ -87,11 +87,11 @@ export default function LibraryLayout() {
       >
         <div className='mb-6 flex items-center justify-between px-4'>
           <h2 className='text-lg font-semibold text-white'>Library</h2>
-          <Tooltip content={<ShortcutTooltip shortcutName='toggleSidebar' />} className='tooltip-secondary'>
+          <Tooltip content={<ShortcutTooltip shortcutName='toggleSidebar' />} className='tooltip-secondary!'>
             <Button
               isIconOnly
               size='sm'
-              className='button-secondary'
+              className='button-secondary!'
               onPress={() => setShowTabs(false)}
               aria-label='Close sidebar'
             >
@@ -134,11 +134,11 @@ export default function LibraryLayout() {
             {!showTabs && (
               <Tooltip
                 content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
-                className='tooltip-secondary'
+                className='tooltip-secondary!'
               >
                 <Button
                   isIconOnly
-                  className='button-secondary h-full'
+                  className='button-secondary! h-full'
                   onPress={() => setShowTabs(true)}
                   aria-label='Show sidebar'
                 >
@@ -160,11 +160,11 @@ export default function LibraryLayout() {
           </div>
           <div className='flex items-center gap-3'>
             {/* Filter button */}
-            <Tooltip content={<ShortcutTooltip shortcutName='toggleFilters' />} className='tooltip-secondary'>
+            <Tooltip content={<ShortcutTooltip shortcutName='toggleFilters' />} className='tooltip-secondary!'>
               <Button
                 isIconOnly
                 className={cn(
-                  'button-secondary relative',
+                  'button-secondary! relative',
                   hasActiveFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20'
                 )}
                 onPress={() => filtersDisclosure.onOpen()}
@@ -209,14 +209,10 @@ export default function LibraryLayout() {
             </Select>
 
             {/* More options dropdown */}
-            <Dropdown
-              placement='bottom-end'
-              backdrop='opaque'
-              classNames={DROPDOWN_CLASSNAMES}
-            >
+            <Dropdown placement='bottom-end' backdrop='opaque' classNames={DROPDOWN_CLASSNAMES}>
               <DropdownTrigger>
-                <Button isIconOnly className='button-secondary relative' aria-label='More options'>
-                  <Tooltip content='More options' className='tooltip-secondary'>
+                <Button isIconOnly className='button-secondary! relative' aria-label='More options'>
+                  <Tooltip content='More options' className='tooltip-secondary!'>
                     <div className='absolute inset-0 size-full'></div>
                   </Tooltip>
                   <MoreVertical className='size-4' />
@@ -230,7 +226,7 @@ export default function LibraryLayout() {
                     onPress={() => importExportDisclosure.onOpen()}
                     description='Import or export your library'
                     classNames={{ shortcut: 'p-0 border-none' }}
-                    shortcut={<ShortcutKey shortcutName='toggleImportExport' className='kbd-sm opacity-80' />}
+                    shortcut={<ShortcutKey shortcutName='toggleImportExport' className='kbd-sm! opacity-80' />}
                   >
                     Import / Export
                   </DropdownItem>
@@ -242,7 +238,7 @@ export default function LibraryLayout() {
                     color='danger'
                     description='Permanently delete all items'
                     classNames={{ shortcut: 'p-0 border-none' }}
-                    shortcut={<ShortcutKey shortcutName='clearLibrary' className='kbd-sm opacity-80' />}
+                    shortcut={<ShortcutKey shortcutName='clearLibrary' className='kbd-sm! opacity-80' />}
                   >
                     {' '}
                     Clear Library
@@ -256,7 +252,7 @@ export default function LibraryLayout() {
                     onPress={() => keyboardShortcutsDisclosure.onOpen()}
                     description='View keyboard shortcuts'
                     classNames={{ shortcut: 'p-0 border-none' }}
-                    shortcut={<ShortcutKey shortcutName='toggleShortcutsHelp' className='kbd-sm opacity-80' />}
+                    shortcut={<ShortcutKey shortcutName='toggleShortcutsHelp' className='kbd-sm! opacity-80' />}
                   >
                     Keyboard Shortcuts
                   </DropdownItem>

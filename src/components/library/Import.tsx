@@ -285,7 +285,7 @@ export default function Import({ onClose }: ImportProps) {
 
             <div className='flex justify-between'>
               <Button
-                className='button-secondary'
+                className='button-secondary!'
                 onPress={handleReset}
                 aria-label='Choose another file'
                 isDisabled={isProcessing}
@@ -318,7 +318,7 @@ export default function Import({ onClose }: ImportProps) {
                     </label>
                     <Tooltip
                       content='How to handle conflicts between your library and imported data'
-                      className='tooltip-secondary'
+                      className='tooltip-secondary!'
                     >
                       <HelpCircle className='text-Grey-400 size-3.5' />
                     </Tooltip>
@@ -359,7 +359,7 @@ export default function Import({ onClose }: ImportProps) {
                   </label>
                   <Tooltip
                     content='Preserve your favorite status even when overwriting items'
-                    className='tooltip-secondary'
+                    className='tooltip-secondary!'
                   >
                     <HelpCircle className='text-Grey-400 size-3.5' />
                   </Tooltip>
@@ -375,7 +375,7 @@ export default function Import({ onClose }: ImportProps) {
             </div>
             <div className='flex justify-between'>
               <Button
-                className='button-secondary'
+                className='button-secondary!'
                 onPress={() => setImportStage('preview')}
                 aria-label='Back to preview'
                 isDisabled={isProcessing}

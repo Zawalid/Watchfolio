@@ -5,7 +5,6 @@ import { ModalBody } from '@heroui/modal';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
-import { cn } from '@/utils';
 import { GENRES, PLATFORMS } from '@/lib/api/TMDB/values';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
@@ -19,11 +18,6 @@ const MEDIA_TYPES = [
   { id: 'tv', label: 'TV Shows', icon: Tv, shortcut: 'filterTvShows' },
   { id: 'anime', label: 'Anime', icon: Clapperboard, shortcut: 'filterAnime' },
 ];
-
-const getClassName = (isSelected: boolean) =>
-  isSelected
-    ? 'border-Secondary-400 bg-Secondary-500/20 text-Secondary-50'
-    : 'text-Grey-300 border-white/10 bg-gray-800/40 hover:border-white/20 hover:bg-white/10';
 
 export default function FiltersModal({ disclosure }: FiltersModalProps) {
   const { isOpen, onClose, onOpen } = disclosure;
@@ -108,7 +102,8 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
                 return (
                   <Button
                     key={id}
-                    className={cn('pill-bg', getClassName(isSelected))}
+                    className='selectable-button!'
+                    data-is-selected={isSelected}
                     onPress={() => toggleGenre(label)}
                   >
                     {label}
@@ -131,10 +126,8 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
                   return (
                     <Button
                       key={platform.id}
-                      className={cn(
-                        'grid size-28 place-content-center rounded-lg border px-3 py-1.5 text-sm font-medium transition-all duration-200',
-                        getClassName(isSelected)
-                      )}
+                      className='selectable-button! size-28'
+                      data-is-selected={isSelected}
                       onPress={() => togglePlatform(platform.id)}
                     >
                       {platform.logo ? (
@@ -161,15 +154,13 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
                   return (
                     <Button
                       key={type.id}
-                      className={cn(
-                        'pill-bg flex items-center justify-center gap-2 px-4 py-2 font-medium transition-colors duration-200',
-                        getClassName(isSelected)
-                      )}
+                      className='selectable-button!'
+                      data-is-selected={isSelected}
                       onPress={() => toggleMediaType(type.id)}
                     >
                       <IconComponent className='size-4' />
                       {type.label}
-                      <ShortcutKey shortcutName={type.shortcut as ShortcutName} className='kbd-sm opacity-60' />
+                      <ShortcutKey shortcutName={type.shortcut as ShortcutName} className='kbd-sm! opacity-60' />
                     </Button>
                   );
                 })}
@@ -180,7 +171,7 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
 
         {(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length) && (
           <Button
-            className='button-secondary'
+            className='button-secondary!'
             onPress={() => {
               setSelectedGenres(null);
               setSelectedPlatforms(null);
@@ -204,8 +195,8 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
 
 const ClearFilter = ({ onClear }: { onClear: () => void }) => {
   return (
-    <Tooltip content='Clear Filter' className='tooltip-secondary'>
-      <Button isIconOnly className='button-secondary' onPress={onClear}>
+    <Tooltip content='Clear Filter' className='tooltip-secondary!'>
+      <Button isIconOnly className='button-secondary!' onPress={onClear}>
         <FunnelX className='size-4' />
       </Button>
     </Tooltip>

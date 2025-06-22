@@ -29,7 +29,7 @@ export const ShortcutTooltip: FC<{ shortcutName: ShortcutName; description?: str
       <div>{description || shortcut.description}</div>
       <div className='flex items-center gap-1'>
         {shortcut.label?.split(' ').map((key, index) => (
-          <kbd key={index} className={cn('kbd-sm', className)}>
+          <kbd key={index} className={cn('kbd-sm!', className)}>
             {key}
           </kbd>
         ))}

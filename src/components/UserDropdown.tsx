@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { addToast } from '@heroui/toast';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { ChevronDownIcon } from 'lucide-react';
-import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
+import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 
 export default function UserDropdown() {
   const navigate = useNavigate();
@@ -42,7 +42,7 @@ export default function UserDropdown() {
       <Dropdown classNames={DROPDOWN_CLASSNAMES} backdrop='opaque' radius='sm' placement='bottom-end'>
         <DropdownTrigger className='cursor-pointer'>
           <div className='flex items-center gap-3 rounded-xl border border-white/10 px-3 py-2 transition-colors duration-200 hover:border-white/20 hover:bg-white/5'>
-            <Avatar src={avatarUrl} isBordered classNames={{ base: 'size-6' }} color='secondary' />
+            <Avatar src={avatarUrl} classNames={AVATAR_CLASSNAMES} size='sm' />
             <span className='text-Primary-50 text-sm font-bold'>{user.name.split(' ')[0]}</span>
             <ChevronDownIcon className='text-Grey-300 size-4' />
           </div>
@@ -54,7 +54,7 @@ export default function UserDropdown() {
               classNames={{ title: 'flex items-center gap-3', base: 'data-[disabled=true]:opacity-100' }}
               className='cursor-auto data-[hover=true]:bg-transparent'
             >
-              <Avatar src={avatarUrl} isBordered color='secondary' size='sm' />
+              <Avatar src={avatarUrl} classNames={AVATAR_CLASSNAMES} />
               <div className='flex-1'>
                 <h5 className='text-Primary-100 text-base font-bold'>{user.name}</h5>
                 <h6 className='text-Primary-200 font-medium'>{user.email}</h6>

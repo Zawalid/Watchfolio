@@ -70,7 +70,7 @@ export function SyncStatus({ className }: { className?: string }) {
   const statusInfo = getStatusInfo();
 
   return (
-    <Tooltip content={statusInfo.tooltip} className='tooltip-secondary'>
+    <Tooltip content={statusInfo.tooltip} className='tooltip-secondary!'>
       <div
         className={cn(
           'flex items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-1 text-xs font-medium transition-colors duration-200',

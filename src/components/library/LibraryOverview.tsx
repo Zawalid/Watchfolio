@@ -79,7 +79,7 @@ export default function LibraryOverview() {
               as={Link}
               to='/library/all'
               endContent={<SquareArrowOutUpRight className='size-4' />}
-              className='button-secondary'
+              className='button-secondary!'
             >
               View All ({totalItems})
             </Button>
@@ -98,7 +98,7 @@ export default function LibraryOverview() {
                 animate='visible'
                 transition={{ delay: index * 0.1 }}
               >
-                <LibraryCard item={item}  tabIndex={0} />
+                <LibraryCard item={item} tabIndex={0} />
               </motion.div>
             ))}
           </motion.div>

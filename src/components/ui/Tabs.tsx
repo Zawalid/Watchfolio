@@ -4,13 +4,13 @@ import { motion } from 'framer-motion';
 import { cn } from '@/utils';
 import { Tooltip } from '@heroui/tooltip';
 
-type TabItem = { 
-  label: string; 
-  icon?: React.JSX.Element; 
-  value: string; 
-  link?: string;  // Optional now, only needed for URL mode
-  includes?: boolean; 
-  tooltip?: string;  // Optional tooltip for keyboard shortcuts
+type TabItem = {
+  label: string;
+  icon?: React.JSX.Element;
+  value: string;
+  link?: string; // Optional now, only needed for URL mode
+  includes?: boolean;
+  tooltip?: string; // Optional tooltip for keyboard shortcuts
 };
 
 type TabsProps = {
@@ -19,32 +19,32 @@ type TabsProps = {
   className?: string;
   tabClassName?: string;
   indicatorClassName?: string;
-  activeTab?: string;  // For controlled mode
-  onChange?: (value: string) => void;  // For controlled mode
+  activeTab?: string; // For controlled mode
+  onChange?: (value: string) => void; // For controlled mode
 };
 
-export  function Tabs({ 
-  tabs, 
-  preserveSearchParams = false, 
-  className = '', 
+export function Tabs({
+  tabs,
+  preserveSearchParams = false,
+  className = '',
   tabClassName = '',
   indicatorClassName = '',
   activeTab: controlledActiveTab,
-  onChange 
+  onChange,
 }: TabsProps) {
   const [searchParams] = useSearchParams();
   const pathname = useLocation().pathname;
   const tabRefs = useRef<(HTMLLIElement | null)[]>([]);
   const containerRef = useRef<HTMLUListElement>(null);
   const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0 });
-  
+
   // Determine if we're in URL mode or state-controlled mode
   const isControlled = controlledActiveTab !== undefined && onChange !== undefined;
 
   // Determine the active tab based on mode
   const activeTabValue = isControlled
     ? controlledActiveTab
-    : tabs.find((tab) => tab.link && (pathname === tab.link || (tab.includes && pathname.includes(tab.link))))?.value || 
+    : tabs.find((tab) => tab.link && (pathname === tab.link || (tab.includes && pathname.includes(tab.link))))?.value ||
       tabs[0].value;
 
   useEffect(() => {
@@ -53,7 +53,6 @@ export  function Tabs({
       const tabElement = tabRefs.current[activeTabIndex];
       const containerElement = containerRef.current;
 
-      
       if (tabElement) {
         const tabRect = tabElement.getBoundingClientRect();
         const containerRect = containerElement.getBoundingClientRect();
@@ -82,7 +81,7 @@ export  function Tabs({
       className={cn('relative flex w-fit gap-5 rounded-xl bg-black/20 p-2 backdrop-blur-2xl', className)}
     >
       <motion.li
-        className={cn('bg-Primary-400 absolute -z-10 rounded-lg',indicatorClassName)}
+        className={cn('bg-Primary-400 absolute -z-10 rounded-lg', indicatorClassName)}
         animate={{
           left: indicator.left,
           top: indicator.top,
@@ -91,19 +90,18 @@ export  function Tabs({
         }}
         transition={{
           type: 'spring',
-          stiffness: 300,  // Reduced from 300 for slower movement
-          damping: 25,     // Adjusted for smoother animation
-          duration: 0.1    // Added minimum duration for consistency
+          stiffness: 300, // Reduced from 300 for slower movement
+          damping: 25, // Adjusted for smoother animation
+          duration: 0.1, // Added minimum duration for consistency
         }}
       />
       {tabs.map((tab, index) => {
-        
         // Create the content element with proper styling
         const tabContent = (
           <span
-          data-active={activeTabValue === tab.value}
-          className={cn(
-              'block size-full px-8 py-2 text-sm font-medium transition-colors duration-200 data-[active=true]:text-Primary-50 text-Grey-300 hover:text-Grey-600',
+            data-active={activeTabValue === tab.value}
+            className={cn(
+              'data-[active=true]:text-Primary-50 text-Grey-300 hover:text-Grey-600 block size-full px-8 py-2 text-sm font-medium transition-colors duration-200',
               tab.icon && 'flex items-center gap-2',
               tabClassName
             )}
@@ -119,16 +117,12 @@ export  function Tabs({
             ref={(el) => {
               tabRefs.current[index] = el;
             }}
-            >
+          >
             {/* Either render as link or button based on mode */}
             {isControlled || !tab.link ? (
-              <button
-                type="button"
-                onClick={(e) => handleTabClick(tab, e)}
-                className="block w-full text-left" 
-              >
+              <button type='button' onClick={(e) => handleTabClick(tab, e)} className='block w-full text-left'>
                 {tab.tooltip ? (
-                  <Tooltip content={tab.tooltip} className="tooltip-secondary">
+                  <Tooltip content={tab.tooltip} className='tooltip-secondary!'>
                     {tabContent}
                   </Tooltip>
                 ) : (
@@ -143,7 +137,7 @@ export  function Tabs({
                 }}
               >
                 {tab.tooltip ? (
-                  <Tooltip content={tab.tooltip} className="tooltip-secondary">
+                  <Tooltip content={tab.tooltip} className='tooltip-secondary!'>
                     {tabContent}
                   </Tooltip>
                 ) : (

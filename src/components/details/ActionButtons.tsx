@@ -41,7 +41,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
 
         <Button
           color='secondary'
-          className='button-secondary w-full'
+          className='button-secondary! w-full'
           onPress={onPlayTrailer}
           startContent={<Film className='size-4' />}
         >
@@ -51,7 +51,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
         <div className='grid grid-cols-2 gap-2'>
           <Button
             color='secondary'
-            className={`button-secondary transition-colors ${
+            className={`button-secondary! transition-colors ${
               isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
             }`}
             onPress={handleToggleFavorite}
@@ -62,7 +62,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
 
           <Button
             color='secondary'
-            className={`button-secondary transition-colors ${
+            className={`button-secondary! transition-colors ${
               currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
             }`}
             onPress={() => openModal(media)}

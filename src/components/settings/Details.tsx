@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { useAuthStore } from '@/stores/useAuthStore';
 import ChangeEmail from './ChangeEmail';
-import { profileSchema } from '@/lib/validation';
+import { profileSchema } from '@/lib/validation/auth';
 import { cn } from '@/utils';
 
 type FormData = z.infer<typeof profileSchema>;
@@ -121,10 +121,10 @@ export default function Details() {
             src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${user.location.countryCode}.svg`}
           />
           {user.location.country}
-        </div>{' '}
+        </div>
         <Preference
           value={values.preference}
-          setValue={(value: 'movies' | 'series' | 'both') => setValue('preference', value, { shouldDirty: true })}
+          setValue={(value) => setValue('preference', value, { shouldDirty: true })}
         />
         <Textarea
           {...register('bio')}
@@ -133,6 +133,7 @@ export default function Details() {
           defaultValue={user.profile.bio}
           error={errors.bio?.message}
         />
+
         <div className='flex items-center justify-end gap-4' ref={parent}>
           {isDirty && isValid && (
             <>
@@ -150,12 +151,18 @@ export default function Details() {
   );
 }
 
-function Preference({ value, setValue }: { value: string; setValue: (value: 'movies' | 'series' | 'both') => void }) {
+function Preference({
+  value,
+  setValue,
+}: {
+  value: MediaPreferenceType;
+  setValue: (value: MediaPreferenceType) => void;
+}) {
   return (
     <div className='flex flex-col gap-2'>
       <label className='text-Grey-400 text-sm'>What are you into</label>
       <div className='grid grid-cols-3 gap-5'>
-        {['movies', 'series', 'both'].map((p) => (
+        {(['movies', 'series', 'both'] as const).map((p) => (
           <Button
             key={p}
             className={cn(
@@ -164,7 +171,7 @@ function Preference({ value, setValue }: { value: string; setValue: (value: 'mov
                 ? 'border-Secondary-400 bg-Secondary-500/20 text-Secondary-50'
                 : 'text-Grey-300 border-white/10 bg-gray-800/40 hover:border-white/20 hover:bg-white/10'
             )}
-            onPress={() => setValue(p as 'movies' | 'series' | 'both')}
+            onPress={() => setValue(p)}
           >
             {p}
           </Button>

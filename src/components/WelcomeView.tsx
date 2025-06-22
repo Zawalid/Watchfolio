@@ -1,7 +1,7 @@
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { Button } from '@heroui/button';
-import { Eye, Film, Tv,  Trophy, Sparkles } from 'lucide-react';
+import { Eye, Film, Tv, Trophy, Sparkles } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -86,7 +86,7 @@ export default function WelcomeView() {
               as={Link}
               to='/tv/popular'
               variant='light'
-              className='button-secondary'
+              className='button-secondary!'
               startContent={<Tv className='size-4' />}
               size='lg'
             >

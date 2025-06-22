@@ -2,8 +2,10 @@ import { RoughNotation } from 'react-rough-notation';
 import { Link, useLocation } from 'react-router';
 
 const links = [
-  { href: '/settings/account', label: 'Account' },
-  { href: '/settings/general', label: 'General' },
+  { href: '/settings/profile', label: 'Profile' },
+  { href: '/settings/preferences', label: 'Preferences' },
+  { href: '/settings/privacy', label: 'Privacy & Security' },
+  { href: '/settings/library', label: 'Library' },
 ];
 
 export default function Sidebar() {
@@ -17,7 +19,7 @@ export default function Sidebar() {
 }
 
 function Item({ href, label }: { href: string; label: string }) {
-  const location = useLocation()
+  const location = useLocation();
   const pathname = location.pathname;
   const isActive = pathname === href;
 

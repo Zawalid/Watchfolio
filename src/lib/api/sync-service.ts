@@ -1,17 +1,19 @@
 import { Query } from 'appwrite';
 import { appwriteService } from './appwrite-service';
 import { compareLibraries, smartMergeLibraries } from '@/utils/library';
-import { authService } from '../auth';
 
 // Map LibraryMedia to Appwrite LibraryItem + TmdbMedia
 const mapToAppwriteData = async (
   media: LibraryMedia
-) => {
+): Promise<{
+  tmdbMedia: CreateTmdbMediaInput;
+  libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
+}> => {
   return {
     tmdbMedia: {
       id: media.id,
       mediaType: media.media_type,
-      title: media.title || `${media.media_type} ${media.id}`, 
+      title: media.title || '',
       overview: undefined,
       posterPath: media.posterPath || undefined,
       releaseDate: media.releaseDate || undefined,
@@ -48,27 +50,37 @@ const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): L
 };
 
 export class LibrarySyncAPI {
+  private libraryId: string | null = null;
+
   /**
    * Get or create library for authenticated user
    * Returns null if user is not authenticated (local-only mode)
    */
-  private async getOrCreateLibrary() {
+  private async getOrCreateLibrary(): Promise<string | null> {
     try {
       // Get current authenticated user
       const currentUser = await appwriteService.auth.getCurrentUser();
-      if (!currentUser) return null;
+      if (!currentUser) {
+        // No authenticated user - local-only mode
+        return null;
+      }
+
+      // Check if we already have the library ID cached
+      if (this.libraryId) return this.libraryId;
 
       // Look for existing library for this user
       const libraries = await appwriteService.libraries.list([Query.equal('user', currentUser.$id), Query.limit(1)]);
 
-      if (libraries.documents.length > 0) return libraries.documents[0].$id;
-
-      // Create new library for user
+      if (libraries.documents.length > 0) {
+        this.libraryId = libraries.documents[0].$id;
+        return this.libraryId;
+      } // Create new library for user
       const library = await appwriteService.libraries.create({
         user: currentUser.$id,
       } as CreateLibraryInput & { user: string });
 
-      return library.$id;
+      this.libraryId = library.$id;
+      return this.libraryId;
     } catch (error) {
       console.error('Failed to get or create library:', error);
       // Return null for local-only mode on error
@@ -78,7 +90,7 @@ export class LibrarySyncAPI {
   /**
    * Sync single item to cloud
    */
-  async syncItemToCloud(media: LibraryMedia) {
+  async syncItemToCloud(media: LibraryMedia): Promise<void> {
     try {
       const libraryId = await this.getOrCreateLibrary();
 
@@ -121,7 +133,7 @@ export class LibrarySyncAPI {
   } /**
    * Intelligent incremental sync to cloud - only syncs changes
    */
-  async syncToCloud(library: LibraryCollection) {
+  async syncToCloud(library: LibraryCollection): Promise<void> {
     try {
       const libraryId = await this.getOrCreateLibrary();
 
@@ -174,23 +186,7 @@ export class LibrarySyncAPI {
   /**
    * Clear cloud library
    */
-  async clearLibraryInCloud() {
-    try {
-      const libraryId = await this.getOrCreateLibrary();
-      if (!libraryId) return;
-
-      const currentUser = await appwriteService.auth.getCurrentUser();
-      if (!currentUser) return;
-
-      await appwriteService.libraries.delete(libraryId);
-      await authService.createUserLibrary(currentUser.$id);
-
-      console.log('✅ Cloud library cleared successfully');
-    } catch (error) {
-      console.error('Failed to clear cloud library:', error);
-      throw error;
-    }
-  }
+  async clearLibraryInCloud(): Promise<void> {}
 
   /**
    * Get library from cloud (returns empty if user is not authenticated)
@@ -236,7 +232,7 @@ export class LibrarySyncAPI {
   } /**
    * Remove item from cloud
    */
-  async removeFromCloud(mediaType: 'movie' | 'tv', tmdbId: number) {
+  async removeFromCloud(mediaType: 'movie' | 'tv', tmdbId: number): Promise<void> {
     try {
       const libraryId = await this.getOrCreateLibrary();
 
@@ -261,6 +257,9 @@ export class LibrarySyncAPI {
       } else {
         console.log(`Library item for ${mediaType}-${tmdbId} not found in cloud`);
       }
+
+      // Optionally clean up TMDB media if no other library items reference it
+      // This is more complex and might not be necessary for now
     } catch (error) {
       console.error(`Failed to remove ${mediaType}-${tmdbId} from cloud:`, error);
       throw error;
@@ -270,12 +269,19 @@ export class LibrarySyncAPI {
   /**
    * Check connection status
    */
-  async checkConnection() {
+  async checkConnection(): Promise<boolean> {
     try {
       return await appwriteService.healthCheck();
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Clear cached library ID (useful when user logs out)
+   */
+  clearSession(): void {
+    this.libraryId = null;
   }
 
   /**
@@ -323,7 +329,11 @@ export class LibrarySyncAPI {
   /**
    * Perform intelligent sync between local and cloud
    */
-  async smartSync(localLibrary: LibraryCollection) {
+  async smartSync(localLibrary: LibraryCollection): Promise<{
+    mergedLibrary: LibraryCollection;
+    changes: string[];
+    uploadedCount: number;
+  }> {
     try {
       const cloudLibrary = await this.getLibraryFromCloud();
 

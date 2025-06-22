@@ -15,7 +15,6 @@ interface SyncStore {
   // Sync operations
   syncToCloud: (library: LibraryCollection) => Promise<void>;
   syncFromCloud: () => Promise<LibraryCollection>;
-
   // Enhanced sync operations
   checkSyncStatus: (library: LibraryCollection) => Promise<SyncComparison | null>;
   smartSync: (library: LibraryCollection) => Promise<{
@@ -23,6 +22,7 @@ interface SyncStore {
     changes: string[];
     uploadedCount: number;
   }>;
+  clearCloudLibrary: () => Promise<void>;
 
   // Status management
   setOnlineStatus: (isOnline: boolean) => void;
@@ -136,6 +136,27 @@ export const useSyncStore = create<SyncStore>((set, get) => ({
       const errorMessage = error instanceof Error ? error.message : 'Smart sync failed';
       setError(errorMessage);
       console.error('❌ Smart sync failed:', error);
+      throw error;
+    } finally {
+      setSyncStatus(false);
+    }
+  },
+
+  clearCloudLibrary: async () => {
+    const { setSyncStatus, setError, updateLastSyncTime } = get();
+
+    try {
+      setSyncStatus(true);
+      setError(null);
+
+      await syncAPI.clearLibraryInCloud();
+
+      updateLastSyncTime();
+      console.log('✅ Cloud library cleared successfully');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to clear cloud library';
+      setError(errorMessage);
+      console.error('❌ Failed to clear cloud library:', error);
       throw error;
     } finally {
       setSyncStatus(false);

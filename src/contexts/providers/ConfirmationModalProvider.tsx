@@ -2,10 +2,10 @@ import { useState, useRef, useCallback } from 'react';
 import { useDisclosure } from '@heroui/modal';
 import ConfirmationModal from '@/components/ui/ConfirmationModal';
 import { ConfirmationModalContext, type ConfirmationOptions } from '../ConfirmationModalContext';
-import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { useAuthStore } from '@/stores/useAuthStore';
 
-// TODO : sync the prefrences with the user's
 export function ConfirmationModalProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuthStore();
   const modalDisclosure = useDisclosure();
   const [options, setOptions] = useState<ConfirmationOptions>({
     title: '',
@@ -20,12 +20,16 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
 
   const confirm = useCallback(
     (options: ConfirmationOptions) => {
-      // Check if "don't ask again" was previously set for this confirmation
-      const confirmationKey = options.confirmationKey;
-      if (confirmationKey) {
-        const dontAskAgainValue = localStorage.getItem(`${LOCAL_STORAGE_PREFIX}confirmation-${confirmationKey}`);
-        if (dontAskAgainValue === 'true') {
-          return Promise.resolve(true); // Auto-confirm if "don't ask again" was selected
+      // Check user preferences for specific confirmation types
+      if (user?.preferences && options.confirmationKey) {
+        const { preferences } = user;
+        
+        // Map confirmation keys to user preference settings
+        if (options.confirmationKey === 'sign-out' && preferences.signOutConfirmation === 'disabled') {
+          return Promise.resolve(true);
+        }
+        if (options.confirmationKey === 'remove-from-library' && preferences.removeFromWatchlistConfirmation === 'disabled') {
+          return Promise.resolve(true);
         }
       }
 
@@ -36,18 +40,17 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
       // Return a promise that will be resolved when the user makes a choice
       return new Promise<boolean>((resolve) => {
         resolveRef.current = resolve;
-      });
-    },
-    [modalDisclosure]
+      });    },
+    [modalDisclosure, user]
   );
 
-  const handleConfirm = (confirmed: boolean, dontAskAgain: boolean) => {
+  const handleConfirm = (confirmed: boolean, _dontAskAgain: boolean) => {
+    console.log(_dontAskAgain)
     if (resolveRef.current) {
-      // If "don't ask again" is checked, store the preference
-      if (dontAskAgain && options.confirmationKey) {
-        localStorage.setItem(`${LOCAL_STORAGE_PREFIX}confirmation-${options.confirmationKey}`, 'true');
-      }
-
+      // TODO: If "don't ask again" is checked, update user preferences
+      // This would require access to updateUserPreferences function
+      // For now, we'll leave this as a future enhancement
+      
       // Resolve the promise with the user's choice
       resolveRef.current(confirmed);
       modalDisclosure.onClose();

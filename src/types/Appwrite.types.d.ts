@@ -68,7 +68,7 @@ declare global {
     libraryId: string;
     mediaId: string;
   };
-  type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Document>;
+  type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Document> & {title : string}; // TO stop the type error in sync-service
 
   type UpdateProfileInput = Partial<CreateProfileInput>;
   type UpdateUserPreferencesInput = Partial<CreateUserPreferencesInput>;

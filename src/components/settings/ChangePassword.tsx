@@ -1,13 +1,14 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { changePasswordSchema } from '@/lib/validation';
+import { changePasswordSchema } from '@/lib/validation/auth';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/modal';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { addToast } from '@heroui/toast';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { KeyRound, Info } from 'lucide-react';
 
 type FormData = z.infer<typeof changePasswordSchema>;
 
@@ -61,15 +62,34 @@ export default function ChangePassword() {
       </div>
     );
   }
-
   return (
-    <>
-      <div className='flex flex-col gap-2'>
-        <h4 className='text-Grey-300 font-semibold'>Change Password</h4>
-        <p className='text-Grey-300 text-sm'>Ensure your account is using a long, random password to stay secure.</p>
-        <Button color='primary' size='sm' className='w-fit' onPress={disclosure.onOpen}>
+    <div className='space-y-4 rounded-xl border border-white/5 bg-white/[0.015] p-6'>
+      <div className='flex items-start justify-between'>
+        <div className='flex gap-4'>
+          <div className='space-y-2'>
+            <h4 className='text-Primary-100 text-lg font-semibold'>Change Password</h4>
+            <p className='text-Grey-300 max-w-md text-sm'>
+              Keep your account secure with a strong, unique password. We recommend using a password manager.
+            </p>
+          </div>
+        </div>
+        <Button color='primary' size='sm' onPress={disclosure.onOpen} className='flex items-center gap-2'>
+          <KeyRound className='size-4' />
           Change Password
         </Button>
+      </div>
+
+      <div className='flex items-start gap-3'>
+        <Info className='text-Primary-400 mt-0.5 size-5 flex-shrink-0' />
+        <div className='space-y-1'>
+          <p className='text-Primary-300 text-sm font-medium'>Password Security Tips</p>
+          <ul className='text-Grey-400 space-y-1 text-xs'>
+            <li>• Use at least 12 characters with mixed case, numbers, and symbols</li>
+            <li>• Avoid personal information or dictionary words</li>
+            <li>• Use a unique password for this account</li>
+            <li>• Consider using a password manager for better security</li>
+          </ul>
+        </div>
       </div>
       <Modal disclosure={disclosure} className='max-w-xl'>
         <ModalHeader className='flex flex-col'>
@@ -109,6 +129,6 @@ export default function ChangePassword() {
           </ModalFooter>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }
