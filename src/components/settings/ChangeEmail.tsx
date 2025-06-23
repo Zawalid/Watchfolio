@@ -10,11 +10,13 @@ import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { UPDATE_ICON } from '@/components/ui/Icons';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useState } from 'react';
 
 type FormData = z.infer<typeof changeEmailSchema>;
 
 export default function ChangeEmail({ email, verified }: { email?: string; verified?: boolean }) {
-  const { updateUserEmail, isLoading } = useAuthStore();
+  const { updateUserEmail, sendEmailVerification, isLoading } = useAuthStore();
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
   const {
     register,
     handleSubmit,
@@ -58,29 +60,41 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
       }
     }
   };
-
   const handleResendVerification = async () => {
-    // TODO: Implement resend verification email functionality
-    addToast({
-      title: 'Feature coming soon',
-      description: 'Email verification resend feature will be available soon.',
-      color: 'warning',
-    });
+    setIsSendingVerification(true);
+    try {
+      await sendEmailVerification();
+      addToast({
+        title: 'Verification email sent',
+        description: 'Please check your email for the verification link.',
+        color: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      addToast({
+        title: 'Error',
+        description: 'Failed to send verification email. Please try again.',
+        color: 'danger',
+      });
+    } finally {
+      setIsSendingVerification(false);
+    }
   };
 
   return (
     <>
       <div className='flex items-baseline gap-3'>
         <div className='flex-1 space-y-1'>
-          <Input defaultValue={email} type='email' label='Email' readOnly />
+          <Input defaultValue={email} type='email' label='Email' readOnly />{' '}
           {!verified && (
             <div className='flex gap-2'>
               <p className='text-Grey-500 text-sm'>Your email is not verified</p>
               <button
-                className='text-Primary-400 hover:text-Primary-500 text-sm transition-colors duration-200'
+                className='text-Primary-400 hover:text-Primary-500 text-sm transition-colors duration-200 disabled:opacity-50'
                 onClick={handleResendVerification}
+                disabled={isSendingVerification}
               >
-                Resend Verification
+                {isSendingVerification ? 'Sending...' : 'Resend Verification'}
               </button>
             </div>
           )}

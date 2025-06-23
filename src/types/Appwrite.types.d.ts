@@ -17,8 +17,8 @@ declare global {
     $updatedAt: string;
     $permissions: string[];
   }
-
   interface Profile extends Document {
+    userId: string;
     name: string;
     email: string;
     mediaPreference: MediaPreferenceType;
@@ -28,7 +28,6 @@ declare global {
     preferences?: UserPreferences;
     library?: Library;
   }
-
   interface UserPreferences extends Document {
     signOutConfirmation: ConfirmationSetting;
     removeFromLibraryConfirmation: ConfirmationSetting;
@@ -36,11 +35,9 @@ declare global {
     theme: Theme;
     language: string;
   }
-
   interface Library extends Document {
     averageRating?: number;
     items?: LibraryItem[];
-    user?: Profile;
   }
 
   interface LibraryItem extends Document {
@@ -66,7 +63,7 @@ declare global {
 
   type CreateProfileInput = Omit<Profile, keyof Document | 'preferences' | 'library'>;
   type CreateUserPreferencesInput = Omit<UserPreferences, keyof Document>;
-  type CreateLibraryInput = Omit<Library, keyof Document | 'items' | 'user'>;
+  type CreateLibraryInput = Omit<Library, keyof Document | 'items'>;
   type CreateLibraryItemInput = Omit<LibraryItem, keyof Document | 'library' | 'media'> & {
     libraryId: string;
     mediaId: string;
@@ -86,11 +83,10 @@ declare global {
     continent: string;
     continentCode: string;
   }
-
   // Combined user type that merges auth, profile, preferences, and location
   interface UserWithProfile extends Models.User<Models.Preferences> {
     profile: Profile;
-    preferences: UserPreferences;
+    preferences: UserPreferences | null;
     location: UserLocation;
   }
 

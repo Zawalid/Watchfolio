@@ -1,4 +1,4 @@
-import { ID, ImageFormat, ImageGravity, Permission, Query, Role, type Models } from 'appwrite';
+import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, type Models } from 'appwrite';
 import { databases, account, storage, locale, DATABASE_ID, COLLECTIONS, BUCKETS } from '@/lib/appwrite';
 
 function setPermissions(userId: string): string[] {
@@ -28,11 +28,7 @@ class BaseAPI {
     )) as T;
   }
 
-  protected async getDocument<T extends Models.Document>(
-    collectionId: string,
-    documentId: string,
-    queries?: string[]
-  ) {
+  protected async getDocument<T extends Models.Document>(collectionId: string, documentId: string, queries?: string[]) {
     return (await databases.getDocument(DATABASE_ID, collectionId, documentId, queries)) as T;
   }
 
@@ -48,10 +44,7 @@ class BaseAPI {
     await databases.deleteDocument(DATABASE_ID, collectionId, documentId);
   }
 
-  protected async listDocuments<T extends Models.Document>(
-    collectionId: string,
-    queries?: string[]
-  ) {
+  protected async listDocuments<T extends Models.Document>(collectionId: string, queries?: string[]) {
     const response = await databases.listDocuments(DATABASE_ID, collectionId, queries);
 
     return {
@@ -65,23 +58,29 @@ class BaseAPI {
  * Profile API - handles profile management
  */
 export class ProfileAPI extends BaseAPI {
-  async create(profileData: CreateProfileInput & { id: string }, documentId?: string) {
-    const permissions = setPermissions(profileData.id);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...cleanProfileData } = profileData;
-    return this.createDocument<Profile>(COLLECTIONS.PROFILES, cleanProfileData, documentId, permissions);
+  async create(profileData: CreateProfileInput) {
+    const permissions = setPermissions(profileData.userId);
+    return this.createDocument<Profile>(COLLECTIONS.PROFILES, profileData, undefined, permissions);
+  }
+  async get(profileId: string) {
+    return this.getDocument<Profile>(COLLECTIONS.PROFILES, profileId, [
+      Query.select(['*', 'preferences.*', 'library.*']),
+    ]);
+  }
+  async getByUserId(userId: string) {
+    const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
+      Query.equal('userId', userId),
+      Query.limit(1),
+      Query.select(['*', 'preferences.*', 'library.*']),
+    ]);
+    return result.documents[0] || null;
+  }
+  async update(profileId: string, profileData: UpdateProfileInput) {
+    return this.updateDocument<Profile>(COLLECTIONS.PROFILES, profileId, profileData);
   }
 
-  async get(userId: string) {
-    return this.getDocument<Profile>(COLLECTIONS.PROFILES, userId, [Query.select(['*', 'preferences.*', 'library.*'])]);
-  }
-
-  async update(userId: string, profileData: UpdateProfileInput) {
-    return this.updateDocument<Profile>(COLLECTIONS.PROFILES, userId, profileData);
-  }
-
-  async delete(userId: string) {
-    return this.deleteDocument(COLLECTIONS.PROFILES, userId);
+  async delete(profileId: string) {
+    return this.deleteDocument(COLLECTIONS.PROFILES, profileId);
   }
 
   async list(queries?: string[]) {
@@ -109,26 +108,13 @@ export class ProfileAPI extends BaseAPI {
  * User Preferences API
  */
 export class UserPreferencesAPI extends BaseAPI {
-  async create(
-    preferencesData: CreateUserPreferencesInput & { userId?: string },
-    documentId?: string
-  ) {
-    const permissions = preferencesData.userId ? setPermissions(preferencesData.userId) : undefined;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { userId, ...cleanData } = preferencesData;
-    return this.createDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, cleanData, documentId, permissions);
+  async create(preferencesData: CreateUserPreferencesInput, documentId?: string) {
+    const currentUser = await account.get();
+    const permissions = setPermissions(currentUser.$id);
+    return this.createDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesData, documentId, permissions);
   }
-
   async get(preferencesId: string) {
     return this.getDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesId);
-  }
-
-  async getByUserId(userId: string) {
-    const result = await this.listDocuments<UserPreferences>(COLLECTIONS.USER_PREFERENCES, [
-      Query.equal('$id', userId), // Assuming preferences use the same ID as user
-      Query.limit(1),
-    ]);
-    return result.documents[0] || null;
   }
 
   async update(preferencesId: string, preferencesData: UpdateUserPreferencesInput) {
@@ -144,18 +130,17 @@ export class UserPreferencesAPI extends BaseAPI {
  * Library API
  */
 export class LibraryAPI extends BaseAPI {
-  async create(libraryData: CreateLibraryInput & { user: string }, documentId?: string) {
-    return this.createDocument<Library>(
-      COLLECTIONS.LIBRARIES,
-      libraryData,
-      documentId,
-      setPermissions(libraryData.user)
-    );
+  async create(libraryData: CreateLibraryInput, documentId?: string) {
+    // Since relationship is managed from users_profiles side, we need to get current user for permissions
+    const currentUser = await account.get();
+    const permissions = setPermissions(currentUser.$id);
+
+    return this.createDocument<Library>(COLLECTIONS.LIBRARIES, libraryData, documentId, permissions);
   }
 
   async get(libraryId: string) {
     return this.getDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, [
-      Query.select(['*', 'items.*', 'items.media.*', 'user.*']),
+      Query.select(['*', 'items.*', 'items.media.*']),
     ]);
   }
 
@@ -171,12 +156,11 @@ export class LibraryAPI extends BaseAPI {
     return this.listDocuments<Library>(COLLECTIONS.LIBRARIES, queries);
   }
 
-  async getByUser(userId: string) {
-    const result = await this.listDocuments<Library>(COLLECTIONS.LIBRARIES, [
-      Query.equal('user', userId),
-      Query.limit(1),
-    ]);
-    return result.documents[0] || null;
+  async getByUserId(userId: string) {
+    const profileAPI = new ProfileAPI();
+    const profile = await profileAPI.getByUserId(userId);
+    if (!profile?.library) return null;
+    return profile.library;
   }
 }
 
@@ -306,13 +290,8 @@ export class AuthAPI {
     await account.deleteSessions();
   }
 
-  async createAccount(
-    email: string,
-    password: string,
-    name: string,
-    userId?: string
-  ) {
-    return await account.create(userId || ID.unique(), email, password, name);
+  async createAccount(email: string, password: string, name: string) {
+    return await account.create(ID.unique(), email, password, name);
   }
 
   async updateName(name: string) {
@@ -334,9 +313,19 @@ export class AuthAPI {
   async updateRecovery(userId: string, secret: string, password: string) {
     return await account.updateRecovery(userId, secret, password);
   }
-
   async createAnonymousSession() {
     return await account.createAnonymousSession();
+  }
+  async createOAuth2Session(provider: OAuthProvider, successUrl?: string, failureUrl?: string) {
+    return account.createOAuth2Session(provider, successUrl, failureUrl);
+  }
+
+  async createVerification(url: string) {
+    return await account.createVerification(url);
+  }
+
+  async updateVerification(userId: string, secret: string) {
+    return await account.updateVerification(userId, secret);
   }
 }
 

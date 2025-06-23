@@ -74,11 +74,6 @@ export default function AvatarManager({ currentAvatarUrl, userName, onAvatarChan
   const handleRemoveAvatar = () => {
     const defaultUrl = getDefaultAvatarUrl(userName);
     onAvatarChange(defaultUrl);
-    addToast({
-      title: 'Avatar reset',
-      description: 'Your avatar has been reset to default.',
-      color: 'success',
-    });
   };
 
   const close = () => {

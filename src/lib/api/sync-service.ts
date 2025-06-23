@@ -1,7 +1,7 @@
 import { Query } from 'appwrite';
 import { appwriteService } from './appwrite-service';
-import { compareLibraries, smartMergeLibraries } from '@/utils/library';
 import { authService } from '../auth';
+import { compareLibraries, smartMergeLibraries } from '@/utils/library';
 
 // Map LibraryMedia to Appwrite LibraryItem + TmdbMedia
 const mapToAppwriteData = async (
@@ -14,7 +14,7 @@ const mapToAppwriteData = async (
     tmdbMedia: {
       id: media.id,
       mediaType: media.media_type,
-      title: media.title || `${media.media_type} ${media.id}`, 
+      title: media.title || `${media.media_type} ${media.id}`,
       overview: undefined,
       posterPath: media.posterPath || undefined,
       releaseDate: media.releaseDate || undefined,
@@ -55,26 +55,24 @@ export class LibrarySyncAPI {
    * Get or create library for authenticated user
    * Returns null if user is not authenticated (local-only mode)
    */
-  private async getOrCreateLibrary() {
+  private async getLibrary() {
     try {
       // Get current authenticated user
       const currentUser = await appwriteService.auth.getCurrentUser();
       if (!currentUser) return null;
 
-      // Look for existing library for this user
-      const libraries = await appwriteService.libraries.list([Query.equal('user', currentUser.$id), Query.limit(1)]);
+      const library = await appwriteService.libraries.getByUserId(currentUser.$id);
 
-      if (libraries.documents.length > 0) return libraries.documents[0].$id;
+      if (library) return library.$id;
 
-      // Create new library for user
-      const library = await appwriteService.libraries.create({
-        user: currentUser.$id,
-      } as CreateLibraryInput & { user: string });
-
-      return library.$id;
+      // If no library exists, get the profile and create one
+      const userProfile = await appwriteService.profiles.getByUserId(currentUser.$id);
+      if (!userProfile) {
+        console.error('No profile found for user');
+        return null;
+      }
     } catch (error) {
       console.error('Failed to get or create library:', error);
-      // Return null for local-only mode on error
       return null;
     }
   }
@@ -83,7 +81,7 @@ export class LibrarySyncAPI {
    */
   async syncItemToCloud(media: LibraryMedia) {
     try {
-      const libraryId = await this.getOrCreateLibrary();
+      const libraryId = await this.getLibrary();
 
       // If no library ID, user is not authenticated - skip sync
       if (!libraryId) {
@@ -126,7 +124,7 @@ export class LibrarySyncAPI {
    */
   async syncToCloud(library: LibraryCollection) {
     try {
-      const libraryId = await this.getOrCreateLibrary();
+      const libraryId = await this.getLibrary();
 
       // If no library ID, user is not authenticated - skip sync
       if (!libraryId) return;
@@ -173,21 +171,24 @@ export class LibrarySyncAPI {
       console.error('Failed to sync library to cloud:', error);
       throw error;
     }
-  }
-  /**
+  } /**
    * Clear cloud library
    */
   async clearLibraryInCloud() {
     try {
-      const libraryId = await this.getOrCreateLibrary();
+      const libraryId = await this.getLibrary();
       if (!libraryId) return;
 
-      const currentUser = await appwriteService.auth.getCurrentUser();
-      if (!currentUser) return;
+      const user = await appwriteService.auth.getCurrentUser();
+      if (!user) return;
 
-      // TODO : FIX : Deleting the library deletes the profile as well
+      // Get the user's profile
+      const userProfile = await appwriteService.profiles.getByUserId(user.$id);
+      if (!userProfile) return;
+
+      // Delete the library and recreate it
       await appwriteService.libraries.delete(libraryId);
-      await authService.createUserLibrary(currentUser.$id);
+      await authService.createUserLibrary();
 
       console.log('✅ Cloud library cleared successfully');
     } catch (error) {
@@ -201,7 +202,7 @@ export class LibrarySyncAPI {
    */
   async getLibraryFromCloud(): Promise<LibraryCollection> {
     try {
-      const libraryId = await this.getOrCreateLibrary();
+      const libraryId = await this.getLibrary();
 
       // If no library ID, user is not authenticated - return empty library
       if (!libraryId) {
@@ -242,7 +243,7 @@ export class LibrarySyncAPI {
    */
   async removeFromCloud(mediaType: 'movie' | 'tv', tmdbId: number) {
     try {
-      const libraryId = await this.getOrCreateLibrary();
+      const libraryId = await this.getLibrary();
 
       // If no library ID, user is not authenticated - skip removal
       if (!libraryId) {

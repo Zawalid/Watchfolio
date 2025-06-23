@@ -15,6 +15,7 @@ interface AuthState {
   signOut: () => Promise<void>;
   checkAuth: () => Promise<void>;
   resetPassword: (email: string) => Promise<Models.Token>;
+  signInWithGoogle: () => Promise<void>;
 
   // User Management Actions
   updateUserEmail: (email: string, password: string) => Promise<void>;
@@ -24,8 +25,10 @@ interface AuthState {
   deleteUserAccount: () => Promise<void>;
   refreshUser: () => Promise<void>;
 
-  // Helper Actions
-  getUserLibraryId: () => Promise<string | null>;
+  // Email Verification Actions
+  sendEmailVerification: () => Promise<Models.Token>;
+  confirmEmailVerification: (userId: string, secret: string) => Promise<void>;
+
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -82,7 +85,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
           });
-          // useLibraryStore.getState().clearLibrary(); 
+          // useLibraryStore.getState().clearLibrary();
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -110,15 +113,13 @@ export const useAuthStore = create<AuthState>()(
 
       resetPassword: async (email: string) => {
         return await authService.resetPassword(email);
-      },
-
-      updateUserEmail: async (email: string, password: string) => {
+      },      updateUserEmail: async (email: string, password: string) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
         set({ isLoading: true });
         try {
-          const updatedUser = await authService.updateUserEmail(user.profile.$id, email, password);
+          const updatedUser = await authService.updateUserEmail(user.$id, email, password);
           set({ user: updatedUser, isLoading: false });
         } catch (error) {
           set({ isLoading: false });
@@ -135,43 +136,37 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false });
           throw error;
         }
-      },
-
-      updateUserProfile: async (profileData: UpdateProfileInput) => {
+      },      updateUserProfile: async (profileData: UpdateProfileInput) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
         set({ isLoading: true });
         try {
-          const updatedUser = await authService.updateUserProfile(user.profile.$id, profileData);
+          const updatedUser = await authService.updateUserProfile(user.$id, profileData);
           set({ user: updatedUser, isLoading: false });
         } catch (error) {
           set({ isLoading: false });
           throw error;
         }
-      },
-      updateUserPreferences: async (preferencesData: UpdateUserPreferencesInput) => {
+      },      updateUserPreferences: async (preferencesData: UpdateUserPreferencesInput) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
         set({ isLoading: true });
         try {
-          // Use the user ID as the preferences ID since they share the same ID
-          const updatedUser = await authService.updateUserPreferences(user.profile.$id, preferencesData);
+          const updatedUser = await authService.updateUserPreferences(user.$id, preferencesData);
           set({ user: updatedUser, isLoading: false });
         } catch (error) {
           set({ isLoading: false });
           throw error;
         }
-      },
-
-      deleteUserAccount: async () => {
+      },      deleteUserAccount: async () => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
         set({ isLoading: true });
         try {
-          await authService.deleteUserAccount(user.profile.$id);
+          await authService.deleteUserAccount(user.$id);
           set({
             user: null,
             isAuthenticated: false,
@@ -195,11 +190,24 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      getUserLibraryId: async () => {
-        const { user } = get();
-        if (!user) return null;
+      signInWithGoogle: async () => {
+        set({ isLoading: true });
+        try {
+          await authService.signInWithGoogle();
+          // OAuth will redirect, so we don't need to do anything here
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
+      },
 
-        return await authService.getUserLibraryId(user.profile.$id);
+      sendEmailVerification: async () => {
+        return await authService.sendEmailVerification();
+      },
+      confirmEmailVerification: async (userId: string, secret: string) => {
+        await authService.confirmEmailVerification(userId, secret);
+        // Refresh user to get updated verification status
+        await get().refreshUser();
       },
     }),
     {
@@ -209,4 +217,3 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
-

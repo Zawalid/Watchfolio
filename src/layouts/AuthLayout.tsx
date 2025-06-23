@@ -1,22 +1,28 @@
 import { Button } from '@heroui/button';
 import { Link, Outlet, useLocation } from 'react-router';
+import { addToast } from '@heroui/toast';
 import { GOOGLE_ICON } from '@/components/ui/Icons';
 import { useState } from 'react';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function AuthLayout() {
   const location = useLocation();
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const { signInWithGoogle } = useAuthStore();
 
   const isSignInPage = location.pathname === '/signin';
 
   const handleGoogleSignIn = async () => {
     setIsSigningIn(true);
     try {
-      // TODO: Implement Google OAuth with Appwrite
-      console.log('Google sign in not yet implemented');
-      // await authService.signInWithGoogle();
+      await signInWithGoogle();
     } catch (error) {
       console.error('Google sign in failed:', error);
+      addToast({
+        title: 'Sign in failed',
+        description: 'Failed to sign in with Google. Please try again.',
+        color: 'danger',
+      });
     } finally {
       setIsSigningIn(false);
     }
@@ -24,7 +30,7 @@ export default function AuthLayout() {
 
   return (
     <div className='grid h-full items-center gap-5 md:grid-cols-2'>
-      <div className='relative hidden h-full  place-content-center md:grid'>
+      <div className='relative hidden h-full place-content-center md:grid'>
         <img src='/images/signin.svg' alt='image' />
       </div>
       <div className='flex flex-col gap-2'>

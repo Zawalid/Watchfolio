@@ -1,4 +1,6 @@
+import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { appwriteService } from './api/appwrite-service';
+import { OAuthProvider } from 'appwrite';
 
 export interface CreateUserAccount {
   name: string;
@@ -31,10 +33,8 @@ class AuthService {
       await this.signIn({ email, password });
 
       // 3. Create user profile in database with proper permissions
+      // This will also create the library and preferences automatically
       await this.createUserProfile(newAccount.$id, name, email);
-
-      // 4. Create empty library for user with proper permissions
-      await this.createUserLibrary(newAccount.$id);
 
       return newAccount;
     } catch (error) {
@@ -66,7 +66,6 @@ class AuthService {
       throw this.formatError(error);
     }
   }
-
   /**
    * Get current authenticated user with profile, preferences, and location
    */
@@ -74,48 +73,29 @@ class AuthService {
     try {
       const currentAccount = await appwriteService.auth.getCurrentUser();
       if (!currentAccount) return null;
-
       try {
-        // Get user profile from database
-        const userProfile = await appwriteService.profiles.get(currentAccount.$id);
+        const userProfile = await appwriteService.profiles.getByUserId(currentAccount.$id);
+        if (!userProfile) throw new Error('Profile not found');
 
-        // Get or create user preferences using the userId
-        let userPreferences: UserPreferences;
-        try {
-          userPreferences = await appwriteService.userPreferences.get(currentAccount.$id);
-        } catch {
-          // Preferences don't exist, create default ones
-          userPreferences = await this.createDefaultUserPreferences(currentAccount.$id);
-        }
-
-        // Get user location
         const userLocation = await appwriteService.locale.getUserLocation();
-
         return {
           ...currentAccount,
           profile: userProfile,
-          preferences: userPreferences,
+          preferences: userProfile.preferences || null,
           location: userLocation,
         };
       } catch {
-        // Profile might not exist yet, return null
-        return null;
+        try {
+          await this.createUserProfile(currentAccount.$id, currentAccount.name, currentAccount.email);
+
+          return await this.getCurrentUser();
+        } catch (profileError) {
+          console.error('Failed to create profile for OAuth user:', profileError);
+          return null;
+        }
       }
     } catch (error) {
       console.error('Get current user error:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Get user's library ID
-   */
-  async getUserLibraryId(userId: string) {
-    try {
-      const userLibrary = await appwriteService.libraries.getByUser(userId);
-      return userLibrary?.$id || null;
-    } catch (error) {
-      console.error('Get user library error:', error);
       return null;
     }
   }
@@ -143,11 +123,9 @@ class AuthService {
       throw this.formatError(error);
     }
   }
-
   /**
    * Create default user preferences
-   */
-  private async createDefaultUserPreferences(userId: string) {
+   */ private async createDefaultUserPreferences() {
     try {
       const defaultPreferences = {
         signOutConfirmation: 'enabled' as ConfirmationSetting,
@@ -155,11 +133,10 @@ class AuthService {
         clearLibraryConfirmation: 'enabled' as ConfirmationSetting,
         theme: 'system' as Theme,
         language: 'en',
-        userId,
       };
 
-      // Use the userId as the document ID to make the relationship simpler
-      return await appwriteService.userPreferences.create(defaultPreferences, userId);
+      // Let Appwrite generate the document ID automatically
+      return await appwriteService.userPreferences.create(defaultPreferences);
     } catch (error) {
       console.error('Create default user preferences error:', error);
       throw error;
@@ -177,7 +154,6 @@ class AuthService {
       throw this.formatError(error);
     }
   }
-
   /**
    * Update user email in both auth and profile
    */
@@ -187,7 +163,10 @@ class AuthService {
       await appwriteService.auth.updateEmail(email, password);
 
       // Update email in profile
-      await appwriteService.profiles.update(userId, { email });
+      const profile = await appwriteService.profiles.getByUserId(userId);
+      if (profile) {
+        await appwriteService.profiles.update(profile.$id, { email });
+      }
 
       // Return updated user
       return await this.getCurrentUser();
@@ -208,14 +187,19 @@ class AuthService {
       throw this.formatError(error);
     }
   }
-
   /**
    * Update user profile data
    */
   async updateUserProfile(userId: string, profileData: UpdateProfileInput): Promise<UserWithProfile | null> {
     try {
       if (profileData.name) await this.updateUserName(profileData.name);
-      await appwriteService.profiles.update(userId, profileData);
+
+      const profile = await appwriteService.profiles.getByUserId(userId);
+      console.log('USERID IDDDDD ' + userId, 'PROFILEEE ' + profile);
+      if (profile) {
+        await appwriteService.profiles.update(profile.$id, profileData);
+      }
+
       return await this.getCurrentUser();
     } catch (error) {
       console.error('Update user profile error:', error);
@@ -227,50 +211,66 @@ class AuthService {
    * Update user preferences
    */
   async updateUserPreferences(
-    preferencesId: string,
+    userId: string,
     preferencesData: UpdateUserPreferencesInput
   ): Promise<UserWithProfile | null> {
     try {
-      await appwriteService.userPreferences.update(preferencesId, preferencesData);
+      const profile = await appwriteService.profiles.getByUserId(userId);
+      if (profile?.preferences) {
+        await appwriteService.userPreferences.update(profile.preferences.$id, preferencesData);
+      }
+
       return await this.getCurrentUser();
     } catch (error) {
       console.error('Update user preferences error:', error);
       throw this.formatError(error);
     }
   }
-
   /**
    * Delete user account - removes auth account, profile, preferences, and library
    */
   async deleteUserAccount(userId: string) {
     try {
-      // Delete profile (this will also delete library, preferences, items, etc. due to cascade delete)
-      await appwriteService.profiles.delete(userId);
+      // Get the profile first to access related data
+      const profile = await appwriteService.profiles.getByUserId(userId);
+      if (profile) {
+        // Delete profile (this will cascade delete preferences and library due to relationships)
+        await appwriteService.profiles.delete(profile.$id);
+      }
       await appwriteService.auth.deleteAllSessions();
     } catch (error) {
       console.error('Delete user account error:', error);
       throw this.formatError(error);
     }
-  }
-
-  /**
+  } /**
    * Create user profile in database with proper permissions
    */
   private async createUserProfile(userId: string, name: string, email: string) {
     try {
-      // First create default user preferences with the same ID as the user
-      await this.createDefaultUserPreferences(userId);
+      // Generate a more unique username
+      const baseUsername = email.split('@')[0];
+      const timestamp = Date.now().toString(36);
+      const username = `${baseUsername}_${timestamp}`;
 
       const userData = {
+        userId: userId,
         name,
         email,
-        username: email.split('@')[0],
-        id: userId,
-        avatarUrl: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`,
+        username,
+        avatarUrl: getDefaultAvatarUrl(name, 'fun-emoji'),
         mediaPreference: 'both' as MediaPreferenceType,
       };
+      console.log('Creating user profile with data:', name, userId);
 
-      const profile = await appwriteService.profiles.create(userData, userId);
+      // First create preferences and library without relationships
+      const preferences = await this.createDefaultUserPreferences();
+      const library = await this.createUserLibrary();
+
+      // Add the relationship IDs to the profile data
+      const profileDataWithRelationships = { ...userData, preferences: preferences.$id, library: library.$id };
+
+      // Create the profile with the relationship IDs
+      const profile = await appwriteService.profiles.create(profileDataWithRelationships);
 
       return profile;
     } catch (error) {
@@ -281,11 +281,9 @@ class AuthService {
 
   /**
    * Create empty library for user with proper permissions
-   */
-  async createUserLibrary(userId: string) {
+   */ async createUserLibrary() {
     try {
       const libraryData = {
-        user: userId,
         averageRating: 0,
       };
 
@@ -293,6 +291,58 @@ class AuthService {
     } catch (error) {
       console.error('Create user library error:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Sign in with Google OAuth
+   */
+  async signInWithGoogle() {
+    try {
+      // Redirect to Google OAuth
+      const success = `${window.location.origin}/`;
+      const failure = `${window.location.origin}/signin`;
+
+      await appwriteService.auth.createOAuth2Session(OAuthProvider.Google, success, failure);
+    } catch (error) {
+      console.error('Google sign in error:', error);
+      throw this.formatError(error);
+    }
+  } /**
+   * Send email verification
+   */
+  async sendEmailVerification() {
+    try {
+      // The verification URL will redirect to our verification page with the parameters
+      const url = `${window.location.origin}/verify-email`;
+      return await appwriteService.auth.createVerification(url);
+    } catch (error) {
+      console.error('Send email verification error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Confirm email verification
+   */
+  async confirmEmailVerification(userId: string, secret: string) {
+    try {
+      return await appwriteService.auth.updateVerification(userId, secret);
+    } catch (error) {
+      console.error('Confirm email verification error:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Get current user ID (helper for other services)
+   */
+  async getCurrentUserId() {
+    try {
+      const currentUser = await appwriteService.auth.getCurrentUser();
+      return currentUser?.$id || null;
+    } catch {
+      return null;
     }
   }
 
@@ -351,18 +401,6 @@ class AuthService {
     }
 
     return authError;
-  }
-
-  /**
-   * Get current user ID (helper for other services)
-   */
-  async getCurrentUserId() {
-    try {
-      const currentUser = await appwriteService.auth.getCurrentUser();
-      return currentUser?.$id || null;
-    } catch {
-      return null;
-    }
   }
 }
 

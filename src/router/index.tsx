@@ -1,9 +1,28 @@
 import { createBrowserRouter, Navigate } from 'react-router';
 import { AuthLayout, Layout, LibraryLayout, MoviesLayout, SettingsLayout, TvLayout } from '@/layouts';
-import { Home, Library, NotFound, Movies, TV, Details, Search, Signin, Signup,Profile,PrivacySecurity,Preferences,LibrarySettings } from '@/pages';
+import {
+  Home,
+  Library,
+  NotFound,
+  Movies,
+  TV,
+  Details,
+  Search,
+  Signin,
+  Signup,
+  EmailVerification,
+  Profile,
+  PrivacySecurity,
+  Preferences,
+  LibrarySettings,
+} from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 
 export const router = createBrowserRouter([
+  {
+    path: '/verify-email',
+    Component: EmailVerification,
+  },
   {
     path: '/',
     Component: Layout,

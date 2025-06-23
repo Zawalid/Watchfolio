@@ -9,6 +9,6 @@ export function useInitialAuth() {
     if (hasChecked.current) return;
     hasChecked.current = true;
 
-    if (user) checkAuth();
+     checkAuth();
   }, [user, checkAuth]);
 }

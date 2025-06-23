@@ -7,6 +7,7 @@ export { default as Details } from './Media/Details';
 export { default as Search } from './Media/Search';
 export { default as Signin } from './Auth/Signin';
 export { default as Signup } from './Auth/Signup';
+export { default as EmailVerification } from './Auth/EmailVerification';
 export { default as Profile } from './Settings/Profile';
 export { default as Preferences } from './Settings/Preferences';
 export { default as PrivacySecurity } from './Settings/PrivacySecurity';
