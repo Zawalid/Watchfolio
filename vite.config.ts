@@ -9,9 +9,13 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    Terminal({
-      console: 'terminal',
-    }),
+    ...(process.env.NODE_ENV === 'development'
+      ? []
+      : [
+          Terminal({
+            output: ['terminal', 'console'],
+          }),
+        ]),
   ],
   resolve: {
     alias: {

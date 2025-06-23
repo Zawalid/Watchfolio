@@ -515,5 +515,38 @@
                 "mockNumbers": []
             }
         }
-    }
+    },
+    "functions": [
+        {
+            "$id": "68597cb70009c8b4e09b",
+            "name": "user-onboarding",
+            "runtime": "node-22",
+            "execute": [
+                "any"
+            ],
+            "events": [
+                "users.*.create"
+            ],
+            "scopes": [
+                "users.read",
+                "databases.read",
+                "databases.write",
+                "collections.read",
+                "collections.write",
+                "attributes.read",
+                "attributes.write",
+                "indexes.read",
+                "indexes.write",
+                "documents.read",
+                "documents.write"
+            ],
+            "schedule": "",
+            "timeout": 60,
+            "enabled": true,
+            "logging": true,
+            "entrypoint": "src/main.js",
+            "commands": "npm install",
+            "path": "functions/user-onboarding"
+        }
+    ]
 }

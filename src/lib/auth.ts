@@ -253,7 +253,7 @@ class AuthService {
       const username = `${baseUsername}_${timestamp}`;
 
       const userData = {
-        userId: userId,
+        userId,
         name,
         email,
         username,
