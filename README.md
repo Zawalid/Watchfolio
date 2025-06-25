@@ -4,6 +4,12 @@
   <p align="center">
     A modern, feature-rich web application meticulously crafted for cinephiles to discover, track, and curate their personal movie and TV show watchlist.
   </p>
+
+  <div align="center">
+  <a href="https://watchfolio.netlify.app" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Live_Demo-Visit_Site-blue?style=for-the-badge&logo=rocket" alt="Live Demo"/>
+  </a>
+</div>
   <br />
 </div>
 
@@ -52,6 +58,19 @@ This project uses a modern, performant, and scalable tech stack.
 | **Styling & Animation** | <img src="https://skillicons.dev/icons?i=tailwind" alt="Tailwind CSS" width="24" style="vertical-align: middle; margin-right: 5px;"> **Tailwind CSS** for styling, and <img src="https://skillicons.dev/icons?i=framer" alt="Framer Motion" width="24" style="vertical-align: middle; margin-right: 5px;"> **Framer Motion** for fluid animations.                               |
 | **Backend & Data** | <img src="https://skillicons.dev/icons?i=appwrite" alt="Appwrite" width="24" style="vertical-align: middle; margin-right: 5px;"> **Appwrite** for Auth & Database, with the <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bFFAz1d6f5f6.svg" alt="TMDB" width="24" style="vertical-align: middle; margin-right: 5px;"> **TMDB API** for media metadata. |
 | **Tooling & Quality** | <img src="https://skillicons.dev/icons?i=vite" alt="Vite" width="24" style="vertical-align: middle; margin-right: 5px;"> **Vite** as the build tool, with <img src="https://skillicons.dev/icons?i=eslint" alt="ESLint" width="24" style="vertical-align: middle; margin-right: 5px;"> **ESLint** & <img src="https://skillicons.dev/icons?i=prettier" alt="Prettier" width="24" style="vertical-align: middle; margin-right: 5px;"> **Prettier** for code quality.       |
+
+---
+
+### **🌟 Future Features**
+
+This project has a strong foundation with a clear roadmap for future enhancements, focusing on personalization, social connectivity, and multi-platform access.
+
+| Feature Area                      | Planned Enhancements                                                                                                                                                             |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Intelligent Discovery & AI**    | Implement a sophisticated **AI-powered recommendation engine** that suggests movies and shows based not only on a user's watch history but also on their current mood or desired genre. |
+| **Social & Community Features**   | Introduce a friend system to enable **social sharing** of watchlists and favorites. Develop a dedicated "Friends' Recommendations" section to discover content curated by your network. |
+| **Cross-Platform Accessibility**  | Expand beyond the web with dedicated **desktop (via Tauri)** and **mobile (via React Native)** applications to ensure a seamless, native experience and on-the-go access to your library. |
+| **Deeper Content Integration**    | Integrate a "Where to Watch" feature to link directly to streaming services. Add **Plex/Jellyfin scrobbling** for automated, real-time watch history tracking.                        |
 
 ---
 
