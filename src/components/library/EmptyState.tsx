@@ -36,19 +36,19 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
 
   if (hasFilters || hasQuery) {
     return (
-      <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
-        <div className='mb-6 rounded-full bg-white/5 p-6 backdrop-blur-md'>
-          {hasFilters ? <FunnelX className='size-12 text-amber-400' /> : <Search className='text-Grey-400 size-12' />}
+      <div className='flex min-h-[400px] flex-col items-center justify-center text-center'>
+        <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
+          {hasFilters ? <FunnelX className='h-12 w-12 text-Warning-400' /> : <Search className='h-12 w-12 text-Grey-400' />}
         </div>
-        <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>
-          {hasFilters ? 'No matches found with current filters' : 'No matches found'}
+        <h3 className='mb-2 text-xl font-semibold text-Grey-50'>
+          {hasFilters ? 'No matches found' : 'No results found'}
         </h3>
-        <p className='text-Grey-400 max-w-md'>
+        <p className='max-w-md text-Grey-400'>
           {hasFilters
             ? 'Your current filters are too specific. Try adjusting them to see more content.'
-            : `Couldn't find any shows or movies matching "${query}". Try a different search term or check your spelling.`}
+            : `Couldn't find any shows or movies matching "${query}". Try a different search term.`}
         </p>
-        <div className='mt-6 flex gap-3'>
+        <div className='mt-6'>
           <Tooltip
             content={<ShortcutTooltip shortcutName={hasFilters ? 'clearFilters' : 'clearSearch'} className='kbd-sm!' />}
             className='tooltip-secondary!'
@@ -123,22 +123,45 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
 
   const { title, message } = getEmptyMessage();
 
+  // Special design for completely empty library
+  if (status === 'all') {
+    return (
+      <div className='flex min-h-[400px] flex-col items-center justify-center text-center'>
+        <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
+          <img 
+            src='/images/empty.svg' 
+            alt='Empty watchlist' 
+            className='h-16 w-16 opacity-80'
+          />
+        </div>
+        <h3 className='mb-2 text-xl font-semibold text-Grey-50'>
+          Your watchlist awaits
+        </h3>
+        <p className='max-w-md text-Grey-400 mb-6'>
+          Ready to start your journey? Discover amazing movies and TV shows to build your personal collection.
+        </p>
+        <Button
+          color='primary'
+          className='button-secondary!'
+        >
+          Start Exploring
+        </Button>
+      </div>
+    );
+  }
+
+  // Regular empty state for other statuses
   return (
-    <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
-      <div className='mb-6 rounded-full bg-white/5 p-6 backdrop-blur-md'>
+    <div className='flex min-h-[400px] flex-col items-center justify-center text-center'>
+      <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
         {statusInfo ? (
           <div className={statusInfo.color}>{statusInfo.icon}</div>
         ) : (
-          <Filter className='text-Grey-400 size-12' />
+          <Filter className='h-12 w-12 text-Grey-400' />
         )}
       </div>
-      <h3 className='text-Primary-50 mb-2 text-xl font-semibold'>{title}</h3>
-      <p className='text-Grey-400 max-w-md'>{message}</p>
-      {status === 'all' && (
-        <button className='bg-Primary-600 hover:bg-Primary-700 mt-6 rounded-lg px-6 py-3 font-medium text-white transition-colors'>
-          Start Exploring
-        </button>
-      )}
+      <h3 className='mb-2 text-xl font-semibold text-Grey-50'>{title}</h3>
+      <p className='max-w-md text-Grey-400'>{message}</p>
     </div>
   );
 }

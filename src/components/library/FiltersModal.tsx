@@ -1,6 +1,6 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
-import { FunnelX, Filter as FilterIcon, Film, Tv, Clapperboard } from 'lucide-react';
+import { FunnelX, Filter as FilterIcon, Film, Tv } from 'lucide-react';
 import { ModalBody } from '@heroui/modal';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
@@ -16,7 +16,7 @@ interface FiltersModalProps {
 const MEDIA_TYPES = [
   { id: 'movie', label: 'Movies', icon: Film, shortcut: 'filterMovies' },
   { id: 'tv', label: 'TV Shows', icon: Tv, shortcut: 'filterTvShows' },
-  { id: 'anime', label: 'Anime', icon: Clapperboard, shortcut: 'filterAnime' },
+  // { id: 'anime', label: 'Anime', icon: Clapperboard, shortcut: 'filterAnime' },
 ];
 
 export default function FiltersModal({ disclosure }: FiltersModalProps) {
@@ -32,7 +32,7 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
 
   useHotkeys(getShortcut('filterMovies').hotkey, () => toggleMediaType('movie'), [selectedTypes]);
   useHotkeys(getShortcut('filterTvShows').hotkey, () => toggleMediaType('tv'), [selectedTypes]);
-  useHotkeys(getShortcut('filterAnime').hotkey, () => toggleMediaType('anime'), [selectedTypes]);
+  // useHotkeys(getShortcut('filterAnime').hotkey, () => toggleMediaType('anime'), [selectedTypes]);
 
   // Clear all filters with Alt+0
   useHotkeys(
@@ -68,14 +68,14 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
   };
 
   const toggleMediaType = (typeId: string) => {
-    const currentTypes = selectedTypes || [];
-    if (currentTypes.includes(typeId)) {
-      setSelectedTypes(currentTypes.length > 1 ? currentTypes.filter((t) => t !== typeId) : null);
-    } else {
-      setSelectedTypes([...currentTypes, typeId]);
-    }
-    // If all types are selected, clear selection
-    if (currentTypes.length === MEDIA_TYPES.length) setSelectedTypes(null);
+    setSelectedTypes(
+      (selectedTypes) => {
+        const currentTypes = selectedTypes || [];
+        if (currentTypes.length && ((currentTypes.length === MEDIA_TYPES.length - 1))) return null
+        return currentTypes.includes(typeId) ?
+          currentTypes.filter((t) => t !== typeId) : [...currentTypes, typeId]
+      }
+    );
   };
 
   return (

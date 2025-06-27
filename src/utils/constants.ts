@@ -83,6 +83,9 @@ export const LIBRARY_MEDIA_STATUS = [
 ] as const;
 
 export const LIBRARY_IMPORT_MAX_SIZE = 10 * 1024 * 1024; // 10 MB
-export const LIBRARY_SYNC_DELAY = 3000; 
+export const LIBRARY_SYNC_DELAY = 3000;
 
 export const LOCAL_STORAGE_PREFIX = 'watchfolio-';
+
+export const TMDB_MOVIE_CATEGORIES: Categories[] = ['popular', 'top-rated', 'now-playing', 'upcoming']
+export const TMDB_TV_CATEGORIES: Categories[] = ['popular', 'top-rated', 'on-tv', 'airing-today']

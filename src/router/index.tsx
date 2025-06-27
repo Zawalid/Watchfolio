@@ -17,12 +17,11 @@ import {
   LibrarySettings,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
+import { LIBRARY_MEDIA_STATUS, TMDB_MOVIE_CATEGORIES, TMDB_TV_CATEGORIES } from '@/utils/constants';
+import { slugify } from '@/utils';
+
 
 export const router = createBrowserRouter([
-  {
-    path: '/verify-email',
-    Component: EmailVerification,
-  },
   {
     path: '/',
     Component: Layout,
@@ -41,12 +40,10 @@ export const router = createBrowserRouter([
                 index: true,
                 element: <Navigate to='/library/all' />,
               },
-              {
-                path: ':status',
+              ...([...LIBRARY_MEDIA_STATUS.map(s => s.value), 'all'].map(s => ({
+                path: slugify(s), element: <Library status={s as LibraryFilterStatus} />
+              })))
 
-                Component: Library,
-                loader: tvShowsLoader,
-              },
             ],
           },
         ],
@@ -61,11 +58,10 @@ export const router = createBrowserRouter([
                 index: true,
                 element: <Navigate to='/movies/popular' />,
               },
-              {
-                path: ':category',
-                Component: Movies,
-                loader: moviesLoader,
-              },
+              ...(TMDB_MOVIE_CATEGORIES.map(c => ({
+                path: c, element: <Movies category={c} />, loader: moviesLoader,
+              })))
+
             ],
           },
           {
@@ -85,11 +81,9 @@ export const router = createBrowserRouter([
                 index: true,
                 element: <Navigate to='/tv/popular' />,
               },
-              {
-                path: ':category',
-                Component: TV,
-                loader: tvShowsLoader,
-              },
+              ...(TMDB_TV_CATEGORIES.map(c => ({
+                path: c, element: <TV category={c} />, loader: tvShowsLoader,
+              })))
             ],
           },
           {
@@ -144,10 +138,14 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: '*',
-        Component: NotFound,
-      },
     ],
+  },
+  {
+    path: '/verify-email',
+    Component: EmailVerification,
+  },
+  {
+    path: '*',
+    Component: NotFound,
   },
 ]);

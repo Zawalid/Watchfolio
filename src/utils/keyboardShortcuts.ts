@@ -72,7 +72,7 @@ export const KEYBOARD_SHORTCUTS = {
   },
   filterMovies: { hotkey: 'alt+1', label: 'Alt 1', description: 'Show only Movies', category: 'filters' },
   filterTvShows: { hotkey: 'alt+2', label: 'Alt 2', description: 'Show only TV shows', category: 'filters' },
-  filterAnime: { hotkey: 'alt+3', label: 'Alt 3', description: 'Show only Anime', category: 'filters' },
+  // filterAnime: { hotkey: 'alt+3', label: 'Alt 3', description: 'Show only Anime', category: 'filters' },
   clearFilters: { hotkey: 'alt+0', label: 'Alt 0', description: 'Clear all filters', category: 'filters' },
 
   // Modal shortcuts (when library modal is open)

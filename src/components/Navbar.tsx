@@ -78,7 +78,9 @@ export default function Navbar() {
       }`}
     >
       <div className='container flex items-center justify-between'>
-        <img src='/images/logo.svg' alt='watchfolio' width={40} height={20} />{' '}
+        <Link to='/'>
+          <img src='/images/logo.svg' alt='watchfolio' width={40} height={20} />
+        </Link>
         <ul className='flex items-center gap-8'>
           {links[isAuthenticated ? 'authenticated' : 'unauthenticated'].map((link) => (
             <NavItem key={link.href} link={link} />

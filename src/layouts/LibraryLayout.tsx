@@ -152,7 +152,7 @@ export default function LibraryLayout() {
               <Button
                 isIconOnly
                 className={cn(
-                  'button-secondary! relative',
+                  'button-secondary! relative overflow-visible',
                   hasActiveFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20'
                 )}
                 onPress={() => filtersDisclosure.onOpen()}
