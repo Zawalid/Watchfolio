@@ -123,6 +123,7 @@ export const getAllShortcuts = () => {
 
 export const getShortcut = (name: ShortcutName) => {
   const shortcut = KEYBOARD_SHORTCUTS[name];
+  if(!shortcut) return null
   return { name, ...shortcut };
 };
 

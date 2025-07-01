@@ -5,7 +5,7 @@ import { ModalBody } from '@heroui/modal';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
-import { GENRES, PLATFORMS } from '@/lib/api/TMDB/values';
+import { GENRES, NETWORKS } from '@/lib/api/TMDB/values';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 
@@ -22,29 +22,29 @@ const MEDIA_TYPES = [
 export default function FiltersModal({ disclosure }: FiltersModalProps) {
   const { isOpen, onClose, onOpen } = disclosure;
   const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
-  const [selectedPlatforms, setSelectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
+  const [selectedNetworks, setSelectedNetworks] = useQueryState('networks', parseAsArrayOf(parseAsString));
   const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
-  const hasFilters = Boolean(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
+  const hasFilters = Boolean(selectedGenres?.length || selectedNetworks?.length || selectedTypes?.length);
 
-  useHotkeys(getShortcut('toggleFilters').hotkey, () => (isOpen ? onClose() : onOpen()), [isOpen]);
-  useHotkeys(getShortcut('escape').hotkey, onClose, { enabled: isOpen });
+  useHotkeys(getShortcut('toggleFilters')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
 
-  useHotkeys(getShortcut('filterMovies').hotkey, () => toggleMediaType('movie'), [selectedTypes]);
-  useHotkeys(getShortcut('filterTvShows').hotkey, () => toggleMediaType('tv'), [selectedTypes]);
-  // useHotkeys(getShortcut('filterAnime').hotkey, () => toggleMediaType('anime'), [selectedTypes]);
+  useHotkeys(getShortcut('filterMovies')?.hotkey || '', () => toggleMediaType('movie'), [selectedTypes]);
+  useHotkeys(getShortcut('filterTvShows')?.hotkey || '', () => toggleMediaType('tv'), [selectedTypes]);
+  // useHotkeys(getShortcut('filterAnime')?.hotkey || '', () => toggleMediaType('anime'), [selectedTypes]);
 
   // Clear all filters with Alt+0
   useHotkeys(
-    getShortcut('clearFilters').hotkey,
+    getShortcut('clearFilters')?.hotkey || '',
     () => {
       if (hasFilters) {
         setSelectedGenres(null);
-        setSelectedPlatforms(null);
+        setSelectedNetworks(null);
         setSelectedTypes(null);
       }
     },
-    [selectedGenres, selectedPlatforms, selectedTypes]
+    [selectedGenres, selectedNetworks, selectedTypes]
   );
 
   // Media type keyboard shortcuts
@@ -58,28 +58,25 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
     }
   };
 
-  const togglePlatform = (platformId: string) => {
-    const currentPlatforms = selectedPlatforms || [];
-    if (currentPlatforms.includes(platformId)) {
-      setSelectedPlatforms(currentPlatforms.length > 1 ? currentPlatforms.filter((p) => p !== platformId) : null);
+  const togglePlatform = (platform: string) => {
+    const currentNetworks = selectedNetworks || [];
+    if (currentNetworks.includes(platform)) {
+      setSelectedNetworks(currentNetworks.length > 1 ? currentNetworks.filter((p) => p !== platform) : null);
     } else {
-      setSelectedPlatforms([...currentPlatforms, platformId]);
+      setSelectedNetworks([...currentNetworks, platform]);
     }
   };
 
   const toggleMediaType = (typeId: string) => {
-    setSelectedTypes(
-      (selectedTypes) => {
-        const currentTypes = selectedTypes || [];
-        if (currentTypes.length && ((currentTypes.length === MEDIA_TYPES.length - 1))) return null
-        return currentTypes.includes(typeId) ?
-          currentTypes.filter((t) => t !== typeId) : [...currentTypes, typeId]
-      }
-    );
+    setSelectedTypes((selectedTypes) => {
+      const currentTypes = selectedTypes || [];
+      if (currentTypes.length && currentTypes.length === MEDIA_TYPES.length - 1) return null;
+      return currentTypes.includes(typeId) ? currentTypes.filter((t) => t !== typeId) : [...currentTypes, typeId];
+    });
   };
 
   return (
-    <Modal disclosure={disclosure} classNames={{ base: 'max-w-4xl' }}>
+    <Modal disclosure={disclosure} size='4xl'>
       <ModalBody className='space-y-6 p-6'>
         {/* Header */}
         <div className='flex items-center gap-3'>
@@ -89,7 +86,7 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
           <h2 className='text-Primary-50 text-xl font-semibold'>Apply Filters</h2>
         </div>
 
-        <div className='grid grid-cols-1 gap-8 md:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-8 md:grid-cols-'>
           {/* Genres */}
           <div className='space-y-3'>
             <div className='flex items-center justify-between'>
@@ -97,84 +94,71 @@ export default function FiltersModal({ disclosure }: FiltersModalProps) {
               {selectedGenres?.length ? <ClearFilter onClear={() => setSelectedGenres(null)} /> : null}
             </div>
             <div className='flex flex-wrap gap-2'>
-              {Object.entries(GENRES).map(([id, label]) => {
-                const isSelected = selectedGenres?.includes(label) || false;
+              {GENRES.map(({ id, label }) => (
+                <Button
+                  key={id}
+                  className='selectable-button!'
+                  data-is-selected={selectedGenres?.includes(label) || false}
+                  onPress={() => toggleGenre(label)}
+                >
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {/* Media Types */}
+          <div className='space-y-3'>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-Primary-50 text-lg font-medium'>Types</h3>
+              {selectedTypes?.length ? <ClearFilter onClear={() => setSelectedTypes(null)} /> : null}
+            </div>
+            <div className='flex flex-wrap gap-3'>
+              {MEDIA_TYPES.map((type) => {
+                const IconComponent = type.icon;
                 return (
                   <Button
-                    key={id}
+                    key={type.id}
                     className='selectable-button!'
-                    data-is-selected={isSelected}
-                    onPress={() => toggleGenre(label)}
+                    data-is-selected={selectedTypes?.includes(type.id) || false}
+                    onPress={() => toggleMediaType(type.id)}
                   >
-                    {label}
+                    <IconComponent className='size-4' />
+                    {type.label}
+                    <ShortcutKey shortcutName={type.shortcut as ShortcutName} className='kbd-sm! opacity-60' />
                   </Button>
                 );
               })}
             </div>
           </div>
 
-          <div className='space-y-6'>
-            {/* Streaming Platforms */}
-            <div className='space-y-3'>
-              <div className='flex items-center justify-between'>
-                <h3 className='text-Primary-50 text-lg font-medium'>Streaming Platforms</h3>
-                {selectedPlatforms?.length ? <ClearFilter onClear={() => setSelectedPlatforms(null)} /> : null}
-              </div>
-              <div className='flex flex-wrap gap-2'>
-                {PLATFORMS.map((platform) => {
-                  const isSelected = selectedPlatforms?.includes(platform.id) || false;
-                  return (
-                    <Button
-                      key={platform.id}
-                      className='selectable-button! size-28'
-                      data-is-selected={isSelected}
-                      onPress={() => togglePlatform(platform.id)}
-                    >
-                      {platform.logo ? (
-                        <img src={platform.logo} alt={platform.label} className='mr-1 inline-block' loading='lazy' />
-                      ) : (
-                        platform.label
-                      )}
-                    </Button>
-                  );
-                })}
-              </div>
+          {/* Networks */}
+          <div className='space-y-3'>
+            <div className='flex items-center justify-between'>
+              <h3 className='text-Primary-50 text-lg font-medium'>Networks</h3>
+              {selectedNetworks?.length ? <ClearFilter onClear={() => setSelectedNetworks(null)} /> : null}
             </div>
-
-            {/* Media Types */}
-            <div className='space-y-3'>
-              <div className='flex items-center justify-between'>
-                <h3 className='text-Primary-50 text-lg font-medium'>Types</h3>
-                {selectedTypes?.length ? <ClearFilter onClear={() => setSelectedTypes(null)} /> : null}
-              </div>
-              <div className='flex flex-wrap gap-3'>
-                {MEDIA_TYPES.map((type) => {
-                  const isSelected = selectedTypes?.includes(type.id) || false;
-                  const IconComponent = type.icon;
-                  return (
-                    <Button
-                      key={type.id}
-                      className='selectable-button!'
-                      data-is-selected={isSelected}
-                      onPress={() => toggleMediaType(type.id)}
-                    >
-                      <IconComponent className='size-4' />
-                      {type.label}
-                      <ShortcutKey shortcutName={type.shortcut as ShortcutName} className='kbd-sm! opacity-60' />
-                    </Button>
-                  );
-                })}
-              </div>
+            <div className='grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3'>
+              {NETWORKS.slice(0, 12).map(({ id, name, logo, slug }) => (
+                <Button
+                  key={id}
+                  className='selectable-button! h-28'
+                  data-is-selected={selectedNetworks?.includes(slug) || false}
+                  onPress={() => togglePlatform(slug)}
+                >
+                  {logo ? <img src={logo} alt={name} className='mr-1 inline-block' loading='lazy' /> : name}
+                </Button>
+              ))}
             </div>
           </div>
         </div>
 
-        {(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length) && (
+        {(selectedGenres?.length || selectedNetworks?.length || selectedTypes?.length) && (
           <Button
-            className='button-secondary!'
+            className='button-secondary! shrink-0'
             onPress={() => {
               setSelectedGenres(null);
-              setSelectedPlatforms(null);
+              setSelectedNetworks(null);
               setSelectedTypes(null);
             }}
           >

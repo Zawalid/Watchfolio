@@ -91,18 +91,18 @@ function StatusSection({
     loop: true,
   });
 
-  useHotkeys(getShortcut('removeFromMediaStatusModal').hotkey, removeItem);
+  useHotkeys(getShortcut('removeFromMediaStatusModal')?.hotkey || '', removeItem);
 
   useHotkeys(
-    getShortcut('rateMedia').hotkey,
+    getShortcut('rateMedia')?.hotkey || '',
     (e) => {
       const rating = parseInt(e.key);
       if (!isNaN(rating) && rating > 0) setCurrentRating(rating);
     },
     [setSelectedStatus, onClose]
   );
-  useHotkeys(getShortcut('rateMedia10').hotkey, () => setCurrentRating(10));
-  useHotkeys(getShortcut('clearRating').hotkey, () => setCurrentRating(undefined));
+  useHotkeys(getShortcut('rateMedia10')?.hotkey || '', () => setCurrentRating(10));
+  useHotkeys(getShortcut('clearRating')?.hotkey || '', () => setCurrentRating(undefined));
 
   return (
     <div className='space-y-8'>
@@ -153,7 +153,7 @@ function StatusButton({
   isSelected: boolean;
   onClick: () => void;
 }) {
-  useHotkeys(getShortcut(status.shortcut as ShortcutName).hotkey, onClick);
+  useHotkeys(getShortcut(status.shortcut as ShortcutName)?.hotkey || '', onClick);
 
   const IconComponent = status.icon;
   const textColorClass = status.className.split(' ')[0];

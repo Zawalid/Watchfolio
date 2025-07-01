@@ -74,9 +74,9 @@ export default function BaseMediaCard({
   };
 
   // Hotkeys
-  useHotkeys(getShortcut('toggleFavorite').hotkey, handleToggleFavorite, { enabled: isFocused });
-  useHotkeys(getShortcut('editStatus').hotkey, handleEditStatus, { enabled: isFocused });
-  useHotkeys(getShortcut('removeFromLibrary').hotkey, handleRemove, { enabled: isFocused });
+  useHotkeys(getShortcut('toggleFavorite')?.hotkey || '', handleToggleFavorite, { enabled: isFocused });
+  useHotkeys(getShortcut('editStatus')?.hotkey || '', handleEditStatus, { enabled: isFocused });
+  useHotkeys(getShortcut('removeFromLibrary')?.hotkey || '', handleRemove, { enabled: isFocused });
 
   const isInteractive = isHovered || isFocused;
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);

@@ -4,6 +4,7 @@ import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, SIGN_IN_ICON } from './ui
 import { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useOnboardingStore } from '@/stores/useOnboardingStore';
 import { Button } from '@heroui/button';
 
 const links: Links = {
@@ -53,6 +54,7 @@ const links: Links = {
 
 export default function Navbar() {
   const { isAuthenticated } = useAuthStore();
+  const { openModal } = useOnboardingStore();
   const [scrolled, setScrolled] = useState(false);
   const pathname = useLocation().pathname;
 
@@ -86,21 +88,32 @@ export default function Navbar() {
             <NavItem key={link.href} link={link} />
           ))}
         </ul>
-        {isAuthenticated ? (
-          <UserDropdown />
-        ) : (
+        <div className='flex items-center gap-3'>
           <Button
-            as={Link}
-            to='/signin'
             size='sm'
-            variant='flat'
+            variant='light'
             color='primary'
-            startContent={SIGN_IN_ICON}
-            className='font-medium'
+            onPress={openModal}
+            className='font-medium text-sm'
           >
-            Sign In
+            How to use
           </Button>
-        )}
+          {isAuthenticated ? (
+            <UserDropdown />
+          ) : (
+            <Button
+              as={Link}
+              to='/signin'
+              size='sm'
+              variant='flat'
+              color='primary'
+              startContent={SIGN_IN_ICON}
+              className='font-medium'
+            >
+              Sign In
+            </Button>
+          )}
+        </div>
       </div>
     </nav>
   );

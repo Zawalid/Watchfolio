@@ -23,10 +23,10 @@ const CATEGORY_ORDER: ShortcutCategory[] = ['general', 'library', 'cardFocus', '
 export default function KeyboardShortcuts({ disclosure }: KeyboardShortcutsProps) {
   const { isOpen, onOpen, onClose } = disclosure;
 
-  useHotkeys(getShortcut('toggleShortcutsHelp').hotkey, () => (isOpen ? onClose() : onOpen()), [isOpen], {
+  useHotkeys(getShortcut('toggleShortcutsHelp')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen], {
     useKey: true,
   });
-  useHotkeys(getShortcut('escape').hotkey, onClose, { enabled: isOpen });
+  useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
 
   return (
     <Modal disclosure={disclosure}>

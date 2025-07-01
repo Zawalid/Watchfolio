@@ -48,8 +48,8 @@ const FeatureCard = ({
 
 export default function WelcomeView() {
   return (
-    <motion.div variants={containerVariants} initial='hidden' animate='visible' className='space-y-8 py-8'>
-      <motion.div variants={itemVariants} className='space-y-12'>
+    <motion.div variants={containerVariants} initial='hidden' animate='visible' className='h-full space-y-8 py-14'>
+      <motion.div variants={itemVariants} className='h-full grid place-content-center gap-12'>
         {/* Hero section */}
         <div className='space-y-6 text-center'>
           <motion.div

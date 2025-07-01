@@ -4,12 +4,15 @@ import Navbar from '@/components/Navbar';
 import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
+import OnboardingModal from '@/components/OnboardingModal';
+import { useOnboarding } from '@/hooks/useOnboarding';
 
 export default function Layout() {
   const location = useLocation();
 
   useInitialAuth();
   useLibrarySync();
+  useOnboarding(); // Auto-trigger onboarding for first-time users
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -22,6 +25,7 @@ export default function Layout() {
         <main className='container flex-1'>
           <Outlet />
         </main>
+        <OnboardingModal />
       </div>
     </Providers>
   );

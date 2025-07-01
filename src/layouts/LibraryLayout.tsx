@@ -51,17 +51,17 @@ export default function LibraryLayout() {
   const { getCount } = useLibraryStore();
   const { handleClearLibrary } = useClearLibrary();
 
-  useHotkeys(getShortcut('toggleSidebar').hotkey, () => setShowTabs(!showTabs), [showTabs], { useKey: true });
+  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => setShowTabs(!showTabs), [showTabs], { useKey: true });
   useHotkeys(
-    getShortcut('focusSearch').hotkey,
+    getShortcut('focusSearch')?.hotkey || '',
     (e) => {
       e.preventDefault();
       searchInputRef.current?.focus();
     },
     { useKey: true }
   );
-  useHotkeys(getShortcut('clearSearch').hotkey, () => setQuery(null), { useKey: true });
-  useHotkeys(getShortcut('clearLibrary').hotkey, handleClearLibrary, { useKey: true });
+  useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null), { useKey: true });
+  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', handleClearLibrary, { useKey: true });
 
   const hasActiveFilters = !!(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
 

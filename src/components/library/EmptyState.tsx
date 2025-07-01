@@ -1,9 +1,10 @@
-import { Filter, Search, Heart, FunnelX } from 'lucide-react';
+import { Filter, Search, FunnelX, Film, Tv, TrendingUp, Star, Heart, Sparkles } from 'lucide-react';
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { Button } from '@heroui/button';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { ShortcutTooltip } from '../ui/ShortcutKey';
 import { Tooltip } from '@heroui/tooltip';
+import { Link } from 'react-router';
 
 const getFilterInfo = (filter: LibraryFilterStatus) => {
   const statusOption = LIBRARY_MEDIA_STATUS.find((status) => status.value === filter);
@@ -11,7 +12,7 @@ const getFilterInfo = (filter: LibraryFilterStatus) => {
   if (statusOption) {
     const IconComponent = statusOption.icon;
     return {
-      icon: <IconComponent className='size-6' />,
+      icon: <IconComponent className='size-10' />,
       label: statusOption.label,
       color: statusOption.className.split(' ')[0],
     };
@@ -19,9 +20,9 @@ const getFilterInfo = (filter: LibraryFilterStatus) => {
 
   switch (filter) {
     case 'favorites':
-      return { icon: <Heart className='size-6' />, label: 'Favorites', color: 'text-red-400' };
+      return { icon: <Heart className='size-10' />, label: 'Favorites', color: 'text-red-400' };
     default:
-      return { icon: <Filter className='size-6' />, label: 'Unknown', color: 'text-gray-400' };
+      return { icon: <Filter className='size-10' />, label: 'Unknown', color: 'text-gray-400' };
   }
 };
 
@@ -34,16 +35,76 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
   const hasFilters = Boolean(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
   const hasQuery = !!query && query.trim() !== '';
 
+  if (status === 'all') {
+    return (
+      <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
+        <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
+          <Film className='text-Primary-400 size-10' />
+        </div>
+        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>Your watchlist awaits</h3>
+        <p className='text-Grey-400 mb-6 max-w-md'>
+          Ready to start your journey? Discover amazing movies and TV shows to build your personal collection.
+        </p>
+        <Button
+          as={Link}
+          to='/'
+          color='primary'
+          size='md'
+          className='font-medium'
+          startContent={<Sparkles className='h-4 w-4' />}
+        >
+          Start Exploring
+        </Button>
+
+        {/* Simple suggestions */}
+        <div className='mt-8 flex flex-wrap justify-center gap-2'>
+          <Link
+            to='/movies'
+            className='pill-bg flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-white/10'
+          >
+            <Film className='text-Primary-400 h-4 w-4' />
+            <span className='text-Grey-300 text-sm'>Movies</span>
+          </Link>
+          <Link
+            to='/tv'
+            className='pill-bg flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-white/10'
+          >
+            <Tv className='text-Secondary-400 h-4 w-4' />
+            <span className='text-Grey-300 text-sm'>TV Shows</span>
+          </Link>
+          <Link
+            to='/movies/trending'
+            className='pill-bg flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-white/10'
+          >
+            <TrendingUp className='text-Warning-400 h-4 w-4' />
+            <span className='text-Grey-300 text-sm'>Trending</span>
+          </Link>
+          <Link
+            to='/tv/top-rated'
+            className='pill-bg flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-white/10'
+          >
+            <Star className='text-Success-400 h-4 w-4' />
+            <span className='text-Grey-300 text-sm'>Top Rated</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (hasFilters || hasQuery) {
     return (
-      <div className='flex min-h-[400px] flex-col items-center justify-center text-center'>
+      <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
         <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
-          {hasFilters ? <FunnelX className='h-12 w-12 text-Warning-400' /> : <Search className='h-12 w-12 text-Grey-400' />}
+          {hasFilters ? (
+            <FunnelX className='text-Warning-400 h-12 w-12' />
+          ) : (
+            <Search className='text-Grey-400 h-12 w-12' />
+          )}
         </div>
-        <h3 className='mb-2 text-xl font-semibold text-Grey-50'>
+        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>
           {hasFilters ? 'No matches found' : 'No results found'}
         </h3>
-        <p className='max-w-md text-Grey-400'>
+        <p className='text-Grey-400 max-w-md'>
           {hasFilters
             ? 'Your current filters are too specific. Try adjusting them to see more content.'
             : `Couldn't find any shows or movies matching "${query}". Try a different search term.`}
@@ -71,17 +132,10 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
     );
   }
 
-  // Handle status-based empty state
   const statusInfo = status ? getFilterInfo(status) : null;
 
   const getEmptyMessage = () => {
     switch (status) {
-      case 'all':
-        return {
-          title: 'Your watchlist awaits',
-          message:
-            'Ready to start your journey? Discover amazing movies and TV shows to build your personal collection.',
-        };
       case 'watching':
         return {
           title: 'Nothing on your screen yet',
@@ -123,45 +177,18 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
 
   const { title, message } = getEmptyMessage();
 
-  // Special design for completely empty library
-  if (status === 'all') {
-    return (
-      <div className='flex min-h-[400px] flex-col items-center justify-center text-center'>
-        <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
-          <img 
-            src='/images/empty.svg' 
-            alt='Empty watchlist' 
-            className='h-16 w-16 opacity-80'
-          />
-        </div>
-        <h3 className='mb-2 text-xl font-semibold text-Grey-50'>
-          Your watchlist awaits
-        </h3>
-        <p className='max-w-md text-Grey-400 mb-6'>
-          Ready to start your journey? Discover amazing movies and TV shows to build your personal collection.
-        </p>
-        <Button
-          color='primary'
-          className='button-secondary!'
-        >
-          Start Exploring
-        </Button>
-      </div>
-    );
-  }
-
   // Regular empty state for other statuses
   return (
-    <div className='flex min-h-[400px] flex-col items-center justify-center text-center'>
+    <div className='flex h-full flex-col items-center justify-center py-20 text-center'>
       <div className='mb-6 rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'>
         {statusInfo ? (
           <div className={statusInfo.color}>{statusInfo.icon}</div>
         ) : (
-          <Filter className='h-12 w-12 text-Grey-400' />
+          <Filter className='text-Grey-400 h-12 w-12' />
         )}
       </div>
-      <h3 className='mb-2 text-xl font-semibold text-Grey-50'>{title}</h3>
-      <p className='max-w-md text-Grey-400'>{message}</p>
+      <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>{title}</h3>
+      <p className='text-Grey-400 max-w-md'>{message}</p>
     </div>
   );
 }

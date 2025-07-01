@@ -18,8 +18,8 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
   const [activeTab, setActiveTab] = useState<'export' | 'import'>('export');
 
   // Keyboard shortcuts for modal
-  useHotkeys(getShortcut('escape').hotkey, onClose, { enabled: isOpen });
-  useHotkeys(getShortcut('toggleImportExport').hotkey, () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
+  useHotkeys(getShortcut('toggleImportExport')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
 
   return (
     <Modal disclosure={disclosure} classNames={{ base: 'max-w-xl' }}>

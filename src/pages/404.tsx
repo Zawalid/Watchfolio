@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
-import { Home, Search, Film, Tv, ArrowLeft } from 'lucide-react';
+import { Home, Search, Film, Tv, ArrowLeft, FileQuestion } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
 
@@ -72,7 +72,7 @@ const navigate = useNavigate()
                 },
               ]}
             >
-              <div className='text-Secondary-400 text-4xl font-bold'>404</div>
+              <FileQuestion className='text-Secondary-400 h-16 w-16' />
             </AnimatedRing>
           </motion.div>
 
@@ -105,7 +105,6 @@ const navigate = useNavigate()
               as={Link}
               to='/'
               color='primary'
-              size='lg'
               startContent={<Home className='h-4 w-4' />}
               className='w-full'
             >
@@ -116,7 +115,6 @@ const navigate = useNavigate()
                 as={Link}
                 to='/search'
                 variant='bordered'
-                size='lg'
                 className='button-secondary! bg-transparent! flex-1'
                 startContent={<Search className='h-4 w-4' />}
               >
@@ -125,7 +123,6 @@ const navigate = useNavigate()
               <Button
                 onPress={() => navigate(-1)}
                 variant='bordered'
-                size='lg'
                 className='button-secondary! bg-transparent! flex-1'
                 startContent={<ArrowLeft className='h-4 w-4' />}
               >

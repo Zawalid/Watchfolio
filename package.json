@@ -38,6 +38,7 @@
     "lucide-react": "^0.511.0",
     "nuqs": "^2.4.3",
     "react": "^19.1.0",
+    "react-confetti": "^6.4.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
     "react-error-boundary": "^6.0.0",
