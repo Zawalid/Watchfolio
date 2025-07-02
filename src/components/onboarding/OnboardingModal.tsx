@@ -38,7 +38,10 @@ const stepVariants = {
 export default function OnboardingModal() {
   const { showModal, currentStep, totalSteps, closeModal, nextStep, prevStep, completeOnboarding } =
     useOnboardingStore();
-  const disclosure = useDisclosure({ isOpen: showModal });
+  const disclosure = useDisclosure({
+    isOpen: showModal,
+    onClose: closeModal,
+  });
 
   const CurrentStepComponent = steps[currentStep]?.component;
   const isFirstStep = currentStep === 0;

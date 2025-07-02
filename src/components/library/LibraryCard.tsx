@@ -1,4 +1,4 @@
-import BaseMediaCard from '@/components/Media/BaseMediaCard';
+import BaseMediaCard from '@/components/media/BaseMediaCard';
 
 interface LibraryCardProps {
   item: LibraryMedia;

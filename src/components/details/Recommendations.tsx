@@ -1,5 +1,5 @@
 import { getRecommendations } from '@/lib/api/TMDB';
-import MediaCardsList from '../Media/MediaCardsList';
+import MediaCardsList from '../media/MediaCardsList';
 
 export default function Recommendations({ type, id }: { type: 'movie' | 'tv'; id: number }) {
   return (

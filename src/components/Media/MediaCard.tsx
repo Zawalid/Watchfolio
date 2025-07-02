@@ -22,7 +22,7 @@ export default function MediaCard({ media, tabIndex }: MediaCardProps) {
   const displayGenres =
     genre_ids
       ?.slice(0, 2)
-      .map((id) => GENRES[id])
+      .map((id) => GENRES.find((genre) => genre.id === id)?.label || 'Unknown')
       .filter(Boolean) || [];
 
   return (

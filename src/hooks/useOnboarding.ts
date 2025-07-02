@@ -22,7 +22,7 @@ export function useOnboarding(options: UseOnboardingOptions = {}) {
     closeModal,
   } = useOnboardingStore();
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout>(null);
   const hasTriggeredRef = useRef(false);
 
   // Function to trigger onboarding

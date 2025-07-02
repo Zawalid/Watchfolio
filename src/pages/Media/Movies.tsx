@@ -1,6 +1,6 @@
 import { useLoaderData } from 'react-router';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import MediaCardsList from '@/components/Media/MediaCardsList';
+import MediaCardsList from '../../components/media/MediaCardsList';
 import { getMovies } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 

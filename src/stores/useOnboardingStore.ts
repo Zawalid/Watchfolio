@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+interface OnboardingPreferences {
+  selectedGenres: string[];
+  selectedContentPreferences: string[];
+  selectedNetworks: number[];
+  mediaPreference: 'movies' | 'tv' | 'both';
+}
+
 interface OnboardingStore {
   // State
   isFirstTime: boolean;
@@ -8,7 +15,8 @@ interface OnboardingStore {
   showModal: boolean;
   currentStep: number;
   totalSteps: number;
-  
+  preferences: OnboardingPreferences;
+
   // Actions
   setFirstTime: (value: boolean) => void;
   openModal: () => void;
@@ -18,6 +26,8 @@ interface OnboardingStore {
   goToStep: (step: number) => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
+  updatePreferences: (preferences: Partial<OnboardingPreferences>) => void;
+  clearPreferences: () => void;
 }
 
 export const useOnboardingStore = create<OnboardingStore>()(
@@ -29,6 +39,12 @@ export const useOnboardingStore = create<OnboardingStore>()(
       showModal: false,
       currentStep: 0,
       totalSteps: 4,
+      preferences: {
+        selectedGenres: [],
+        selectedContentPreferences: ['hollywood'], // Default to Hollywood
+        selectedNetworks: [],
+        mediaPreference: 'both',
+      },
 
       // Actions
       setFirstTime: (value: boolean) => set({ isFirstTime: value }),
@@ -58,25 +74,52 @@ export const useOnboardingStore = create<OnboardingStore>()(
         }
       },
 
-      completeOnboarding: () => set({ 
-        hasSeenOnboarding: true, 
-        isFirstTime: false, 
-        showModal: false,
-        currentStep: 0 
-      }),
+      completeOnboarding: () =>
+        set({
+          hasSeenOnboarding: true,
+          isFirstTime: false,
+          showModal: false,
+          currentStep: 0,
+        }),
 
-      resetOnboarding: () => set({ 
-        isFirstTime: true, 
-        hasSeenOnboarding: false, 
-        showModal: false,
-        currentStep: 0 
-      }),
+      resetOnboarding: () =>
+        set({
+          isFirstTime: true,
+          hasSeenOnboarding: false,
+          showModal: false,
+          currentStep: 0,
+          preferences: {
+            selectedGenres: [],
+            selectedContentPreferences: ['hollywood'],
+            selectedNetworks: [],
+            mediaPreference: 'both',
+          },
+        }),
+
+      updatePreferences: (newPreferences: Partial<OnboardingPreferences>) => {
+        set((state) => ({
+          preferences: { ...state.preferences, ...newPreferences },
+        }));
+      },
+
+      clearPreferences: () => {
+        set({
+          preferences: {
+            selectedGenres: [],
+            selectedContentPreferences: ['hollywood'],
+            selectedNetworks: [],
+            mediaPreference: 'both',
+          },
+        });
+      },
     }),
     {
       name: 'watchfolio-onboarding',
       partialize: (state) => ({
+        currentStep : state.currentStep,
         isFirstTime: state.isFirstTime,
         hasSeenOnboarding: state.hasSeenOnboarding,
+        preferences: state.preferences,
       }),
     }
   )

@@ -51,7 +51,9 @@ const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
     posterPath: media.poster_path,
     releaseDate,
     genres:
-      media.genres?.map((g: { id: number; name: string }) => g.name) || media.genre_ids?.map((id) => GENRES[id]) || [],
+      media.genres?.map((g: { id: number; name: string }) => g.name) ||
+      media.genre_ids?.map((id) => GENRES.find((g) => g.id === id)?.label || '') ||
+      [],
     rating: +getRating(media.vote_average),
   };
 };
@@ -238,4 +240,3 @@ export const useLibraryStore = create<LibraryState>()(
     }
   )
 );
-

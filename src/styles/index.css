@@ -192,13 +192,16 @@
 }
 
 @utility selectable-button {
-  @apply pill-bg flex items-center justify-center gap-2  capitalize transition-colors duration-200 text-Grey-300 border-white/10 hover:border-white/20 hover:bg-white/10;
+  @apply pill-bg flex items-center justify-center gap-2 capitalize transition-colors duration-200 text-Grey-300 border-white/10 hover:border-white/20 hover:bg-white/10;
 
   &[data-is-selected='true'] {
     @apply border-Secondary-400 bg-Secondary-500/20 text-Secondary-50;
   }
 }
 
+@utility gradient-text {
+  @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
+}
 
 body {
   @apply dark blur-bg bg-[url('/images/Background.svg')] antialiased;

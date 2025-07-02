@@ -1313,15 +1313,60 @@ export const NETWORKS = [
   },
 ];
 
-export const REGIONS = [
-  { code: 'US', name: 'United States' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'JP', name: 'Japan' },
-  { code: 'KR', name: 'South Korea' },
+export const CONTENT_PREFERENCES = [
+  {
+    code: 'hollywood',
+    name: 'Hollywood & English',
+    description: 'US/UK movies and shows',
+    tmdb: {
+      region: 'US',
+      languages: ['en'],
+    },
+  },
+  {
+    code: 'anime',
+    name: 'Anime & Japanese',
+    description: 'Anime, J-dramas, Japanese content',
+    tmdb: {
+      region: 'JP',
+      languages: ['ja'],
+      genres: [16], // Animation
+    },
+  },
+  {
+    code: 'kdrama',
+    name: 'K-Content',
+    description: 'K-dramas, K-movies, Korean content',
+    tmdb: {
+      region: 'KR',
+      languages: ['ko'],
+    },
+  },
+  {
+    code: 'bollywood',
+    name: 'Bollywood & Indian',
+    description: 'Hindi movies, Indian TV shows',
+    tmdb: {
+      region: 'IN',
+      languages: ['hi', 'te', 'ta', 'ml'],
+    },
+  },
+  {
+    code: 'european',
+    name: 'European Cinema',
+    description: 'French, German, Italian films',
+    tmdb: {
+      region: 'FR',
+      languages: ['fr', 'de', 'it', 'es'],
+    },
+  },
+  {
+    code: 'latin',
+    name: 'Latin American',
+    description: 'Spanish & Portuguese content',
+    tmdb: {
+      region: 'MX',
+      languages: ['es', 'pt'],
+    },
+  },
 ];

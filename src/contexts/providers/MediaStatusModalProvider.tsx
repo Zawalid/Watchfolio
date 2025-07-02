@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDisclosure } from '@heroui/modal';
-import MediaStatusModal from '@/components/Media/MediaStatusModal';
+import MediaStatusModal from '../../components/media/MediaStatusModal';
 import { MediaStatusModalContext } from '../MediaStatusModalContext';
 
 export function MediaStatusModalProvider({ children }: { children: React.ReactNode }) {

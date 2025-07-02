@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
-import OnboardingModal from '@/components/OnboardingModal';
+import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import { useOnboarding } from '@/hooks/useOnboarding';
 
 export default function Layout() {
