@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persistAndSync } from '@/utils/persistAndSync';
 
 interface OnboardingPreferences {
   selectedGenres: string[];
@@ -31,7 +31,7 @@ interface OnboardingStore {
 }
 
 export const useOnboardingStore = create<OnboardingStore>()(
-  persist(
+  persistAndSync(
     (set, get) => ({
       // Initial state
       isFirstTime: true,
@@ -115,12 +115,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
     }),
     {
       name: 'watchfolio-onboarding',
-      partialize: (state) => ({
-        currentStep : state.currentStep,
-        isFirstTime: state.isFirstTime,
-        hasSeenOnboarding: state.hasSeenOnboarding,
-        preferences: state.preferences,
-      }),
+      include: ['isFirstTime', 'hasSeenOnboarding', 'currentStep', 'preferences'],
     }
   )
 );

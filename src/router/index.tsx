@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-import { AuthLayout, Layout, LibraryLayout, MoviesLayout, SettingsLayout, TvLayout } from '@/layouts';
+import {  Layout, LibraryLayout, MoviesLayout, SettingsLayout, TvLayout } from '@/layouts';
 import {
   Home,
   Library,
@@ -8,8 +8,6 @@ import {
   TV,
   Details,
   Search,
-  Signin,
-  Signup,
   EmailVerification,
   Profile,
   PrivacySecurity,
@@ -97,21 +95,6 @@ export const router = createBrowserRouter([
         path: 'search',
         Component: Search,
       },
-      {
-        Component: AuthLayout,
-        // TODO : Prevent authenticated users from accessing auth routes
-        children: [
-          {
-            path: 'signin',
-            Component: Signin,
-          },
-          {
-            path: 'signup',
-            Component: Signup,
-          },
-        ],
-      },
-      // TODO : Prevent unauthenticated users from accessing auth routes
       {
         path: 'settings',
         Component: SettingsLayout,

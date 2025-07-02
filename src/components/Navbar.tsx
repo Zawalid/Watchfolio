@@ -52,7 +52,7 @@ const links: Links = {
 };
 
 export default function Navbar() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, openAuthModal } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
   const pathname = useLocation().pathname;
 
@@ -91,13 +91,12 @@ export default function Navbar() {
             <UserDropdown />
           ) : (
             <Button
-              as={Link}
-              to='/signin'
               size='sm'
               variant='flat'
               color='primary'
               startContent={SIGN_IN_ICON}
               className='font-medium'
+              onPress={() => openAuthModal('signin')}
             >
               Sign In
             </Button>

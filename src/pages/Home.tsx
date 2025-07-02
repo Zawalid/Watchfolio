@@ -1,10 +1,8 @@
 import LandingPage from '@/components/LandingPage';
-import LibraryOverview from '@/components/library/LibraryOverview';
-import WelcomeView from '@/components/WelcomeView';
+// import LibraryOverview from '@/components/library/LibraryOverview';
 
 export default function Home() {
-  const isFirstVisit = true
+  // const isFirstVisit = true
 
-  // return isFirstVisit ? <WelcomeView /> : <LibraryOverview />;
   return <LandingPage />;
 }

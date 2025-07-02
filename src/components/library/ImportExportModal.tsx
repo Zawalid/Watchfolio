@@ -22,7 +22,7 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
   useHotkeys(getShortcut('toggleImportExport')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
 
   return (
-    <Modal disclosure={disclosure} classNames={{ base: 'max-w-xl' }}>
+    <Modal disclosure={disclosure} size='xl'>
       <ModalBody className='space-y-6 p-6'>
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>

@@ -5,6 +5,7 @@ import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
+import AuthModal from '@/components/auth/AuthModal';
 import { useOnboarding } from '@/hooks/useOnboarding';
 
 export default function Layout() {
@@ -12,7 +13,7 @@ export default function Layout() {
 
   useInitialAuth();
   useLibrarySync();
-  useOnboarding(); // Auto-trigger onboarding for first-time users
+  useOnboarding();
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -26,6 +27,7 @@ export default function Layout() {
           <Outlet />
         </main>
         <OnboardingModal />
+        <AuthModal />
       </div>
     </Providers>
   );

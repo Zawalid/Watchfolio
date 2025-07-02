@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router';
 import { Tooltip } from '@heroui/tooltip';
 import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
 import { useSyncStore } from '@/stores/useSyncStore';
@@ -8,10 +7,8 @@ import { cn } from '@/utils';
 export function SyncStatus({ className }: { className?: string }) {
   const status = useSyncStore((state) => state.status);
   const setError = useSyncStore((state) => state.setError);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { isAuthenticated, openAuthModal } = useAuthStore();
   const { isOnline, isSyncing, error, lastSyncTime } = status;
-
-  const navigate = useNavigate();
 
   const hasError = !!error;
 
@@ -32,7 +29,7 @@ export function SyncStatus({ className }: { className?: string }) {
         icon: <CloudOff className='size-4' />,
         text: 'Sign in to sync',
         tooltip: 'Sign in to sync your library across devices',
-        onClick: () => navigate('/signin'),
+        onClick: () => openAuthModal('signin'),
       };
     }
 

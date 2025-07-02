@@ -9,6 +9,10 @@ interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
 
+  // Modal State
+  showAuthModal: boolean;
+  authModalType: 'signin' | 'signup';
+
   // Auth Actions
   signIn: (email: string, password: string) => Promise<Models.Session>;
   signUp: (name: string, email: string, password: string) => Promise<Models.User<Models.Preferences>>;
@@ -29,6 +33,10 @@ interface AuthState {
   sendEmailVerification: () => Promise<Models.Token>;
   confirmEmailVerification: (userId: string, secret: string) => Promise<void>;
 
+  // Modal Actions
+  openAuthModal: (type: 'signin' | 'signup') => void;
+  closeAuthModal: () => void;
+  switchAuthMode: (type: 'signin' | 'signup') => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -37,6 +45,8 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: false,
       isAuthenticated: false,
+      showAuthModal: false,
+      authModalType: 'signin',
 
       signIn: async (email: string, password: string) => {
         set({ isLoading: true });
@@ -113,7 +123,8 @@ export const useAuthStore = create<AuthState>()(
 
       resetPassword: async (email: string) => {
         return await authService.resetPassword(email);
-      },      updateUserEmail: async (email: string, password: string) => {
+      },
+      updateUserEmail: async (email: string, password: string) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
@@ -136,7 +147,8 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false });
           throw error;
         }
-      },      updateUserProfile: async (profileData: UpdateProfileInput) => {
+      },
+      updateUserProfile: async (profileData: UpdateProfileInput) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
@@ -148,7 +160,8 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false });
           throw error;
         }
-      },      updateUserPreferences: async (preferencesData: UpdateUserPreferencesInput) => {
+      },
+      updateUserPreferences: async (preferencesData: UpdateUserPreferencesInput) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
@@ -160,7 +173,8 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false });
           throw error;
         }
-      },      deleteUserAccount: async () => {
+      },
+      deleteUserAccount: async () => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
 
@@ -208,6 +222,19 @@ export const useAuthStore = create<AuthState>()(
         await authService.confirmEmailVerification(userId, secret);
         // Refresh user to get updated verification status
         await get().refreshUser();
+      },
+
+      // Modal Actions
+      openAuthModal: (type: 'signin' | 'signup') => {
+        set({ showAuthModal: true, authModalType: type });
+      },
+
+      closeAuthModal: () => {
+        set({ showAuthModal: false });
+      },
+
+      switchAuthMode: (type: 'signin' | 'signup') => {
+        set({ authModalType: type });
       },
     }),
     {

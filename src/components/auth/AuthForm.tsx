@@ -1,7 +1,6 @@
 import { type FieldErrors, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router';
-import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { Button } from '@heroui/button';
@@ -80,56 +79,21 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
 
   const isPending = isLoading || isSubmitting;
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: 'easeOut',
-      },
-    },
-  };
-
   return (
-    <motion.form
-      className='flex flex-col gap-4'
-      onSubmit={handleSubmit(onSubmit)}
-      variants={containerVariants}
-      initial='hidden'
-      animate='visible'
-    >
+    <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}>
       {type === 'signup' && (
-        <motion.div variants={itemVariants}>
-          <Input
-            {...register('name')}
-            icon='name'
-            label='Name'
-            placeholder='eg. John Doe'
-            error={(errors as FieldErrors<SignUpFormData>).name?.message}
-          />
-        </motion.div>
+        <Input
+          {...register('name')}
+          icon='name'
+          label='Name'
+          placeholder='eg. John Doe'
+          error={(errors as FieldErrors<SignUpFormData>).name?.message}
+        />
       )}
-      <motion.div variants={itemVariants}>
-        <Input {...register('email')} type='email' label='Email' error={errors.email?.message} />
-      </motion.div>
-      <motion.div variants={itemVariants}>
-        <PasswordInput {...register('password')} label='Password' error={errors.password?.message} />
-      </motion.div>
+      <Input {...register('email')} type='email' label='Email' error={errors.email?.message} />
+      <PasswordInput {...register('password')} label='Password' error={errors.password?.message} />
       {type === 'signin' && (
-        <motion.button
-          variants={itemVariants}
+        <button
           type='button'
           className='text-Primary-400 hover:text-Primary-500 ml-auto w-fit text-end text-sm transition-colors duration-200'
           onClick={() => {
@@ -142,14 +106,12 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
           }}
         >
           Forgot your password?
-        </motion.button>
+        </button>
       )}
-      <motion.div variants={itemVariants}>
-        <Button className='w-full' color='primary' type='submit' isLoading={isPending}>
-          {type === 'signin' ? (isPending ? 'Signing in...' : 'Sign In') : null}
-          {type === 'signup' ? (isPending ? 'Signing up...' : 'Sign Up') : null}
-        </Button>
-      </motion.div>
-    </motion.form>
+      <Button className='w-full' color='primary' type='submit' isLoading={isPending}>
+        {type === 'signin' ? (isPending ? 'Signing in...' : 'Sign In') : null}
+        {type === 'signup' ? (isPending ? 'Signing up...' : 'Sign Up') : null}
+      </Button>
+    </form>
   );
 }
