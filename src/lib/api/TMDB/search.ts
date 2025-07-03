@@ -34,3 +34,14 @@ export const getRecommendations = async (type: 'movie' | 'tv', id: number): Prom
 export const getSimilar = async (type: 'movie' | 'tv', id: number): Promise<TMDBResponse> => {
   return await fetchFromTMDB(`/${type}/${id}/similar`);
 };
+
+export const getSuggestions = async (query: string, limit: number) => {
+  const response = await search(query, 1);
+  const suggestions = response.results
+    .map((item: { title?: string; name?: string }) => item.title || item.name)
+    .filter((title: string | undefined): title is string => {
+      return title !== undefined && title.toLowerCase().includes(query.toLowerCase());
+    });
+
+  return [...new Set(suggestions)].slice(0, limit);
+};

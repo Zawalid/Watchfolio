@@ -199,8 +199,12 @@
   }
 }
 
-@utility gradient-text {
-  @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
+@utility gradient-heading {
+  @apply text-2xl leading-tight font-black text-white sm:text-3xl;
+
+  & .gradient {
+    @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
+  }
 }
 
 body {

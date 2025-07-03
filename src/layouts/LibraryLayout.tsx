@@ -14,7 +14,6 @@ import {
   Star,
   Trash2,
   TrendingUp,
-  X,
 } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
@@ -24,6 +23,7 @@ import { Tooltip } from '@heroui/tooltip';
 import { Input } from '@/components/ui/Input';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tabs } from '@/components/ui/Tabs';
+import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import FiltersModal from '@/components/library/FiltersModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
@@ -35,7 +35,7 @@ import { cn, slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 // TODO : Display the syn status somewhere else when the sidebar is hidden
 
@@ -269,52 +269,26 @@ export default function LibraryLayout() {
         <div className='flex-1'>
           {/* Welcome Banner for Onboarding Users */}
           <AnimatePresence>
-            {onboardingMessage.show && (
-              <motion.div
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className={`relative overflow-hidden rounded-xl border p-4 backdrop-blur-sm ${
-                  onboardingMessage.action === 'Start Rating'
-                    ? 'border-Warning-500/20 from-Warning-500/10 to-Tertiary-500/10 bg-gradient-to-r'
-                    : 'border-Success-500/20 from-Success-500/10 to-Secondary-500/10 bg-gradient-to-r'
-                }`}
-              >
-                <div className='absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50' />
-
-                <div className='relative flex items-center gap-4'>
-                  <div className='bg-Grey-800 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/10'>
-                    {onboardingMessage.action === 'Start Rating' ? (
-                      <Star className='text-Warning-400 h-5 w-5' />
-                    ) : (
-                      <TrendingUp className='text-Success-400 h-5 w-5' />
-                    )}
-                  </div>
-
-                  <div className='flex-1'>
-                    <h3 className='mb-1 text-base font-bold text-white'>
-                      {onboardingMessage.action === 'Start Rating'
-                        ? 'Ready to Rate Your Content!'
-                        : 'Welcome to Your Library!'}
-                    </h3>
-                    <p className='text-Grey-300 text-sm leading-relaxed'>
-                      {onboardingMessage.action === 'Start Rating'
-                        ? 'Rate movies and shows to build your taste profile. Look for unrated items to get started.'
-                        : 'This is where you organize and track your entertainment. Use filters and sorting to explore your collection.'}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={() => setOnboardingMessage({ show: false, action: null })}
-                    className='text-Grey-400 hover:text-Grey-300 rounded-lg p-1 transition-colors hover:bg-white/10'
-                    aria-label='Dismiss'
-                  >
-                    <X className='h-4 w-4' />
-                  </button>
-                </div>
-              </motion.div>
-            )}
+            <WelcomeBanner
+              title={
+                onboardingMessage.action === 'Start Rating' ? 'Ready to Rate Your Content!' : 'Welcome to Your Library!'
+              }
+              description={
+                onboardingMessage.action === 'Start Rating'
+                  ? 'Rate movies and shows to build your taste profile. Look for unrated items to get started.'
+                  : 'This is where you organize and track your entertainment. Use filters and sorting to explore your collection.'
+              }
+              icon={
+                onboardingMessage.action === 'Start Rating' ? (
+                  <Star className='text-Warning-400 h-5 w-5' />
+                ) : (
+                  <TrendingUp className='text-Success-400 h-5 w-5' />
+                )
+              }
+              variant={onboardingMessage.action === 'Start Rating' ? 'rating' : 'library'}
+              onDismiss={() => setOnboardingMessage({ show: false, action: null })}
+              show={onboardingMessage.show}
+            />
           </AnimatePresence>
           <Outlet />
         </div>

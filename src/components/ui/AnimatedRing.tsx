@@ -10,7 +10,7 @@ interface AnimatedRingProps {
   glowEffect?: boolean;
   floatingIcons?: Array<{
     icon: ReactNode;
-    position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+    position: 'top-left' | 'top-right' | 'top-center'| 'bottom-left' | 'bottom-right' | 'bottom-center';
     color?: 'primary' | 'secondary' | 'tertiary' | 'error' | 'warning' | 'success';
     delay?: number;
   }>;
@@ -86,8 +86,10 @@ const speedConfig = {
 const floatingPositions = {
   'top-left': '-top-4 -left-4',
   'top-right': '-top-4 -right-4',
+  'top-center': '-top-4 left-1/2 transform -translate-x-1/2',
   'bottom-left': '-bottom-4 -left-4',
   'bottom-right': '-bottom-4 -right-4',
+  'bottom-center': '-bottom-4 left-1/2 transform -translate-x-1/2',
 };
 
 export function AnimatedRing({

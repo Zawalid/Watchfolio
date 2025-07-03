@@ -9,9 +9,10 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 
 export default function Library() {
-  const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(localStorage.getItem('watchfolio-auto-sync') !== 'false');
+  const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(localStorage.getItem(`${LOCAL_STORAGE_PREFIX}auto-sync`) !== 'false');
   const { isAuthenticated } = useAuthStore();
   const { library } = useLibraryStore();
   const syncStore = useSyncStore();
@@ -24,7 +25,7 @@ export default function Library() {
       return;
     }
     // TODO : Add it as a user preference
-    localStorage.setItem('watchfolio-auto-sync', enabled.toString());
+    localStorage.setItem(`${LOCAL_STORAGE_PREFIX}auto-sync`, enabled.toString());
     setIsAutoSyncEnabled(enabled);
     addToast({
       title: enabled ? 'Auto-sync enabled' : 'Auto-sync disabled',

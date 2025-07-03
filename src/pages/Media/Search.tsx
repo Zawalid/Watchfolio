@@ -1,14 +1,16 @@
+import { useEffect, useState, useCallback } from 'react';
+import { useLocation } from 'react-router';
 import { useIsFetching } from '@tanstack/react-query';
 import { Button } from '@heroui/button';
 import { parseAsInteger, useQueryState } from 'nuqs';
-import { useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { Input } from '@/components/ui/Input';
+import { Sparkles, Search as SearchIcon, Film, Star, Heart,Tv } from 'lucide-react';
+import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import { search } from '@/lib/api/TMDB';
-import MediaCardsList from '../../components/media/MediaCardsList';
+import MediaCardsList from '@/components/media/MediaCardsList';
 import { queryKeys } from '@/lib/react-query';
+import SearchInput from '@/components/SearchInput';
+import { AnimatedRing } from '@/components/ui/AnimatedRing';
 
 export default function Search() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
@@ -16,108 +18,68 @@ export default function Search() {
   const isFetching = useIsFetching({ queryKey: ['search', query, page] }) > 0;
   const location = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(query);
+
+  // Sync searchQuery with query state
+  useEffect(() => {
+    setSearchQuery(query);
+  }, [query]);
+
+  // Handle search submission
+  const handleSearch = useCallback(
+    (searchTerm: string) => {
+      setQuery(searchTerm);
+      setPage(1);
+    },
+    [setQuery, setPage]
+  );
 
   // Check if user came from onboarding
   const fromOnboarding = location.state?.fromOnboarding;
   const onboardingAction = location.state?.action;
 
-  console.log(location.state);
-
-  // Show welcome banner for onboarding users
   useEffect(() => {
     if (fromOnboarding && onboardingAction === 'Search Now') setShowWelcome(true);
   }, [fromOnboarding, onboardingAction, location.pathname, location.search]);
 
   return (
-    <div className='flex h-full flex-col gap-12'>
-      {/* Welcome Banner for Onboarding Users */}
+    <div className='flex h-full flex-col gap-8'>
       <AnimatePresence>
-        {showWelcome && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className='border-Primary-500/20 from-Primary-500/10 to-Secondary-500/10 relative overflow-hidden rounded-xl border bg-gradient-to-r p-4 backdrop-blur-sm'
-          >
-            <div className='absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50' />
-
-            <div className='relative flex items-center gap-4'>
-              <div className='bg-Grey-800 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/10'>
-                <Sparkles className='text-Primary-400 h-5 w-5' />
-              </div>
-
-              <div className='flex-1'>
-                <h3 className='mb-1 text-base font-bold text-white'>Welcome to Search!</h3>
-                <p className='text-Grey-300 text-sm leading-relaxed'>
-                  Find movies and shows to add to your collection. Try searching for something you've recently watched.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setShowWelcome(false)}
-                className='text-Grey-400 hover:text-Grey-300 rounded-lg p-1 transition-colors hover:bg-white/10'
-                aria-label='Dismiss'
-              >
-                <X className='h-4 w-4' />
-              </button>
-            </div>
-          </motion.div>
-        )}
+        <WelcomeBanner
+          title='Welcome to Search!'
+          description='Discover your next favorite movie or show. Search our extensive database and add content to your personal collection.'
+          icon={<Sparkles className='text-Primary-400 h-6 w-6' />}
+          variant='default'
+          onDismiss={() => setShowWelcome(false)}
+          show={showWelcome}
+        />
       </AnimatePresence>
 
-      <form
-        className='flex w-3/5 gap-2 self-center'
-        id='search-form'
-        onSubmit={(e) => {
-          e.preventDefault();
-          const query = (e.target as HTMLFormElement).query.value.trim();
-          if (query === '') return;
-          setQuery(query);
-          setPage(1);
-        }}
-      >
-        <Input
-          type='text'
-          icon='search'
-          parentClassname='flex-1'
-          className='pt-7'
-          name='query'
-          defaultValue={query}
-          label='Search For Movies Or Tv Shows'
-          placeholder='eg. The Wire'
+      <div className='mx-auto w-full max-w-2xl'>
+        <form
+          className='flex gap-3'
+          id='search-form'
+          onSubmit={(e) => {
+            e.preventDefault();
+            const searchTerm = searchQuery.trim();
+            if (searchTerm === '') return;
+            handleSearch(searchTerm);
+          }}
         >
-          <button
-            className={`icon text-Grey-100 absolute top-1/2 right-4 z-20 -translate-y-1/2 cursor-pointer ${!query ? 'hidden' : ''}`}
-            type='reset'
-            onClick={() => {
-              setQuery('');
-              setPage(1);
-            }}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth='1.5'
-              stroke='currentColor'
-              className='size-6'
-            >
-              <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
-            </svg>
-          </button>
-        </Input>
+          <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearch={handleSearch} />
 
-        <Button
-          className={`h-auto ${isFetching ? 'flex items-center gap-1' : ''}`}
-          type='submit'
-          color='primary'
-          size='md'
-          isLoading={isFetching}
-        >
-          {isFetching ? 'Searching...' : 'Search'}
-        </Button>
-      </form>
+          <Button
+            className='shadow-Primary-500/25 hover:shadow-Primary-500/40 h-14 px-8 font-semibold shadow-lg transition-all duration-300'
+            type='submit'
+            color='primary'
+            size='lg'
+            isLoading={isFetching}
+          >
+            {isFetching ? 'Searching...' : 'Search'}
+          </Button>
+        </form>
+      </div>
+      
       {query ? (
         <MediaCardsList
           queryOptions={{
@@ -128,12 +90,110 @@ export default function Search() {
           errorMessage='Something went wrong while searching. Please try again later.'
         />
       ) : (
-        <div className='flex flex-1 flex-col items-center justify-center'>
-          <h2 className='text-Grey-50 text-2xl font-semibold'>Start Searching...</h2>
-          <p className='text-Grey-300 leading-relaxed'>
-            It looks like you haven&apos;t searched for anything yet. Start typing to find what you&apos;re looking for!
-          </p>
-        </div>
+        <motion.div
+          className='flex flex-1 flex-col items-center justify-center px-8 text-center'
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+        >
+          <motion.div
+            className='relative mb-8'
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+          >
+            <AnimatedRing
+              color='primary'
+              size='md'
+              ringCount={3}
+              animationSpeed='normal'
+              glowEffect={true}
+              floatingIcons={[
+                {
+                  icon: <Film className='h-4 w-4' />,
+                  position: 'top-right',
+                  color: 'secondary',
+                  delay: 0,
+                },
+                {
+                  icon: <Tv className='h-4 w-4' />,
+                  position: 'top-left',
+                  color: 'tertiary',
+                  delay: 0.5,
+                },
+                {
+                  icon: <Star className='h-4 w-4' />,
+                  position: 'bottom-left',
+                  color: 'warning',
+                  delay: 1,
+                },
+                {
+                  icon: <Heart className='h-4 w-4' />,
+                  position: 'bottom-right',
+                  color: 'error',
+                  delay: 1.5,
+                },
+              ]}
+            >
+              <SearchIcon className='text-Primary-400 h-8 w-8' />
+            </AnimatedRing>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+            className='max-w-lg space-y-4'
+          >
+            <h2 className='gradient-heading'>
+              What's Your Next
+              <span className='gradient'>Favorite?</span>
+            </h2>
+            <p className='text-Grey-300 text-base leading-relaxed'>
+              Search through thousands of movies and TV shows to discover your next favorite and build your personal
+              collection.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
+            className='mt-10 space-y-4'
+          >
+            <div className='flex items-center justify-center gap-2'>
+              <div className='to-Grey-700/50 h-px max-w-[60px] flex-1 bg-gradient-to-r from-transparent'></div>
+              <p className='text-Grey-300 text-sm font-medium tracking-wider uppercase'>Popular Searches</p>
+              <div className='to-Grey-700/50 h-px max-w-[60px] flex-1 bg-gradient-to-l from-transparent'></div>
+            </div>
+
+            <div className='flex flex-wrap justify-center gap-2'>
+              {['Breaking Bad', 'The Matrix', 'Stranger Things', 'Inception', 'The Office', 'Avatar'].map(
+                (suggestion, index) => (
+                  <motion.button
+                    key={suggestion}
+                    className='selectable-button text-sm'
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.4,
+                      delay: 0.8 + index * 0.1,
+                      type: 'spring',
+                      stiffness: 400,
+                      damping: 15,
+                    }}
+                    onClick={() => {
+                      handleSearch(suggestion);
+                    }}
+                  >
+                    {suggestion}
+                  </motion.button>
+                )
+              )}
+            </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

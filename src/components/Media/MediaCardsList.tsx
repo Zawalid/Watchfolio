@@ -8,6 +8,7 @@ import MediaCardsListSkeleton from '@/components/skeletons/MediaCardsListSkeleto
 import { Error, NoResults } from '@/components/Status';
 import { Slider } from '@/components/ui/slider';
 import { useListNavigator } from '@/hooks/useListNavigator';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { generateMediaLink, getMediaType } from '@/utils/media';
 
 type MediaCardsListProps = {
@@ -23,6 +24,7 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { isActive } = useNavigation();
 
   const { data, isLoading, isError } = useQuery({
     ...queryOptions,
@@ -32,6 +34,9 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
   useEffect(() => {
     setFocusIndex(-1);
   }, [data?.results, query, page]);
+
+  // Only enable navigation when this navigator is active
+  const navigationEnabled = isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
 
   useListNavigator({
     containerRef: cardsContainerRef,
@@ -53,7 +58,7 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
       }
     },
     orientation: 'grid',
-    enabled: !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider,
+    enabled: navigationEnabled,
     loop: true,
     autoFocus: true,
   });

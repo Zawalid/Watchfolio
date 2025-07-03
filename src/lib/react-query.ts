@@ -18,6 +18,7 @@ export const queryKeys = {
   details: (type: 'movie' | 'tv', id: string) => ['details', type, id],
   category: (type: 'movie' | 'tv', category: string, page: number) => [type, category, page],
   search: (query: string, page: number) => ['search', query, page],
+  suggestions: (query: string) => ['suggestions', query],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
   season: (seasonNumber: number) => ['season', seasonNumber],
   

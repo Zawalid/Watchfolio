@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persistAndSync } from '@/utils/persistAndSync';
+import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 
 interface OnboardingPreferences {
   selectedGenres: string[];
@@ -114,8 +115,9 @@ export const useOnboardingStore = create<OnboardingStore>()(
       },
     }),
     {
-      name: 'watchfolio-onboarding',
+      name: `${LOCAL_STORAGE_PREFIX}onboarding`,
       include: ['isFirstTime', 'hasSeenOnboarding', 'currentStep', 'preferences'],
+      storage: 'cookie',
     }
   )
 );

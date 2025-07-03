@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NuqsAdapter } from 'nuqs/adapters/react';
 import { ToastProvider } from '@heroui/toast';
-import { MediaStatusModalProvider, ConfirmationModalProvider } from '@/contexts/providers';
+import { MediaStatusModalProvider, ConfirmationModalProvider, NavigationProvider } from '@/contexts/providers';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const queryClient = new QueryClient();
@@ -19,7 +19,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
           />
           <ReactQueryDevtools initialIsOpen={false} />
           <MediaStatusModalProvider>
-            <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
+            <NavigationProvider>
+              <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
+            </NavigationProvider>
           </MediaStatusModalProvider>
         </NuqsAdapter>
       </QueryClientProvider>
