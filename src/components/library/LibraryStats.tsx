@@ -61,7 +61,7 @@ const StatCard = ({
             <Icon className='size-4' />
             <span className='text-Grey-200 text-sm font-medium'>{label}</span>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -70,7 +70,7 @@ const StatCard = ({
           >
             {value}
           </motion.div>
-          
+
           {description && (
             <motion.p
               initial={{ opacity: 0 }}
@@ -88,7 +88,7 @@ const StatCard = ({
             <Link
               to={link}
               className={cn(
-                'flex relative z-10 h-8 w-8 items-center justify-center rounded-full opacity-80 transition-all duration-300 hover:opacity-100',
+                'relative z-10 flex h-8 w-8 items-center justify-center rounded-full opacity-80 transition-all duration-300 hover:opacity-100',
                 className
               )}
               aria-label={`View all ${label.toLowerCase()}`}
@@ -96,7 +96,7 @@ const StatCard = ({
               <SquareArrowOutUpRight className='size-3' />
             </Link>
           )}
-          
+
           {trend && (
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -120,7 +120,7 @@ const StatCard = ({
       </div>
     </motion.div>
   );
-};;
+};
 
 interface LibraryStatsProps {
   items: LibraryMedia[];
@@ -137,7 +137,7 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
 
     // Status counts
     const watching = items.filter((item) => item.status === 'watching');
-    const watched = items.filter((item) => item.status === 'watched');
+    const completed = items.filter((item) => item.status === 'completed');
     const willWatch = items.filter((item) => item.status === 'willWatch');
     const onHold = items.filter((item) => item.status === 'onHold');
     const dropped = items.filter((item) => item.status === 'dropped');
@@ -152,7 +152,7 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
       movies: movies.length,
       tvShows: tvShows.length,
       watching: watching.length,
-      watched: watched.length,
+      completed: completed.length,
       willWatch: willWatch.length,
       onHold: onHold.length,
       dropped: dropped.length,
@@ -171,7 +171,7 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
     description: status.descriptions.stats,
     link: `/library/${status.value}`,
     ...(status.value === 'watching' ? { trend: { value: 8, isPositive: true } } : {}),
-    ...(status.value === 'watched' ? { trend: { value: 15, isPositive: true } } : {}),
+    ...(status.value === 'completed' ? { trend: { value: 15, isPositive: true } } : {}),
   }));
 
   const statCardsData: StatCardProps[] = [

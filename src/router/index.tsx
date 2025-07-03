@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to='/library/all' />,
+                element: <Navigate to='/library/all' replace />,
               },
               ...([...LIBRARY_MEDIA_STATUS.map(s => s.value), 'all'].map(s => ({
                 path: slugify(s), element: <Library status={s as LibraryFilterStatus} />
@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to='/movies/popular' />,
+                element: <Navigate to='/movies/popular' replace />,
               },
               ...(TMDB_MOVIE_CATEGORIES.map(c => ({
                 path: c, element: <Movies category={c} />, loader: moviesLoader,
@@ -77,7 +77,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to='/tv/popular' />,
+                element: <Navigate to='/tv/popular' replace />,
               },
               ...(TMDB_TV_CATEGORIES.map(c => ({
                 path: c, element: <TV category={c} />, loader: tvShowsLoader,
@@ -101,7 +101,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to='/settings/preferences' />,
+            element: <Navigate to='/settings/preferences' replace />,
           },
           {
             path: 'profile',

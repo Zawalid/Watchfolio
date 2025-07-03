@@ -69,7 +69,7 @@ export default function Search() {
           <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearch={handleSearch} />
 
           <Button
-            className='shadow-Primary-500/25 hover:shadow-Primary-500/40 h-14 px-8 font-semibold shadow-lg transition-all duration-300'
+            className='h-14'
             type='submit'
             color='primary'
             size='lg'

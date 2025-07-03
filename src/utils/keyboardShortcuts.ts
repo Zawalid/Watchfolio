@@ -91,7 +91,7 @@ export const KEYBOARD_SHORTCUTS = {
   setStatusWatched: {
     hotkey: 'alt+c',
     label: 'Alt C',
-    description: 'Set status to "Watched"',
+    description: 'Set status to "Completed"',
     category: 'mediaStatus',
   },
   setStatusOnHold: { hotkey: 'alt+h', label: 'Alt H', description: 'Set status to "On Hold"', category: 'mediaStatus' },

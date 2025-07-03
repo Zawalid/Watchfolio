@@ -1,4 +1,4 @@
-type LibraryMediaStatus = 'watched' | 'watching' | 'willWatch' | 'onHold' | 'dropped' | 'none';
+type LibraryMediaStatus = 'completed' | 'watching' | 'willWatch' | 'onHold' | 'dropped' | 'none';
 
 type LibraryFilterStatus = Exclude<LibraryMediaStatus, 'none'> | 'favorites' | 'all';
 
@@ -34,11 +34,9 @@ interface ExportOptions {
   includeMetadata?: boolean;
 }
 
-
-
 // Sync Types
 
- interface SyncStatus {
+interface SyncStatus {
   isOnline: boolean;
   isSyncing: boolean;
   lastSyncTime: string | null;
@@ -46,7 +44,7 @@ interface ExportOptions {
   error: string | null;
 }
 
- interface SyncComparison {
+interface SyncComparison {
   isInSync: boolean;
   cloudItemCount: number;
   localItemCount: number;

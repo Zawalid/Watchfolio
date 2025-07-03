@@ -12,7 +12,7 @@ const links: Links = {
       label: 'My Library',
       icon: HOME_ICON,
       href: '/library',
-      checks: ['all', 'watching', 'will-watch', 'watched', 'on-hold', 'dropped', 'favorites'],
+      checks: ['all', 'watching', 'will-watch', 'completed', 'on-hold', 'dropped', 'favorites'],
     },
     {
       label: 'Movies',
@@ -33,7 +33,7 @@ const links: Links = {
       label: 'My Library',
       icon: HOME_ICON,
       href: '/library',
-      checks: ['all', 'watching', 'will-watch', 'watched', 'on-hold', 'dropped', 'favorites'],
+      checks: ['all', 'watching', 'will-watch', 'completed', 'on-hold', 'dropped', 'favorites'],
     },
     {
       label: 'Movies',

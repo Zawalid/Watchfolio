@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import MediaCard from './MediaCard';
 import { Pagination } from '@/components/ui/Pagination';
 import MediaCardsListSkeleton from '@/components/skeletons/MediaCardsListSkeleton';
-import { Error, NoResults } from '@/components/Status';
+import { Error,  NoResults } from '@/components/Status';
 import { Slider } from '@/components/ui/slider';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { useNavigation } from '@/contexts/NavigationContext';
@@ -26,7 +26,7 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
   const navigate = useNavigate();
   const { isActive } = useNavigation();
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     ...queryOptions,
     queryKey: [...new Set([...queryOptions.queryKey, query, page])],
   });
@@ -36,7 +36,8 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
   }, [data?.results, query, page]);
 
   // Only enable navigation when this navigator is active
-  const navigationEnabled = isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
+  const navigationEnabled =
+    isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
 
   useListNavigator({
     containerRef: cardsContainerRef,
@@ -63,7 +64,8 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
     autoFocus: true,
   });
 
-  if (isError) return <Error message={errorMessage} />;
+
+  if (isError) return <Error message={errorMessage} onRetry={() => refetch()} />;
   if (isLoading) return <MediaCardsListSkeleton asSlider={asSlider} />;
   if (query && !data?.results?.length) return <NoResults />;
   if (data?.total_results === 0 && emptyComponent) return emptyComponent;

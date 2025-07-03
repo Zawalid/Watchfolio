@@ -4,7 +4,7 @@ declare global {
   type Theme = 'light' | 'dark' | 'system';
   type ConfirmationSetting = 'enabled' | 'disabled';
   type MediaType = 'movie' | 'tv';
-  type WatchStatus = 'watching' | 'willWatch' | 'watched' | 'onHold' | 'dropped' | 'none';
+  type WatchStatus = 'watching' | 'willWatch' | 'completed' | 'onHold' | 'dropped' | 'none';
   type MediaPreferenceType = 'movies' | 'series' | 'both';
   type ConfirmationPreferences = 'signOutConfirmation' | 'removeFromLibraryConfirmation' | 'clearLibraryConfirmation';
   type ConfirmationKeys = 'sign-out' | 'remove-from-library' | 'clear-library' | 'delete-account';

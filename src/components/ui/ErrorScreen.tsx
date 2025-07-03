@@ -167,7 +167,6 @@ export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
             <Button
               onPress={handleRetry}
               color='primary'
-              size='lg'
               isLoading={isRetrying}
               startContent={!isRetrying && <RefreshCw className='h-4 w-4' />}
             >
@@ -177,7 +176,6 @@ export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
             <Button
               onPress={handleGoHome}
               variant='bordered'
-              size='lg'
               className='button-secondary! bg-transparent!'
               startContent={<Home className='h-4 w-4' />}
             >

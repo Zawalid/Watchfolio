@@ -141,10 +141,10 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
           title: 'Nothing on your screen yet',
           message: "When you start watching something new, it'll appear here so you can track your progress.",
         };
-      case 'watched':
+      case 'completed':
         return {
           title: 'Nothing completed yet',
-          message: 'Finished watching something? Mark it as "Watched" to keep track of your completed adventures.',
+          message: 'Finished watching something? Mark it as "Completed" to keep track of your completed adventures.',
         };
       case 'willWatch':
         return {

@@ -8,7 +8,7 @@ import { z } from 'zod';
 const libraryMediaBaseSchema = z.object({
   id: z.number().int().positive(),
   media_type: z.enum(['movie', 'tv']),
-  status: z.enum(['watched', 'watching', 'willWatch', 'onHold', 'dropped', 'none']).default('none'),
+  status: z.enum(['completed', 'watching', 'willWatch', 'onHold', 'dropped', 'none']).default('none'),
   isFavorite: z.boolean().default(false),
   addedToLibraryAt: z
     .string()

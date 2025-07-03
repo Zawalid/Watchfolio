@@ -181,7 +181,7 @@ export const useLibraryStore = create<LibraryState>()(
           all: 0,
           watching: 0,
           willWatch: 0,
-          watched: 0,
+          completed: 0,
           onHold: 0,
           dropped: 0,
           favorites: 0,
@@ -193,7 +193,7 @@ export const useLibraryStore = create<LibraryState>()(
           counts.all++;
           if (item.status === 'watching') counts.watching++;
           else if (item.status === 'willWatch') counts['willWatch']++;
-          else if (item.status === 'watched') counts.watched++;
+          else if (item.status === 'completed') counts.completed++;
           else if (item.status === 'onHold') counts['onHold']++;
           else if (item.status === 'dropped') counts.dropped++;
           if (item.isFavorite) counts.favorites++;
