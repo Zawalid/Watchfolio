@@ -175,6 +175,10 @@
   @apply rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm transition-colors duration-200 hover:border-white/20
 }
 
+@utility button-primary {
+  @apply from-Primary-600 to-Secondary-600 hover:from-Primary-700 hover:to-Secondary-700 shadow-Primary-600/20 flex items-center gap-2 rounded-lg bg-gradient-to-r px-4 py-2 text-sm font-medium text-white shadow-lg transition-all duration-200;
+}
+
 @utility button-secondary {
   @apply border border-white/10 bg-white/5 py-2.5 text-sm text-white backdrop-blur-md transition-all duration-200 hover:bg-white/10;
 }

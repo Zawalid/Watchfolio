@@ -86,7 +86,7 @@ export default function LibraryLayout() {
     <div className='relative flex h-full flex-col gap-6 pb-3.5 lg:flex-row lg:gap-10'>
       <div
         className={cn(
-          'fixed z-20 flex h-[calc(100vh-120px)] flex-col pb-3.5 transition-transform duration-300',
+          'fixed z-20 flex h-[calc(100vh-80px)] flex-col pb-3.5 transition-transform duration-300',
           showTabs ? 'translate-x-0' : '-translate-x-[200%]'
         )}
       >

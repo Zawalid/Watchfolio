@@ -1,12 +1,12 @@
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
 import { Button } from '@heroui/button';
-import { 
-  Play, 
-  Bookmark, 
-  Star, 
-  TrendingUp, 
-  Search, 
+import {
+  Play,
+  Bookmark,
+  Star,
+  TrendingUp,
+  Search,
   Zap,
   Film,
   Tv,
@@ -19,7 +19,7 @@ import {
   Award,
   Users,
   BarChart3,
-  Check
+  Check,
 } from 'lucide-react';
 import { useRef } from 'react';
 
@@ -53,7 +53,6 @@ const cardVariants = {
 
 export default function LandingPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  
 
   return (
     <div ref={containerRef} className='relative overflow-hidden'>
@@ -119,7 +118,7 @@ export default function LandingPage() {
                   to='/movies/trending'
                   size='md'
                   color='primary'
-                  className='hover:shadow-Primary-500/25 group px-6 py-2 font-semibold shadow-lg transition-all duration-300'
+                  className='button-primary! px-6!'
                   endContent={<ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />}
                 >
                   Start Exploring
@@ -127,9 +126,8 @@ export default function LandingPage() {
                 <Button
                   as={Link}
                   to='/tv/popular'
-                  variant='bordered'
                   size='md'
-                  className='border-white/20 px-6 py-2 text-white transition-all duration-300 hover:border-white/30 hover:bg-white/5'
+                  className='button-secondary! bg-transparent! px-6!'
                   startContent={<Play className='h-4 w-4' />}
                 >
                   Browse Trending
@@ -350,12 +348,9 @@ export default function LandingPage() {
         <section className='px-6 py-20'>
           <div className='mx-auto max-w-6xl'>
             <motion.div variants={itemVariants} className='mb-16 space-y-4 text-center'>
-            <h2 className='gradient-heading lg:text-4xl'>
-            Experience the
-                <span className='gradient !inline'>
-                  {' '}
-                  Difference
-                </span>
+              <h2 className='gradient-heading lg:text-4xl'>
+                Experience the
+                <span className='gradient !inline'> Difference</span>
               </h2>
               <p className='text-Grey-400 mx-auto max-w-2xl text-base'>
                 See how Watchfolio transforms your entertainment tracking experience
@@ -532,8 +527,7 @@ export default function LandingPage() {
                     as={Link}
                     to='/movies/popular'
                     size='md'
-                    color='primary'
-                    className='hover:shadow-Primary-500/30 px-6 py-2 font-semibold shadow-xl transition-all duration-300'
+                    className='button-primary! px-6!'
                     startContent={<Film className='h-4 w-4' />}
                     endContent={<ArrowRight className='h-4 w-4' />}
                   >
@@ -542,9 +536,8 @@ export default function LandingPage() {
                   <Button
                     as={Link}
                     to='/tv/popular'
-                    variant='bordered'
                     size='md'
-                    className='border-white/30 px-6 py-2 text-white transition-all duration-300 hover:border-white/40 hover:bg-white/10'
+                    className='button-secondary! bg-transparent! px-6!'
                     startContent={<Tv className='h-4 w-4' />}
                   >
                     Browse TV Shows

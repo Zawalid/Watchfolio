@@ -1,12 +1,12 @@
 import { useLayoutEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
-import Navbar from '@/components/Navbar';
 import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import AuthModal from '@/components/auth/AuthModal';
-import { useOnboarding } from '@/hooks/useOnboarding';
+import Navbar from '@/components/Navbar';
 
 export default function Layout() {
   const location = useLocation();
@@ -23,7 +23,7 @@ export default function Layout() {
     <Providers>
       <div className='flex h-full min-h-dvh flex-col'>
         <Navbar />
-        <main className='container flex-1'>
+        <main className='container flex-1 pt-16 md:pt-20 lg:pt-24'>
           <Outlet />
         </main>
         <OnboardingModal />

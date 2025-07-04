@@ -4,7 +4,7 @@ import { useIsFetching } from '@tanstack/react-query';
 import { Button } from '@heroui/button';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Search as SearchIcon, Film, Star, Heart,Tv } from 'lucide-react';
+import { Sparkles, Search as SearchIcon, Film, Star, Heart, Tv } from 'lucide-react';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import { search } from '@/lib/api/TMDB';
 import MediaCardsList from '@/components/media/MediaCardsList';
@@ -69,9 +69,9 @@ export default function Search() {
           <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearch={handleSearch} />
 
           <Button
-            className='h-14'
+            className='button-primary h-14'
+            startContent={<SearchIcon className='h-5 w-5' />}
             type='submit'
-            color='primary'
             size='lg'
             isLoading={isFetching}
           >
@@ -79,7 +79,7 @@ export default function Search() {
           </Button>
         </form>
       </div>
-      
+
       {query ? (
         <MediaCardsList
           queryOptions={{

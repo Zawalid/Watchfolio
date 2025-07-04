@@ -1,108 +1,175 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router';
+import { motion } from 'framer-motion';
+import { Heart } from 'lucide-react';
+import { Tooltip } from '@heroui/tooltip';
+import { useAuthStore } from '@/stores/useAuthStore';
+import {
+  HOME_ICON,
+  MOVIES_ICON,
+  SEARCH_ICON,
+  TV_ICON,
+  SIGN_IN_ICON,
+  COLLECTIONS_ICON,
+  SETTINGS_ICON,
+} from './ui/Icons';
+import { MobileNavTrigger } from './MobileNav';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
-import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, SIGN_IN_ICON } from './ui/Icons';
-import { useEffect, useState } from 'react';
-import { useLocation, Link } from 'react-router';
-import { useAuthStore } from '@/stores/useAuthStore';
 import { Button } from '@heroui/button';
 
-const links: Links = {
-  authenticated: [
-    {
-      label: 'My Library',
-      icon: HOME_ICON,
-      href: '/library',
-      checks: ['all', 'watching', 'will-watch', 'completed', 'on-hold', 'dropped', 'favorites'],
-    },
-    {
-      label: 'Movies',
-      icon: MOVIES_ICON,
-      href: '/movies',
-      checks: ['popular', 'top-rated', 'now-playing', 'upcoming'],
-    },
-    {
-      label: 'Tv Shows',
-      icon: TV_ICON,
-      href: '/tv',
-      checks: ['popular', 'top-rated', 'airing-today', 'on-tv'],
-    },
-    { label: 'Search', icon: SEARCH_ICON, href: '/search' },
-  ],
-  unauthenticated: [
-    {
-      label: 'My Library',
-      icon: HOME_ICON,
-      href: '/library',
-      checks: ['all', 'watching', 'will-watch', 'completed', 'on-hold', 'dropped', 'favorites'],
-    },
-    {
-      label: 'Movies',
-      icon: MOVIES_ICON,
-      href: '/movies',
-      checks: ['popular', 'top-rated', 'now-playing', 'upcoming'],
-    },
-    {
-      label: 'Tv Shows',
-      icon: TV_ICON,
-      href: '/tv',
-      checks: ['popular', 'top-rated', 'airing-today', 'on-tv'],
-    },
-    { label: 'Search', icon: SEARCH_ICON, href: '/search' },
-  ],
-};
+const navigationItems = [
+  {
+    label: 'Home',
+    icon: HOME_ICON,
+    href: '/',
+    matches: ['/'],
+  },
+  {
+    label: 'Movies',
+    icon: MOVIES_ICON,
+    href: '/movies',
+    matches: ['/movies'],
+  },
+  {
+    label: 'TV Shows',
+    icon: TV_ICON,
+    href: '/tv',
+    matches: ['/tv'],
+  },
+  {
+    label: 'Search',
+    icon: SEARCH_ICON,
+    href: '/search',
+    matches: ['/search'],
+  },
+];
+
+function QuickActions() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isLibraryActive = location.pathname.startsWith('/library');
+  const isFavoritesActive = location.pathname === '/library/favorites';
+  const isSettingsActive = location.pathname.startsWith('/settings');
+
+  return (
+    <div className='hidden items-center gap-2 md:flex'>
+      <Tooltip content='Library' className='tooltip-secondary!'>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate('/library')}
+          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+            isLibraryActive && !isFavoritesActive
+              ? 'text-Primary-400 bg-Primary-500/20'
+              : 'text-Grey-400 hover:text-Primary-400'
+          }`}
+          aria-label='Library'
+        >
+          <span className='[&>svg]:h-5 [&>svg]:w-5'>{COLLECTIONS_ICON}</span>
+        </motion.button>
+      </Tooltip>
+      <Tooltip content='Favorites' className='tooltip-secondary!'>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate('/library/favorites')}
+          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+            isFavoritesActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
+          }`}
+          aria-label='Favorites'
+        >
+          <Heart className='h-5 w-5' />
+        </motion.button>
+      </Tooltip>
+      <Tooltip content='Settings' className='tooltip-secondary!'>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => navigate('/settings')}
+          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+            isSettingsActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
+          }`}
+          aria-label='Settings'
+        >
+          <span className='[&>svg]:h-5 [&>svg]:w-5'>{SETTINGS_ICON}</span>
+        </motion.button>
+      </Tooltip>
+    </div>
+  );
+}
+
+function AuthActions() {
+  const { isAuthenticated, openAuthModal } = useAuthStore();
+
+  if (isAuthenticated) {
+    return (
+      <div className='flex items-center gap-3'>
+        <QuickActions />
+        <UserDropdown />
+      </div>
+    );
+  }
+
+  return (
+    <div className='hidden items-center gap-3 md:flex'>
+      <QuickActions />
+      <Button onPress={() => openAuthModal('signin')} size='sm' className='button-primary!'>
+        <span className='[&>svg]:h-4 [&>svg]:w-4'>{SIGN_IN_ICON}</span>
+        Sign In
+      </Button>
+    </div>
+  );
+}
 
 export default function Navbar() {
-  const { isAuthenticated, openAuthModal } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
-  const pathname = useLocation().pathname;
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 70;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
+      const isScrolled = window.scrollY > 20;
+      setScrolled(isScrolled);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, [scrolled]);
+  const visibleItems = navigationItems;
 
   return (
-    <nav
-      className={`sticky top-0 z-30 mb-12 py-4 backdrop-blur-lg transition-all duration-200 ${
-        scrolled ? (pathname.includes('/details') ? 'bg-black/40' : 'bg-blur') : ''
+    <motion.nav
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
+        scrolled ? 'bg-Grey-900/95 shadow-2xl shadow-black/20 backdrop-blur-xl' : 'bg-transparent'
       }`}
     >
-      <div className='container flex items-center justify-between'>
-        <Link to='/'>
-          <img src='/images/logo.svg' alt='watchfolio' width={40} height={20} />
-        </Link>
-        <ul className='flex items-center gap-8'>
-          {links[isAuthenticated ? 'authenticated' : 'unauthenticated'].map((link) => (
-            <NavItem key={link.href} link={link} />
-          ))}
-        </ul>
-        <div className='flex items-center gap-3'>
-          {isAuthenticated ? (
-            <UserDropdown />
-          ) : (
-            <Button
-              size='sm'
-              variant='flat'
-              color='primary'
-              startContent={SIGN_IN_ICON}
-              className='font-medium'
-              onPress={() => openAuthModal('signin')}
-            >
-              Sign In
-            </Button>
-          )}
+      <div className='container mx-auto px-4 lg:px-6'>
+        <div className='flex h-16 items-center justify-between'>
+          <Link to='/' className='group flex items-center space-x-2'>
+            <motion.img
+              whileHover={{ scale: 1.05 }}
+              src='/images/logo.svg'
+              alt='Watchfolio'
+              className='h-8 w-auto transition-transform'
+            />
+          </Link>
+
+          <div className='hidden items-center space-x-1 md:flex'>
+            {visibleItems.map((item) => (
+              <NavItem key={item.href} label={item.label} icon={item.icon} href={item.href} matches={item.matches} />
+            ))}
+          </div>
+
+          <div className='flex items-center gap-3'>
+            <AuthActions />
+            <MobileNavTrigger />
+          </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 }
