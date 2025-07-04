@@ -13,7 +13,7 @@ export const ShortcutKey: FC<{ shortcutName?: ShortcutName; className?: string; 
   return (
     <span className='inline-flex items-center gap-1'>
       {keys?.map((key, index) => (
-        <kbd key={index} className={cn('kbd', className)}>
+        <kbd key={index} className={cn('kbd-sm', className)}>
           {key}
         </kbd>
       ))}

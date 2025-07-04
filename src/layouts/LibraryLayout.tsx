@@ -1,12 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { parseAsArrayOf, parseAsString, useQueryState } from 'nuqs';
+import { useQueryState } from 'nuqs';
 import {
-  ArrowDown,
-  ArrowUp,
   FileJson,
-  Filter,
   GalleryVerticalEnd,
   HelpCircle,
   MoreVertical,
@@ -18,35 +15,30 @@ import {
 import { Button } from '@heroui/button';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
 import { useDisclosure } from '@heroui/modal';
-import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Tooltip } from '@heroui/tooltip';
 import { Input } from '@/components/ui/Input';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tabs } from '@/components/ui/Tabs';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
-import FiltersModal from '@/components/library/FiltersModal';
+import FiltersModal from '@/components/FiltersModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import { SyncStatus } from '@/components/library/SyncStatus';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { DROPDOWN_CLASSNAMES, SELECT_CLASSNAMES } from '@/styles/heroui';
+import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { cn, slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
 import { AnimatePresence } from 'framer-motion';
+import SortBy from '@/components/SortBy';
 
 // TODO : Display the syn status somewhere else when the sidebar is hidden
 
 export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
-  const [sortBy, setSortBy] = useQueryState('sort', { defaultValue: 'recent' });
-  const [sortDir, setSortDir] = useQueryState('dir', { defaultValue: 'desc' });
   const [showTabs, setShowTabs] = useLocalStorageState('show-tabs', true);
-  const [selectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
-  const [selectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
-  const [selectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filtersDisclosure = useDisclosure();
@@ -79,8 +71,6 @@ export default function LibraryLayout() {
   );
   useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null), { useKey: true });
   useHotkeys(getShortcut('clearLibrary')?.hotkey || '', handleClearLibrary, { useKey: true });
-
-  const hasActiveFilters = !!(selectedGenres?.length || selectedPlatforms?.length || selectedTypes?.length);
 
   return (
     <div className='relative flex h-full flex-col gap-6 pb-3.5 lg:flex-row lg:gap-10'>
@@ -164,54 +154,20 @@ export default function LibraryLayout() {
             />
           </div>
           <div className='flex items-center gap-3'>
-            {/* Filter button */}
-            <Tooltip content={<ShortcutTooltip shortcutName='toggleFilters' />} className='tooltip-secondary!'>
-              <Button
-                isIconOnly
-                className={cn(
-                  'button-secondary! relative overflow-visible',
-                  hasActiveFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20'
-                )}
-                onPress={() => filtersDisclosure.onOpen()}
-                aria-label='Show filters'
-              >
-                <Filter className={cn('size-4', hasActiveFilters && 'text-amber-400')} />
-                {hasActiveFilters && (
-                  <div className='absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black/80'>
-                    {(selectedGenres?.length || 0) + (selectedPlatforms?.length || 0) + (selectedTypes?.length || 0)}
-                  </div>
-                )}
-              </Button>
-            </Tooltip>
-
-            {/* Sort */}
-            <Select
-              placeholder='Sort by'
-              classNames={{ ...SELECT_CLASSNAMES, listboxWrapper: 'max-h-none!' }}
-              aria-label='Sort options'
-              selectedKeys={[sortBy, sortDir]}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (['asc', 'desc'].includes(val)) setSortDir(val);
-                else setSortBy(val);
-              }}
-              value={sortBy}
-            >
-              <SelectSection title='Sort By' showDivider>
-                <SelectItem key='recent'>Recently Added</SelectItem>
-                <SelectItem key='title'>Title</SelectItem>
-                <SelectItem key='rating'>Your Rating</SelectItem>
-                <SelectItem key='date'>Release Date</SelectItem>
-              </SelectSection>
-              <SelectSection title='Direction'>
-                <SelectItem key='asc' startContent={<ArrowUp className='size-3.5' />}>
-                  Ascending
-                </SelectItem>
-                <SelectItem key='desc' startContent={<ArrowDown className='size-3.5' />}>
-                  Descending
-                </SelectItem>
-              </SelectSection>
-            </Select>
+            <FiltersModal
+              disclosure={filtersDisclosure}
+              title='Library Filters'
+              filterOptions={['genres', 'networks', 'types']}
+            />
+            <SortBy
+              options={[
+                { key: 'recent', label: 'Recently Added' },
+                { key: 'title', label: 'Title' },
+                { key: 'rating', label: 'Your Rating' },
+                { key: 'date', label: 'Release Date' },
+              ]}
+              defaultSort='recent'
+            />
 
             {/* More options dropdown */}
             <Dropdown placement='bottom-end' backdrop='opaque' classNames={DROPDOWN_CLASSNAMES}>
@@ -231,7 +187,7 @@ export default function LibraryLayout() {
                     onPress={() => importExportDisclosure.onOpen()}
                     description='Import or export your library'
                     classNames={{ shortcut: 'p-0 border-none' }}
-                    shortcut={<ShortcutKey shortcutName='toggleImportExport' className='kbd-sm! opacity-80' />}
+                    shortcut={<ShortcutKey shortcutName='toggleImportExport' className='opacity-80' />}
                   >
                     Import / Export
                   </DropdownItem>
@@ -243,9 +199,8 @@ export default function LibraryLayout() {
                     color='danger'
                     description='Permanently delete all items'
                     classNames={{ shortcut: 'p-0 border-none' }}
-                    shortcut={<ShortcutKey shortcutName='clearLibrary' className='kbd-sm! opacity-80' />}
+                    shortcut={<ShortcutKey shortcutName='clearLibrary' className='opacity-80' />}
                   >
-                    {' '}
                     Clear Library
                   </DropdownItem>
                 </DropdownSection>
@@ -294,7 +249,6 @@ export default function LibraryLayout() {
         </div>
       </div>
       <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
-      <FiltersModal disclosure={filtersDisclosure} />
       <ImportExportModal disclosure={importExportDisclosure} />
     </div>
   );

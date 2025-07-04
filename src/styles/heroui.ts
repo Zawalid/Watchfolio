@@ -2,7 +2,8 @@ export const SELECT_CLASSNAMES = {
   trigger: 'bg-white/5 border-2 border-white/5 w-54 backdrop-blur-md hover:bg-white/10!',
   popoverContent: 'text-default-500 bg-blur backdrop-blur-md border border-white/5',
   selectorIcon: 'text-Grey-600',
-  listbox: '[&:>li]-data-[hover=true]:bg-blur!',
+  listbox:
+    '[&_li[data-hover=true]]:bg-white/5! [&_li[data-selected=true]]:text-Primary-400! [&_li[data-selected=true]]:bg-Primary-500/20!',
   label: 'text-white/60 font-medium text-xs uppercase border-b border-white/10 pb-1.5 mb-1.5',
 };
 

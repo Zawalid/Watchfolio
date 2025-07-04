@@ -74,6 +74,15 @@ export const KEYBOARD_SHORTCUTS = {
   filterTvShows: { hotkey: 'alt+2', label: 'Alt 2', description: 'Show only TV shows', category: 'filters' },
   // filterAnime: { hotkey: 'alt+3', label: 'Alt 3', description: 'Show only Anime', category: 'filters' },
   clearFilters: { hotkey: 'alt+0', label: 'Alt 0', description: 'Clear all filters', category: 'filters' },
+  sortByPopularity: {
+    hotkey: 'alt+shift+p',
+    label: 'Alt Shift P',
+    description: 'Sort by popularity',
+    category: 'filters',
+  },
+  sortByRating: { hotkey: 'alt+shift+r', label: 'Alt Shift R', description: 'Sort by rating', category: 'filters' },
+  sortByDate: { hotkey: 'alt+shift+d', label: 'Alt Shift D', description: 'Sort by date', category: 'filters' },
+  sortByTitle: { hotkey: 'alt+shift+t', label: 'Alt Shift T', description: 'Sort by title', category: 'filters' },
 
   // Modal shortcuts (when library modal is open)
   setStatusWatching: {
@@ -123,7 +132,7 @@ export const getAllShortcuts = () => {
 
 export const getShortcut = (name: ShortcutName) => {
   const shortcut = KEYBOARD_SHORTCUTS[name];
-  if(!shortcut) return null
+  if (!shortcut) return null;
   return { name, ...shortcut };
 };
 
