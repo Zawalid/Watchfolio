@@ -145,7 +145,7 @@ export default function Search() {
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
             className='max-w-lg space-y-4'
           >
-            <h2 className='gradient-heading'>
+            <h2 className='heading'>
               What's Your Next
               <span className='gradient'>Favorite?</span>
             </h2>

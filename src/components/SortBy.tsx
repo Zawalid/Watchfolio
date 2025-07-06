@@ -9,8 +9,8 @@ type SortByProps = {
   defaultDir?: 'asc' | 'desc';
 };
 export default function SortBy({ options, defaultSort, defaultDir }: SortByProps) {
-  const [sortBy, setSortBy] = useQueryState('sort', { defaultValue: defaultSort || options[0]?.key });
-  const [sortDir, setSortDir] = useQueryState('dir', { defaultValue: defaultDir || 'desc' });
+  const [sortBy, setSortBy] = useQueryState('sort_by', { defaultValue: defaultSort || options[0]?.key });
+  const [sortDir, setSortDir] = useQueryState('sort_dir', { defaultValue: defaultDir || 'desc' });  
 
   return (
     <Select

@@ -34,7 +34,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   const Icon = icons[type as IconType] || (icon && icons[icon]);
 
-  console.log(Icon);
 
   return (
     <div className={cn('flex flex-col gap-2', parentClassname)} ref={parent}>

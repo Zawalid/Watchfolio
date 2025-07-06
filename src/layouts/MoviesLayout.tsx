@@ -1,87 +1,53 @@
-import { Outlet } from 'react-router';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { useDisclosure } from '@heroui/modal';
-import { parseAsString, useQueryState } from 'nuqs';
-import { Tabs } from '@/components/ui/Tabs';
-import FiltersModal from '@/components/FiltersModal';
-import { getShortcut } from '@/utils/keyboardShortcuts';
-import SortBy from '@/components/SortBy';
+import { Film, TrendingUp, Star, Calendar, PlayCircle } from 'lucide-react';
+import MediaLayout from '@/components/media/MediaLayout';
+
+const MOVIE_CATEGORIES = [
+  {
+    id: 'popular',
+    label: 'Popular',
+    description: "Trending movies everyone's talking about",
+    icon: TrendingUp,
+    gradient: 'from-Primary-500 to-Secondary-500',
+  },
+  {
+    id: 'top-rated',
+    label: 'Top Rated',
+    description: 'Critically acclaimed masterpieces',
+    icon: Star,
+    gradient: 'from-Warning-500 to-Warning-600',
+  },
+  {
+    id: 'now-playing',
+    label: 'Now Playing',
+    description: 'Currently in theaters',
+    icon: PlayCircle,
+    gradient: 'from-Success-500 to-Success-600',
+  },
+  {
+    id: 'upcoming',
+    label: 'Upcoming',
+    description: 'Soon to be released',
+    icon: Calendar,
+    gradient: 'from-Secondary-500 to-Secondary-600',
+  },
+];
 
 export default function MoviesLayout() {
-  const filtersDisclosure = useDisclosure();
-  const [, setSortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
-  const [, setSortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
-
-  // Toggle filters with hotkey
-  useHotkeys(
-    getShortcut('toggleFilters')?.hotkey || '',
-    () => (filtersDisclosure.isOpen ? filtersDisclosure.onClose() : filtersDisclosure.onOpen()),
-    [filtersDisclosure.isOpen]
-  );
-
-  // Sorting hotkeys
-  useHotkeys(
-    getShortcut('sortByPopularity')?.hotkey || '',
-    () => {
-      setSortBy('popularity');
-      setSortDir('desc');
-    },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByRating')?.hotkey || '',
-    () => {
-      setSortBy('vote_average');
-      setSortDir('desc');
-    },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByDate')?.hotkey || '',
-    () => {
-      setSortBy('release_date');
-      setSortDir('desc');
-    },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByTitle')?.hotkey || '',
-    () => {
-      setSortBy('title');
-      setSortDir('asc');
-    },
-    []
-  );
-
   return (
-    <div className='space-y-8'>
-      <div className='flex items-center justify-between'>
-        <Tabs
-          tabs={[
-            { label: 'Popular', value: 'popular', link: '/movies/popular' },
-            { label: 'Top Rated', value: 'top-rated', link: '/movies/top-rated' },
-            { label: 'Now Playing', value: 'now-playing', link: '/movies/now-playing' },
-            { label: 'Upcoming', value: 'upcoming', link: '/movies/upcoming' },
-          ]}
-        />
-        <div className='flex items-center gap-3'>
-          <SortBy
-            options={[
-              { key: 'popularity', label: 'Popularity' },
-              { key: 'vote_average', label: 'Rating' },
-              { key: 'first_air_date', label: 'Air Date' },
-              { key: 'name', label: 'Title' },
-            ]}
-            defaultSort='popularity'
-          />
-          <FiltersModal
-            disclosure={filtersDisclosure}
-            title='Movie Filters'
-            filterOptions={['genres', 'networks', 'language', 'ratingRange', 'releaseYear']}
-          />
-        </div>
-      </div>
-      <Outlet />
-    </div>
+    <MediaLayout
+      title='Movies'
+      subtitle='Discover your next cinematic adventure'
+      icon={Film}
+      iconGradient='from-Success-400 to-Primary-400'
+      categories={MOVIE_CATEGORIES}
+      sortOptions={[
+        { key: 'popularity', label: 'Popularity' },
+        { key: 'vote_average', label: 'Rating' },
+        { key: 'release_date', label: 'Release Date' },
+        { key: 'title', label: 'Title' },
+      ]}
+      filterOptions={['genres', 'networks', 'language', 'ratingRange', 'releaseYear']}
+      filterTitle='Movie Filters'
+    />
   );
 }

@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router';
-import {  Layout, LibraryLayout, MoviesLayout, SettingsLayout, TvLayout } from '@/layouts';
+import { Layout, LibraryLayout, MoviesLayout, SettingsLayout, TvLayout } from '@/layouts';
 import {
   Home,
   Library,
@@ -15,9 +15,8 @@ import {
   LibrarySettings,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
-import { LIBRARY_MEDIA_STATUS, TMDB_MOVIE_CATEGORIES, TMDB_TV_CATEGORIES } from '@/utils/constants';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { slugify } from '@/utils';
-
 
 export const router = createBrowserRouter([
   {
@@ -38,10 +37,10 @@ export const router = createBrowserRouter([
                 index: true,
                 element: <Navigate to='/library/all' replace />,
               },
-              ...([...LIBRARY_MEDIA_STATUS.map(s => s.value), 'all'].map(s => ({
-                path: slugify(s), element: <Library status={s as LibraryFilterStatus} />
-              })))
-
+              ...[...LIBRARY_MEDIA_STATUS.map((s) => s.value), 'all'].map((s) => ({
+                path: slugify(s),
+                element: <Library status={s as LibraryFilterStatus} />,
+              })),
             ],
           },
         ],
@@ -54,12 +53,9 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to='/movies/popular' replace />,
+                element: <Movies />,
+                loader: moviesLoader,
               },
-              ...(TMDB_MOVIE_CATEGORIES.map(c => ({
-                path: c, element: <Movies category={c} />, loader: moviesLoader,
-              })))
-
             ],
           },
           {
@@ -77,11 +73,9 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Navigate to='/tv/popular' replace />,
+                element: <TV />,
+                loader: tvShowsLoader,
               },
-              ...(TMDB_TV_CATEGORIES.map(c => ({
-                path: c, element: <TV category={c} />, loader: tvShowsLoader,
-              })))
             ],
           },
           {

@@ -73,7 +73,7 @@ export default function LandingPage() {
 
               {/* Main Headline */}
               <motion.div variants={itemVariants} className='space-y-4'>
-                <h1 className='gradient-heading space-x-3'>
+                <h1 className='heading space-x-3'>
                   <motion.span
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -115,7 +115,7 @@ export default function LandingPage() {
               >
                 <Button
                   as={Link}
-                  to='/movies/trending'
+                  to='/movies?category=popular'
                   size='md'
                   color='primary'
                   className='button-primary! px-6!'
@@ -125,7 +125,7 @@ export default function LandingPage() {
                 </Button>
                 <Button
                   as={Link}
-                  to='/tv/popular'
+                  to='/tv?category=popular'
                   size='md'
                   className='button-secondary! bg-transparent! px-6!'
                   startContent={<Play className='h-4 w-4' />}
@@ -262,7 +262,7 @@ export default function LandingPage() {
         <section className='px-6 py-16'>
           <div className='mx-auto max-w-5xl'>
             <motion.div variants={itemVariants} className='mb-12 space-y-3 text-center'>
-              <h2 className='gradient-heading lg:text-4xl'>
+              <h2 className='heading lg:text-4xl'>
                 Built for
                 <span className='gradient'>Entertainment Lovers</span>
               </h2>
@@ -348,7 +348,7 @@ export default function LandingPage() {
         <section className='px-6 py-20'>
           <div className='mx-auto max-w-6xl'>
             <motion.div variants={itemVariants} className='mb-16 space-y-4 text-center'>
-              <h2 className='gradient-heading lg:text-4xl'>
+              <h2 className='heading lg:text-4xl'>
                 Experience the
                 <span className='gradient !inline'> Difference</span>
               </h2>
@@ -525,7 +525,7 @@ export default function LandingPage() {
                 <motion.div variants={itemVariants} className='flex flex-col justify-center gap-3 sm:flex-row'>
                   <Button
                     as={Link}
-                    to='/movies/popular'
+                    to='/movies?category=popular'
                     size='md'
                     className='button-primary! px-6!'
                     startContent={<Film className='h-4 w-4' />}
@@ -535,7 +535,7 @@ export default function LandingPage() {
                   </Button>
                   <Button
                     as={Link}
-                    to='/tv/popular'
+                    to='/tv?category=popular'
                     size='md'
                     className='button-secondary! bg-transparent! px-6!'
                     startContent={<Tv className='h-4 w-4' />}

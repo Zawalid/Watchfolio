@@ -88,4 +88,4 @@ export const LIBRARY_SYNC_DELAY = 3000;
 export const LOCAL_STORAGE_PREFIX = 'watchfolio-';
 
 export const TMDB_MOVIE_CATEGORIES: Categories[] = ['popular', 'top-rated', 'now-playing', 'upcoming'];
-export const TMDB_TV_CATEGORIES: Categories[] = ['popular', 'top-rated', 'on-tv', 'airing-today'];
+export const TMDB_TV_CATEGORIES: Categories[] = ['popular', 'top-rated', 'airing-today', 'on-tv'];

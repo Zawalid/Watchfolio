@@ -8,7 +8,7 @@
   <div align="center">
   <a href="https://watchfolio.netlify.app" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/Live_Demo-Visit_Site-blue?style=for-the-badge&logo=rocket" alt="Live Demo"/>
-  </a>
+  </a>****
 </div>
   <br />
 </div>
@@ -25,10 +25,12 @@
 ---
 
 ### **📌 Table of Contents**
-* [✨ Core Features](#-core-features)
-* [🧰 Technology Stack](#-technology-stack)
-* [📸 Screenshots](#-screenshots)
-* [📨 Get In Touch](#-get-in-touch)
+- [**📌 Table of Contents**](#-table-of-contents)
+- [**✨ Core Features**](#-core-features)
+- [**🧰 Technology Stack**](#-technology-stack)
+- [**🌟 Future Features**](#-future-features)
+- [**📸 Screenshots**](#-screenshots)
+- [**📨 Get In Touch**](#-get-in-touch)
 
 ---
 

@@ -1,87 +1,57 @@
-import { Outlet } from 'react-router';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { useDisclosure } from '@heroui/modal';
-import { parseAsString, useQueryState } from 'nuqs';
-import { Tabs } from '@/components/ui/Tabs';
-import FiltersModal from '@/components/FiltersModal';
-import { getShortcut } from '@/utils/keyboardShortcuts';
-import SortBy from '@/components/SortBy';
+import { Tv, TrendingUp, Star, Calendar, Zap } from 'lucide-react';
+import MediaLayout from '@/components/media/MediaLayout';
+
+const TV_CATEGORIES = [
+  {
+    id: 'popular',
+    label: 'Popular',
+    description: "Trending TV shows everyone's talking about",
+    icon: TrendingUp,
+    gradient: 'from-Primary-500 to-Secondary-500',
+  },
+  {
+    id: 'top-rated',
+    label: 'Top Rated',
+    description: 'Outstanding series with exceptional storytelling',
+    icon: Star,
+    gradient: 'from-Warning-500 to-Warning-600',
+  },
+  {
+    id: 'airing-today',
+    label: 'Airing Today',
+    description: 'New episodes dropping today',
+    icon: Zap,
+    gradient: 'from-Success-500 to-Success-600',
+  },
+  {
+    id: 'on-tv',
+    label: 'On TV',
+    description: 'Currently airing and upcoming shows',
+    icon: Calendar,
+    gradient: 'from-Secondary-500 to-Secondary-600',
+  },
+];
 
 export default function TvLayout() {
-  const filtersDisclosure = useDisclosure();
-  const [, setSortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
-  const [, setSortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
-
-  // Toggle filters with hotkey
-  useHotkeys(
-    getShortcut('toggleFilters')?.hotkey || '',
-    () => (filtersDisclosure.isOpen ? filtersDisclosure.onClose() : filtersDisclosure.onOpen()),
-    [filtersDisclosure.isOpen]
-  );
-
-  // Sorting hotkeys
-  useHotkeys(
-    getShortcut('sortByPopularity')?.hotkey || '',
-    () => {
-      setSortBy('popularity');
-      setSortDir('desc');
-    },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByRating')?.hotkey || '',
-    () => {
-      setSortBy('vote_average');
-      setSortDir('desc');
-    },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByDate')?.hotkey || '',
-    () => {
-      setSortBy('first_air_date');
-      setSortDir('desc');
-    },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByTitle')?.hotkey || '',
-    () => {
-      setSortBy('name');
-      setSortDir('asc');
-    },
-    []
-  );
-
   return (
-    <div className='space-y-8'>
-      <div className='flex items-center justify-between'>
-        <Tabs
-          tabs={[
-            { label: 'Popular', value: 'popular', link: '/tv/popular' },
-            { label: 'Top Rated', value: 'top-rated', link: '/tv/top-rated' },
-            { label: 'Airing Today', value: 'airing-today', link: '/tv/airing-today' },
-            { label: 'On TV', value: 'on-tv', link: '/tv/on-tv' },
-          ]}
-        />
-        <div className='flex items-center gap-3'>
-          <SortBy
-            options={[
-              { key: 'popularity', label: 'Popularity' },
-              { key: 'vote_average', label: 'Rating' },
-              { key: 'first_air_date', label: 'Air Date' },
-              { key: 'name', label: 'Title' },
-            ]}
-            defaultSort='popularity'
-          />
-          <FiltersModal
-            disclosure={filtersDisclosure}
-            title='TV Show Filters'
-            filterOptions={['genres', 'networks', 'language', 'ratingRange', 'releaseYear']}
-          />
-        </div>
-      </div>
-      <Outlet />
-    </div>
+    <MediaLayout
+      title='TV Shows'
+      subtitle='Discover your next binge-worthy series'
+      icon={Tv}
+      iconGradient='from-Secondary-400 to-Primary-400'
+      categories={TV_CATEGORIES}
+      sortOptions={[
+        { key: 'popularity', label: 'Popularity' },
+        { key: 'vote_average', label: 'Rating' },
+        { key: 'first_air_date', label: 'Air Date' },
+        { key: 'name', label: 'Title' },
+      ]}
+      filterOptions={['genres', 'networks', 'language', 'ratingRange', 'releaseYear']}
+      filterTitle='TV Show Filters'
+      specialCategoryHandling={{
+        categoryId: 'on-tv',
+        displayName: 'On TV',
+      }}
+    />
   );
 }

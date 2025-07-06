@@ -14,6 +14,7 @@ You are working on **Watchfolio** - a premium entertainment tracking app with a 
 - **NEVER use oversized elements** - the user values properly proportioned, realistic sizing
 - **ALWAYS use the established design system** - no random Tailwind colors or arbitrary values
 - **THINK ENTERTAINMENT APP** - avoid corporate/SaaS patterns, embrace streaming service aesthetics
+- **NEVER NAME NEW FUNCTIONS, COMPONENTS, FILES THESE WEIRD NAMES** - avoid renaming them "EnhancedComponent", "WithSomething", "WithSomethingElse", "TaskNameComponent", "TaskNamePage", "TaskNameScreen", etc. Override existing otherwise create new ones with proper names that match the context of the app.
 
 ## 🎨 Design System Mastery
 
