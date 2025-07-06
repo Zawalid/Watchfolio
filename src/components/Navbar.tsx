@@ -22,8 +22,8 @@ const navigationItems = [
   {
     label: 'Home',
     icon: HOME_ICON,
-    href: '/',
-    matches: ['/'],
+    href: '/home',
+    matches: ['/home'],
   },
   {
     label: 'Movies',
@@ -125,6 +125,7 @@ function AuthActions() {
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -137,6 +138,7 @@ export default function Navbar() {
   }, []);
 
   const visibleItems = navigationItems;
+  const homeLink = isAuthenticated ? '/home' : '/';
 
   return (
     <motion.nav
@@ -149,7 +151,7 @@ export default function Navbar() {
     >
       <div className='container mx-auto px-4 lg:px-6'>
         <div className='flex h-16 items-center justify-between'>
-          <Link to='/' className='group flex items-center space-x-2'>
+          <Link to={homeLink} className='group flex items-center space-x-2'>
             <motion.img
               whileHover={{ scale: 1.05 }}
               src='/images/logo.svg'

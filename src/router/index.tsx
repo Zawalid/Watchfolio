@@ -13,6 +13,7 @@ import {
   PrivacySecurity,
   Preferences,
   LibrarySettings,
+  Landing,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
+        Component: Landing,
+      },
+      {
+        path: 'home',
         Component: Home,
       },
       {
