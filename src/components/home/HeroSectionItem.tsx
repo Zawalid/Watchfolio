@@ -124,9 +124,8 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
           >
             <Button
               onPress={handleAddToLibrary}
-              size='lg'
               className={cn(
-                'button-primary px-8 py-6 text-base font-semibold shadow-lg transition-all duration-200',
+                'button-primary! px-8 shadow-lg',
                 isInLibrary &&
                   'from-Success-600 to-Success-700 hover:from-Success-700 hover:to-Success-800 shadow-Success-600/20'
               )}
@@ -137,10 +136,8 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
 
             <Button
               onPress={handleToggleFavorite}
-              size='lg'
-              variant='bordered'
               className={cn(
-                'border-white/30 bg-white/10 px-8 py-6 text-base font-semibold text-white shadow-lg backdrop-blur-sm transition-all duration-200',
+                'button-secondary! px-8 shadow-lg',
                 'hover:border-white/50 hover:bg-white/20',
                 isFavorite &&
                   'bg-Error-500/20 border-Error-500/50 text-Error-300 hover:bg-Error-500/30 hover:border-Error-500/70'

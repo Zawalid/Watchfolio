@@ -23,7 +23,7 @@ export default function Layout() {
     <Providers>
       <div className='flex h-full min-h-dvh flex-col'>
         <Navbar />
-        <main className='container flex-1 px-4 pt-16 md:pt-20 lg:px-6 lg:pt-24'>
+        <main className='container flex-1 px-4 pb-10 pt-16 md:pt-20 lg:px-6 lg:pt-24'>
           <Outlet />
         </main>
         <OnboardingModal />

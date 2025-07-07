@@ -23,4 +23,5 @@ export const queryKeys = {
   suggestions: (query: string) => ['suggestions', query],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
   season: (seasonNumber: number) => ['season', seasonNumber],
+  trending: (type: 'all' | 'movie' | 'tv', timeWindow: 'day' | 'week') => ['trending', type, timeWindow],
 };

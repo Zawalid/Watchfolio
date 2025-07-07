@@ -1,13 +1,7 @@
 import { motion } from 'framer-motion';
 import HeroSection from '@/components/home/HeroSection';
-// import ContinueWatching from '@/components/home/ContinueWatching';
-// import TrendingSection from '@/components/home/TrendingSection';
-// import TopRatedSection from '@/components/home/TopRatedSection';
-// import NewReleasesSection from '@/components/home/NewReleasesSection';
-// import ComingSoonSection from '@/components/home/ComingSoonSection';
-// import RecommendedSection from '@/components/home/RecommendedSection';
-// import WatchFolioTop10 from '@/components/home/WatchFolioTop10';
-// import CollectionsSection from '@/components/home/CollectionsSection';
+import TrendingSection from '@/components/home/TrendingSection';
+import ComingSoonSection from '@/components/home/ComingSoonSection';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -30,38 +24,23 @@ const sectionVariants = {
 
 export default function Home() {
   return (
-    <motion.div className='space-y-8 w-full md:space-y-12' variants={containerVariants} initial='hidden' animate='visible'>
-      {/* Hero Section */}
-      <motion.section variants={sectionVariants}>
+    <motion.div
+      className='w-full space-y-8 md:space-y-12'
+      variants={containerVariants}
+      initial='hidden'
+      animate='visible'
+    >
+      <motion.section className='py-10' variants={sectionVariants}>
         <HeroSection />
       </motion.section>
 
-      {/* Continue Watching - Personal Section */}
-      <motion.section variants={sectionVariants}>{/* <ContinueWatching /> */}</motion.section>
+      <motion.section variants={sectionVariants}>
+        <TrendingSection />
+      </motion.section>
 
-      {/* Trending This Week */}
-      <motion.section variants={sectionVariants}>{/* <TrendingSection /> */}</motion.section>
-
-      {/* Top Rated Movies */}
-      <motion.section variants={sectionVariants}>{/* <TopRatedSection type='movie' /> */}</motion.section>
-
-      {/* New This Week */}
-      <motion.section variants={sectionVariants}>{/* <NewReleasesSection /> */}</motion.section>
-
-      {/* Top Rated TV Shows */}
-      <motion.section variants={sectionVariants}>{/* <TopRatedSection type='tv' /> */}</motion.section>
-
-      {/* Coming Soon */}
-      <motion.section variants={sectionVariants}>{/* <ComingSoonSection /> */}</motion.section>
-
-      {/* Recommended For You - AI Powered */}
-      <motion.section variants={sectionVariants}>{/* <RecommendedSection /> */}</motion.section>
-
-      {/* WatchFolio TOP 10 */}
-      <motion.section variants={sectionVariants}>{/* <WatchFolioTop10 /> */}</motion.section>
-
-      {/* Featured Collections */}
-      <motion.section variants={sectionVariants}>{/* <CollectionsSection /> */}</motion.section>
+      <motion.section variants={sectionVariants}>
+        <ComingSoonSection />
+      </motion.section>
     </motion.div>
   );
 }
