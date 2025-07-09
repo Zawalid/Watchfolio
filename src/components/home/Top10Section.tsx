@@ -8,21 +8,21 @@ import { TABS_CLASSNAMES } from '@/styles/heroui';
 import MediaCard from '@/components/media/MediaCard';
 import { Slider } from '@/components/ui/slider';
 
+const movieQuery = {
+  queryKey: queryKeys.trending('movie', 'day'),
+  queryFn: () => getTrendingMovies('day'),
+  staleTime: 1000 * 60 * 60,
+};
+
+const tvQuery = {
+  queryKey: queryKeys.trending('tv', 'day'),
+  queryFn: () => getTrendingTvShows('day'),
+  staleTime: 1000 * 60 * 60,
+};
+
 export default function Top10Section() {
   const [selectedTab, setSelectedTab] = useState<'movie' | 'tv'>('movie');
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
-
-  const movieQuery = {
-    queryKey: queryKeys.trending('movie', 'day'),
-    queryFn: () => getTrendingMovies('day'),
-    staleTime: 1000 * 60 * 60,
-  };
-
-  const tvQuery = {
-    queryKey: queryKeys.trending('tv', 'day'),
-    queryFn: () => getTrendingTvShows('day'),
-    staleTime: 1000 * 60 * 60,
-  };
 
   const { data: movies, isLoading: moviesLoading, isError: moviesError } = useQuery(movieQuery);
   const { data: tvShows, isLoading: tvLoading, isError: tvError } = useQuery(tvQuery);

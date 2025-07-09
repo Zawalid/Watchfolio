@@ -148,4 +148,15 @@ declare interface TvShow extends BaseMedia {
   in_production?: boolean;
 }
 
-type Media = Movie | TvShow
+type Media = Movie | TvShow;
+
+/**
+ * Collection information
+ */
+declare interface Collection {
+  id: number;
+  name: string;
+  poster_path?: string | null;
+  backdrop_path?: string | null;
+  parts: Array<Media>;
+}

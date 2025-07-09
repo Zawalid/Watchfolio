@@ -35,7 +35,7 @@ export const moviesLoader = async ({ request }: LoaderFunctionArgs) => {
   const sortBy = url.searchParams.get('sort_by') || 'popularity';
   const sortDir = url.searchParams.get('sort_dir') || 'desc';
 
-  const queryKey = queryKeys.discover('movie', 'discover', {
+  const queryKey = queryKeys.discover('movie',  {
     page,
     sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'],
     'vote_count.gte': 50,
@@ -69,7 +69,7 @@ export const tvShowsLoader = async ({ request }: LoaderFunctionArgs) => {
   const sortBy = url.searchParams.get('sort_by') || 'popularity';
   const sortDir = url.searchParams.get('sort_dir') || 'desc';
 
-  const queryKey = queryKeys.discover('tv', 'discover', {
+  const queryKey = queryKeys.discover('tv',  {
     page,
     sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'],
     'vote_count.gte': 50,

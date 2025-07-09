@@ -3,6 +3,11 @@ import HeroSection from '@/components/home/HeroSection';
 import TrendingSection from '@/components/home/TrendingSection';
 import ComingSoonSection from '@/components/home/ComingSoonSection';
 import Top10Section from '@/components/home/Top10Section';
+import TopRatedSection from '@/components/home/TopRatedSection';
+import FranchisesSection from '@/components/home/FranchisesSection';
+import ThisDayInCinema from '@/components/home/ThisDayInCinema';
+import AwardsSpotlight from '@/components/home/AwardsSpotlight';
+import HiddenGemsSection from '@/components/home/HiddenGemsSection';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -38,13 +43,33 @@ export default function Home() {
       <motion.section variants={sectionVariants}>
         <TrendingSection />
       </motion.section>
-      
+
       <motion.section variants={sectionVariants}>
         <Top10Section />
       </motion.section>
 
       <motion.section variants={sectionVariants}>
+        <AwardsSpotlight />
+      </motion.section>
+
+      <motion.section variants={sectionVariants}>
+        <HiddenGemsSection />
+      </motion.section>
+
+      <motion.section variants={sectionVariants}>
+        <ThisDayInCinema />
+      </motion.section>
+
+      <motion.section variants={sectionVariants}>
         <ComingSoonSection />
+      </motion.section>
+
+      <motion.section variants={sectionVariants}>
+        <TopRatedSection />
+      </motion.section>
+
+      <motion.section variants={sectionVariants}>
+        <FranchisesSection />
       </motion.section>
     </motion.div>
   );

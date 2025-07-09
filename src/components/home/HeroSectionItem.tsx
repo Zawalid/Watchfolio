@@ -13,7 +13,7 @@ interface HeroItemProps {
   isActive?: boolean;
 }
 
-// TODO : https://api.tmdb.org/3/movie/1119878/images?include_image_language=en&language=en-US (TO get logo)
+// TODO : use intead of title https://api.tmdb.org/3/movie/1119878/images?include_image_language=en&language=en-US (TO get logo)
 
 
 export default function HeroItem({ item, isActive = false }: HeroItemProps) {

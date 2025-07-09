@@ -30,3 +30,7 @@ export const getMovies = async (category: Categories, page?: number): Promise<TM
       throw new Error('Invalid category');
   }
 };
+
+export const getCollection = async (collectionId: number) : Promise<Collection> => {
+  return await fetchFromTMDB(`/collection/${collectionId}`);
+};

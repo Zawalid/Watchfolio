@@ -17,8 +17,8 @@ export async function prefetchQuery<TData>(queryFn: () => Promise<TData>, queryK
 
 export const queryKeys = {
   details: (type: 'movie' | 'tv', id: string) => ['details', type, id],
-  category: (type: 'movie' | 'tv', category: string, page: number) => [type, category, page],
-  discover: (type: 'movie' | 'tv', category: string, params: DiscoverParams) => ['discover', type, category, params],
+  category: (type: 'movie' | 'tv', category: Categories, page: number) => [type, category, page],
+  discover: (type: 'movie' | 'tv', params: DiscoverParams) => ['discover', type, params],
   search: (query: string, page: number) => ['search', query, page],
   suggestions: (query: string) => ['suggestions', query],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],

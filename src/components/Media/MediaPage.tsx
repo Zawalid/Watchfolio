@@ -85,7 +85,7 @@ export default function MediaPage({ type, categories }: MediaPageProps) {
   return (
     <MediaCardsList
       queryOptions={{
-        queryKey: queryKeys.discover(type, 'discover', discoverParams),
+        queryKey: queryKeys.discover(type, discoverParams),
         queryFn: async () => await discoverFn(discoverParams),
       }}
       errorMessage={`Something went wrong while fetching ${type === 'movie' ? 'movies' : 'TV shows'}. Please try again later.`}

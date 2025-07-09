@@ -40,8 +40,8 @@ export default function TrendingSection() {
         <Button
           as={Link}
           to='/movies?category=popular'
-          variant='light'
-          className='text-Primary-300 hover:text-Primary-200 px-4 py-2 transition-colors duration-200'
+          size='sm'
+          className='button-secondary! text-xs!'
           endContent={<ArrowRight className='h-4 w-4' />}
         >
           View All
