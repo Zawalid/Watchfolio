@@ -13,6 +13,9 @@ interface HeroItemProps {
   isActive?: boolean;
 }
 
+// TODO : https://api.tmdb.org/3/movie/1119878/images?include_image_language=en&language=en-US (TO get logo)
+
+
 export default function HeroItem({ item, isActive = false }: HeroItemProps) {
   const { openModal } = useMediaStatusModal();
   const libraryItem = useLibraryStore((state) => state.getItem(getMediaType(item), item.id));
@@ -81,7 +84,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 30 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className='text-5xl font-black text-white drop-shadow-lg md:text-6xl lg:text-7xl'
+            className='text-5xl  font-black text-white drop-shadow-lg md:text-6xl lg:text-7xl'
           >
             {title}
           </motion.h1>

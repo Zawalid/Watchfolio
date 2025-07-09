@@ -16,3 +16,10 @@ export const AVATAR_CLASSNAMES = {
   base: 'bg-transparent ring-Primary-500/50 hover:ring-Primary-400/70 shadow-[0_0_30px_rgba(139,92,246,0.5)] ring-2 transition-all duration-300 hover:shadow-[0_0_40px_rgba(139,92,246,0.7)]',
   img: 'hover:scale-105 transition-transform duration-300',
 };
+
+
+export const TABS_CLASSNAMES = {
+              tabList: 'bg-white/5 border border-white/5 backdrop-blur-md  p-1',
+              tab: 'text-white/70 hover:text-white transition-colors duration-200 data-[selected=true]:text-white',
+              cursor: 'bg-white/10! shadow-none!',
+            }

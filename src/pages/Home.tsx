@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import HeroSection from '@/components/home/HeroSection';
 import TrendingSection from '@/components/home/TrendingSection';
 import ComingSoonSection from '@/components/home/ComingSoonSection';
+import Top10Section from '@/components/home/Top10Section';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -36,6 +37,10 @@ export default function Home() {
 
       <motion.section variants={sectionVariants}>
         <TrendingSection />
+      </motion.section>
+      
+      <motion.section variants={sectionVariants}>
+        <Top10Section />
       </motion.section>
 
       <motion.section variants={sectionVariants}>

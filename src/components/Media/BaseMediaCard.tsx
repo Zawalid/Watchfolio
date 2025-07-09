@@ -95,11 +95,6 @@ export default function BaseMediaCard({
         isFocused &&
           'border-blue-400/70 shadow-2xl ring-2 shadow-blue-500/25 ring-blue-400/50 ring-offset-2 ring-offset-gray-900'
       )}
-      whileHover={{
-        scale: 1.02,
-        y: -6,
-        transition: { duration: 0.3, ease: 'easeOut' },
-      }}
       whileFocus={{
         scale: 1.03,
         y: -8,

@@ -176,7 +176,7 @@
 }
 
 @utility button-primary {
-  @apply from-Primary-600 to-Secondary-600 hover:from-Primary-700 hover:to-Secondary-700 shadow-Primary-600/20 flex items-center gap-2  bg-gradient-to-r  text-sm font-medium text-white shadow-lg transition-all duration-200;
+  @apply from-Primary-600 to-Secondary-600 hover:from-Primary-700 hover:to-Secondary-700 shadow-Primary-600/20 flex items-center gap-2 bg-gradient-to-r text-sm font-medium text-white shadow-lg transition-all duration-200;
 }
 
 @utility button-secondary {
@@ -263,4 +263,22 @@ body {
 [data-sonner-toast][data-type='loading'] [data-icon] {
   width: 20px;
   margin-right: 15px;
+}
+
+
+
+
+@utility outline-heading {
+  @apply text-Secondary-500 text-8xl font-bold uppercase lg:text-9xl;
+
+  &:not(.filled) {
+    -webkit-text-stroke: 2px;
+    -webkit-text-fill-color: transparent;
+
+    &.letter-shadow,
+    & .letter-shadow {
+      mask-image: linear-gradient(to right, var(--color-blur) 36%, transparent 100%);
+    }
+  }
+
 }

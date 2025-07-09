@@ -26,6 +26,7 @@
     "@heroui/select": "2.4.17-beta.2",
     "@heroui/switch": "^2.2.19",
     "@heroui/system": "2.4.13-beta.2",
+    "@heroui/tabs": "^2.2.19",
     "@heroui/theme": "2.4.13-beta.2",
     "@heroui/toast": "^2.0.11",
     "@heroui/tooltip": "^2.2.18",

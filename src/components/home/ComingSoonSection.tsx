@@ -19,19 +19,15 @@ export default function ComingSoonSection() {
 
   return (
     <div className='space-y-6'>
-      {/* Section Header - Inspired by streaming sites */}
       <div className='flex items-center justify-between'>
         <div className='flex items-center gap-4'>
-          {/* Icon with gradient background */}
           <div className='from-Secondary-500 to-Tertiary-500 shadow-Secondary-500/25 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
             <Calendar className='h-6 w-6 text-white drop-shadow-sm' />
           </div>
 
-          {/* Title and subtitle */}
           <div>
             <div className='flex items-center gap-3'>
               <h2 className='text-2xl font-bold text-white'>Coming Soon</h2>
-              {/* Coming Soon indicator pill */}
               <div className='border-Success-500/30 bg-Success-500/10 text-Success-300 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm'>
                 <Clock className='h-3 w-3' />
                 <span>Soon</span>
@@ -41,7 +37,6 @@ export default function ComingSoonSection() {
           </div>
         </div>
 
-        {/* View All Button */}
         <Button
           as={Link}
           to='/movies?category=upcoming'
@@ -53,7 +48,6 @@ export default function ComingSoonSection() {
         </Button>
       </div>
 
-      {/* Content */}
       <div className='relative'>
         {isLoading && (
           <div className='from-Grey-800 to-Grey-700 h-[400px] w-full animate-pulse rounded-2xl bg-gradient-to-r' />
@@ -77,6 +71,7 @@ export default function ComingSoonSection() {
             }}
             asSlider={true}
             errorMessage='Unable to load upcoming content. Please try again later.'
+            slideClassName='w-[200px]! sm:w-[250px]!'
           />
         )}
       </div>

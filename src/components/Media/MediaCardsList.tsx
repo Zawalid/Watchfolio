@@ -5,20 +5,28 @@ import { useNavigate } from 'react-router';
 import MediaCard from './MediaCard';
 import { Pagination } from '@/components/ui/Pagination';
 import MediaCardsListSkeleton from '@/components/skeletons/MediaCardsListSkeleton';
-import { Error,  NoResults } from '@/components/Status';
+import { Error, NoResults } from '@/components/Status';
 import { Slider } from '@/components/ui/slider';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { generateMediaLink, getMediaType } from '@/utils/media';
+import { cn } from '@/utils';
 
 type MediaCardsListProps = {
   queryOptions: UseQueryOptions<TMDBResponse>;
   asSlider?: boolean;
   emptyComponent?: JSX.Element;
   errorMessage?: string;
+  slideClassName?: string;
 };
 
-export default function MediaCardsList({ queryOptions, asSlider, emptyComponent, errorMessage }: MediaCardsListProps) {
+export default function MediaCardsList({
+  queryOptions,
+  asSlider,
+  emptyComponent,
+  errorMessage,
+  slideClassName,
+}: MediaCardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [focusIndex, setFocusIndex] = useState<number>(-1);
@@ -64,7 +72,6 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
     autoFocus: true,
   });
 
-
   if (isError) return <Error message={errorMessage} onRetry={() => refetch()} />;
   if (isLoading) return <MediaCardsListSkeleton asSlider={asSlider} />;
   if (query && !data?.results?.length) return <NoResults />;
@@ -74,7 +81,7 @@ export default function MediaCardsList({ queryOptions, asSlider, emptyComponent,
     return (
       <Slider smartSlide={true}>
         {data?.results?.map((media) => (
-          <Slider.Slide key={media.id} className='w-[160px] sm:w-[200px]!'>
+          <Slider.Slide key={media.id} className={cn('w-[160px] sm:w-[200px]!', slideClassName)}>
             <MediaCard key={media.id} media={media} />
           </Slider.Slide>
         ))}
