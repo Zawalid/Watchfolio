@@ -1,4 +1,3 @@
-import { fetchFromTMDB } from './config';
 import { getUpcomingMovies } from './movies';
 import { discoverTvShows } from './discover';
 

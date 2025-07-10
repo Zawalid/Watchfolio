@@ -1,8 +1,5 @@
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
-import { ErrorScreen } from './ui/ErrorScreen';
-
-
-
+import { ErrorScreen } from '@/components/ui/ErrorScreen';
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;

@@ -12,7 +12,7 @@ import {
   SIGN_IN_ICON,
   COLLECTIONS_ICON,
   SETTINGS_ICON,
-} from './ui/Icons';
+} from '@/components/ui/Icons';
 import { MobileNavTrigger } from './MobileNav';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';

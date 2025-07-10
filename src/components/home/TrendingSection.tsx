@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query';
 import { TrendingUp, ArrowRight, Flame } from 'lucide-react';
 import { Link } from 'react-router';
 import { Button } from '@heroui/button';
@@ -7,16 +6,6 @@ import { queryKeys } from '@/lib/react-query';
 import MediaCardsList from '@/components/media/MediaCardsList';
 
 export default function TrendingSection() {
-  const {
-    data: trendingData,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: queryKeys.trending('all', 'week'),
-    queryFn: () => getTrendingAll('week'),
-    staleTime: 1000 * 60 * 30, // 30 minutes - trending data changes frequently
-  });
-
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
@@ -48,33 +37,15 @@ export default function TrendingSection() {
         </Button>
       </div>
 
-      <div className='relative'>
-        {isLoading && (
-          <div className='from-Grey-800 to-Grey-700 h-[400px] w-full animate-pulse rounded-2xl bg-gradient-to-r' />
-        )}
-
-        {isError && (
-          <div className='from-Grey-800 to-Grey-700 flex h-[400px] w-full items-center justify-center rounded-2xl bg-gradient-to-r'>
-            <div className='space-y-3 text-center'>
-              <TrendingUp className='text-Grey-500 mx-auto h-12 w-12' />
-              <p className='text-Grey-400 text-lg'>Unable to load trending content</p>
-              <p className='text-Grey-500 text-sm'>Check back later for the hottest movies and shows</p>
-            </div>
-          </div>
-        )}
-
-        {!isLoading && !isError && trendingData && (
-          <MediaCardsList
-            queryOptions={{
-              queryKey: queryKeys.trending('all', 'week'),
-              queryFn: () => getTrendingAll('week'),
-            }}
-            asSlider={true}
-            errorMessage='Unable to load trending content. Please try again later.'
-            slideClassName='w-[200px]! sm:w-[250px]!'
-          />
-        )}
-      </div>
+      <MediaCardsList
+        queryOptions={{
+          queryKey: queryKeys.trending('all', 'week'),
+          queryFn: () => getTrendingAll('week'),
+        }}
+        asSlider={true}
+        errorMessage='Unable to load trending content. Please try again later.'
+        slideClassName='w-[200px]! sm:w-[250px]!'
+      />
     </div>
   );
 }

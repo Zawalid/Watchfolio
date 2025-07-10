@@ -1,5 +1,5 @@
 import { getSimilar } from '@/lib/api/TMDB';
-import MediaCardsList from '../media/MediaCardsList';
+import MediaCardsList from '@/components/media/MediaCardsList';
 
 export default function Similar({ type, id }: { type: 'movie' | 'tv'; id: number }) {
   return (

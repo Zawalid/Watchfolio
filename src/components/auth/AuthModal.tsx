@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@heroui/button';
-import { Modal } from '../ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/modal';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { GOOGLE_ICON } from '../ui/Icons';
-import AuthForm from '../AuthForm';
+import { GOOGLE_ICON } from '@/components/ui/Icons';
+import AuthForm from './AuthForm';
 import { addToast } from '@heroui/toast';
 
 const tabVariants = {

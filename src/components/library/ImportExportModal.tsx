@@ -7,7 +7,7 @@ import { Tabs } from '@/components/ui/Tabs';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import Import from './Import';
 import Export from './Export';
-import { ShortcutKey } from '../ui/ShortcutKey';
+import { ShortcutKey } from '@/components/ui/ShortcutKey';
 
 interface ImportExportModalProps {
   disclosure: Disclosure;

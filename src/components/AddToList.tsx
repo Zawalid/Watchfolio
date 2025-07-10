@@ -1,7 +1,7 @@
 import { Button } from '@heroui/button';
 import { Checkbox } from '@heroui/checkbox';
 import { ModalHeader, ModalBody, ModalFooter } from '@heroui/modal';
-import { Modal } from './ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 
 type List = {
   name: string;

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { GENRES } from '@/lib/api/TMDB/values';
+import { GENRES } from '@/utils/constants/TMDB';
 import { getRating } from '@/utils/media';
 import { serializeToJSON, serializeToCSV, mergeLibraryItems, generateMediaKey } from '@/utils/library';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';

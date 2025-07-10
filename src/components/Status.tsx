@@ -2,7 +2,7 @@ import { Button } from '@heroui/button';
 import { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { AnimatedRing } from './ui/AnimatedRing';
+import { AnimatedRing } from '@/components/ui/AnimatedRing';
 import { SearchSlash, ListX, AlertTriangle, RotateCcw } from 'lucide-react';
 
 export function NoResults({ children }: { children?: ReactNode }) {

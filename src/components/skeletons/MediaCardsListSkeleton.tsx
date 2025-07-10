@@ -1,5 +1,5 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
-import { Slider } from '../ui/slider';
+import { Slider } from '@/components/ui/slider';
 
 function MediaCardSkeleton() {
   return (

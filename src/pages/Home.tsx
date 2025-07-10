@@ -5,9 +5,8 @@ import ComingSoonSection from '@/components/home/ComingSoonSection';
 import Top10Section from '@/components/home/Top10Section';
 import TopRatedSection from '@/components/home/TopRatedSection';
 import FranchisesSection from '@/components/home/FranchisesSection';
-import ThisDayInCinema from '@/components/home/ThisDayInCinema';
 import AwardsSpotlight from '@/components/home/AwardsSpotlight';
-import HiddenGemsSection from '@/components/home/HiddenGemsSection';
+import NetworksSection from '@/components/home/NetworksSection';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -53,11 +52,7 @@ export default function Home() {
       </motion.section>
 
       <motion.section variants={sectionVariants}>
-        <HiddenGemsSection />
-      </motion.section>
-
-      <motion.section variants={sectionVariants}>
-        <ThisDayInCinema />
+        <NetworksSection />
       </motion.section>
 
       <motion.section variants={sectionVariants}>

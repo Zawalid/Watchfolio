@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { SearchIcon } from 'lucide-react';
 import { queryKeys } from '@/lib/react-query';
 import { getSuggestions } from '@/lib/api/TMDB';
-import { Input } from './ui/Input';
+import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
 
 interface SearchInputProps {
@@ -128,7 +128,7 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
       setShowSuggestions(true);
       registerNavigator('search-suggestions');
     }
-  }
+  };
 
   return (
     <div className='relative flex-1' ref={suggestionsRef}>
@@ -143,7 +143,7 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
         onChange={(e) => {
           setSearchQuery(e.target.value);
           setSelectedSuggestionIndex(-1);
-          handleShowSuggestions()
+          handleShowSuggestions();
         }}
         onKeyDown={handleKeyDown}
         onFocus={handleShowSuggestions}

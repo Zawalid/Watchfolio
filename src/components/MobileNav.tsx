@@ -11,7 +11,7 @@ import {
   SIGN_IN_ICON,
   SETTINGS_ICON,
   COLLECTIONS_ICON,
-} from './ui/Icons';
+} from '@/components/ui/Icons';
 
 const navigationItems = [
   {

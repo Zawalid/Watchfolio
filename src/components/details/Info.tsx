@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { LANGUAGES } from '@/lib/api/TMDB/values';
+import { LANGUAGES } from '@/utils/constants/TMDB';
 import { STAR_ICON } from '@/components/ui/Icons';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { getDirectorOrCreator, getFormattedRuntime, getMediaType, getRating, getReleaseYear } from '@/utils/media';
@@ -172,5 +172,3 @@ function Details({ media }: { media: Media }) {
     </div>
   );
 }
-
-

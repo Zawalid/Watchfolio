@@ -3,7 +3,7 @@ import { Tabs, Tab } from '@heroui/tabs';
 import { getMovies, getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
-import MediaCardsList from '../media/MediaCardsList';
+import MediaCardsList from '@/components/media/MediaCardsList';
 import { Button } from '@heroui/button';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router';

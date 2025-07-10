@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Button } from '@heroui/button';
 import { Globe, Heart, Tv, Film } from 'lucide-react';
-import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/lib/api/TMDB/values';
+import { CONTENT_PREFERENCES } from '@/utils/constants';
+import { GENRES, NETWORKS } from '@/utils/constants/TMDB';
 import { useOnboardingStore } from '@/stores/useOnboardingStore';
 
 const itemVariants = {

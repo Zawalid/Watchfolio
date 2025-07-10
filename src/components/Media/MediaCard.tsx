@@ -1,5 +1,5 @@
 import { getMediaType, getRating, getReleaseYear } from '@/utils/media';
-import { GENRES } from '@/lib/api/TMDB/values';
+import { GENRES } from '@/utils/constants/TMDB';
 import BaseMediaCard from './BaseMediaCard';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 

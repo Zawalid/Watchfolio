@@ -2,7 +2,7 @@ import { Filter, Search, FunnelX, Film, Tv, TrendingUp, Star, Heart, Sparkles } 
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { Button } from '@heroui/button';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { ShortcutTooltip } from '../ui/ShortcutKey';
+import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tooltip } from '@heroui/tooltip';
 import { Link } from 'react-router';
 

@@ -6,12 +6,12 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
 import { Select, SelectItem } from '@heroui/select';
-import { GENRES, NETWORKS } from '@/lib/api/TMDB/values';
+import { GENRES, NETWORKS } from '@/utils/constants/TMDB';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 import { cn } from '@/utils';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
-import { Input } from './ui/Input';
+import { Input } from '@/components/ui/Input';
 
 export type FilterOption = 'genres' | 'networks' | 'types' | 'language' | 'ratingRange' | 'releaseYear';
 
@@ -112,12 +112,12 @@ export default function FiltersModal({
     }
   };
 
-  const togglePlatform = (platform: string) => {
+  const toggleNetwork = (network: string) => {
     const currentNetworks = selectedNetworks || [];
-    if (currentNetworks.includes(platform)) {
-      setSelectedNetworks(currentNetworks.length > 1 ? currentNetworks.filter((p) => p !== platform) : null);
+    if (currentNetworks.includes(network)) {
+      setSelectedNetworks(currentNetworks.length > 1 ? currentNetworks.filter((p) => p !== network) : null);
     } else {
-      setSelectedNetworks([...currentNetworks, platform]);
+      setSelectedNetworks([...currentNetworks, network]);
     }
   };
 
@@ -174,7 +174,7 @@ export default function FiltersModal({
               key={id}
               className='selectable-button! h-28'
               data-is-selected={selectedNetworks?.includes(slug) || false}
-              onPress={() => togglePlatform(slug)}
+              onPress={() => toggleNetwork(slug)}
             >
               {logo ? <img src={logo} alt={name} className='mr-1 inline-block max-h-24' loading='lazy' /> : name}
             </Button>

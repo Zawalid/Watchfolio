@@ -7,9 +7,9 @@ import WelcomeStep from './steps/WelcomeStep';
 import FeaturesStep from './steps/FeaturesStep';
 import SetupStep from './steps/SetupStep';
 import GetStartedStep from './steps/GetStartedStep';
-import { Modal } from '../ui/Modal';
+import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, useDisclosure } from '@heroui/modal';
-import { ShortcutKey } from '../ui/ShortcutKey';
+import { ShortcutKey } from '@/components/ui/ShortcutKey';
 
 const steps = [
   { id: 'welcome', component: WelcomeStep },
