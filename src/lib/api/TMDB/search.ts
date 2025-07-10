@@ -45,3 +45,7 @@ export const getSuggestions = async (query: string, limit: number) => {
 
   return [...new Set(suggestions)].slice(0, limit);
 };
+
+export const getImages = async (id: number, type: 'movie' | 'tv'): Promise<Images> => {
+  return await fetchFromTMDB(`/${type}/${id}/images`);
+};

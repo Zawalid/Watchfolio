@@ -9,7 +9,7 @@ export default function Cast({ cast }: { cast: Person[] }) {
     <section className='py-6'>
       <h2 className='mb-4 text-2xl font-semibold text-white'>Main Cast</h2>
       <div className='relative'>
-        <Slider smartSlide={true}>
+        <Slider>
           {cast?.map((member) => (
             <SwiperSlide key={member.id} className='w-[100px]!'>
               <div>

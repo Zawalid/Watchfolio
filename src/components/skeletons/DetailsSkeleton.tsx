@@ -95,7 +95,7 @@ export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
             <div className='bg-Grey-700/50 inline-block h-8 w-48 animate-pulse rounded-lg' />
           </h2>
           <div className='relative'>
-            <Slider smartSlide={true}>
+            <Slider>
               {Array.from({ length: 15 }).map((_, i) => (
                 <Slider.Slide key={i} className='w-[100px]!'>
                   <div>
@@ -120,7 +120,7 @@ export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
           <div className='mx-auto max-w-7xl px-6'>
             <div className='bg-Grey-700/50 mb-6 h-8 w-32 animate-pulse rounded-lg' />
             <div className='relative'>
-              <Slider smartSlide={true}>
+              <Slider>
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Slider.Slide key={i} className='w-[180px]!'>
                     <div className='relative overflow-hidden rounded-lg'>
@@ -142,7 +142,7 @@ export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
       <section className='py-12'>
         <div className='mx-auto max-w-7xl px-6'>
           <div className='bg-Grey-700/50 mb-6 h-8 w-40 animate-pulse rounded-lg' />
-          <Slider smartSlide={true}>
+          <Slider>
             {Array.from({ length: 4 }).map((_, i) => (
               <Slider.Slide key={i} className='w-[430px]!'>
                 <div className='aspect-video rounded-lg' {...backgroundImage} />

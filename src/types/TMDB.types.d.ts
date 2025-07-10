@@ -160,3 +160,23 @@ declare interface Collection {
   backdrop_path?: string | null;
   parts: Array<Media>;
 }
+
+/**
+ * Images information
+ */
+
+type Image = {
+  aspect_ratio: number;
+  height: number;
+  iso_639_1: string;
+  file_path: string;
+  vote_average: number;
+  vote_count: number;
+  width: number;
+};
+declare interface Images {
+  backdrops: Image[];
+  id: 1119878;
+  logos: Image[];
+  posters: Image[];
+}

@@ -29,7 +29,7 @@ export function Slider({
   showNavigation = true,
   customNavigationButtons,
   navigationClassName = 'absolute top-1/2 z-10 flex w-full -translate-y-1/2 justify-between',
-  smartSlide = false,
+  smartSlide = true,
   ...restProps
 }: SliderProps) {
   // ------------- State & Refs -------------

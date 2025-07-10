@@ -7,15 +7,19 @@ import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
 import { Rating } from '@/components/details/Info';
+import { useQuery } from '@tanstack/react-query';
+import { getImages } from '@/lib/api/TMDB';
 
 interface HeroItemProps {
   item: Media;
   isActive?: boolean;
 }
 
-// TODO : use intead of title https://api.tmdb.org/3/movie/1119878/images?include_image_language=en&language=en-US (TO get logo)
-
 export default function HeroItem({ item, isActive = false }: HeroItemProps) {
+  const { data: images } = useQuery({
+    queryKey: ['logo', item.id],
+    queryFn: async () => await getImages(item.id, item.media_type),
+  });
   const { openModal } = useMediaStatusModal();
   const libraryItem = useLibraryStore((state) => state.getItem(getMediaType(item), item.id));
   const { toggleFavorite } = useLibraryStore();
@@ -36,9 +40,13 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
     toggleFavorite({ media_type: mediaType, id: item.id }, item);
   };
 
+  const logoPath = images?.logos
+    ?.sort((a, b) => b.width - a.width)
+    ?.filter((logo) => logo.iso_639_1 === 'en')?.[0]?.file_path;
+
   return (
     <motion.div
-      className={cn('absolute inset-0 h-[75vh] min-h-[600px] w-full overflow-hidden', isActive ? 'z-10' : 'z-0')}
+      className={cn('absolute inset-0 h-screen min-h-[600px] w-full overflow-hidden', isActive ? 'z-10' : 'z-0')}
       initial={{ opacity: 0 }}
       animate={{ opacity: isActive ? 1 : 0 }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
@@ -85,7 +93,11 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
             transition={{ duration: 0.6, delay: 0.3 }}
             className='text-5xl font-black text-white drop-shadow-lg md:text-6xl lg:text-7xl'
           >
-            {title}
+            {logoPath ? (
+              <img src={`https://image.tmdb.org/t/p/original${logoPath}`} alt={title} className='h-28 w-auto' />
+            ) : (
+              title
+            )}
           </motion.h1>
 
           {/* Meta information with glassy pill design */}

@@ -2,6 +2,7 @@ import { JSX, useState, useEffect, useRef } from 'react';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
+import { SwiperProps } from 'swiper/react';
 import MediaCard from './MediaCard';
 import { Pagination } from '@/components/ui/Pagination';
 import MediaCardsListSkeleton from '@/components/skeletons/MediaCardsListSkeleton';
@@ -18,6 +19,7 @@ type MediaCardsListProps = {
   emptyComponent?: JSX.Element;
   errorMessage?: string;
   slideClassName?: string;
+  sliderProps?: SwiperProps;
 };
 
 export default function MediaCardsList({
@@ -26,6 +28,7 @@ export default function MediaCardsList({
   emptyComponent,
   errorMessage,
   slideClassName,
+  sliderProps,
 }: MediaCardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
@@ -79,7 +82,7 @@ export default function MediaCardsList({
 
   if (asSlider)
     return (
-      <Slider smartSlide={true}>
+      <Slider {...sliderProps}>
         {data?.results?.map((media) => (
           <Slider.Slide key={media.id} className={cn('w-[160px] sm:w-[200px]!', slideClassName)}>
             <MediaCard key={media.id} media={media} />

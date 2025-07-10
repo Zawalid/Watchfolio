@@ -8,22 +8,6 @@ function MediaCardSkeleton() {
         className='h-[300px] rounded-xl'
         style={{ backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' }}
       />
-      <div className='flex animate-pulse flex-col gap-4'>
-        <div className='flex items-center justify-between'>
-          <span className='bg-Grey-700 h-4 w-36 rounded-lg shadow-md'></span>
-          <span className='bg-Grey-700 h-4 w-10 rounded-full shadow-md'></span>
-        </div>
-        <div className='flex items-center justify-between'>
-          <div className='flex gap-1'>
-            <span className='bg-Grey-700 h-4 w-16 rounded-lg shadow-md'></span>
-            <span className='bg-Grey-700 h-4 w-14 rounded-lg shadow-md'></span>
-          </div>
-          <div className='flex gap-0.5'>
-            <span className='bg-Grey-700 h-4 w-3 rounded-full shadow-md'></span>
-            <span className='bg-Grey-700 h-4 w-4 rounded-full shadow-md'></span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -31,7 +15,7 @@ function MediaCardSkeleton() {
 export default function MediaCardsListSkeleton({ length = 20, asSlider }: { length?: number; asSlider?: boolean }) {
   if (asSlider)
     return (
-      <Slider smartSlide={true}>
+      <Slider>
         {Array.from({ length: 8 }).map((_, i) => (
           <Slider.Slide key={i} className='w-[160px] sm:w-[200px]!'>
             <MediaCardSkeleton />

@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import HeroSection from '@/components/home/HeroSection';
 import TrendingSection from '@/components/home/TrendingSection';
-import ComingSoonSection from '@/components/home/ComingSoonSection';
 import Top10Section from '@/components/home/Top10Section';
+import NetworksSection from '@/components/home/NetworksSection';
+import CriticsChoiceSection from '@/components/home/CriticsChoiceSection';
+import ComingSoonSection from '@/components/home/ComingSoonSection';
 import TopRatedSection from '@/components/home/TopRatedSection';
 import FranchisesSection from '@/components/home/FranchisesSection';
-import AwardsSpotlight from '@/components/home/AwardsSpotlight';
-import NetworksSection from '@/components/home/NetworksSection';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -35,7 +35,7 @@ export default function Home() {
       initial='hidden'
       animate='visible'
     >
-      <motion.section className='py-10' variants={sectionVariants}>
+      <motion.section className='h-[90vh]' variants={sectionVariants}>
         <HeroSection />
       </motion.section>
 
@@ -48,11 +48,11 @@ export default function Home() {
       </motion.section>
 
       <motion.section variants={sectionVariants}>
-        <AwardsSpotlight />
+        <NetworksSection />
       </motion.section>
 
       <motion.section variants={sectionVariants}>
-        <NetworksSection />
+        <CriticsChoiceSection />
       </motion.section>
 
       <motion.section variants={sectionVariants}>

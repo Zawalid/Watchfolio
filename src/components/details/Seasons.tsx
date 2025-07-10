@@ -19,7 +19,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
     <section className='py-6'>
       <h2 className='mb-4 text-2xl font-semibold text-white'>Seasons</h2>
       <div className='relative'>
-        <Slider smartSlide={true} spaceBetween={16} className='seasons-slider'>
+        <Slider spaceBetween={16} className='seasons-slider'>
           {filteredSeasons.map((season) => (
             <SwiperSlide key={season.id} className='w-[200px]!'>
               <MorphingDialog

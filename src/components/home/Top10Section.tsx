@@ -8,6 +8,7 @@ import { TABS_CLASSNAMES } from '@/styles/heroui';
 import MediaCard from '@/components/media/MediaCard';
 import { Slider } from '@/components/ui/slider';
 
+
 const movieQuery = {
   queryKey: queryKeys.trending('movie', 'day'),
   queryFn: () => getTrendingMovies('day'),
@@ -62,8 +63,8 @@ export default function Top10Section() {
         <div className='scrollbar-hide relative overflow-x-auto'>
           <div className='flex gap-4 pb-4' style={{ width: 'max-content' }}>
             {Array.from({ length: 10 }).map((_, i) => (
-              <div key={i} className='group relative flex w-[260px] items-baseline gap-3'>
-                <div className='outline-heading'>
+              <div key={i} className='group relative flex w-[300px] items-baseline gap-3'>
+                <div className='outline-heading -mr-5'>
                   <span className='letter-shadow'>{i + 1}</span>
                 </div>
                 <div className='bg-Grey-700 h-[320px] w-[220px] animate-pulse rounded-xl' />
@@ -72,7 +73,7 @@ export default function Top10Section() {
           </div>
         </div>
       ) : (
-        <Slider smartSlide={true}>
+        <Slider>
           {topItems.map((media, index) => (
             <Slider.Slide key={media.id} className={`flex-shrink-0 ${index < 9 ? 'w-[300px]!' : 'w-[340px]!'}`}>
               <motion.div
