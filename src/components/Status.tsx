@@ -5,33 +5,34 @@ import { motion } from 'framer-motion';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
 import { SearchSlash, ListX, AlertTriangle, RotateCcw } from 'lucide-react';
 
-export function NoResults({ children }: { children?: ReactNode }) {
-  const containerVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-        staggerChildren: 0.1,
-      },
+const containerVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 15,
+      staggerChildren: 0.1,
     },
-  };
+  },
+};
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 120,
-        damping: 20,
-      },
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 120,
+      damping: 20,
     },
-  };
+  },
+};
+
+export function NoResults({ children,message }: { children?: ReactNode,message : string }) {
 
   return (
     <motion.div
@@ -65,8 +66,7 @@ export function NoResults({ children }: { children?: ReactNode }) {
       <motion.div variants={itemVariants} className='space-y-4'>
         <h2 className='text-Grey-50 text-xxl font-semibold sm:text-2xl'>No matches found</h2>
         <p className='text-Grey-300 max-w-md font-medium'>
-          We couldn't find any movies or TV shows matching your search. Try different keywords or explore trending
-          content.
+         {message}
         </p>
       </motion.div>
 

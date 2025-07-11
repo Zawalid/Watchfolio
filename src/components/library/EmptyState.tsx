@@ -73,14 +73,14 @@ export default function EmptyState({ status }: { status?: LibraryFilterStatus })
             <span className='text-Grey-300 text-sm'>TV Shows</span>
           </Link>
           <Link
-            to='/movies?category=popular'
+            to='/home#trending'
             className='pill-bg flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-white/10'
           >
             <TrendingUp className='text-Warning-400 h-4 w-4' />
             <span className='text-Grey-300 text-sm'>Trending</span>
           </Link>
           <Link
-            to='/tv?category=top-rated'
+            to='/home#top-rated'
             className='pill-bg flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-white/10'
           >
             <Star className='text-Success-400 h-4 w-4' />

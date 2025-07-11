@@ -147,8 +147,8 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
         }}
         onKeyDown={handleKeyDown}
         onFocus={handleShowSuggestions}
-        label='Search For Movies Or Tv Shows'
-        placeholder='eg. Breaking Bad, The Matrix, Avatar...'
+        label='Search For Movies, TV Shows & People'
+        placeholder='eg. Breaking Bad, Leonardo DiCaprio, The Matrix...'
         autoComplete='off'
       >
         {searchQuery && (

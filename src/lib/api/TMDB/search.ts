@@ -12,6 +12,10 @@ export const searchTvShows = async (query: string, page?: number): Promise<TMDBR
   return await fetchFromTMDB(`/search/tv`, { query, page: String(page || 1) });
 };
 
+export const searchPerson = async (query: string, page?: number): Promise<TMDBResponse<Person>> => {
+  return await fetchFromTMDB(`/search/person`, { query, page: String(page || 1) });
+};
+
 export const getDetails = async (type: 'movie' | 'tv', slug: string): Promise<Media | null> => {
   if (!type || !slug) throw new Error('Type and Slug are required');
   const id = slug.split('-')[0];
@@ -35,15 +39,21 @@ export const getSimilar = async (type: 'movie' | 'tv', id: number): Promise<TMDB
   return await fetchFromTMDB(`/${type}/${id}/similar`);
 };
 
+// Get suggestions from multi-search (movies, TV shows, people)
 export const getSuggestions = async (query: string, limit: number) => {
-  const response = await search(query, 1);
-  const suggestions = response.results
-    .map((item: { title?: string; name?: string }) => item.title || item.name)
-    .filter((title: string | undefined): title is string => {
-      return title !== undefined && title.toLowerCase().includes(query.toLowerCase());
-    });
+  try {
+    const response = await search(query, 1);
+    const suggestions = response.results
+      .map((item: { title?: string; name?: string }) => item.title || item.name)
+      .filter((title: string | undefined): title is string => {
+        return title !== undefined && title.toLowerCase().includes(query.toLowerCase());
+      });
 
-  return [...new Set(suggestions)].slice(0, limit);
+    return [...new Set(suggestions)].slice(0, limit);
+  } catch (error) {
+    console.error('Error fetching enhanced suggestions:', error);
+    return [];
+  }
 };
 
 export const getImages = async (id: number, type: 'movie' | 'tv'): Promise<Images> => {
