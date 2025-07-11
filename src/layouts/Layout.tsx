@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
@@ -7,9 +7,11 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import AuthModal from '@/components/auth/AuthModal';
 import Navbar from '@/components/Navbar';
+import { ResponsiveScreen } from '@/components/ui/ResponsiveScreen';
 
 export default function Layout() {
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
 
   useInitialAuth();
   useLibrarySync();
@@ -19,16 +21,30 @@ export default function Layout() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location.pathname]);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <Providers>
-      <div className='flex h-full min-h-dvh flex-col'>
-        <Navbar />
-        <main className='container flex-1 px-4 pb-10 pt-16 md:pt-20 lg:px-6 lg:pt-24'>
-          <Outlet />
-        </main>
-        <OnboardingModal />
-        <AuthModal />
-      </div>
+      {isMobile ? (
+        <ResponsiveScreen />
+      ) : (
+        <div className='flex h-full min-h-dvh flex-col'>
+          <Navbar />
+          <main className='container flex-1 px-4 pb-10 pt-16 md:pt-20 lg:px-6 lg:pt-24'>
+            <Outlet />
+          </main>
+          <OnboardingModal />
+          <AuthModal />
+        </div>
+      )}
     </Providers>
   );
 }
