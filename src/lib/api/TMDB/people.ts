@@ -1,7 +1,14 @@
 import { fetchFromTMDB } from './config';
 
-export const searchPerson = async (query: string): Promise<TMDBResponse<Person>> => {
-  return await fetchFromTMDB(`/search/person`, { query });
+export const getPopularPeople = async (page: number = 1): Promise<TMDBResponse<Person>> => {
+  return await fetchFromTMDB('/person/popular', { page: String(page) });
+};
+
+export const getTrendingPeople = async (
+  page: number = 1,
+  timeWindow: 'day' | 'week' = 'week'
+): Promise<TMDBResponse<Person>> => {
+  return await fetchFromTMDB(`/trending/person/${timeWindow}`, { page: String(page) });
 };
 
 export const getPersonDetails = async (id: number | string): Promise<Person> => {

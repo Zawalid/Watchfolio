@@ -16,14 +16,18 @@ export async function prefetchQuery<TData>(queryFn: () => Promise<TData>, queryK
 }
 
 export const queryKeys = {
-  details: (type: 'movie' | 'tv', id: string) => ['details', type, id],
-  category: (type: 'movie' | 'tv', category: Categories, page: number) => [type, category, page],
   discover: (type: 'movie' | 'tv', params: DiscoverParams) => ['discover', type, params],
-  search: (query: string, page: number) => ['search', query, page],
-  suggestions: (query: string) => ['suggestions', query],
+  category: (type: 'movie' | 'tv', category: Categories, page: number) => [type, category, page],
+  trending: (type: 'all' | 'movie' | 'tv', timeWindow: 'day' | 'week') => ['trending', type, timeWindow],
+  
+  details: (type: 'movie' | 'tv', id: string) => ['details', type, id],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
   season: (seasonNumber: number) => ['season', seasonNumber],
-  trending: (type: 'all' | 'movie' | 'tv', timeWindow: 'day' | 'week') => ['trending', type, timeWindow],
-  person: (id: number) => ['person', id] as const,
+  
+  search: (contentType: string, query: string, page: number) => ['search', contentType, query, page],
+  suggestions: (query: string) => ['suggestions', query],
+
+  celebrities: (category: string, page: number) => ['celebrities', category, page] as const,
+  celebrity: (id: number) => ['celebrity', id] as const,
   personCredits: (id: number, type: 'movie' | 'tv' | 'combined') => ['person', id, 'credits', type] as const,
 };
