@@ -30,4 +30,6 @@ export const queryKeys = {
   celebrities: (category: string, page: number) => ['celebrities', category, page] as const,
   celebrity: (id: number) => ['celebrity', id] as const,
   personCredits: (id: number, type: 'movie' | 'tv' | 'combined') => ['person', id, 'credits', type] as const,
+
+  collection: (id: number) => ['collection', id] as const,
 };

@@ -1,5 +1,5 @@
+import MediaCardsListSkeleton from '@/components/media/MediaCardsListSkeleton';
 import { placeholder } from '@/utils/shimmer-placeholder';
-import MediaCardsListSkeleton from './MediaCardsListSkeleton';
 
 const backgroundImage = { style: { backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' } };
 

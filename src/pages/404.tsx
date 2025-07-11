@@ -159,10 +159,10 @@ const navigate = useNavigate()
                 TV Shows
               </Link>
               <Link 
-                to='/home' 
+                to='/celebrities' 
                 className='pill-bg text-Grey-300 hover:text-Grey-100 px-3 py-1 text-xs hover:bg-white/10'
               >
-                Discover
+                Celebrities
               </Link>
               <Link 
                 to='/library' 

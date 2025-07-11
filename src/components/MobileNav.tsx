@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X, Heart, Layers } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import {
   HOME_ICON,
@@ -38,6 +38,12 @@ const navigationItems = [
     icon: TV_ICON,
     href: '/tv',
     matches: ['/tv'],
+  },
+  {
+    label: 'Collections',
+    icon: <Layers className="w-5 h-5" />,
+    href: '/collections',
+    matches: ['/collections'],
   },
   {
     label: 'Search',

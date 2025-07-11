@@ -7,7 +7,6 @@ import { Pagination } from '@/components/ui/Pagination';
 import CelebritiesCardsListSkeleton from '@/components/celebrity/CelebritiesCardsListSkeleton';
 import { Error, NoResults } from '@/components/Status';
 import { useListNavigator } from '@/hooks/useListNavigator';
-import { useNavigation } from '@/contexts/NavigationContext';
 import { slugify } from '@/utils';
 
 type CelebritiesCardsListProps = {
@@ -26,7 +25,6 @@ export default function CelebritiesCardsList({
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { isActive } = useNavigation();
 
   const { data, isLoading, isError, refetch } = useQuery({
     ...queryOptions,
@@ -36,9 +34,6 @@ export default function CelebritiesCardsList({
   useEffect(() => {
     setFocusIndex(-1);
   }, [data?.results, query, page]);
-
-  // Only enable navigation when this navigator is active
-  const navigationEnabled = isActive('celebrities-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0;
 
   useListNavigator({
     containerRef: cardsContainerRef,
@@ -53,7 +48,6 @@ export default function CelebritiesCardsList({
       }
     },
     orientation: 'grid',
-    enabled: navigationEnabled,
   });
 
   if (isError) return <Error message={errorMessage} onRetry={() => refetch()} />;

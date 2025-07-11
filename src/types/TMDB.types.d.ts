@@ -161,6 +161,7 @@ type Media = Movie | TvShow;
 declare interface Collection {
   id: number;
   name: string;
+  overview?: string;
   poster_path?: string | null;
   backdrop_path?: string | null;
   parts: Array<Media>;

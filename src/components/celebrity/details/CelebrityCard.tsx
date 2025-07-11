@@ -23,15 +23,15 @@ export default function CelebrityCard({ person, tabIndex = 0 }: CelebrityCardPro
   const { data: personDetails } = useQuery({
     queryKey: queryKeys.celebrity(person.id),
     queryFn: () => getPersonDetails(person.id),
-    staleTime: 1000 * 60 * 30, // Cache for 30 minutes
-    enabled: isInteractive, // Only fetch when user shows interest
+    staleTime: 1000 * 60 * 30,
+    enabled: isInteractive,
   });
 
   const { data: credits } = useQuery({
     queryKey: [...queryKeys.celebrity(person.id), 'combined-credits'],
     queryFn: () => getPersonCombinedCredits(person.id),
-    staleTime: 1000 * 60 * 30, // Cache for 30 minutes
-    enabled: isInteractive, // Only fetch when user shows interest
+    staleTime: 1000 * 60 * 30,
+    enabled: isInteractive,
   });
 
   // Use detailed data if available, fallback to basic person data
@@ -50,12 +50,10 @@ export default function CelebrityCard({ person, tabIndex = 0 }: CelebrityCardPro
       aria-label={`${displayPerson.name} - ${displayPerson.known_for_department}`}
       className={cn(
         'group relative cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] shadow-lg backdrop-blur-sm transition-all duration-500 ease-out',
-        isInteractive && '-translate-y-2 border-white/25 shadow-2xl shadow-black/40',
+        isInteractive && 'border-white/25 shadow-2xl shadow-black/40',
         isFocused &&
           'border-Tertiary-400/70 shadow-Tertiary-500/25 ring-Tertiary-400/50 shadow-2xl ring-2 ring-offset-2 ring-offset-gray-900'
       )}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
     >
       <Link className='absolute inset-0 z-10' to={`/celebrities/${person.id}-${slugify(displayPerson.name)}`} />
 

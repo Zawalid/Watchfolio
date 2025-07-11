@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
-import { Heart } from 'lucide-react';
+import { Heart, Layers } from 'lucide-react';
 import { Tooltip } from '@heroui/tooltip';
 import { useAuthStore } from '@/stores/useAuthStore';
 import {
@@ -36,6 +36,12 @@ const navigationItems = [
     icon: TV_ICON,
     href: '/tv',
     matches: ['/tv'],
+  },
+  {
+    label: 'Collections',
+    icon: <Layers className="w-4 h-4" />,
+    href: '/collections',
+    matches: ['/collections'],
   },
   {
     label: 'Search',

@@ -16,6 +16,7 @@ import {
   Landing,
   Person,
   Celebrities,
+  Collections,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -106,6 +107,15 @@ export const router = createBrowserRouter([
           {
             path: ':slug',
             element: <Person />,
+          },
+        ],
+      },
+      {
+        path: 'collections',
+        children: [
+          {
+            index: true,
+            element: <Collections />,
           },
         ],
       },

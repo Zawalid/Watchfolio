@@ -15,7 +15,7 @@ import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { generateMediaLink } from '@/utils/media';
-import { Rating } from '@/components/media/details/Info';
+import { Rating } from '@/components/ui/Rating';
 
 interface BaseMediaCardProps {
   id: number;
@@ -384,9 +384,9 @@ export default function BaseMediaCard({
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
-            className='absolute top-3 right-3 z-20 *:text-xs [&_svg]:size-3!'
+            className='absolute top-3 right-3 z-20'
           >
-            <Rating rating={rating} />
+            <Rating rating={rating} className='*:text-xs [&_svg]:size-3!' />
           </motion.div>
         )}
       </AnimatePresence>

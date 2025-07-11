@@ -1,6 +1,7 @@
 export { default as Landing } from './Landing';
 export { default as Home } from './Home';
 export { default as Library } from './Library';
+export { default as Collections } from './Collections';
 export { default as NotFound } from './404';
 export { default as Movies } from './Media/Movies';
 export { default as TV } from './Media/TV';
