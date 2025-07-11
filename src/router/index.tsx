@@ -15,6 +15,7 @@ import {
   LibrarySettings,
   Landing,
   Person,
+  Celebrities,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -96,8 +97,17 @@ export const router = createBrowserRouter([
         Component: Search,
       },
       {
-        path: 'person/:slug',
-        element: <Person />,
+        path: 'celebrities',
+        children: [
+          {
+            index: true,
+            element: <Celebrities />,
+          },
+          {
+            path: ':slug',
+            element: <Person />,
+          },
+        ],
       },
       {
         path: 'settings',

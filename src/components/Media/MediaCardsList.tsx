@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { SwiperProps } from 'swiper/react';
 import MediaCard from './MediaCard';
 import { Pagination } from '@/components/ui/Pagination';
-import MediaCardsListSkeleton from '@/components/skeletons/MediaCardsListSkeleton';
+import MediaCardsListSkeleton from '@/components/media/MediaCardsListSkeleton';
 import { Error, NoResults } from '@/components/Status';
 import { Slider } from '@/components/ui/slider';
 import { useListNavigator } from '@/hooks/useListNavigator';
@@ -18,6 +18,7 @@ type MediaCardsListProps = {
   asSlider?: boolean;
   emptyComponent?: JSX.Element;
   errorMessage?: string;
+  noResultsMessage?: string;
   slideClassName?: string;
   sliderProps?: SwiperProps;
 };
@@ -77,7 +78,10 @@ export default function MediaCardsList({
 
   if (isError) return <Error message={errorMessage} onRetry={() => refetch()} />;
   if (isLoading) return <MediaCardsListSkeleton asSlider={asSlider} />;
-  if (query && !data?.results?.length) return <NoResults />;
+  if (query && !data?.results?.length)
+    return (
+      <NoResults message="We couldn't find any movies or TV shows matching your search. Try different keywords or explore trending content." />
+    );
   if (data?.total_results === 0 && emptyComponent) return emptyComponent;
 
   if (asSlider)

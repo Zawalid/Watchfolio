@@ -15,7 +15,7 @@ import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { generateMediaLink } from '@/utils/media';
-import { Rating } from '@/components/media-details/Info';
+import { Rating } from '@/components/media/details/Info';
 
 interface BaseMediaCardProps {
   id: number;
@@ -29,7 +29,7 @@ interface BaseMediaCardProps {
   media?: Media;
   tabIndex?: number;
   // Person role props
-  personRoles?: string[];
+  celebrityRoles?: string[];
   primaryRole?: 'acting' | 'voice' | 'guest' | 'production';
 }
 
@@ -161,7 +161,7 @@ export default function BaseMediaCard({
   item,
   media,
   tabIndex = 0,
-  personRoles,
+  celebrityRoles,
   primaryRole,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -202,7 +202,7 @@ export default function BaseMediaCard({
 
   const isInteractive = isHovered || isFocused;
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
-  const isPersonContext = !!personRoles && personRoles.length > 0;
+  const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;
 
   return (
     <motion.div
@@ -351,7 +351,7 @@ export default function BaseMediaCard({
 
       {/* Person Role Badges - Only show when person context and NOT interactive */}
       <AnimatePresence>
-        {isPersonContext && <PersonRoleBadges roles={personRoles!} primaryRole={primaryRole} maxVisible={2} />}
+        {isPersonContext && <PersonRoleBadges roles={celebrityRoles!} primaryRole={primaryRole} maxVisible={2} />}
       </AnimatePresence>
 
       {/* Library Status Badge on Hover for Person Context */}

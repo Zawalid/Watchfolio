@@ -13,7 +13,7 @@ export default function Cast({ cast }: { cast: Person[] }) {
         <Slider>
           {cast?.map((member) => (
             <Slider.Slide key={member.id} className='group w-[100px]!'>
-              <Link to={`/person/${member.id}-${slugify(member.name)}`}>
+              <Link to={`/celebrities/${member.id}-${slugify(member.name)}`}>
                 <div className='aspect-square overflow-hidden rounded-full'>
                   <LazyImage
                     src={

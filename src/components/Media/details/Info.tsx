@@ -4,6 +4,8 @@ import { LazyImage } from '@/components/ui/LazyImage';
 import { getDirectorOrCreator, getFormattedRuntime, getMediaType, getRating, getReleaseYear } from '@/utils/media';
 import ActionButtons from './ActionButtons';
 import { Star } from 'lucide-react';
+import { Link } from 'react-router';
+import { slugify } from '@/utils';
 
 export default function Info({ media }: { media: Media }) {
   const { vote_average, poster_path, genres } = media;
@@ -156,7 +158,12 @@ function Details({ media }: { media: Media }) {
       </div>
       <div>
         <h4 className='mb-1 text-xs font-medium text-gray-400'>{type === 'movie' ? 'Director' : 'Creator'}</h4>
-        <div className='pill-bg flex w-fit items-center gap-2.5 overflow-hidden py-0 pl-0 [&>div]:size-8'>
+        <Link
+          to={
+            directorOrCreator?.name ? `/celebrities/${directorOrCreator?.id}-${slugify(directorOrCreator?.name)}` : ''
+          }
+          className='pill-bg flex w-fit items-center gap-2.5 overflow-hidden py-0 pl-0 [&>div]:size-8'
+        >
           <LazyImage
             src={
               directorOrCreator?.profile_path
@@ -167,7 +174,7 @@ function Details({ media }: { media: Media }) {
             className='rounded-e-l size-full object-cover'
           />
           <span className='text-sm text-gray-200'>{directorOrCreator?.name}</span>
-        </div>
+        </Link>
       </div>
     </div>
   );

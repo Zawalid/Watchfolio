@@ -133,7 +133,7 @@ export default function LibraryLayout() {
               >
                 <Button
                   isIconOnly
-                  className='button-secondary! h-full'
+                  className='button-secondary!'
                   onPress={() => setShowTabs(true)}
                   aria-label='Show sidebar'
                 >

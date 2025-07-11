@@ -103,7 +103,7 @@ const navigate = useNavigate()
           <motion.div variants={itemVariants} className='w-full max-w-lg flex flex-col items-center gap-3'>
             <Button
               as={Link}
-              to='/'
+              to='/home'
               color='primary'
               startContent={<Home className='h-4 w-4' />}
               className='w-full'
@@ -159,7 +159,7 @@ const navigate = useNavigate()
                 TV Shows
               </Link>
               <Link 
-                to='/discover' 
+                to='/home' 
                 className='pill-bg text-Grey-300 hover:text-Grey-100 px-3 py-1 text-xs hover:bg-white/10'
               >
                 Discover

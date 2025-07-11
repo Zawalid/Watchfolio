@@ -1,5 +1,5 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
-import MediaCardsListSkeleton from './MediaCardsListSkeleton';
+import MediaCardsListSkeleton from '../MediaCardsListSkeleton';
 import { Slider } from '@/components/ui/slider';
 
 const backgroundImage = { style: { backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' } };
@@ -11,10 +11,7 @@ export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
       <div className='mx-auto min-h-[700px] flex-1 py-4 pt-16'>
         <div className='flex animate-pulse flex-col gap-6 lg:flex-row lg:gap-8'>
           <div className='flex flex-col items-center gap-3 lg:items-start'>
-            <div
-              className='relative aspect-[2/3] h-80 w-[280px] rounded-xl shadow-2xl'
-              {...backgroundImage}
-            />
+            <div className='relative aspect-[2/3] h-[450px] w-[280px] rounded-xl shadow-2xl' {...backgroundImage} />
             <div className='mt-1 w-full max-w-[280px] space-y-2'>
               <div className='bg-Grey-500/30 h-10 w-full rounded-lg' />
               <div className='bg-Grey-700/50 h-10 w-full rounded-lg' />

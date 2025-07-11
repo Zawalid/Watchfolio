@@ -8,7 +8,7 @@ import { Sparkles, Search as SearchIcon, Film, Star, Heart, Tv, Users } from 'lu
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import { search, searchMovie, searchPerson, searchTvShows } from '@/lib/api/TMDB';
 import MediaCardsList from '@/components/media/MediaCardsList';
-import PeopleCardsList from '@/components/people/PeopleCardsList';
+import CelebritiesCardsList from '@/components/celebrity/CelebritiesCardsList';
 import { queryKeys } from '@/lib/react-query';
 import SearchInput from '@/components/SearchInput';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
@@ -19,7 +19,7 @@ const SEARCH_TABS = [
     id: 'all',
     label: 'All',
     icon: SearchIcon,
-    description: 'Movies, TV shows & people',
+    description: 'Movies, TV shows & celebrities',
   },
   {
     id: 'movie',
@@ -35,7 +35,7 @@ const SEARCH_TABS = [
   },
   {
     id: 'person',
-    label: 'People',
+    label: 'Celebrities',
     icon: Users,
     description: 'Actors, directors & crew',
   },
@@ -100,7 +100,7 @@ export default function Search() {
       <AnimatePresence>
         <WelcomeBanner
           title='Welcome to Search!'
-          description='Discover your next favorite movie, TV show, or talented person. Search our extensive database and add content to your personal collection.'
+          description='Discover your next favorite movie, TV show, or talented celebrity. Search our extensive database and add content to your personal collection.'
           icon={<Sparkles className='text-Primary-400 h-6 w-6' />}
           variant='default'
           onDismiss={() => setShowWelcome(false)}
@@ -167,13 +167,13 @@ export default function Search() {
       {query ? (
         <div>
           {contentType === 'person' ? (
-            <PeopleCardsList
+            <CelebritiesCardsList
               queryOptions={{
                 queryKey: queryKeys.search(contentType, query, page),
                 queryFn: getQueryFunction() as () => Promise<TMDBResponse<Person>>,
                 enabled: !!query,
               }}
-              errorMessage='Something went wrong while searching for people. Please try again later.'
+              errorMessage='Something went wrong while searching for celebrities. Please try again later.'
             />
           ) : (
             <MediaCardsList
@@ -255,7 +255,7 @@ function NoSearchQuery({ handleSearch }: { handleSearch: (searchTerm: string) =>
           <span className='gradient'>Favorite?</span>
         </h2>
         <p className='text-Grey-300 text-base leading-relaxed'>
-          Search through thousands of movies, TV shows, and people to discover your next favorite and build your
+          Search through thousands of movies, TV shows, and celebrities to discover your next favorite and build your
           personal collection.
         </p>
       </motion.div>
