@@ -1,16 +1,16 @@
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
-import { Select, SelectItem, SelectSection } from '@heroui/select';
+import { Select, SelectItem, SelectProps, SelectSection } from '@heroui/select';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 
-type SortByProps = {
+interface SortByProps extends Omit<SelectProps, 'children'> {
   options: { key: string; label: string }[];
   defaultSort?: string;
   defaultDir?: 'asc' | 'desc';
-};
-export default function SortBy({ options, defaultSort, defaultDir }: SortByProps) {
+}
+export default function SortBy({ options, defaultSort, defaultDir, ...props }: SortByProps) {
   const [sortBy, setSortBy] = useQueryState('sort_by', { defaultValue: defaultSort || options[0]?.key });
-  const [sortDir, setSortDir] = useQueryState('sort_dir', { defaultValue: defaultDir || 'desc' });  
+  const [sortDir, setSortDir] = useQueryState('sort_dir', { defaultValue: defaultDir || 'desc' });
 
   return (
     <Select
@@ -23,6 +23,7 @@ export default function SortBy({ options, defaultSort, defaultDir }: SortByProps
         if (['asc', 'desc'].includes(val)) setSortDir(val);
         else setSortBy(val);
       }}
+      {...props}
     >
       <SelectSection title='Sort By' showDivider>
         {options.map((option) => (

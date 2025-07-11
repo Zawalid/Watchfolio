@@ -6,6 +6,7 @@ export { default as Movies } from './Media/Movies';
 export { default as TV } from './Media/TV';
 export { default as Details } from './Media/Details';
 export { default as Search } from './Media/Search';
+export { default as Person } from './Person';
 export { default as EmailVerification } from './EmailVerification';
 export { default as Profile } from './Settings/Profile';
 export { default as Preferences } from './Settings/Preferences';

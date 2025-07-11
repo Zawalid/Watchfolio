@@ -12,7 +12,7 @@ export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
         <div className='flex animate-pulse flex-col gap-6 lg:flex-row lg:gap-8'>
           <div className='flex flex-col items-center gap-3 lg:items-start'>
             <div
-              className='relative aspect-[2/3] h-80 w-full max-w-[280px] rounded-xl shadow-2xl'
+              className='relative aspect-[2/3] h-80 w-[280px] rounded-xl shadow-2xl'
               {...backgroundImage}
             />
             <div className='mt-1 w-full max-w-[280px] space-y-2'>

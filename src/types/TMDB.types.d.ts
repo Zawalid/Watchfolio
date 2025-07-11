@@ -24,6 +24,11 @@ declare interface Person {
   credit_id: string;
   order: number;
   job?: string;
+  birthday?: string;
+  place_of_birth?: string;
+  biography?: string;
+  homepage?: string;
+  deathday?: string;
 }
 
 /**
@@ -164,7 +169,6 @@ declare interface Collection {
 /**
  * Images information
  */
-
 type Image = {
   aspect_ratio: number;
   height: number;
@@ -179,4 +183,21 @@ declare interface Images {
   id: 1119878;
   logos: Image[];
   posters: Image[];
+}
+
+/**
+ * Credits information
+ */
+interface Credit extends Movie, TvShow {
+  character: string;
+  credit_id: string;
+  order: number;
+  job: string;
+  roles: string[]; // Array of all roles for this project
+  primaryRole: 'acting' | 'voice' | 'guest' | 'production'; // Primary role type
+}
+declare interface PersonCredits {
+  cast: Credit[];
+  crew: Credit[];
+  id: number;
 }

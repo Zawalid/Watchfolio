@@ -1,14 +1,14 @@
 import { useParams } from 'react-router';
-import Cast from '@/components/details/Cast';
-import Info from '@/components/details/Info';
-import Seasons from '@/components/details/Seasons';
-import Trailers from '@/components/details/Trailers';
+import Cast from '@/components/media-details/Cast';
+import Info from '@/components/media-details/Info';
+import Seasons from '@/components/media-details/Seasons';
+import Trailers from '@/components/media-details/Trailers';
 import { useQuery } from '@tanstack/react-query';
 import { getDetails } from '@/lib/api/TMDB';
 import DetailsSkeleton from '@/components/skeletons/DetailsSkeleton';
 import { Error } from '@/components/Status';
-import Recommendations from '@/components/details/Recommendations';
-import Similar from '@/components/details/Similar';
+import Recommendations from '@/components/media-details/Recommendations';
+import Similar from '@/components/media-details/Similar';
 
 export default function Details({ type }: { type: 'movie' | 'tv' }) {
   // const media = useLoaderData() as Media;

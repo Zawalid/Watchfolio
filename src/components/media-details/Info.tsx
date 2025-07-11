@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import { LANGUAGES } from '@/utils/constants/TMDB';
-import { STAR_ICON } from '@/components/ui/Icons';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { getDirectorOrCreator, getFormattedRuntime, getMediaType, getRating, getReleaseYear } from '@/utils/media';
 import ActionButtons from './ActionButtons';
+import { Star } from 'lucide-react';
 
 export default function Info({ media }: { media: Media }) {
   const { vote_average, poster_path, genres } = media;
@@ -104,8 +104,8 @@ export function Rating({ rating }: { rating: number }) {
     <motion.div
       className={`flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md ${getBgColor(rating)}`}
     >
-      {STAR_ICON}
-      <span>{rating}</span>
+      <Star className='size-4' />
+      <span>{getRating(rating)}</span>
     </motion.div>
   );
 }

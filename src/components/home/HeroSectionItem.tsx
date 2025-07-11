@@ -6,7 +6,7 @@ import { getMediaType, generateMediaLink, getRating, getReleaseYear } from '@/ut
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
-import { Rating } from '@/components/details/Info';
+import { Rating } from '@/components/media-details/Info';
 import { useQuery } from '@tanstack/react-query';
 import { getImages } from '@/lib/api/TMDB';
 

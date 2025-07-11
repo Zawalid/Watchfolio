@@ -7,28 +7,24 @@ const TV_CATEGORIES = [
     label: 'Popular',
     description: "Trending TV shows everyone's talking about",
     icon: TrendingUp,
-    gradient: 'from-Primary-500 to-Secondary-500',
   },
   {
     id: 'top-rated',
     label: 'Top Rated',
     description: 'Outstanding series with exceptional storytelling',
     icon: Star,
-    gradient: 'from-Warning-500 to-Warning-600',
   },
   {
     id: 'airing-today',
     label: 'Airing Today',
     description: 'New episodes dropping today',
     icon: Zap,
-    gradient: 'from-Success-500 to-Success-600',
   },
   {
     id: 'on-tv',
     label: 'On TV',
     description: 'Currently airing and upcoming shows',
     icon: Calendar,
-    gradient: 'from-Secondary-500 to-Secondary-600',
   },
 ];
 

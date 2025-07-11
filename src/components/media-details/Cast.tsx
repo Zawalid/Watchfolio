@@ -1,6 +1,7 @@
-import { SwiperSlide } from 'swiper/react';
 import { Slider } from '@/components/ui/slider';
 import { LazyImage } from '@/components/ui/LazyImage';
+import { Link } from 'react-router';
+import { slugify } from '@/utils';
 
 export default function Cast({ cast }: { cast: Person[] }) {
   if (!cast?.length) return null; // TODO: Handle empty cast array
@@ -11,8 +12,8 @@ export default function Cast({ cast }: { cast: Person[] }) {
       <div className='relative'>
         <Slider>
           {cast?.map((member) => (
-            <SwiperSlide key={member.id} className='w-[100px]!'>
-              <div>
+            <Slider.Slide key={member.id} className='group w-[100px]!'>
+              <Link to={`/person/${member.id}-${slugify(member.name)}`}>
                 <div className='aspect-square overflow-hidden rounded-full'>
                   <LazyImage
                     src={
@@ -21,15 +22,15 @@ export default function Cast({ cast }: { cast: Person[] }) {
                         : '/images/placeholder.png'
                     }
                     alt={member.name}
-                    className='size-full object-cover'
+                    className='size-full object-cover transition-transform duration-300 group-hover:scale-110'
                   />
                 </div>
                 <div className='mt-2 text-center'>
                   <p className='text font-medium text-white'>{member.name}</p>
                   <p className='text-sm text-gray-400'>{member.character}</p>
                 </div>
-              </div>
-            </SwiperSlide>
+              </Link>
+            </Slider.Slide>
           ))}
         </Slider>
       </div>

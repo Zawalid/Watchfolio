@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Star, Calendar, Film, Tv, Heart, Trash2, Edit3 } from 'lucide-react';
+import { Calendar, Film, Tv, Heart, Trash2, Edit3, User, Mic, Users, Clapperboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn } from '@/utils';
+import { formatDate } from '@/utils';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
@@ -14,33 +15,154 @@ import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { generateMediaLink } from '@/utils/media';
+import { Rating } from '@/components/media-details/Info';
 
 interface BaseMediaCardProps {
   id: number;
   title: string;
   mediaType: 'movie' | 'tv';
   posterPath?: string | null;
-  releaseYear?: number | null;
+  releaseDate?: string | null;
   rating?: number;
   genres?: string[];
   item?: LibraryMedia;
   media?: Media;
   tabIndex?: number;
+  // Person role props
+  personRoles?: string[];
+  primaryRole?: 'acting' | 'voice' | 'guest' | 'production';
 }
 
-// TODO : Better design for user-rating / rating
+// Person Role Components (separated but in same file)
+const PersonRoleBadges = ({
+  roles,
+  primaryRole,
+  maxVisible = 2,
+}: {
+  roles: string[];
+  primaryRole?: string;
+  maxVisible?: number;
+}) => {
+  const displayRoles = roles.slice(0, maxVisible);
+  const remainingRoles = roles.slice(maxVisible);
+  const hasMore = remainingRoles.length > 0;
 
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -10 }}
+      transition={{ duration: 0.3, staggerChildren: 0.1 }}
+      className='absolute top-3 left-3 z-20 flex flex-col items-start gap-1.5'
+    >
+      {displayRoles.map((role, index) => (
+        <RoleBadge key={index} role={role} primaryRole={primaryRole} delay={index * 0.1} />
+      ))}
+
+      {hasMore && <OverflowBadge remainingRoles={remainingRoles} delay={displayRoles.length * 0.1} />}
+    </motion.div>
+  );
+};
+
+const RoleBadge = ({ role, primaryRole, delay = 0 }: { role: string; primaryRole?: string; delay?: number }) => {
+  const getIcon = () => {
+    if (primaryRole === 'voice' || role.toLowerCase().includes('voice')) {
+      return <Mic className='h-3 w-3' />;
+    }
+    if (primaryRole === 'guest' || role.includes('Self') || role.includes('Host')) {
+      return <Users className='h-3 w-3' />;
+    }
+    if (role.includes('Director') || role.includes('Producer') || role.includes('Writer')) {
+      return <Clapperboard className='h-3 w-3' />;
+    }
+    return <User className='h-3 w-3' />;
+  };
+
+  const getColor = () => {
+    if (primaryRole === 'voice' || role.toLowerCase().includes('voice')) {
+      return 'bg-Tertiary-500/20 text-Tertiary-300 border-Tertiary-500/30';
+    }
+    if (primaryRole === 'guest') {
+      return 'bg-Secondary-500/20 text-Secondary-300 border-Secondary-500/30';
+    }
+    if (role.includes('Director')) {
+      return 'bg-Error-500/20 text-Error-300 border-Error-500/30';
+    }
+    if (role.includes('Producer')) {
+      return 'bg-Warning-500/20 text-Warning-300 border-Warning-500/30';
+    }
+    if (role.includes('Writer')) {
+      return 'bg-Success-500/20 text-Success-300 border-Success-500/30';
+    }
+    return 'bg-Primary-500/20 text-Primary-300 border-Primary-500/30';
+  };
+
+  const formatRole = (role: string) => {
+    return role.replace('as ', '').replace('Executive ', 'Exec ').replace('Associate ', 'Assoc ').replace('Co-', 'Co');
+  };
+
+  const fullRole = formatRole(role);
+  const isLongRole = fullRole.length > 12;
+
+  return (
+    <Tooltip content={isLongRole ? role : undefined} className='tooltip-secondary!' isDisabled={!isLongRole}>
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay }}
+        className={cn(
+          'flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md',
+          getColor()
+        )}
+      >
+        {getIcon()}
+        <span className={cn('line-clamp-1', isLongRole ? 'max-w-16' : 'max-w-20')}>{fullRole}</span>
+      </motion.div>
+    </Tooltip>
+  );
+};
+
+const OverflowBadge = ({ remainingRoles, delay = 0 }: { remainingRoles: string[]; delay?: number }) => {
+  return (
+    <Tooltip
+      content={
+        <div className='space-y-1'>
+          <p className='text-xs font-medium text-white'>Additional roles:</p>
+          {remainingRoles.map((role, index) => (
+            <p key={index} className='text-Grey-300 text-xs'>
+              {role}
+            </p>
+          ))}
+        </div>
+      }
+      className='tooltip-secondary!'
+    >
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay }}
+        className='border-Grey-500/30 bg-Grey-500/20 text-Grey-300 flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md'
+      >
+        <span>+{remainingRoles.length}</span>
+      </motion.div>
+    </Tooltip>
+  );
+};
+
+// Main Component
 export default function BaseMediaCard({
   id,
   title,
   mediaType,
   posterPath,
-  releaseYear,
+  releaseDate,
   rating,
   genres = [],
   item,
   media,
   tabIndex = 0,
+  personRoles,
+  primaryRole,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -80,6 +202,7 @@ export default function BaseMediaCard({
 
   const isInteractive = isHovered || isFocused;
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+  const isPersonContext = !!personRoles && personRoles.length > 0;
 
   return (
     <motion.div
@@ -112,12 +235,12 @@ export default function BaseMediaCard({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className='absolute -inset-1 rounded-3xl bg-gradient-to-r from-blue-500/15 via-blue-400/10 to-blue-500/15 blur-lg'
+            className='absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-500/15 via-blue-400/10 to-blue-500/15 blur-lg'
           />
         )}
       </AnimatePresence>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Show for ALL items on hover, including person context */}
       <AnimatePresence>
         {isInteractive && (
           <motion.div
@@ -195,20 +318,22 @@ export default function BaseMediaCard({
         )}
       </AnimatePresence>
 
-      {/* Top left badges */}
+      {/* Media Type & Library Status Badges - Show when NOT person context and NOT interactive */}
       <AnimatePresence>
-        {!isInteractive && (
+        {!isPersonContext && !isInteractive && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
             className='absolute top-3 left-3 z-20 flex flex-col items-start gap-2'
           >
+            {/* Media type badge */}
             <div className='flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-xs font-medium text-white/90 shadow-lg backdrop-blur-md'>
               {mediaType === 'movie' ? <Film className='size-3' /> : <Tv className='size-3' />}
               <span className='capitalize'>{mediaType}</span>
             </div>
 
+            {/* Library status badge */}
             {status && (
               <div
                 className={cn(
@@ -220,6 +345,48 @@ export default function BaseMediaCard({
                 <span>{status.label}</span>
               </div>
             )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Person Role Badges - Only show when person context and NOT interactive */}
+      <AnimatePresence>
+        {isPersonContext && <PersonRoleBadges roles={personRoles!} primaryRole={primaryRole} maxVisible={2} />}
+      </AnimatePresence>
+
+      {/* Library Status Badge on Hover for Person Context */}
+      <AnimatePresence>
+        {isPersonContext && isInteractive && status && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.2 }}
+            className='absolute top-3 left-3 z-20'
+          >
+            <div
+              className={cn(
+                'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md',
+                status.className
+              )}
+            >
+              <status.icon className='size-3' />
+              <span>{status.label}</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Rating badge - Top right (hidden on hover when library actions show) */}
+      <AnimatePresence>
+        {rating && rating > 0 && !isInteractive && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className='absolute top-3 right-3 z-20 *:text-xs [&_svg]:size-3!'
+          >
+            <Rating rating={rating} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -244,7 +411,7 @@ export default function BaseMediaCard({
         <div className='absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent' />
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: isInteractive ? 1 : 0 }}
+          animate={{ opacity: isInteractive ? 0 : 1 }}
           transition={{ duration: 0.3 }}
           className='absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent'
         />
@@ -263,7 +430,7 @@ export default function BaseMediaCard({
         </AnimatePresence>
 
         {/* Content overlay */}
-        <div className='absolute inset-x-0 bottom-0 space-y-3 p-4'>
+        <div className='absolute inset-x-0 bottom-0 space-y-2 p-4'>
           <motion.div
             animate={{
               y: isInteractive ? -4 : 0,
@@ -279,26 +446,15 @@ export default function BaseMediaCard({
               opacity: isInteractive ? 1 : 0.9,
             }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className='flex items-center justify-between text-sm'
+            className='text-Grey-200 flex items-center gap-2.5 text-sm'
           >
-            <div className='flex items-center gap-2.5 text-white/90'>
-              {rating && (
-                <div className='flex items-center gap-1'>
-                  <Star className='size-3.5 fill-yellow-400 text-yellow-400 drop-shadow-md' />
-                  <span className='font-semibold'>{rating}/10</span>
-                </div>
-              )}
-
-              {releaseYear && (
-                <>
-                  {rating && <span className='text-white/50'>•</span>}
-                  <div className='flex items-center gap-1'>
-                    <Calendar className='size-3.5' />
-                    <span className='font-medium'>{releaseYear}</span>
-                  </div>
-                </>
-              )}
-            </div>
+            {/* Release date - using formatDate util */}
+            {releaseDate && (
+              <div className='flex items-center gap-1'>
+                <Calendar className='size-3.5' />
+                <span className='font-medium'>{formatDate(releaseDate)}</span>
+              </div>
+            )}
           </motion.div>
 
           {/* Genres - only show on hover/focus */}

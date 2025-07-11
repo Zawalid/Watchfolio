@@ -10,14 +10,14 @@ const sortItems = (items: LibraryMedia[], sortBy: string, sortDir: string): Libr
         comparison = (a.title || '').localeCompare(b.title || '');
         break;
       case 'rating':
-        comparison = (b.userRating || 0) - (a.userRating || 0);
+        comparison = (a.userRating || 0) - (b.userRating || 0);
         break;
       case 'date':
-        comparison = new Date(b.releaseDate || '').getTime() - new Date(a.releaseDate || '').getTime();
+        comparison = new Date(a.releaseDate || '').getTime() - new Date(b.releaseDate || '').getTime();
         break;
       case 'recent':
       default:
-        comparison = new Date(b.addedToLibraryAt).getTime() - new Date(a.addedToLibraryAt).getTime();
+        comparison = new Date(a.addedToLibraryAt).getTime() - new Date(b.addedToLibraryAt).getTime();
     }
     return sortDir === 'asc' ? comparison : -comparison;
   });
