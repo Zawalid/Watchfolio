@@ -6,7 +6,7 @@ import {
   NotFound,
   Movies,
   TV,
-  Details,
+  MediaDetails,
   Search,
   EmailVerification,
   Profile,
@@ -17,6 +17,7 @@ import {
   Person,
   Celebrities,
   Collections,
+  CollectionDetails,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -68,7 +69,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'details/:slug',
-            element: <Details type='movie' />,
+            element: <MediaDetails type='movie' />,
             // loader: MovieLoader,
           },
         ],
@@ -88,7 +89,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'details/:slug',
-            element: <Details type='tv' />,
+            element: <MediaDetails type='tv' />,
             // loader: tvDetailsLoader,
           },
         ],
@@ -116,6 +117,10 @@ export const router = createBrowserRouter([
           {
             index: true,
             element: <Collections />,
+          },
+          {
+            path: ':slug',
+            element: <CollectionDetails />,
           },
         ],
       },

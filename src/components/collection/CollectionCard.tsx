@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Film, Calendar } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { LazyImage } from '@/components/ui/LazyImage';
-import { cn, formatDate, slugify } from '@/utils';
+import { cn, slugify } from '@/utils';
 import { getCollection } from '@/lib/api/TMDB/movies';
 import { queryKeys } from '@/lib/react-query';
 import { Rating } from '@/components/ui/Rating';
-import { getRating } from '@/utils/media';
+import { getRating, getReleaseYear } from '@/utils/media';
 
 interface CollectionCardProps {
   collection: { id: number; name: string; category: string };
@@ -133,7 +133,7 @@ export default function CollectionCard({ collection, tabIndex = 0 }: CollectionC
             }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
           >
-            <h3 className='group-hover:text-Tertiary-300 line-clamp-2 text-xl font-bold text-white drop-shadow-lg transition-colors duration-300'>
+            <h3 className='line-clamp-2 text-xl font-bold text-white drop-shadow-lg transition-colors duration-300'>
               {formattedName}
             </h3>
           </motion.div>
@@ -175,8 +175,8 @@ export default function CollectionCard({ collection, tabIndex = 0 }: CollectionC
                   <div className='border-Primary-400/30 bg-Primary-500/20 text-Primary-300 flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-md'>
                     <Calendar className='size-4' />
                     <span className='font-medium'>
-                      {formatDate((details.parts[0] as Movie).release_date)}-{' '}
-                      {formatDate((details.parts[details.parts.length - 1] as Movie).release_date)}
+                      {getReleaseYear(details.parts[0]) || 'Unknown'} -{' '}
+                      {getReleaseYear(details.parts[details.parts.length - 1]) || 'Unknown Date'}
                     </span>
                   </div>
                 )}

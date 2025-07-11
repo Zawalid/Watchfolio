@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getDetails } from '@/lib/api/TMDB';
 import { Error } from '@/components/Status';
 
-export default function Details({ type }: { type: 'movie' | 'tv' }) {
+export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
   // const media = useLoaderData() as Media;
   const { slug } = useParams();
   const {

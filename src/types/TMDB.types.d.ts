@@ -164,7 +164,7 @@ declare interface Collection {
   overview?: string;
   poster_path?: string | null;
   backdrop_path?: string | null;
-  parts: Array<Media>;
+  parts: Array<Movie>;
 }
 
 /**
