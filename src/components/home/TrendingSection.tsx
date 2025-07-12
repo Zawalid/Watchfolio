@@ -43,7 +43,6 @@ export default function TrendingSection() {
           queryFn: () => getTrendingAll('week'),
         }}
         asSlider={true}
-        errorMessage='Unable to load trending content. Please try again later.'
         slideClassName='w-[200px]! sm:w-[250px]!'
         sliderProps={{ autoplay: true }}
       />

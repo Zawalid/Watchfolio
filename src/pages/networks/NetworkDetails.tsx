@@ -7,13 +7,11 @@ import MediaCardsList from '@/components/media/MediaCardsList';
 import SortBy from '@/components/SortBy';
 import { Tv } from 'lucide-react';
 import { cn } from '@/utils';
-import { Error } from '@/components/Status';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { useDiscoverParams } from '@/hooks/useDiscoverParams';
 import FiltersModal from '@/components/FiltersModal';
 import { useDisclosure } from '@heroui/modal';
-
-// TODO : Handle Error, Empty, Filters
+import { Status } from '@/components/ui/Status';
 
 export default function NetworkDetails() {
   const { slug } = useParams();
@@ -22,12 +20,16 @@ export default function NetworkDetails() {
 
   const network = NETWORKS.find((n) => n.slug === slug);
 
-  if (!network) {
-    return <Error message='Network not found.' />;
-  }
+  if (!network)
+    return (
+      <Status.NotFound
+        title='Network Not Found'
+        message='The network you are looking for does not exist. Please try again with a different network.'
+      />
+    );
 
   return (
-    <motion.div className='space-y-8' variants={containerVariants} initial='hidden' animate='visible'>
+    <motion.div className='flex h-full flex-col gap-8' variants={containerVariants} initial='hidden' animate='visible'>
       <motion.div
         variants={itemVariants}
         className='relative grid h-[300px] place-content-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-t from-black/50 to-transparent p-8 shadow-2xl'

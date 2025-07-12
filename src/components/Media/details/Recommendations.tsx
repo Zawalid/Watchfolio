@@ -12,7 +12,6 @@ export default function Recommendations({ type, id }: { type: 'movie' | 'tv'; id
           enabled: !!id,
         }}
         asSlider
-        errorMessage='Something went wrong while fetching recommendations. Please try again later.'
       />
     </section>
   );

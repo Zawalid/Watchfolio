@@ -1,25 +1,20 @@
-import { JSX, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
 import PersonCard from '@/components/celebrity/details/CelebrityCard';
 import { Pagination } from '@/components/ui/Pagination';
 import CelebritiesCardsListSkeleton from '@/components/celebrity/CelebritiesCardsListSkeleton';
-import { Error, NoResults } from '@/components/Status';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { slugify } from '@/utils';
+import { Status } from '@/components/ui/Status';
+import { Users2Icon } from 'lucide-react';
 
 type CelebritiesCardsListProps = {
   queryOptions: UseQueryOptions<TMDBResponse<Person>>;
-  emptyComponent?: JSX.Element;
-  errorMessage?: string;
 };
 
-export default function CelebritiesCardsList({
-  queryOptions,
-  emptyComponent,
-  errorMessage,
-}: CelebritiesCardsListProps) {
+export default function CelebritiesCardsList({ queryOptions }: CelebritiesCardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [focusIndex, setFocusIndex] = useState<number>(-1);
@@ -50,13 +45,26 @@ export default function CelebritiesCardsList({
     orientation: 'grid',
   });
 
-  if (isError) return <Error message={errorMessage} onRetry={() => refetch()} />;
   if (isLoading) return <CelebritiesCardsListSkeleton length={20} />;
-  if (query && !data?.results?.length)
+  if (isError)
     return (
-      <NoResults message="We couldn't find any celebrities matching your search. Try different keywords or explore trending celebrities." />
+      <Status.Error
+        message='There was an error loading the celebrity list. Please try again.'
+        onRetry={() => refetch()}
+      />
     );
-  if (data?.total_results === 0 && emptyComponent) return emptyComponent;
+  if (!data?.results?.length)
+    return (
+      <Status.NoResults message="We couldn't find any celebrities matching your search. Try different keywords or explore trending celebrities." />
+    );
+  if (data?.total_results === 0)
+    return (
+      <Status.Empty
+        Icon={Users2Icon}
+        title='No Celebrities'
+        message='It seems there are no celebrities at the moment. Please come back and check later.'
+      />
+    );
 
   return (
     <>

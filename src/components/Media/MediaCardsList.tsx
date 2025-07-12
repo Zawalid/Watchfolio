@@ -1,4 +1,4 @@
-import { JSX, useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
@@ -6,31 +6,22 @@ import { SwiperProps } from 'swiper/react';
 import MediaCard from './MediaCard';
 import { Pagination } from '@/components/ui/Pagination';
 import MediaCardsListSkeleton from '@/components/media/MediaCardsListSkeleton';
-import { Error, NoResults } from '@/components/Status';
 import { Slider } from '@/components/ui/slider';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { generateMediaLink, getMediaType } from '@/utils/media';
 import { cn } from '@/utils';
+import { Status } from '@/components/ui/Status';
+import { Film } from 'lucide-react';
 
 type MediaCardsListProps = {
   queryOptions: UseQueryOptions<TMDBResponse>;
   asSlider?: boolean;
-  emptyComponent?: JSX.Element;
-  errorMessage?: string;
-  noResultsMessage?: string;
   slideClassName?: string;
   sliderProps?: SwiperProps;
 };
 
-export default function MediaCardsList({
-  queryOptions,
-  asSlider,
-  emptyComponent,
-  errorMessage,
-  slideClassName,
-  sliderProps,
-}: MediaCardsListProps) {
+export default function MediaCardsList({ queryOptions, asSlider, slideClassName, sliderProps }: MediaCardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [focusIndex, setFocusIndex] = useState<number>(-1);
@@ -49,7 +40,7 @@ export default function MediaCardsList({
 
   // Only enable navigation when this navigator is active
   const navigationEnabled =
-  isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
+    isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
 
   useListNavigator({
     containerRef: cardsContainerRef,
@@ -76,13 +67,23 @@ export default function MediaCardsList({
     autoFocus: true,
   });
 
-  if (isError) return <Error message={errorMessage} onRetry={() => refetch()} />;
   if (isLoading) return <MediaCardsListSkeleton asSlider={asSlider} />;
-  if (query && !data?.results?.length)
+  if (isError)
     return (
-      <NoResults message="We couldn't find any movies or TV shows matching your search. Try different keywords or explore trending content." />
+      <Status.Error message='There was an error loading the media list. Please try again.' onRetry={() => refetch()} />
     );
-  if (data?.total_results === 0 && emptyComponent) return emptyComponent;
+  if (!data?.results?.length)
+    return (
+      <Status.NoResults message="We couldn't find any movies or TV shows matching your search. Try different keywords or explore trending content." />
+    );
+  if (data.total_results === 0)
+    return (
+      <Status.Empty
+        Icon={Film}
+        title='No Media'
+        message='It seems there are no media at the moment. Please come back and check later.'
+      />
+    );
 
   if (asSlider)
     return (

@@ -173,7 +173,6 @@ export default function Search() {
                 queryFn: getQueryFunction() as () => Promise<TMDBResponse<Person>>,
                 enabled: !!query,
               }}
-              errorMessage='Something went wrong while searching for celebrities. Please try again later.'
             />
           ) : (
             <MediaCardsList
@@ -182,7 +181,6 @@ export default function Search() {
                 queryFn: getQueryFunction() as () => Promise<TMDBResponse<Media>>,
                 enabled: !!query,
               }}
-              errorMessage='Something went wrong while searching. Please try again later.'
             />
           )}
         </div>

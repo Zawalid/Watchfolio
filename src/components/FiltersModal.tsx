@@ -14,7 +14,7 @@ import { cn } from '@/utils';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { useDiscoverParams } from '@/hooks/useDiscoverParams';
+import { useFilters } from '@/hooks/useFilters';
 
 export type FilterOption = 'genres' | 'networks' | 'types' | 'language' | 'ratingRange' | 'releaseYear';
 
@@ -52,29 +52,7 @@ export default function FiltersModal({
   const { isOpen, onClose, onOpen } = disclosure;
   const { registerNavigator, unregisterNavigator } = useNavigation();
 
-  const {
-    language,
-    minRating,
-    maxRating,
-    minYear,
-    maxYear,
-    selectedGenres,
-    selectedNetworks,
-    selectedTypes,
-    setSelectedTypes,
-    clearAllFilters,
-  } = useDiscoverParams();
-
-  const hasFilters = Boolean(
-    selectedGenres?.length ||
-      selectedNetworks?.length ||
-      selectedTypes?.length ||
-      language ||
-      minRating ||
-      maxRating ||
-      minYear ||
-      maxYear
-  );
+  const { selectedTypes, setSelectedTypes, numberOfFilters, hasFilters, clearAllFilters } = useFilters();
 
   useHotkeys(getShortcut('toggleFilters')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
   useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
@@ -126,14 +104,7 @@ export default function FiltersModal({
           <Filter className={cn('size-4', hasFilters && 'text-amber-400')} />
           {hasFilters && (
             <div className='absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black/80'>
-              {(selectedGenres?.length || 0) +
-                (selectedNetworks?.length || 0) +
-                (selectedTypes?.length || 0) +
-                (language ? 1 : 0) +
-                (minRating ? 1 : 0) +
-                (maxRating ? 1 : 0) +
-                (minYear ? 1 : 0) +
-                (maxYear ? 1 : 0)}
+              {numberOfFilters}
             </div>
           )}
         </Button>
@@ -165,7 +136,7 @@ export default function FiltersModal({
 }
 
 function GenresFilter() {
-  const { selectedGenres, setSelectedGenres } = useDiscoverParams();
+  const { selectedGenres, setSelectedGenres } = useFilters();
   const toggle = (slug: string) => {
     const list = selectedGenres || [];
     if (list.includes(slug)) {
@@ -202,7 +173,7 @@ function GenresFilter() {
 }
 
 function NetworksFilter() {
-  const { selectedNetworks, setSelectedNetworks } = useDiscoverParams();
+  const { selectedNetworks, setSelectedNetworks } = useFilters();
   const toggle = (slug: string) => {
     const list = selectedNetworks || [];
     if (list.includes(slug)) {
@@ -277,7 +248,7 @@ function TypesFilter() {
 }
 
 function LanguageFilter() {
-  const { language, setLanguage } = useDiscoverParams();
+  const { language, setLanguage } = useFilters();
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
@@ -304,7 +275,7 @@ function LanguageFilter() {
 }
 
 function RatingRangeFilter() {
-  const { minRating, maxRating, setMinRating, setMaxRating } = useDiscoverParams();
+  const { minRating, maxRating, setMinRating, setMaxRating } = useFilters();
 
   let minError: string | null = null;
   let maxError: string | null = null;
@@ -369,7 +340,7 @@ function RatingRangeFilter() {
 
 function ReleaseYearFilter() {
   const currentYear = new Date().getFullYear();
-  const { minYear, maxYear, setMinYear, setMaxYear } = useDiscoverParams();
+  const { minYear, maxYear, setMinYear, setMaxYear } = useFilters();
 
   let minError: string | null = null;
   let maxError: string | null = null;

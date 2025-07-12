@@ -90,7 +90,6 @@ export default function Celebrities() {
             queryFn: async () =>
               category === 'trending' ? await getTrendingPeople(page) : await getPopularPeople(page),
           }}
-          errorMessage='Something went wrong while fetching celebrities. Please try again later.'
         />
       </motion.div>
     </motion.div>

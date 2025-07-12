@@ -10,6 +10,7 @@ import CelebrityProfile from '@/components/celebrity/details/CelebrityProfile';
 import CelebrityCategories from '@/components/celebrity/details/CelebrityCategories';
 import CelebrityCredits from '@/components/celebrity/details/CelebrityCredits';
 import CelebritySkeleton from '@/components/celebrity/details/CelebritySkeleton';
+import { Status } from '@/components/ui/Status';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
 const sectionVariants = {
@@ -125,7 +126,14 @@ export default function CelebrityDetails() {
   );
 
   if (isLoading) return <CelebritySkeleton />;
-  if (isError || !person) return null; // TODO : Better error UI
+  if (!isError) return <Status.Error message='There was an error loading the celebrity details. Please try again.' />;
+  if (!person)
+    return (
+      <Status.NotFound
+        title='Celebrity Not Found'
+        message='The celebrity you are looking for does not exist. Please try again with a different celebrity.'
+      />
+    );
 
   return (
     <motion.div className='space-y-6' variants={containerVariants} initial='hidden' animate='visible'>

@@ -12,7 +12,6 @@ export default function Similar({ type, id }: { type: 'movie' | 'tv'; id: number
           enabled: !!id,
         }}
         asSlider
-        errorMessage='Something went wrong while fetching similar content. Please try again later.'
       />
     </section>
   );

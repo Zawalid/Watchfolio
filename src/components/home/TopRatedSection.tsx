@@ -45,7 +45,6 @@ export default function TopRatedSection() {
         <MediaCardsList
           queryOptions={selectedTab === 'movie' ? movieQuery : tvQuery}
           asSlider={true}
-          errorMessage='Unable to load upcoming content. Please try again later.'
           slideClassName='w-[200px]! sm:w-[250px]!'
           sliderProps={{ autoplay: true }}
         />

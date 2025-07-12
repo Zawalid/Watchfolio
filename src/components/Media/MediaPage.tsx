@@ -24,7 +24,6 @@ export default function MediaPage({ type, categories }: MediaPageProps) {
           queryKey: queryKeys.category(type, category as Categories, page),
           queryFn: async () => await getFn(category as Categories, page),
         }}
-        errorMessage={`Something went wrong while fetching ${type === 'movie' ? 'movies' : 'TV shows'}. Please try again later.`}
       />
     );
   }
@@ -37,7 +36,6 @@ export default function MediaPage({ type, categories }: MediaPageProps) {
         queryKey: queryKeys.discover(type, discoverParams),
         queryFn: async () => await discoverFn(discoverParams),
       }}
-      errorMessage={`Something went wrong while fetching ${type === 'movie' ? 'movies' : 'TV shows'}. Please try again later.`}
     />
   );
 }

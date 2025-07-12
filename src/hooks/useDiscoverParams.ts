@@ -1,22 +1,17 @@
 import { useMemo } from 'react';
-import { parseAsArrayOf, parseAsInteger, parseAsString, useQueryState } from 'nuqs';
+import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { DiscoverParams } from '@/lib/api/TMDB';
 import { GENRES } from '@/utils/constants/TMDB';
 import { useDebounce } from './useDebounce';
+import { useFilters } from './useFilters';
 
 export function useDiscoverParams(type?: MediaType) {
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [sortBy, setSortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
-  const [sortDir, setSortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
-  const [language, setLanguage] = useQueryState('language', parseAsString);
-  const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
-  const [selectedNetworks, setSelectedNetworks] = useQueryState('networks', parseAsArrayOf(parseAsString));
-  const [minRating, setMinRating] = useQueryState('min_rating', parseAsInteger);
-  const [maxRating, setMaxRating] = useQueryState('max_rating', parseAsInteger);
-  const [minYear, setMinYear] = useQueryState('min_year', parseAsInteger);
-  const [maxYear, setMaxYear] = useQueryState('max_year', parseAsInteger);
+  const [page] = useQueryState('page', parseAsInteger.withDefault(1));
+  const [sortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
+  const [sortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
 
-  const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
+  const { language, minRating, maxRating, minYear, maxYear, selectedGenres, selectedNetworks, selectedTypes } =
+    useFilters();
 
   const debouncedMinRating = useDebounce(minRating, 700);
   const debouncedMaxRating = useDebounce(maxRating, 700);
@@ -75,38 +70,18 @@ export function useDiscoverParams(type?: MediaType) {
     type,
   ]);
 
-  const clearAllFilters = () => {
-    setSelectedGenres(null);
-    setSelectedNetworks(null);
-    setMinRating(null);
-    setMaxRating(null);
-    setMinYear(null);
-    setMaxYear(null);
-  };
-
   return {
     discoverParams,
     page,
-    setPage,
     sortBy,
-    setSortBy,
     sortDir,
-    setSortDir,
     language,
-    setLanguage,
     minRating,
-    setMinRating,
     maxRating,
-    setMaxRating,
     minYear,
-    setMinYear,
     maxYear,
-    setMaxYear,
     selectedGenres,
-    setSelectedGenres,
     selectedNetworks,
-    setSelectedNetworks,
-    selectedTypes,setSelectedTypes,
-    clearAllFilters,
+    selectedTypes,
   };
 }

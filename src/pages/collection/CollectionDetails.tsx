@@ -6,11 +6,11 @@ import CollectionDetailsSkeleton from '@/components/collection/details/Collectio
 import CollectionMovies from '@/components/collection/details/CollectionMovies';
 import { getCollection } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
-import { Error } from '@/components/Status';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { formatDate } from '@/utils';
 import { Rating } from '@/components/ui/Rating';
+import { Status } from '@/components/ui/Status';
 
 export default function CollectionDetails() {
   const { slug } = useParams();
@@ -27,7 +27,14 @@ export default function CollectionDetails() {
   });
 
   if (isLoading) return <CollectionDetailsSkeleton />;
-  if (isError || !collection) return <Error message='Failed to load collection details.' />;
+  if (isError) return <Status.Error message='There was an error loading the collection details. Please try again.' />;
+  if (!collection)
+    return (
+      <Status.NotFound
+        title='Collection Not Found'
+        message='The collection you are looking for does not exist. Please try again with a different collection.'
+      />
+    );
 
   const { name, overview, backdrop_path, parts } = collection;
   const formattedName = name.replace(' Collection', '').trim();
