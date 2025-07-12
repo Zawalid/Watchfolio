@@ -120,7 +120,7 @@ export default function LibraryLayout() {
         <SyncStatus className='mt-auto mb-3' />
       </div>
       <div
-        className={`flex flex-col gap-8 transition-all duration-300 ${
+        className={`flex flex-col gap-8 h-full transition-all duration-300 ${
           showTabs ? 'w-[calc(100%-260px)] translate-x-[260px]' : 'w-full translate-x-0'
         }`}
       >

@@ -202,3 +202,15 @@ declare interface PersonCredits {
   crew: Credit[];
   id: number;
 }
+
+/**
+ * Network information
+ */
+interface Network {
+  id: number;
+  name: string;
+  logo: string;
+  slug: string;
+  invertOnHover: boolean;
+  provider_id?: number;
+}

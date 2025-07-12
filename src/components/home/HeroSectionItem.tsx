@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Heart, Info, TrendingUp, Sparkles, LibraryBig, Check, Film, Tv } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Link } from 'react-router';
-import { getMediaType, generateMediaLink, getRating, getReleaseYear } from '@/utils/media';
+import { getMediaType, generateMediaLink,  getReleaseYear } from '@/utils/media';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
@@ -27,7 +27,6 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
   const mediaType = getMediaType(item);
   const title = mediaType === 'movie' ? (item as Movie).title : (item as TvShow).name;
   const fullDate = getReleaseYear(item, 'full');
-  const rating = getRating(item.vote_average);
 
   const isInLibrary = libraryItem && libraryItem.status !== 'none';
   const isFavorite = libraryItem?.isFavorite || false;
@@ -113,7 +112,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
               </div>
             )}
 
-            {rating && <Rating rating={+rating} />}
+            {<Rating rating={item.vote_average} />}
 
             <div className='flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm'>
               {mediaType === 'movie' ? <Film className='h-4 w-4' /> : <Tv className='h-4 w-4' />}

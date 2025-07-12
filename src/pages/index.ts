@@ -6,15 +6,16 @@ export { default as Movies } from './media/Movies';
 export { default as TV } from './media/TV';
 export { default as MediaDetails } from './media/MediaDetails';
 export { default as Search } from './media/Search';
-export { default as Person } from './celebrity/Celebrity';
 export { default as Celebrities } from './celebrity/Celebrities';
+export { default as CelebrityDetails } from './celebrity/CelebrityDetails';
 export { default as EmailVerification } from './auth/EmailVerification';
 export { default as Profile } from './settings/Profile';
 export { default as Preferences } from './settings/Preferences';
 export { default as PrivacySecurity } from './settings/PrivacySecurity';
 export { default as LibrarySettings } from './settings/Library';
-export { default as Collections } from './collection/Collections'
+export { default as Collections } from './collection/Collections';
 export { default as CollectionDetails } from './collection/CollectionDetails';
 export { default as TermsOfService } from './legal/TermsOfService';
 export { default as PrivacyPolicy } from './legal/PrivacyPolicy';
-;
+export { default as Networks } from './networks/Networks'
+export { default as NetworkDetails } from './networks/NetworkDetails';

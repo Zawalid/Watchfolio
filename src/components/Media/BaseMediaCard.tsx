@@ -379,7 +379,7 @@ export default function BaseMediaCard({
 
       {/* Rating badge - Top right (hidden on hover when library actions show) */}
       <AnimatePresence>
-        {rating && rating > 0 && !isInteractive && (
+        {!isInteractive && (
           <motion.div
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}

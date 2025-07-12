@@ -6,6 +6,7 @@ import { queryKeys } from '@/lib/react-query';
 import { getSuggestions } from '@/lib/api/TMDB';
 import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface SearchInputProps {
   searchQuery: string;
@@ -16,19 +17,11 @@ interface SearchInputProps {
 export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: SearchInputProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const { registerNavigator, unregisterNavigator } = useNavigation();
 
-  // Debounce the search input
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
   // Use React Query to fetch and cache suggestions
   const { data: suggestions = [], isLoading } = useQuery({

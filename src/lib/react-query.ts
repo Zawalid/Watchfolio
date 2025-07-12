@@ -32,4 +32,6 @@ export const queryKeys = {
   personCredits: (id: number, type: 'movie' | 'tv' | 'combined') => ['person', id, 'credits', type] as const,
 
   collection: (id: number) => ['collection', id] as const,
+
+  network: (id: number, params: DiscoverParams) => ['network', id, params] as const,
 };

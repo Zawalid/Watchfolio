@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { Github, Twitter, Instagram, Film, Tv, Layers, User, Settings, Home, Users } from 'lucide-react';
+import { Github, Twitter, Instagram, Film, Tv, Layers, User, Settings, Home, Users, Tv2Icon } from 'lucide-react';
 
 const footerLinks = [
   {
@@ -11,6 +11,7 @@ const footerLinks = [
       { label: 'TV Shows', href: '/tv', icon: <Tv className='size-4' /> },
       { label: 'Collections', href: '/collections', icon: <Layers className='size-4' /> },
       { label: 'Celebrities', href: '/celebrities', icon: <Users className='size-4' /> },
+      { label: 'Networks', href: '/networks', icon: <Tv2Icon className='size-4' /> },
     ],
   },
   {

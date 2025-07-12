@@ -1,1442 +1,1523 @@
 export const GENRES = [
-    { id: 10759, label: 'Action & Adventure' },
-    { id: 16, label: 'Animation' },
-    { id: 35, label: 'Comedy' },
-    { id: 80, label: 'Crime' },
-    { id: 99, label: 'Documentary' },
-    { id: 18, label: 'Drama' },
-    { id: 10751, label: 'Family' },
-    { id: 10762, label: 'Kids' },
-    { id: 9648, label: 'Mystery' },
-    { id: 10763, label: 'News' },
-    { id: 10764, label: 'Reality' },
-    { id: 10765, label: 'Sci-Fi & Fantasy' },
-    { id: 10766, label: 'Soap' },
-    { id: 10767, label: 'Talk' },
-    { id: 10768, label: 'War & Politics' },
-    { id: 37, label: 'Western' },
-    { id: 28, label: 'Action' },
-    { id: 12, label: 'Adventure' },
-    { id: 14, label: 'Fantasy' },
-    { id: 36, label: 'History' },
-    { id: 27, label: 'Horror' },
-    { id: 10402, label: 'Music' },
-    { id: 10749, label: 'Romance' },
-    { id: 10770, label: 'TV Movie' },
-    { id: 53, label: 'Thriller' },
-    { id: 10752, label: 'War' },
-    { id: 878, label: 'Science Fiction' },
-  ];
-  
-  export const LANGUAGES = [
-    {
-      iso_639_1: 'ay',
-      english_name: 'Aymara',
-      name: '',
-    },
-    {
-      iso_639_1: 'ch',
-      english_name: 'Chamorro',
-      name: "Finu' Chamorro",
-    },
-    {
-      iso_639_1: 'fj',
-      english_name: 'Fijian',
-      name: '',
-    },
-    {
-      iso_639_1: 'it',
-      english_name: 'Italian',
-      name: 'Italiano',
-    },
-    {
-      iso_639_1: 'nv',
-      english_name: 'Navajo',
-      name: '',
-    },
-    {
-      iso_639_1: 'qu',
-      english_name: 'Quechua',
-      name: '',
-    },
-    {
-      iso_639_1: 'ru',
-      english_name: 'Russian',
-      name: 'Pусский',
-    },
-    {
-      iso_639_1: 'sc',
-      english_name: 'Sardinian',
-      name: '',
-    },
-    {
-      iso_639_1: 'sw',
-      english_name: 'Swahili',
-      name: 'Kiswahili',
-    },
-    {
-      iso_639_1: 'tn',
-      english_name: 'Tswana',
-      name: '',
-    },
-    {
-      iso_639_1: 'ur',
-      english_name: 'Urdu',
-      name: 'اردو',
-    },
-    {
-      iso_639_1: 'ho',
-      english_name: 'Hiri Motu',
-      name: '',
-    },
-    {
-      iso_639_1: 'km',
-      english_name: 'Khmer',
-      name: '',
-    },
-    {
-      iso_639_1: 'kj',
-      english_name: 'Kuanyama',
-      name: '',
-    },
-    {
-      iso_639_1: 'tt',
-      english_name: 'Tatar',
-      name: '',
-    },
-    {
-      iso_639_1: 'ps',
-      english_name: 'Pushto',
-      name: 'پښتو',
-    },
-    {
-      iso_639_1: 'cn',
-      english_name: 'Cantonese',
-      name: '广州话 / 廣州話',
-    },
-    {
-      iso_639_1: 'mk',
-      english_name: 'Macedonian',
-      name: '',
-    },
-    {
-      iso_639_1: 'yo',
-      english_name: 'Yoruba',
-      name: 'Èdè Yorùbá',
-    },
-    {
-      iso_639_1: 'fo',
-      english_name: 'Faroese',
-      name: '',
-    },
-    {
-      iso_639_1: 'ff',
-      english_name: 'Fulah',
-      name: 'Fulfulde',
-    },
-    {
-      iso_639_1: 'ig',
-      english_name: 'Igbo',
-      name: '',
-    },
-    {
-      iso_639_1: 'io',
-      english_name: 'Ido',
-      name: '',
-    },
-    {
-      iso_639_1: 'id',
-      english_name: 'Indonesian',
-      name: 'Bahasa indonesia',
-    },
-    {
-      iso_639_1: 'ko',
-      english_name: 'Korean',
-      name: '한국어/조선말',
-    },
-    {
-      iso_639_1: 'mo',
-      english_name: 'Moldavian',
-      name: '',
-    },
-    {
-      iso_639_1: 'nr',
-      english_name: 'Ndebele',
-      name: '',
-    },
-    {
-      iso_639_1: 'pi',
-      english_name: 'Pali',
-      name: '',
-    },
-    {
-      iso_639_1: 'so',
-      english_name: 'Somali',
-      name: 'Somali',
-    },
-    {
-      iso_639_1: 'sq',
-      english_name: 'Albanian',
-      name: 'shqip',
-    },
-    {
-      iso_639_1: 'ta',
-      english_name: 'Tamil',
-      name: 'தமிழ்',
-    },
-    {
-      iso_639_1: 'tl',
-      english_name: 'Tagalog',
-      name: '',
-    },
-    {
-      iso_639_1: 'th',
-      english_name: 'Thai',
-      name: 'ภาษาไทย',
-    },
-    {
-      iso_639_1: 've',
-      english_name: 'Venda',
-      name: '',
-    },
-    {
-      iso_639_1: 'vo',
-      english_name: 'Volapük',
-      name: '',
-    },
-    {
-      iso_639_1: 'cu',
-      english_name: 'Slavic',
-      name: '',
-    },
-    {
-      iso_639_1: 'kw',
-      english_name: 'Cornish',
-      name: '',
-    },
-    {
-      iso_639_1: 'fr',
-      english_name: 'French',
-      name: 'Français',
-    },
-    {
-      iso_639_1: 'fy',
-      english_name: 'Frisian',
-      name: '',
-    },
-    {
-      iso_639_1: 'ht',
-      english_name: 'Haitian; Haitian Creole',
-      name: '',
-    },
-    {
-      iso_639_1: 'ie',
-      english_name: 'Interlingue',
-      name: '',
-    },
-    {
-      iso_639_1: 'ia',
-      english_name: 'Interlingua',
-      name: '',
-    },
-    {
-      iso_639_1: 'mh',
-      english_name: 'Marshall',
-      name: '',
-    },
-    {
-      iso_639_1: 'rn',
-      english_name: 'Rundi',
-      name: 'Kirundi',
-    },
-    {
-      iso_639_1: 'se',
-      english_name: 'Northern Sami',
-      name: '',
-    },
-    {
-      iso_639_1: 'gd',
-      english_name: 'Gaelic',
-      name: '',
-    },
-    {
-      iso_639_1: 'ii',
-      english_name: 'Yi',
-      name: '',
-    },
-    {
-      iso_639_1: 'lo',
-      english_name: 'Lao',
-      name: '',
-    },
-    {
-      iso_639_1: 'la',
-      english_name: 'Latin',
-      name: 'Latin',
-    },
-    {
-      iso_639_1: 'ny',
-      english_name: 'Chichewa; Nyanja',
-      name: '',
-    },
-    {
-      iso_639_1: 'oj',
-      english_name: 'Ojibwa',
-      name: '',
-    },
-    {
-      iso_639_1: 'ab',
-      english_name: 'Abkhazian',
-      name: '',
-    },
-    {
-      iso_639_1: 'ar',
-      english_name: 'Arabic',
-      name: 'العربية',
-    },
-    {
-      iso_639_1: 'ee',
-      english_name: 'Ewe',
-      name: 'Èʋegbe',
-    },
-    {
-      iso_639_1: 'hi',
-      english_name: 'Hindi',
-      name: 'हिन्दी',
-    },
-    {
-      iso_639_1: 'an',
-      english_name: 'Aragonese',
-      name: '',
-    },
-    {
-      iso_639_1: 'ba',
-      english_name: 'Bashkir',
-      name: '',
-    },
-    {
-      iso_639_1: 'bn',
-      english_name: 'Bengali',
-      name: 'বাংলা',
-    },
-    {
-      iso_639_1: 'bi',
-      english_name: 'Bislama',
-      name: '',
-    },
-    {
-      iso_639_1: 'et',
-      english_name: 'Estonian',
-      name: 'Eesti',
-    },
-    {
-      iso_639_1: 'eu',
-      english_name: 'Basque',
-      name: 'euskera',
-    },
-    {
-      iso_639_1: 'gl',
-      english_name: 'Galician',
-      name: 'Galego',
-    },
-    {
-      iso_639_1: 'ha',
-      english_name: 'Hausa',
-      name: 'Hausa',
-    },
-    {
-      iso_639_1: 'hz',
-      english_name: 'Herero',
-      name: '',
-    },
-    {
-      iso_639_1: 'iu',
-      english_name: 'Inuktitut',
-      name: '',
-    },
-    {
-      iso_639_1: 'jv',
-      english_name: 'Javanese',
-      name: '',
-    },
-    {
-      iso_639_1: 'kr',
-      english_name: 'Kanuri',
-      name: '',
-    },
-    {
-      iso_639_1: 'mn',
-      english_name: 'Mongolian',
-      name: '',
-    },
-    {
-      iso_639_1: 'my',
-      english_name: 'Burmese',
-      name: '',
-    },
-    {
-      iso_639_1: 'na',
-      english_name: 'Nauru',
-      name: '',
-    },
-    {
-      iso_639_1: 'pt',
-      english_name: 'Portuguese',
-      name: 'Português',
-    },
-    {
-      iso_639_1: 'sd',
-      english_name: 'Sindhi',
-      name: '',
-    },
-    {
-      iso_639_1: 'zu',
-      english_name: 'Zulu',
-      name: 'isiZulu',
-    },
-    {
-      iso_639_1: 'ak',
-      english_name: 'Akan',
-      name: '',
-    },
-    {
-      iso_639_1: 'hu',
-      english_name: 'Hungarian',
-      name: 'Magyar',
-    },
-    {
-      iso_639_1: 'ik',
-      english_name: 'Inupiaq',
-      name: '',
-    },
-    {
-      iso_639_1: 'ks',
-      english_name: 'Kashmiri',
-      name: '',
-    },
-    {
-      iso_639_1: 'ka',
-      english_name: 'Georgian',
-      name: 'ქართული',
-    },
-    {
-      iso_639_1: 'lg',
-      english_name: 'Ganda',
-      name: '',
-    },
-    {
-      iso_639_1: 'oc',
-      english_name: 'Occitan',
-      name: '',
-    },
-    {
-      iso_639_1: 'uz',
-      english_name: 'Uzbek',
-      name: 'ozbek',
-    },
-    {
-      iso_639_1: 'xh',
-      english_name: 'Xhosa',
-      name: '',
-    },
-    {
-      iso_639_1: 'za',
-      english_name: 'Zhuang',
-      name: '',
-    },
-    {
-      iso_639_1: 'zh',
-      english_name: 'Mandarin',
-      name: '普通话',
-    },
-    {
-      iso_639_1: 'el',
-      english_name: 'Greek',
-      name: 'ελληνικά',
-    },
-    {
-      iso_639_1: 'ga',
-      english_name: 'Irish',
-      name: 'Gaeilge',
-    },
-    {
-      iso_639_1: 'gn',
-      english_name: 'Guarani',
-      name: '',
-    },
-    {
-      iso_639_1: 'gu',
-      english_name: 'Gujarati',
-      name: '',
-    },
-    {
-      iso_639_1: 'kl',
-      english_name: 'Kalaallisut',
-      name: '',
-    },
-    {
-      iso_639_1: 'kn',
-      english_name: 'Kannada',
-      name: '?????',
-    },
-    {
-      iso_639_1: 'ky',
-      english_name: 'Kirghiz',
-      name: '??????',
-    },
-    {
-      iso_639_1: 'nl',
-      english_name: 'Dutch',
-      name: 'Nederlands',
-    },
-    {
-      iso_639_1: 'sl',
-      english_name: 'Slovenian',
-      name: 'Slovenščina',
-    },
-    {
-      iso_639_1: 'sr',
-      english_name: 'Serbian',
-      name: 'Srpski',
-    },
-    {
-      iso_639_1: 'ss',
-      english_name: 'Swati',
-      name: '',
-    },
-    {
-      iso_639_1: 'ug',
-      english_name: 'Uighur',
-      name: '',
-    },
-    {
-      iso_639_1: 'bg',
-      english_name: 'Bulgarian',
-      name: 'български език',
-    },
-    {
-      iso_639_1: 'co',
-      english_name: 'Corsican',
-      name: '',
-    },
-    {
-      iso_639_1: 'cy',
-      english_name: 'Welsh',
-      name: 'Cymraeg',
-    },
-    {
-      iso_639_1: 'dv',
-      english_name: 'Divehi',
-      name: '',
-    },
-    {
-      iso_639_1: 'ki',
-      english_name: 'Kikuyu',
-      name: '',
-    },
-    {
-      iso_639_1: 'mt',
-      english_name: 'Maltese',
-      name: 'Malti',
-    },
-    {
-      iso_639_1: 'ne',
-      english_name: 'Nepali',
-      name: '',
-    },
-    {
-      iso_639_1: 'si',
-      english_name: 'Sinhalese',
-      name: 'සිංහල',
-    },
-    {
-      iso_639_1: 'sn',
-      english_name: 'Shona',
-      name: '',
-    },
-    {
-      iso_639_1: 'su',
-      english_name: 'Sundanese',
-      name: '',
-    },
-    {
-      iso_639_1: 'to',
-      english_name: 'Tonga',
-      name: '',
-    },
-    {
-      iso_639_1: 'wa',
-      english_name: 'Walloon',
-      name: '',
-    },
-    {
-      iso_639_1: 'cr',
-      english_name: 'Cree',
-      name: '',
-    },
-    {
-      iso_639_1: 'fi',
-      english_name: 'Finnish',
-      name: 'suomi',
-    },
-    {
-      iso_639_1: 'hr',
-      english_name: 'Croatian',
-      name: 'Hrvatski',
-    },
-    {
-      iso_639_1: 'mg',
-      english_name: 'Malagasy',
-      name: '',
-    },
-    {
-      iso_639_1: 'nb',
-      english_name: 'Norwegian Bokmål',
-      name: 'Bokmål',
-    },
-    {
-      iso_639_1: 'ts',
-      english_name: 'Tsonga',
-      name: '',
-    },
-    {
-      iso_639_1: 'vi',
-      english_name: 'Vietnamese',
-      name: 'Tiếng Việt',
-    },
-    {
-      iso_639_1: 'hy',
-      english_name: 'Armenian',
-      name: '',
-    },
-    {
-      iso_639_1: 'av',
-      english_name: 'Avaric',
-      name: '',
-    },
-    {
-      iso_639_1: 'az',
-      english_name: 'Azerbaijani',
-      name: 'Azərbaycan',
-    },
-    {
-      iso_639_1: 'gv',
-      english_name: 'Manx',
-      name: '',
-    },
-    {
-      iso_639_1: 'sh',
-      english_name: 'Serbo-Croatian',
-      name: '',
-    },
-    {
-      iso_639_1: 'lv',
-      english_name: 'Latvian',
-      name: 'Latviešu',
-    },
-    {
-      iso_639_1: 'mr',
-      english_name: 'Marathi',
-      name: '',
-    },
-    {
-      iso_639_1: 'pl',
-      english_name: 'Polish',
-      name: 'Polski',
-    },
-    {
-      iso_639_1: 'rm',
-      english_name: 'Raeto-Romance',
-      name: '',
-    },
-    {
-      iso_639_1: 'tr',
-      english_name: 'Turkish',
-      name: 'Türkçe',
-    },
-    {
-      iso_639_1: 'xx',
-      english_name: 'No Language',
-      name: 'No Language',
-    },
-    {
-      iso_639_1: 'ca',
-      english_name: 'Catalan',
-      name: 'Català',
-    },
-    {
-      iso_639_1: 'de',
-      english_name: 'German',
-      name: 'Deutsch',
-    },
-    {
-      iso_639_1: 'rw',
-      english_name: 'Kinyarwanda',
-      name: 'Kinyarwanda',
-    },
-    {
-      iso_639_1: 'ln',
-      english_name: 'Lingala',
-      name: '',
-    },
-    {
-      iso_639_1: 'ro',
-      english_name: 'Romanian',
-      name: 'Română',
-    },
-    {
-      iso_639_1: 'ty',
-      english_name: 'Tahitian',
-      name: '',
-    },
-    {
-      iso_639_1: 'ti',
-      english_name: 'Tigrinya',
-      name: '',
-    },
-    {
-      iso_639_1: 'he',
-      english_name: 'Hebrew',
-      name: 'עִבְרִית',
-    },
-    {
-      iso_639_1: 'as',
-      english_name: 'Assamese',
-      name: '',
-    },
-    {
-      iso_639_1: 'bo',
-      english_name: 'Tibetan',
-      name: '',
-    },
-    {
-      iso_639_1: 'dz',
-      english_name: 'Dzongkha',
-      name: '',
-    },
-    {
-      iso_639_1: 'eo',
-      english_name: 'Esperanto',
-      name: 'Esperanto',
-    },
-    {
-      iso_639_1: 'ja',
-      english_name: 'Japanese',
-      name: '日本語',
-    },
-    {
-      iso_639_1: 'ng',
-      english_name: 'Ndonga',
-      name: '',
-    },
-    {
-      iso_639_1: 'no',
-      english_name: 'Norwegian',
-      name: 'Norsk',
-    },
-    {
-      iso_639_1: 'pa',
-      english_name: 'Punjabi',
-      name: 'ਪੰਜਾਬੀ',
-    },
-    {
-      iso_639_1: 'sa',
-      english_name: 'Sanskrit',
-      name: '',
-    },
-    {
-      iso_639_1: 'am',
-      english_name: 'Amharic',
-      name: '',
-    },
-    {
-      iso_639_1: 'fa',
-      english_name: 'Persian',
-      name: 'فارسی',
-    },
-    {
-      iso_639_1: 'aa',
-      english_name: 'Afar',
-      name: '',
-    },
-    {
-      iso_639_1: 'ae',
-      english_name: 'Avestan',
-      name: '',
-    },
-    {
-      iso_639_1: 'br',
-      english_name: 'Breton',
-      name: '',
-    },
-    {
-      iso_639_1: 'is',
-      english_name: 'Icelandic',
-      name: 'Íslenska',
-    },
-    {
-      iso_639_1: 'kk',
-      english_name: 'Kazakh',
-      name: 'қазақ',
-    },
-    {
-      iso_639_1: 'lt',
-      english_name: 'Lithuanian',
-      name: 'Lietuvių',
-    },
-    {
-      iso_639_1: 'mi',
-      english_name: 'Maori',
-      name: '',
-    },
-    {
-      iso_639_1: 'ms',
-      english_name: 'Malay',
-      name: 'Bahasa melayu',
-    },
-    {
-      iso_639_1: 'or',
-      english_name: 'Oriya',
-      name: '',
-    },
-    {
-      iso_639_1: 'st',
-      english_name: 'Sotho',
-      name: '',
-    },
-    {
-      iso_639_1: 'tk',
-      english_name: 'Turkmen',
-      name: '',
-    },
-    {
-      iso_639_1: 'af',
-      english_name: 'Afrikaans',
-      name: 'Afrikaans',
-    },
-    {
-      iso_639_1: 'bm',
-      english_name: 'Bambara',
-      name: 'Bamanankan',
-    },
-    {
-      iso_639_1: 'bs',
-      english_name: 'Bosnian',
-      name: 'Bosanski',
-    },
-    {
-      iso_639_1: 'cs',
-      english_name: 'Czech',
-      name: 'Český',
-    },
-    {
-      iso_639_1: 'ce',
-      english_name: 'Chechen',
-      name: '',
-    },
-    {
-      iso_639_1: 'kv',
-      english_name: 'Komi',
-      name: '',
-    },
-    {
-      iso_639_1: 'lb',
-      english_name: 'Letzeburgesch',
-      name: '',
-    },
-    {
-      iso_639_1: 'nd',
-      english_name: 'Ndebele',
-      name: '',
-    },
-    {
-      iso_639_1: 'sk',
-      english_name: 'Slovak',
-      name: 'Slovenčina',
-    },
-    {
-      iso_639_1: 'sm',
-      english_name: 'Samoan',
-      name: '',
-    },
-    {
-      iso_639_1: 'tg',
-      english_name: 'Tajik',
-      name: '',
-    },
-    {
-      iso_639_1: 'wo',
-      english_name: 'Wolof',
-      name: 'Wolof',
-    },
-    {
-      iso_639_1: 'yi',
-      english_name: 'Yiddish',
-      name: '',
-    },
-    {
-      iso_639_1: 'be',
-      english_name: 'Belarusian',
-      name: 'беларуская мова',
-    },
-    {
-      iso_639_1: 'cv',
-      english_name: 'Chuvash',
-      name: '',
-    },
-    {
-      iso_639_1: 'da',
-      english_name: 'Danish',
-      name: 'Dansk',
-    },
-    {
-      iso_639_1: 'en',
-      english_name: 'English',
-      name: 'English',
-    },
-    {
-      iso_639_1: 'kg',
-      english_name: 'Kongo',
-      name: '',
-    },
-    {
-      iso_639_1: 'ku',
-      english_name: 'Kurdish',
-      name: '',
-    },
-    {
-      iso_639_1: 'li',
-      english_name: 'Limburgish',
-      name: '',
-    },
-    {
-      iso_639_1: 'lu',
-      english_name: 'Luba-Katanga',
-      name: '',
-    },
-    {
-      iso_639_1: 'ml',
-      english_name: 'Malayalam',
-      name: '',
-    },
-    {
-      iso_639_1: 'nn',
-      english_name: 'Norwegian Nynorsk',
-      name: '',
-    },
-    {
-      iso_639_1: 'om',
-      english_name: 'Oromo',
-      name: '',
-    },
-    {
-      iso_639_1: 'os',
-      english_name: 'Ossetian; Ossetic',
-      name: '',
-    },
-    {
-      iso_639_1: 'sg',
-      english_name: 'Sango',
-      name: '',
-    },
-    {
-      iso_639_1: 'es',
-      english_name: 'Spanish',
-      name: 'Español',
-    },
-    {
-      iso_639_1: 'sv',
-      english_name: 'Swedish',
-      name: 'svenska',
-    },
-    {
-      iso_639_1: 'te',
-      english_name: 'Telugu',
-      name: 'తెలుగు',
-    },
-    {
-      iso_639_1: 'tw',
-      english_name: 'Twi',
-      name: '',
-    },
-    {
-      iso_639_1: 'uk',
-      english_name: 'Ukrainian',
-      name: 'Український',
-    },
-  ];
-  
-  export const GENDERS = {
-    0: 'Not Specified',
-    1: 'Female',
-    2: 'Male',
-    3: 'Non Binary',
-  };
-  
-  export const NETWORKS = [
-    // TO make it all white : use h50_filter(negate,000,666) insead of w500
-    {
-      name: 'Netflix',
-      slug: 'netflix',
-      logo: 'https://image.tmdb.org/t/p/w500/wwemzKWzjKYJFfCeiB57q3r4Bcm.png',
-      id: 213,
-    },
-    {
-      name: 'HBO',
-      slug: 'hbo',
-      logo: 'https://image.tmdb.org/t/p/w500/tuomPhY2UtuPTqqFnKMVHvSb724.png',
-      id: 49,
-    },
-    {
-      name: 'Disney+',
-      slug: 'disney-plus',
-      logo: 'https://image.tmdb.org/t/p/w500/1edZOYAfoyZyZ3rklNSiUpXX30Q.png',
-      id: 2739,
-    },
-    {
-      name: 'Prime Video',
-      slug: 'prime-video',
-      logo: 'https://image.tmdb.org/t/p/w500/ifhbNuuVnlwYy5oXA5VIb2YR8AZ.png',
-      id: 1024,
-    },
-    {
-      name: 'Apple TV+',
-      slug: 'apple-tv-plus',
-      logo: 'https://image.tmdb.org/t/p/w500/4KAy34EHvRM25Ih8wb82AuGU7zJ.png',
-      id: 2552,
-    },
-    {
-      name: 'Hulu',
-      slug: 'hulu',
-      logo: 'https://image.tmdb.org/t/p/w500/pqUTCleNUiTLAVlelGxUgWn1ELh.png',
-      id: 453,
-    },
-    {
-      name: 'Max',
-      slug: 'max',
-      logo: 'https://image.tmdb.org/t/p/w500/rAb4M1LjGpWASxpk6Va791A7Nkw.png',
-      id: 6783,
-    },
-    {
-      name: 'HBO Max',
-      slug: 'hbo-max',
-      logo: 'https://image.tmdb.org/t/p/w500/nmU0UMDJB3dRRQSTUqawzF2Od1a.png',
-      id: 3186,
-    },
-    {
-      name: 'Paramount+',
-      slug: 'paramount-plus',
-      logo: 'https://image.tmdb.org/t/p/w500/fi83B1oztoS47xxcemFdPMhIzK.png',
-      id: 4330,
-    },
-    {
-      name: 'Peacock',
-      slug: 'peacock',
-      logo: 'https://image.tmdb.org/t/p/w500/gIAcGTjKKr0KOHL5s4O36roJ8p7.png',
-      id: 3353,
-    },
-    {
-      name: 'CBS',
-      slug: 'cbs',
-      logo: 'https://image.tmdb.org/t/p/w500/wWA5mILSAyahtdNQh1WiADi6PRI.png',
-      id: 16,
-    },
-    {
-      name: 'NBC',
-      slug: 'nbc',
-      logo: 'https://image.tmdb.org/t/p/w500/cm111bsDVlYaC1foL0itvEI4yLG.png',
-      id: 6,
-    },
-    {
-      name: 'FOX',
-      slug: 'fox',
-      logo: 'https://image.tmdb.org/t/p/w500/1DSpHrWyOORkL9N2QHX7Adt31mQ.png',
-      id: 19,
-    },
-    {
-      name: 'ABC',
-      slug: 'abc',
-      logo: 'https://image.tmdb.org/t/p/w500/2uy2ZWcplrSObIyt4x0Y9rkG6qO.png',
-      id: 2,
-    },
-    {
-      name: 'The CW',
-      slug: 'the-cw',
-      logo: 'https://image.tmdb.org/t/p/w500/hEpcdJ4O6eitG9ADSnDXNUrlovS.png',
-      id: 71,
-    },
-    {
-      name: 'Showtime',
-      slug: 'showtime',
-      logo: 'https://image.tmdb.org/t/p/w500/Allse9kbjiP6ExaQrnSpIhkurEi.png',
-      id: 67,
-    },
-    {
-      name: 'Starz',
-      slug: 'starz',
-      logo: 'https://image.tmdb.org/t/p/w500/GMDGZk9iDG4WDijY3VgUgJeyus.png',
-      id: 318,
-    },
-    {
-      name: 'AMC',
-      slug: 'amc',
-      logo: 'https://image.tmdb.org/t/p/w500/alqLicR1ZMHMaZGP3xRQxn9sq7p.png',
-      id: 174,
-    },
-    {
-      name: 'FX',
-      slug: 'fx',
-      logo: 'https://image.tmdb.org/t/p/w500/aexGjtcs42DgRtZh7zOxayiry4J.png',
-      id: 88,
-    },
-    {
-      name: 'TNT',
-      slug: 'tnt',
-      logo: 'https://image.tmdb.org/t/p/w500/6ISsKwa2XUhSC6oBtHZjYf6xFqv.png',
-      id: 41,
-    },
-    {
-      name: 'Cartoon Network',
-      slug: 'cartoon-network',
-      logo: 'https://image.tmdb.org/t/p/w500/c5OC6oVCg6QP4eqzW6XIq17CQjI.png',
-      id: 56,
-    },
-    {
-      name: 'Disney Channel',
-      slug: 'disney-channel',
-      logo: 'https://image.tmdb.org/t/p/w500/yeO3eLAa5peDwO4VQWRX7KqfVZ9.png',
-      id: 54,
-    },
-    {
-      name: 'Disney XD',
-      slug: 'disney-xd',
-      logo: 'https://image.tmdb.org/t/p/w500/nKM9EnV7jTpt3MKRbhBusJ03lAY.png',
-      id: 44,
-    },
-    {
-      name: 'BBC One',
-      slug: 'bbc-one',
-      logo: 'https://image.tmdb.org/t/p/w500/uJjcCg3O4DMEjM0xtno9OWFciRP.png',
-      id: 4,
-    },
-    {
-      name: 'BBC Two',
-      slug: 'bbc-two',
-      logo: 'https://image.tmdb.org/t/p/w500/7HVPn1p2w1nC5oRKBehXVHpss7e.png',
-      id: 332,
-    },
-    {
-      name: 'BBC Three',
-      slug: 'bbc-three',
-      logo: 'https://image.tmdb.org/t/p/w500/s22fRhj8xFPbiexrJwiAOcDEIrS.png',
-      id: 3,
-    },
-    {
-      name: 'ITV1',
-      slug: 'itv1',
-      logo: 'https://image.tmdb.org/t/p/w500/oz9pjTHnBUmlju8OkaTymhKbh6C.png',
-      id: 9,
-    },
-    {
-      name: 'Channel 4',
-      slug: 'channel-4',
-      logo: 'https://image.tmdb.org/t/p/w500/hbifXPpM55B1fL5wPo7t72vzN78.png',
-      id: 26,
-    },
-    {
-      name: 'Channel 5',
-      slug: 'channel-5',
-      logo: 'https://image.tmdb.org/t/p/w500/bMuKs6xuhI0GHSsq4WWd9FsntUN.png',
-      id: 99,
-    },
-    {
-      name: 'Crunchyroll',
-      slug: 'crunchyroll',
-      logo: 'https://image.tmdb.org/t/p/w500/81QfupgVijSH5v1H3VUbdlPm2r8.png',
-      id: 1112,
-    },
-    {
-      name: 'Freeform',
-      slug: 'freeform',
-      logo: 'https://image.tmdb.org/t/p/w500/jk2Z7WH6JnHSZrxouYh4sireM3a.png',
-      id: 1267,
-    },
-    {
-      name: 'Syfy',
-      slug: 'syfy',
-      logo: 'https://image.tmdb.org/t/p/w500/iYfrkobwDhTOFJ4AXYPSLIEeaAT.png',
-      id: 77,
-    },
-    {
-      name: 'Adult Swim',
-      slug: 'adult-swim',
-      logo: 'https://image.tmdb.org/t/p/w500/tHZPHOLc6iF27G34cAZGPsMtMSy.png',
-      id: 80,
-    },
-    {
-      name: 'TBS',
-      slug: 'tbs',
-      logo: 'https://image.tmdb.org/t/p/w500/65r0kR6MfOBYF0gEQsJGM6v5fEG.png',
-      id: 68,
-    },
-    {
-      name: 'Paramount+ with Showtime',
-      slug: 'paramount-plus-with-showtime',
-      logo: 'https://image.tmdb.org/t/p/w500/zFEsDBjBEj5OiM0FDRYY1NnG7a9.png',
-      id: 6631,
-    },
-    {
-      name: 'discovery+',
-      slug: 'discovery-plus',
-      logo: 'https://image.tmdb.org/t/p/w500/1D1bS3Dyw4ScYnFWTlBOvJXC3nb.png',
-      id: 4353,
-    },
-    {
-      name: 'Stan',
-      slug: 'stan',
-      logo: 'https://image.tmdb.org/t/p/w500/1akCJMjyZsiS4v3NTJD5Y0LFZ4R.png',
-      id: 1255,
-    },
-    {
-      name: 'Sky One',
-      slug: 'sky-one',
-      logo: 'https://image.tmdb.org/t/p/w500/dVBHOr0nYCx9GSNesTVb1TT52Xj.png',
-      id: 214,
-    },
-    {
-      name: 'Sky Atlantic',
-      slug: 'sky-atlantic',
-      logo: 'https://image.tmdb.org/t/p/w500/6es7UmBjk2HTSZKq3NbtAxYEGCx.png',
-      id: 1063,
-    },
-    {
-      name: 'Sky Max',
-      slug: 'sky-max',
-      logo: 'https://image.tmdb.org/t/p/w500/g2IOt9G84UAjsDPMXQiqgr77AMV.png',
-      id: 5237,
-    },
-    {
-      name: 'Sky Comedy',
-      slug: 'sky-comedy',
-      logo: 'https://image.tmdb.org/t/p/w500/lpg9xIy2JPy046ebRBI8GL8IebE.png',
-      id: 5213,
-    },
-    {
-      name: 'Sky History',
-      slug: 'sky-history',
-      logo: 'https://image.tmdb.org/t/p/w500/mzLlbqnnLiDIzriohlvfSbWlEfR.png',
-      id: 1755,
-    },
-    {
-      name: 'USA Network',
-      slug: 'usa-network',
-      logo: 'https://image.tmdb.org/t/p/w500/g1e0H0Ka97IG5SyInMXdJkHGKiH.png',
-      id: 30,
-    },
-    {
-      name: 'Epix',
-      slug: 'epix',
-      logo: 'https://image.tmdb.org/t/p/w500/9aH86hGHVQfvhAqrDRv1EINoxua.png',
-      id: 922,
-    },
-    {
-      name: 'WWE Network',
-      slug: 'wwe-network',
-      logo: 'https://image.tmdb.org/t/p/w500/fNkVI38NJKpnWKMmEkSxxinuyAe.png',
-      id: 1025,
-    },
-    {
-      name: 'La Une',
-      slug: 'la-une',
-      logo: 'https://image.tmdb.org/t/p/w500/kR47hzfGe3zFsFipHTuC123qyCe.png',
-      id: 1386,
-    },
-    {
-      name: 'MGM+',
-      slug: 'mgm-plus',
-      logo: 'https://image.tmdb.org/t/p/w500/89TXvQzvoKvyqD9EEogohzMJ8D6.png',
-      id: 6219,
-    },
-    {
-      name: 'Amazon Freevee',
-      slug: 'amazon-freevee',
-      logo: 'https://image.tmdb.org/t/p/w500/cCqeRYB0u4RfHbsFJo6uzCxQ9iI.png',
-      id: 7385,
-    },
-    {
-      name: 'Amazon Freevee 2',
-      slug: 'amazon-freevee-2',
-      logo: 'https://image.tmdb.org/t/p/w500/n0hqN6lKlBENn9WAbSC2WwHRPnS.png',
-      id: 5865,
-    },
-    {
-      name: 'IMDb TV',
-      slug: 'imdb-tv',
-      logo: 'https://image.tmdb.org/t/p/w500/to21uGi3vA3ACigdA7lKj3EsREk.png',
-      id: 5495,
-    },
-    {
-      name: 'CBS All Access',
-      slug: 'cbs-all-access',
-      logo: 'https://image.tmdb.org/t/p/w500/rSWD2WoY26KJmOw7QHvZjC5OEWG.png',
-      id: 1709,
-    },
-    {
-      name: 'HBO Asia',
-      slug: 'hbo-asia',
-      logo: 'https://image.tmdb.org/t/p/w500/e0TPhobVyxQ09bu9r5qj3rQLxkj.png',
-      id: 1303,
-    },
-    {
-      name: 'Disney Junior',
-      slug: 'disney-junior',
-      logo: 'https://image.tmdb.org/t/p/w500/wlkOIl5YUluIn1VjUF829jau4y4.png',
-      id: 281,
-    },
-    {
-      name: 'DC Universe',
-      slug: 'dc-universe',
-      logo: 'https://image.tmdb.org/t/p/w500/eOL4PkiC0zkDpxKFQhBnmCtwx5p.png',
-      id: 2243,
-    },
-    {
-      name: 'Investigation Discovery',
-      slug: 'investigation-discovery',
-      logo: 'https://image.tmdb.org/t/p/w500/3s6YJSYXW9mtJwoszTVI1BHDNc6.png',
-      id: 244,
-    },
-    {
-      name: 'AMC+',
-      slug: 'amc-plus',
-      logo: 'https://image.tmdb.org/t/p/w500/hECpNxPnJowi91GQ1uAXevmk2g1.png',
-      id: 4661,
-    },
-  ];
-  
+  { id: 10759, label: 'Action & Adventure', slug: 'action-adventure' },
+  { id: 16, label: 'Animation', slug: 'animation' },
+  { id: 35, label: 'Comedy', slug: 'comedy' },
+  { id: 80, label: 'Crime', slug: 'crime' },
+  { id: 99, label: 'Documentary', slug: 'documentary' },
+  { id: 18, label: 'Drama', slug: 'drama' },
+  { id: 10751, label: 'Family', slug: 'family' },
+  { id: 10762, label: 'Kids', slug: 'kids' },
+  { id: 9648, label: 'Mystery', slug: 'mystery' },
+  { id: 10763, label: 'News', slug: 'news' },
+  { id: 10764, label: 'Reality', slug: 'reality' },
+  { id: 10765, label: 'Sci-Fi & Fantasy', slug: 'sci-fi-fantasy' },
+  { id: 10766, label: 'Soap', slug: 'soap' },
+  { id: 10767, label: 'Talk', slug: 'talk' },
+  { id: 10768, label: 'War & Politics', slug: 'war-politics' },
+  { id: 37, label: 'Western', slug: 'western' },
+  { id: 28, label: 'Action', slug: 'action' },
+  { id: 12, label: 'Adventure', slug: 'adventure' },
+  { id: 14, label: 'Fantasy', slug: 'fantasy' },
+  { id: 36, label: 'History', slug: 'history' },
+  { id: 27, label: 'Horror', slug: 'horror' },
+  { id: 10402, label: 'Music', slug: 'music' },
+  { id: 10749, label: 'Romance', slug: 'romance' },
+  { id: 10770, label: 'TV Movie', slug: 'tv-movie' },
+  { id: 53, label: 'Thriller', slug: 'thriller' },
+  { id: 10752, label: 'War', slug: 'war' },
+  { id: 878, label: 'Science Fiction', slug: 'science-fiction' },
+];
 
-  
-  export const MOVIE_COLLECTIONS = {
-    // Blockbuster Franchises
-    blockbusters: [
-      { id: 10, name: 'Star Wars Collection' },
-      { id: 1241, name: 'Harry Potter Collection' },
-      { id: 9485, name: 'The Fast and the Furious Collection' },
-      { id: 328, name: 'Jurassic Park Collection' },
-      { id: 295, name: 'Pirates of the Caribbean Collection' },
-      { id: 8650, name: 'Transformers Collection' },
-      { id: 2344, name: 'The Matrix Collection' },
-      { id: 84, name: 'Indiana Jones Collection' },
-      { id: 264, name: 'Back to the Future Collection' },
-      { id: 86055, name: 'Men in Black Collection' },
-      { id: 52984, name: 'National Treasure Collection' },
-      { id: 420, name: 'The Chronicles of Narnia Collection' },
-      { id: 87359, name: 'Mission: Impossible Collection' },
-    ],
-  
-    // Superhero Collections
-    superheroes: [
-      { id: 748, name: 'X-Men Collection' },
-      { id: 556, name: 'Spider-Man Collection' },
-      { id: 263, name: 'The Dark Knight Collection' },
-      { id: 8537, name: 'Superman Collection' },
-      { id: 9744, name: 'Fantastic Four Collection' },
-      { id: 17235, name: 'Hellboy Collection' },
-      { id: 735, name: 'Blade Collection' },
-      { id: 86311, name: 'The Avengers Collection' },
-      { id: 131296, name: 'Thor Collection' },
-    ],
-  
-    // Classic Action
-    action: [
-      { id: 645, name: 'James Bond Collection' },
-      { id: 528, name: 'The Terminator Collection' },
-      { id: 8091, name: 'Alien Collection' },
-      { id: 399, name: 'Predator Collection' },
-      { id: 1570, name: 'Die Hard Collection' },
-      { id: 945, name: 'Lethal Weapon Collection' },
-      { id: 31562, name: 'The Bourne Collection' },
-      { id: 5039, name: 'Rambo Collection' },
-      { id: 8945, name: 'Mad Max Collection' },
-      { id: 14890, name: 'Bad Boys Collection' },
-      { id: 5547, name: 'RoboCop Collection' },
-      { id: 52785, name: 'xXx Collection' },
-      { id: 86029, name: "Charlie's Angels Collection" },
-      { id: 2467, name: 'Tomb Raider Collection' },
-    ],
-  
-    // Legendary Cinema
-    classics: [
-      { id: 230, name: 'The Godfather Collection' },
-      { id: 119, name: 'The Lord of the Rings Collection' },
-      { id: 1575, name: 'Rocky Collection' },
-      { id: 304, name: "Ocean's Collection" },
-      { id: 9518, name: 'The Transporter Collection' },
-      { id: 1733, name: 'The Mummy Collection' },
-      { id: 2366, name: 'Jaws Collection' },
-      { id: 1709, name: 'Planet of the Apes (Original) Collection' },
-      { id: 2883, name: 'Kill Bill Collection' },
-      { id: 8580, name: 'The Karate Kid Collection' },
-      { id: 121938, name: 'The Hobbit Collection' },
-      { id: 151, name: 'Star Trek: The Original Series Collection' },
-    ],
-  
-    // Family & Animation
-    family: [
-      { id: 10194, name: 'Toy Story Collection' },
-      { id: 2150, name: 'Shrek Collection' },
-      { id: 8354, name: 'Ice Age Collection' },
-      { id: 14740, name: 'Madagascar Collection' },
-      { id: 12087, name: 'Herbie Collection' },
-      { id: 9888, name: 'Home Alone Collection' },
-      { id: 86066, name: 'Despicable Me Collection' },
-      { id: 77816, name: 'Kung Fu Panda Collection' },
-      { id: 85943, name: 'Night at the Museum Collection' },
-      { id: 33085, name: 'The Little Mermaid Collection' },
-      { id: 11716, name: 'Addams Family Collection' },
-      { id: 53159, name: 'The Santa Clause Collection' },
-    ],
-  
-    // Horror Classics
-    horror: [
-      { id: 656, name: 'Saw Collection' },
-      { id: 2602, name: 'Scream Collection' },
-      { id: 8581, name: 'A Nightmare on Elm Street Collection' },
-      { id: 9735, name: 'Friday the 13th Collection' },
-      { id: 12263, name: 'The Exorcist Collection' },
-      { id: 17255, name: 'Resident Evil Collection' },
-      { id: 2326, name: 'Underworld Collection' },
-      { id: 8864, name: 'Final Destination Collection' },
-      { id: 1960, name: 'Evil Dead Collection' },
-      { id: 10455, name: "Child's Play Collection" },
-      { id: 313086, name: 'The Conjuring Collection' },
-    ],
-  
-    // Comedy Favorites
-    comedy: [
-      { id: 1006, name: 'Austin Powers Collection' },
-      { id: 52988, name: 'Hot Shots! Collection' },
-      { id: 51509, name: 'Meet the Parents Collection' },
-      { id: 8979, name: "Wayne's World Collection" },
-      { id: 44979, name: "Big Momma's House Collection" },
-      { id: 30663, name: 'Harold & Kumar Collection' },
-      { id: 2980, name: 'Ghostbusters Collection' },
-      { id: 85861, name: 'Beverly Hills Cop Collection' },
-      { id: 86119, name: 'The Hangover Collection' },
-      { id: 9338, name: 'Police Academy Collection' },
-      { id: 937, name: 'The Pink Panther (Original) Collection' },
-      { id: 4246, name: 'Scary Movie Collection' },
-      { id: 43072, name: 'The Mask Collection' },
-      { id: 86117, name: 'Johnny English Collection' },
-    ],
-  
-    // Teen & Young Adult
-    teen: [
-      { id: 33514, name: 'The Twilight Collection' },
-      { id: 2806, name: 'American Pie Collection' },
-      { id: 86092, name: 'Step Up Collection' },
-      { id: 86024, name: 'Legally Blonde Collection' },
-      { id: 86083, name: 'Grease Collection' },
-      { id: 86058, name: 'Dirty Dancing Collection' },
-    ],
-  } as const;
-  
+export const LANGUAGES = [
+  {
+    iso_639_1: 'ay',
+    english_name: 'Aymara',
+    name: '',
+  },
+  {
+    iso_639_1: 'ch',
+    english_name: 'Chamorro',
+    name: "Finu' Chamorro",
+  },
+  {
+    iso_639_1: 'fj',
+    english_name: 'Fijian',
+    name: '',
+  },
+  {
+    iso_639_1: 'it',
+    english_name: 'Italian',
+    name: 'Italiano',
+  },
+  {
+    iso_639_1: 'nv',
+    english_name: 'Navajo',
+    name: '',
+  },
+  {
+    iso_639_1: 'qu',
+    english_name: 'Quechua',
+    name: '',
+  },
+  {
+    iso_639_1: 'ru',
+    english_name: 'Russian',
+    name: 'Pусский',
+  },
+  {
+    iso_639_1: 'sc',
+    english_name: 'Sardinian',
+    name: '',
+  },
+  {
+    iso_639_1: 'sw',
+    english_name: 'Swahili',
+    name: 'Kiswahili',
+  },
+  {
+    iso_639_1: 'tn',
+    english_name: 'Tswana',
+    name: '',
+  },
+  {
+    iso_639_1: 'ur',
+    english_name: 'Urdu',
+    name: 'اردو',
+  },
+  {
+    iso_639_1: 'ho',
+    english_name: 'Hiri Motu',
+    name: '',
+  },
+  {
+    iso_639_1: 'km',
+    english_name: 'Khmer',
+    name: '',
+  },
+  {
+    iso_639_1: 'kj',
+    english_name: 'Kuanyama',
+    name: '',
+  },
+  {
+    iso_639_1: 'tt',
+    english_name: 'Tatar',
+    name: '',
+  },
+  {
+    iso_639_1: 'ps',
+    english_name: 'Pushto',
+    name: 'پښتو',
+  },
+  {
+    iso_639_1: 'cn',
+    english_name: 'Cantonese',
+    name: '广州话 / 廣州話',
+  },
+  {
+    iso_639_1: 'mk',
+    english_name: 'Macedonian',
+    name: '',
+  },
+  {
+    iso_639_1: 'yo',
+    english_name: 'Yoruba',
+    name: 'Èdè Yorùbá',
+  },
+  {
+    iso_639_1: 'fo',
+    english_name: 'Faroese',
+    name: '',
+  },
+  {
+    iso_639_1: 'ff',
+    english_name: 'Fulah',
+    name: 'Fulfulde',
+  },
+  {
+    iso_639_1: 'ig',
+    english_name: 'Igbo',
+    name: '',
+  },
+  {
+    iso_639_1: 'io',
+    english_name: 'Ido',
+    name: '',
+  },
+  {
+    iso_639_1: 'id',
+    english_name: 'Indonesian',
+    name: 'Bahasa indonesia',
+  },
+  {
+    iso_639_1: 'ko',
+    english_name: 'Korean',
+    name: '한국어/조선말',
+  },
+  {
+    iso_639_1: 'mo',
+    english_name: 'Moldavian',
+    name: '',
+  },
+  {
+    iso_639_1: 'nr',
+    english_name: 'Ndebele',
+    name: '',
+  },
+  {
+    iso_639_1: 'pi',
+    english_name: 'Pali',
+    name: '',
+  },
+  {
+    iso_639_1: 'so',
+    english_name: 'Somali',
+    name: 'Somali',
+  },
+  {
+    iso_639_1: 'sq',
+    english_name: 'Albanian',
+    name: 'shqip',
+  },
+  {
+    iso_639_1: 'ta',
+    english_name: 'Tamil',
+    name: 'தமிழ்',
+  },
+  {
+    iso_639_1: 'tl',
+    english_name: 'Tagalog',
+    name: '',
+  },
+  {
+    iso_639_1: 'th',
+    english_name: 'Thai',
+    name: 'ภาษาไทย',
+  },
+  {
+    iso_639_1: 've',
+    english_name: 'Venda',
+    name: '',
+  },
+  {
+    iso_639_1: 'vo',
+    english_name: 'Volapük',
+    name: '',
+  },
+  {
+    iso_639_1: 'cu',
+    english_name: 'Slavic',
+    name: '',
+  },
+  {
+    iso_639_1: 'kw',
+    english_name: 'Cornish',
+    name: '',
+  },
+  {
+    iso_639_1: 'fr',
+    english_name: 'French',
+    name: 'Français',
+  },
+  {
+    iso_639_1: 'fy',
+    english_name: 'Frisian',
+    name: '',
+  },
+  {
+    iso_639_1: 'ht',
+    english_name: 'Haitian; Haitian Creole',
+    name: '',
+  },
+  {
+    iso_639_1: 'ie',
+    english_name: 'Interlingue',
+    name: '',
+  },
+  {
+    iso_639_1: 'ia',
+    english_name: 'Interlingua',
+    name: '',
+  },
+  {
+    iso_639_1: 'mh',
+    english_name: 'Marshall',
+    name: '',
+  },
+  {
+    iso_639_1: 'rn',
+    english_name: 'Rundi',
+    name: 'Kirundi',
+  },
+  {
+    iso_639_1: 'se',
+    english_name: 'Northern Sami',
+    name: '',
+  },
+  {
+    iso_639_1: 'gd',
+    english_name: 'Gaelic',
+    name: '',
+  },
+  {
+    iso_639_1: 'ii',
+    english_name: 'Yi',
+    name: '',
+  },
+  {
+    iso_639_1: 'lo',
+    english_name: 'Lao',
+    name: '',
+  },
+  {
+    iso_639_1: 'la',
+    english_name: 'Latin',
+    name: 'Latin',
+  },
+  {
+    iso_639_1: 'ny',
+    english_name: 'Chichewa; Nyanja',
+    name: '',
+  },
+  {
+    iso_639_1: 'oj',
+    english_name: 'Ojibwa',
+    name: '',
+  },
+  {
+    iso_639_1: 'ab',
+    english_name: 'Abkhazian',
+    name: '',
+  },
+  {
+    iso_639_1: 'ar',
+    english_name: 'Arabic',
+    name: 'العربية',
+  },
+  {
+    iso_639_1: 'ee',
+    english_name: 'Ewe',
+    name: 'Èʋegbe',
+  },
+  {
+    iso_639_1: 'hi',
+    english_name: 'Hindi',
+    name: 'हिन्दी',
+  },
+  {
+    iso_639_1: 'an',
+    english_name: 'Aragonese',
+    name: '',
+  },
+  {
+    iso_639_1: 'ba',
+    english_name: 'Bashkir',
+    name: '',
+  },
+  {
+    iso_639_1: 'bn',
+    english_name: 'Bengali',
+    name: 'বাংলা',
+  },
+  {
+    iso_639_1: 'bi',
+    english_name: 'Bislama',
+    name: '',
+  },
+  {
+    iso_639_1: 'et',
+    english_name: 'Estonian',
+    name: 'Eesti',
+  },
+  {
+    iso_639_1: 'eu',
+    english_name: 'Basque',
+    name: 'euskera',
+  },
+  {
+    iso_639_1: 'gl',
+    english_name: 'Galician',
+    name: 'Galego',
+  },
+  {
+    iso_639_1: 'ha',
+    english_name: 'Hausa',
+    name: 'Hausa',
+  },
+  {
+    iso_639_1: 'hz',
+    english_name: 'Herero',
+    name: '',
+  },
+  {
+    iso_639_1: 'iu',
+    english_name: 'Inuktitut',
+    name: '',
+  },
+  {
+    iso_639_1: 'jv',
+    english_name: 'Javanese',
+    name: '',
+  },
+  {
+    iso_639_1: 'kr',
+    english_name: 'Kanuri',
+    name: '',
+  },
+  {
+    iso_639_1: 'mn',
+    english_name: 'Mongolian',
+    name: '',
+  },
+  {
+    iso_639_1: 'my',
+    english_name: 'Burmese',
+    name: '',
+  },
+  {
+    iso_639_1: 'na',
+    english_name: 'Nauru',
+    name: '',
+  },
+  {
+    iso_639_1: 'pt',
+    english_name: 'Portuguese',
+    name: 'Português',
+  },
+  {
+    iso_639_1: 'sd',
+    english_name: 'Sindhi',
+    name: '',
+  },
+  {
+    iso_639_1: 'zu',
+    english_name: 'Zulu',
+    name: 'isiZulu',
+  },
+  {
+    iso_639_1: 'ak',
+    english_name: 'Akan',
+    name: '',
+  },
+  {
+    iso_639_1: 'hu',
+    english_name: 'Hungarian',
+    name: 'Magyar',
+  },
+  {
+    iso_639_1: 'ik',
+    english_name: 'Inupiaq',
+    name: '',
+  },
+  {
+    iso_639_1: 'ks',
+    english_name: 'Kashmiri',
+    name: '',
+  },
+  {
+    iso_639_1: 'ka',
+    english_name: 'Georgian',
+    name: 'ქართული',
+  },
+  {
+    iso_639_1: 'lg',
+    english_name: 'Ganda',
+    name: '',
+  },
+  {
+    iso_639_1: 'oc',
+    english_name: 'Occitan',
+    name: '',
+  },
+  {
+    iso_639_1: 'uz',
+    english_name: 'Uzbek',
+    name: 'ozbek',
+  },
+  {
+    iso_639_1: 'xh',
+    english_name: 'Xhosa',
+    name: '',
+  },
+  {
+    iso_639_1: 'za',
+    english_name: 'Zhuang',
+    name: '',
+  },
+  {
+    iso_639_1: 'zh',
+    english_name: 'Mandarin',
+    name: '普通话',
+  },
+  {
+    iso_639_1: 'el',
+    english_name: 'Greek',
+    name: 'ελληνικά',
+  },
+  {
+    iso_639_1: 'ga',
+    english_name: 'Irish',
+    name: 'Gaeilge',
+  },
+  {
+    iso_639_1: 'gn',
+    english_name: 'Guarani',
+    name: '',
+  },
+  {
+    iso_639_1: 'gu',
+    english_name: 'Gujarati',
+    name: '',
+  },
+  {
+    iso_639_1: 'kl',
+    english_name: 'Kalaallisut',
+    name: '',
+  },
+  {
+    iso_639_1: 'kn',
+    english_name: 'Kannada',
+    name: '?????',
+  },
+  {
+    iso_639_1: 'ky',
+    english_name: 'Kirghiz',
+    name: '??????',
+  },
+  {
+    iso_639_1: 'nl',
+    english_name: 'Dutch',
+    name: 'Nederlands',
+  },
+  {
+    iso_639_1: 'sl',
+    english_name: 'Slovenian',
+    name: 'Slovenščina',
+  },
+  {
+    iso_639_1: 'sr',
+    english_name: 'Serbian',
+    name: 'Srpski',
+  },
+  {
+    iso_639_1: 'ss',
+    english_name: 'Swati',
+    name: '',
+  },
+  {
+    iso_639_1: 'ug',
+    english_name: 'Uighur',
+    name: '',
+  },
+  {
+    iso_639_1: 'bg',
+    english_name: 'Bulgarian',
+    name: 'български език',
+  },
+  {
+    iso_639_1: 'co',
+    english_name: 'Corsican',
+    name: '',
+  },
+  {
+    iso_639_1: 'cy',
+    english_name: 'Welsh',
+    name: 'Cymraeg',
+  },
+  {
+    iso_639_1: 'dv',
+    english_name: 'Divehi',
+    name: '',
+  },
+  {
+    iso_639_1: 'ki',
+    english_name: 'Kikuyu',
+    name: '',
+  },
+  {
+    iso_639_1: 'mt',
+    english_name: 'Maltese',
+    name: 'Malti',
+  },
+  {
+    iso_639_1: 'ne',
+    english_name: 'Nepali',
+    name: '',
+  },
+  {
+    iso_639_1: 'si',
+    english_name: 'Sinhalese',
+    name: 'සිංහල',
+  },
+  {
+    iso_639_1: 'sn',
+    english_name: 'Shona',
+    name: '',
+  },
+  {
+    iso_639_1: 'su',
+    english_name: 'Sundanese',
+    name: '',
+  },
+  {
+    iso_639_1: 'to',
+    english_name: 'Tonga',
+    name: '',
+  },
+  {
+    iso_639_1: 'wa',
+    english_name: 'Walloon',
+    name: '',
+  },
+  {
+    iso_639_1: 'cr',
+    english_name: 'Cree',
+    name: '',
+  },
+  {
+    iso_639_1: 'fi',
+    english_name: 'Finnish',
+    name: 'suomi',
+  },
+  {
+    iso_639_1: 'hr',
+    english_name: 'Croatian',
+    name: 'Hrvatski',
+  },
+  {
+    iso_639_1: 'mg',
+    english_name: 'Malagasy',
+    name: '',
+  },
+  {
+    iso_639_1: 'nb',
+    english_name: 'Norwegian Bokmål',
+    name: 'Bokmål',
+  },
+  {
+    iso_639_1: 'ts',
+    english_name: 'Tsonga',
+    name: '',
+  },
+  {
+    iso_639_1: 'vi',
+    english_name: 'Vietnamese',
+    name: 'Tiếng Việt',
+  },
+  {
+    iso_639_1: 'hy',
+    english_name: 'Armenian',
+    name: '',
+  },
+  {
+    iso_639_1: 'av',
+    english_name: 'Avaric',
+    name: '',
+  },
+  {
+    iso_639_1: 'az',
+    english_name: 'Azerbaijani',
+    name: 'Azərbaycan',
+  },
+  {
+    iso_639_1: 'gv',
+    english_name: 'Manx',
+    name: '',
+  },
+  {
+    iso_639_1: 'sh',
+    english_name: 'Serbo-Croatian',
+    name: '',
+  },
+  {
+    iso_639_1: 'lv',
+    english_name: 'Latvian',
+    name: 'Latviešu',
+  },
+  {
+    iso_639_1: 'mr',
+    english_name: 'Marathi',
+    name: '',
+  },
+  {
+    iso_639_1: 'pl',
+    english_name: 'Polish',
+    name: 'Polski',
+  },
+  {
+    iso_639_1: 'rm',
+    english_name: 'Raeto-Romance',
+    name: '',
+  },
+  {
+    iso_639_1: 'tr',
+    english_name: 'Turkish',
+    name: 'Türkçe',
+  },
+  {
+    iso_639_1: 'xx',
+    english_name: 'No Language',
+    name: 'No Language',
+  },
+  {
+    iso_639_1: 'ca',
+    english_name: 'Catalan',
+    name: 'Català',
+  },
+  {
+    iso_639_1: 'de',
+    english_name: 'German',
+    name: 'Deutsch',
+  },
+  {
+    iso_639_1: 'rw',
+    english_name: 'Kinyarwanda',
+    name: 'Kinyarwanda',
+  },
+  {
+    iso_639_1: 'ln',
+    english_name: 'Lingala',
+    name: '',
+  },
+  {
+    iso_639_1: 'ro',
+    english_name: 'Romanian',
+    name: 'Română',
+  },
+  {
+    iso_639_1: 'ty',
+    english_name: 'Tahitian',
+    name: '',
+  },
+  {
+    iso_639_1: 'ti',
+    english_name: 'Tigrinya',
+    name: '',
+  },
+  {
+    iso_639_1: 'he',
+    english_name: 'Hebrew',
+    name: 'עִבְרִית',
+  },
+  {
+    iso_639_1: 'as',
+    english_name: 'Assamese',
+    name: '',
+  },
+  {
+    iso_639_1: 'bo',
+    english_name: 'Tibetan',
+    name: '',
+  },
+  {
+    iso_639_1: 'dz',
+    english_name: 'Dzongkha',
+    name: '',
+  },
+  {
+    iso_639_1: 'eo',
+    english_name: 'Esperanto',
+    name: 'Esperanto',
+  },
+  {
+    iso_639_1: 'ja',
+    english_name: 'Japanese',
+    name: '日本語',
+  },
+  {
+    iso_639_1: 'ng',
+    english_name: 'Ndonga',
+    name: '',
+  },
+  {
+    iso_639_1: 'no',
+    english_name: 'Norwegian',
+    name: 'Norsk',
+  },
+  {
+    iso_639_1: 'pa',
+    english_name: 'Punjabi',
+    name: 'ਪੰਜਾਬੀ',
+  },
+  {
+    iso_639_1: 'sa',
+    english_name: 'Sanskrit',
+    name: '',
+  },
+  {
+    iso_639_1: 'am',
+    english_name: 'Amharic',
+    name: '',
+  },
+  {
+    iso_639_1: 'fa',
+    english_name: 'Persian',
+    name: 'فارسی',
+  },
+  {
+    iso_639_1: 'aa',
+    english_name: 'Afar',
+    name: '',
+  },
+  {
+    iso_639_1: 'ae',
+    english_name: 'Avestan',
+    name: '',
+  },
+  {
+    iso_639_1: 'br',
+    english_name: 'Breton',
+    name: '',
+  },
+  {
+    iso_639_1: 'is',
+    english_name: 'Icelandic',
+    name: 'Íslenska',
+  },
+  {
+    iso_639_1: 'kk',
+    english_name: 'Kazakh',
+    name: 'қазақ',
+  },
+  {
+    iso_639_1: 'lt',
+    english_name: 'Lithuanian',
+    name: 'Lietuvių',
+  },
+  {
+    iso_639_1: 'mi',
+    english_name: 'Maori',
+    name: '',
+  },
+  {
+    iso_639_1: 'ms',
+    english_name: 'Malay',
+    name: 'Bahasa melayu',
+  },
+  {
+    iso_639_1: 'or',
+    english_name: 'Oriya',
+    name: '',
+  },
+  {
+    iso_639_1: 'st',
+    english_name: 'Sotho',
+    name: '',
+  },
+  {
+    iso_639_1: 'tk',
+    english_name: 'Turkmen',
+    name: '',
+  },
+  {
+    iso_639_1: 'af',
+    english_name: 'Afrikaans',
+    name: 'Afrikaans',
+  },
+  {
+    iso_639_1: 'bm',
+    english_name: 'Bambara',
+    name: 'Bamanankan',
+  },
+  {
+    iso_639_1: 'bs',
+    english_name: 'Bosnian',
+    name: 'Bosanski',
+  },
+  {
+    iso_639_1: 'cs',
+    english_name: 'Czech',
+    name: 'Český',
+  },
+  {
+    iso_639_1: 'ce',
+    english_name: 'Chechen',
+    name: '',
+  },
+  {
+    iso_639_1: 'kv',
+    english_name: 'Komi',
+    name: '',
+  },
+  {
+    iso_639_1: 'lb',
+    english_name: 'Letzeburgesch',
+    name: '',
+  },
+  {
+    iso_639_1: 'nd',
+    english_name: 'Ndebele',
+    name: '',
+  },
+  {
+    iso_639_1: 'sk',
+    english_name: 'Slovak',
+    name: 'Slovenčina',
+  },
+  {
+    iso_639_1: 'sm',
+    english_name: 'Samoan',
+    name: '',
+  },
+  {
+    iso_639_1: 'tg',
+    english_name: 'Tajik',
+    name: '',
+  },
+  {
+    iso_639_1: 'wo',
+    english_name: 'Wolof',
+    name: 'Wolof',
+  },
+  {
+    iso_639_1: 'yi',
+    english_name: 'Yiddish',
+    name: '',
+  },
+  {
+    iso_639_1: 'be',
+    english_name: 'Belarusian',
+    name: 'беларуская мова',
+  },
+  {
+    iso_639_1: 'cv',
+    english_name: 'Chuvash',
+    name: '',
+  },
+  {
+    iso_639_1: 'da',
+    english_name: 'Danish',
+    name: 'Dansk',
+  },
+  {
+    iso_639_1: 'en',
+    english_name: 'English',
+    name: 'English',
+  },
+  {
+    iso_639_1: 'kg',
+    english_name: 'Kongo',
+    name: '',
+  },
+  {
+    iso_639_1: 'ku',
+    english_name: 'Kurdish',
+    name: '',
+  },
+  {
+    iso_639_1: 'li',
+    english_name: 'Limburgish',
+    name: '',
+  },
+  {
+    iso_639_1: 'lu',
+    english_name: 'Luba-Katanga',
+    name: '',
+  },
+  {
+    iso_639_1: 'ml',
+    english_name: 'Malayalam',
+    name: '',
+  },
+  {
+    iso_639_1: 'nn',
+    english_name: 'Norwegian Nynorsk',
+    name: '',
+  },
+  {
+    iso_639_1: 'om',
+    english_name: 'Oromo',
+    name: '',
+  },
+  {
+    iso_639_1: 'os',
+    english_name: 'Ossetian; Ossetic',
+    name: '',
+  },
+  {
+    iso_639_1: 'sg',
+    english_name: 'Sango',
+    name: '',
+  },
+  {
+    iso_639_1: 'es',
+    english_name: 'Spanish',
+    name: 'Español',
+  },
+  {
+    iso_639_1: 'sv',
+    english_name: 'Swedish',
+    name: 'svenska',
+  },
+  {
+    iso_639_1: 'te',
+    english_name: 'Telugu',
+    name: 'తెలుగు',
+  },
+  {
+    iso_639_1: 'tw',
+    english_name: 'Twi',
+    name: '',
+  },
+  {
+    iso_639_1: 'uk',
+    english_name: 'Ukrainian',
+    name: 'Український',
+  },
+];
+
+export const GENDERS = {
+  0: 'Not Specified',
+  1: 'Female',
+  2: 'Male',
+  3: 'Non Binary',
+};
+
+export const NETWORKS: Network[] = [
+  {
+    name: 'Netflix',
+    slug: 'netflix',
+    logo: 'https://image.tmdb.org/t/p/w500/wwemzKWzjKYJFfCeiB57q3r4Bcm.png',
+    id: 213,
+    invertOnHover: false,
+    provider_id: 8
+  },
+  {
+    name: 'HBO',
+    slug: 'hbo',
+    logo: 'https://image.tmdb.org/t/p/w500/tuomPhY2UtuPTqqFnKMVHvSb724.png',
+    id: 49,
+    invertOnHover: true,
+    provider_id: 3
+  },
+  {
+    name: 'Disney+',
+    slug: 'disney-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/1edZOYAfoyZyZ3rklNSiUpXX30Q.png',
+    id: 2739,
+    invertOnHover: false,
+    provider_id: 337
+  },
+  {
+    name: 'Prime Video',
+    slug: 'prime-video',
+    logo: 'https://image.tmdb.org/t/p/w500/ifhbNuuVnlwYy5oXA5VIb2YR8AZ.png',
+    id: 1024,
+    invertOnHover: false,
+    provider_id: 9
+  },
+  {
+    name: 'Apple TV+',
+    slug: 'apple-tv-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/4KAy34EHvRM25Ih8wb82AuGU7zJ.png',
+    id: 2552,
+    invertOnHover: true,
+    provider_id: 350
+  },
+  {
+    name: 'Hulu',
+    slug: 'hulu',
+    logo: 'https://image.tmdb.org/t/p/w500/pqUTCleNUiTLAVlelGxUgWn1ELh.png',
+    id: 453,
+    invertOnHover: false,
+    provider_id: 15
+  },
+  {
+    name: 'Max',
+    slug: 'max',
+    logo: 'https://image.tmdb.org/t/p/w500/rAb4M1LjGpWASxpk6Va791A7Nkw.png',
+    id: 6783,
+    invertOnHover: false,
+    provider_id: 1899
+  },
+  {
+    name: 'HBO Max',
+    slug: 'hbo-max',
+    logo: 'https://image.tmdb.org/t/p/w500/nmU0UMDJB3dRRQSTUqawzF2Od1a.png',
+    id: 3186,
+    invertOnHover: true,
+    provider_id: 384
+  },
+  {
+    name: 'Paramount+',
+    slug: 'paramount-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/fi83B1oztoS47xxcemFdPMhIzK.png',
+    id: 4330,
+    invertOnHover: false,
+    provider_id: 531
+  },
+  {
+    name: 'Peacock',
+    slug: 'peacock',
+    logo: 'https://image.tmdb.org/t/p/w500/gIAcGTjKKr0KOHL5s4O36roJ8p7.png',
+    id: 3353,
+    invertOnHover: true,
+    provider_id: 386
+  },
+  {
+    name: 'CBS',
+    slug: 'cbs',
+    logo: 'https://image.tmdb.org/t/p/w500/wWA5mILSAyahtdNQh1WiADi6PRI.png',
+    id: 16,
+    invertOnHover: true
+  },
+  {
+    name: 'NBC',
+    slug: 'nbc',
+    logo: 'https://image.tmdb.org/t/p/w500/cm111bsDVlYaC1foL0itvEI4yLG.png',
+    id: 6,
+    invertOnHover: true,
+    provider_id: 79
+  },
+  {
+    name: 'FOX',
+    slug: 'fox',
+    logo: 'https://image.tmdb.org/t/p/w500/1DSpHrWyOORkL9N2QHX7Adt31mQ.png',
+    id: 19,
+    invertOnHover: true,
+    provider_id: 328
+  },
+  {
+    name: 'ABC',
+    slug: 'abc',
+    logo: 'https://image.tmdb.org/t/p/w500/2uy2ZWcplrSObIyt4x0Y9rkG6qO.png',
+    id: 2,
+    invertOnHover: false,
+    provider_id: 148
+  },
+  {
+    name: 'The CW',
+    slug: 'the-cw',
+    logo: 'https://image.tmdb.org/t/p/w500/hEpcdJ4O6eitG9ADSnDXNUrlovS.png',
+    id: 71,
+    invertOnHover: false,
+    provider_id: 83
+  },
+  {
+    name: 'Showtime',
+    slug: 'showtime',
+    logo: 'https://image.tmdb.org/t/p/w500/Allse9kbjiP6ExaQrnSpIhkurEi.png',
+    id: 67,
+    invertOnHover: false
+  },
+  {
+    name: 'Starz',
+    slug: 'starz',
+    logo: 'https://image.tmdb.org/t/p/w500/GMDGZk9iDG4WDijY3VgUgJeyus.png',
+    id: 318,
+    invertOnHover: true,
+    provider_id: 43
+  },
+  {
+    name: 'AMC',
+    slug: 'amc',
+    logo: 'https://image.tmdb.org/t/p/w500/alqLicR1ZMHMaZGP3xRQxn9sq7p.png',
+    id: 174,
+    invertOnHover: true,
+    provider_id: 80
+  },
+  {
+    name: 'FX',
+    slug: 'fx',
+    logo: 'https://image.tmdb.org/t/p/w500/aexGjtcs42DgRtZh7zOxayiry4J.png',
+    id: 88,
+    invertOnHover: true,
+    provider_id: 123
+  },
+  {
+    name: 'TNT',
+    slug: 'tnt',
+    logo: 'https://image.tmdb.org/t/p/w500/6ISsKwa2XUhSC6oBtHZjYf6xFqv.png',
+    id: 41,
+    invertOnHover: true,
+    provider_id: 363
+  },
+  {
+    name: 'Cartoon Network',
+    slug: 'cartoon-network',
+    logo: 'https://image.tmdb.org/t/p/w500/c5OC6oVCg6QP4eqzW6XIq17CQjI.png',
+    id: 56,
+    invertOnHover: true,
+    provider_id: 2328
+  },
+  {
+    name: 'Disney Channel',
+    slug: 'disney-channel',
+    logo: 'https://image.tmdb.org/t/p/w500/yeO3eLAa5peDwO4VQWRX7KqfVZ9.png',
+    id: 54,
+    invertOnHover: true
+  },
+  {
+    name: 'Disney XD',
+    slug: 'disney-xd',
+    logo: 'https://image.tmdb.org/t/p/w500/nKM9EnV7jTpt3MKRbhBusJ03lAY.png',
+    id: 44,
+    invertOnHover: false
+  },
+  {
+    name: 'BBC One',
+    slug: 'bbc-one',
+    logo: 'https://image.tmdb.org/t/p/w500/uJjcCg3O4DMEjM0xtno9OWFciRP.png',
+    id: 4,
+    invertOnHover: true
+  },
+  {
+    name: 'BBC Two',
+    slug: 'bbc-two',
+    logo: 'https://image.tmdb.org/t/p/w500/7HVPn1p2w1nC5oRKBehXVHpss7e.png',
+    id: 332,
+    invertOnHover: true
+  },
+  {
+    name: 'BBC Three',
+    slug: 'bbc-three',
+    logo: 'https://image.tmdb.org/t/p/w500/s22fRhj8xFPbiexrJwiAOcDEIrS.png',
+    id: 3,
+    invertOnHover: false
+  },
+  {
+    name: 'ITV1',
+    slug: 'itv1',
+    logo: 'https://image.tmdb.org/t/p/w500/oz9pjTHnBUmlju8OkaTymhKbh6C.png',
+    id: 9,
+    invertOnHover: true
+  },
+  {
+    name: 'Channel 4',
+    slug: 'channel-4',
+    logo: 'https://image.tmdb.org/t/p/w500/hbifXPpM55B1fL5wPo7t72vzN78.png',
+    id: 26,
+    invertOnHover: true,
+    provider_id: 103
+  },
+  {
+    name: 'Channel 5',
+    slug: 'channel-5',
+    logo: 'https://image.tmdb.org/t/p/w500/bMuKs6xuhI0GHSsq4WWd9FsntUN.png',
+    id: 99,
+    invertOnHover: false,
+    provider_id: 333
+  },
+  {
+    name: 'Crunchyroll',
+    slug: 'crunchyroll',
+    logo: 'https://image.tmdb.org/t/p/w500/81QfupgVijSH5v1H3VUbdlPm2r8.png',
+    id: 1112,
+    invertOnHover: false,
+    provider_id: 283
+  },
+  {
+    name: 'Freeform',
+    slug: 'freeform',
+    logo: 'https://image.tmdb.org/t/p/w500/jk2Z7WH6JnHSZrxouYh4sireM3a.png',
+    id: 1267,
+    invertOnHover: false,
+    provider_id: 211
+  },
+  {
+    name: 'Syfy',
+    slug: 'syfy',
+    logo: 'https://image.tmdb.org/t/p/w500/iYfrkobwDhTOFJ4AXYPSLIEeaAT.png',
+    id: 77,
+    invertOnHover: true
+  },
+  {
+    name: 'Adult Swim',
+    slug: 'adult-swim',
+    logo: 'https://image.tmdb.org/t/p/w500/tHZPHOLc6iF27G34cAZGPsMtMSy.png',
+    id: 80,
+    invertOnHover: true,
+    provider_id: 318
+  },
+  {
+    name: 'TBS',
+    slug: 'tbs',
+    logo: 'https://image.tmdb.org/t/p/w500/65r0kR6MfOBYF0gEQsJGM6v5fEG.png',
+    id: 68,
+    invertOnHover: true,
+    provider_id: 506
+  },
+  {
+    name: 'Paramount+ with Showtime',
+    slug: 'paramount-plus-with-showtime',
+    logo: 'https://image.tmdb.org/t/p/w500/zFEsDBjBEj5OiM0FDRYY1NnG7a9.png',
+    id: 6631,
+    invertOnHover: false,
+    provider_id: 1770
+  },
+  {
+    name: 'discovery+',
+    slug: 'discovery-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/1D1bS3Dyw4ScYnFWTlBOvJXC3nb.png',
+    id: 4353,
+    invertOnHover: false,
+    provider_id: 524
+  },
+  {
+    name: 'Stan',
+    slug: 'stan',
+    logo: 'https://image.tmdb.org/t/p/w500/1akCJMjyZsiS4v3NTJD5Y0LFZ4R.png',
+    id: 1255,
+    invertOnHover: false,
+    provider_id: 21
+  },
+  {
+    name: 'Sky One',
+    slug: 'sky-one',
+    logo: 'https://image.tmdb.org/t/p/w500/dVBHOr0nYCx9GSNesTVb1TT52Xj.png',
+    id: 214,
+    invertOnHover: false,
+    provider_id: 210
+  },
+  {
+    name: 'Sky Atlantic',
+    slug: 'sky-atlantic',
+    logo: 'https://image.tmdb.org/t/p/w500/6es7UmBjk2HTSZKq3NbtAxYEGCx.png',
+    id: 1063,
+    invertOnHover: false
+  },
+  {
+    name: 'Sky Max',
+    slug: 'sky-max',
+    logo: 'https://image.tmdb.org/t/p/w500/g2IOt9G84UAjsDPMXQiqgr77AMV.png',
+    id: 5237,
+    invertOnHover: false
+  },
+  {
+    name: 'Sky Comedy',
+    slug: 'sky-comedy',
+    logo: 'https://image.tmdb.org/t/p/w500/lpg9xIy2JPy046ebRBI8GL8IebE.png',
+    id: 5213,
+    invertOnHover: false
+  },
+  {
+    name: 'Sky History',
+    slug: 'sky-history',
+    logo: 'https://image.tmdb.org/t/p/w500/mzLlbqnnLiDIzriohlvfSbWlEfR.png',
+    id: 1755,
+    invertOnHover: false,
+    provider_id: 155
+  },
+  {
+    name: 'USA Network',
+    slug: 'usa-network',
+    logo: 'https://image.tmdb.org/t/p/w500/g1e0H0Ka97IG5SyInMXdJkHGKiH.png',
+    id: 30,
+    invertOnHover: false
+  },
+  {
+    name: 'Epix',
+    slug: 'epix',
+    logo: 'https://image.tmdb.org/t/p/w500/9aH86hGHVQfvhAqrDRv1EINoxua.png',
+    id: 922,
+    invertOnHover: false,
+    provider_id: 34
+  },
+  {
+    name: 'WWE Network',
+    slug: 'wwe-network',
+    logo: 'https://image.tmdb.org/t/p/w500/fNkVI38NJKpnWKMmEkSxxinuyAe.png',
+    id: 1025,
+    invertOnHover: true,
+    provider_id: 260
+  },
+  {
+    name: 'La Une',
+    slug: 'la-une',
+    logo: 'https://image.tmdb.org/t/p/w500/kR47hzfGe3zFsFipHTuC123qyCe.png',
+    id: 1386,
+    invertOnHover: false
+  },
+  {
+    name: 'MGM+',
+    slug: 'mgm-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/89TXvQzvoKvyqD9EEogohzMJ8D6.png',
+    id: 6219,
+    invertOnHover: false,
+    provider_id: 34
+  },
+  {
+    name: 'Amazon Freevee',
+    slug: 'amazon-freevee',
+    logo: 'https://image.tmdb.org/t/p/w500/cCqeRYB0u4RfHbsFJo6uzCxQ9iI.png',
+    id: 7385,
+    invertOnHover: false
+  },
+  {
+    name: 'IMDb TV',
+    slug: 'imdb-tv',
+    logo: 'https://image.tmdb.org/t/p/w500/to21uGi3vA3ACigdA7lKj3EsREk.png',
+    id: 5495,
+    invertOnHover: true
+  },
+  {
+    name: 'CBS All Access',
+    slug: 'cbs-all-access',
+    logo: 'https://image.tmdb.org/t/p/w500/rSWD2WoY26KJmOw7QHvZjC5OEWG.png',
+    id: 1709,
+    invertOnHover: true
+  },
+  {
+    name: 'HBO Asia',
+    slug: 'hbo-asia',
+    logo: 'https://image.tmdb.org/t/p/w500/e0TPhobVyxQ09bu9r5qj3rQLxkj.png',
+    id: 1303,
+    invertOnHover: true
+  },
+  {
+    name: 'Disney Junior',
+    slug: 'disney-junior',
+    logo: 'https://image.tmdb.org/t/p/w500/wlkOIl5YUluIn1VjUF829jau4y4.png',
+    id: 281,
+    invertOnHover: false,
+    provider_id: 508
+  },
+  {
+    name: 'DC Universe',
+    slug: 'dc-universe',
+    logo: 'https://image.tmdb.org/t/p/w500/eOL4PkiC0zkDpxKFQhBnmCtwx5p.png',
+    id: 2243,
+    invertOnHover: false
+  },
+  {
+    name: 'Investigation Discovery',
+    slug: 'investigation-discovery',
+    logo: 'https://image.tmdb.org/t/p/w500/3s6YJSYXW9mtJwoszTVI1BHDNc6.png',
+    id: 244,
+    invertOnHover: false,
+    provider_id: 408
+  },
+  {
+    name: 'AMC+',
+    slug: 'amc-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/hECpNxPnJowi91GQ1uAXevmk2g1.png',
+    id: 4661,
+    invertOnHover: true,
+    provider_id: 526
+  }
+];
+
+export const MOVIE_COLLECTIONS = {
+  // Blockbuster Franchises
+  blockbusters: [
+    { id: 10, name: 'Star Wars Collection' },
+    { id: 1241, name: 'Harry Potter Collection' },
+    { id: 9485, name: 'The Fast and the Furious Collection' },
+    { id: 328, name: 'Jurassic Park Collection' },
+    { id: 295, name: 'Pirates of the Caribbean Collection' },
+    { id: 8650, name: 'Transformers Collection' },
+    { id: 2344, name: 'The Matrix Collection' },
+    { id: 84, name: 'Indiana Jones Collection' },
+    { id: 264, name: 'Back to the Future Collection' },
+    { id: 86055, name: 'Men in Black Collection' },
+    { id: 52984, name: 'National Treasure Collection' },
+    { id: 420, name: 'The Chronicles of Narnia Collection' },
+    { id: 87359, name: 'Mission: Impossible Collection' },
+  ],
+
+  // Superhero Collections
+  superheroes: [
+    { id: 748, name: 'X-Men Collection' },
+    { id: 556, name: 'Spider-Man Collection' },
+    { id: 263, name: 'The Dark Knight Collection' },
+    { id: 8537, name: 'Superman Collection' },
+    { id: 9744, name: 'Fantastic Four Collection' },
+    { id: 17235, name: 'Hellboy Collection' },
+    { id: 735, name: 'Blade Collection' },
+    { id: 86311, name: 'The Avengers Collection' },
+    { id: 131296, name: 'Thor Collection' },
+  ],
+
+  // Classic Action
+  action: [
+    { id: 645, name: 'James Bond Collection' },
+    { id: 528, name: 'The Terminator Collection' },
+    { id: 8091, name: 'Alien Collection' },
+    { id: 399, name: 'Predator Collection' },
+    { id: 1570, name: 'Die Hard Collection' },
+    { id: 945, name: 'Lethal Weapon Collection' },
+    { id: 31562, name: 'The Bourne Collection' },
+    { id: 5039, name: 'Rambo Collection' },
+    { id: 8945, name: 'Mad Max Collection' },
+    { id: 14890, name: 'Bad Boys Collection' },
+    { id: 5547, name: 'RoboCop Collection' },
+    { id: 52785, name: 'xXx Collection' },
+    { id: 86029, name: "Charlie's Angels Collection" },
+    { id: 2467, name: 'Tomb Raider Collection' },
+  ],
+
+  // Legendary Cinema
+  classics: [
+    { id: 230, name: 'The Godfather Collection' },
+    { id: 119, name: 'The Lord of the Rings Collection' },
+    { id: 1575, name: 'Rocky Collection' },
+    { id: 304, name: "Ocean's Collection" },
+    { id: 9518, name: 'The Transporter Collection' },
+    { id: 1733, name: 'The Mummy Collection' },
+    { id: 2366, name: 'Jaws Collection' },
+    { id: 1709, name: 'Planet of the Apes (Original) Collection' },
+    { id: 2883, name: 'Kill Bill Collection' },
+    { id: 8580, name: 'The Karate Kid Collection' },
+    { id: 121938, name: 'The Hobbit Collection' },
+    { id: 151, name: 'Star Trek: The Original Series Collection' },
+  ],
+
+  // Family & Animation
+  family: [
+    { id: 10194, name: 'Toy Story Collection' },
+    { id: 2150, name: 'Shrek Collection' },
+    { id: 8354, name: 'Ice Age Collection' },
+    { id: 14740, name: 'Madagascar Collection' },
+    { id: 12087, name: 'Herbie Collection' },
+    { id: 9888, name: 'Home Alone Collection' },
+    { id: 86066, name: 'Despicable Me Collection' },
+    { id: 77816, name: 'Kung Fu Panda Collection' },
+    { id: 85943, name: 'Night at the Museum Collection' },
+    { id: 33085, name: 'The Little Mermaid Collection' },
+    { id: 11716, name: 'Addams Family Collection' },
+    { id: 53159, name: 'The Santa Clause Collection' },
+  ],
+
+  // Horror Classics
+  horror: [
+    { id: 656, name: 'Saw Collection' },
+    { id: 2602, name: 'Scream Collection' },
+    { id: 8581, name: 'A Nightmare on Elm Street Collection' },
+    { id: 9735, name: 'Friday the 13th Collection' },
+    { id: 12263, name: 'The Exorcist Collection' },
+    { id: 17255, name: 'Resident Evil Collection' },
+    { id: 2326, name: 'Underworld Collection' },
+    { id: 8864, name: 'Final Destination Collection' },
+    { id: 1960, name: 'Evil Dead Collection' },
+    { id: 10455, name: "Child's Play Collection" },
+    { id: 313086, name: 'The Conjuring Collection' },
+  ],
+
+  // Comedy Favorites
+  comedy: [
+    { id: 1006, name: 'Austin Powers Collection' },
+    { id: 52988, name: 'Hot Shots! Collection' },
+    { id: 51509, name: 'Meet the Parents Collection' },
+    { id: 8979, name: "Wayne's World Collection" },
+    { id: 44979, name: "Big Momma's House Collection" },
+    { id: 30663, name: 'Harold & Kumar Collection' },
+    { id: 2980, name: 'Ghostbusters Collection' },
+    { id: 85861, name: 'Beverly Hills Cop Collection' },
+    { id: 86119, name: 'The Hangover Collection' },
+    { id: 9338, name: 'Police Academy Collection' },
+    { id: 937, name: 'The Pink Panther (Original) Collection' },
+    { id: 4246, name: 'Scary Movie Collection' },
+    { id: 43072, name: 'The Mask Collection' },
+    { id: 86117, name: 'Johnny English Collection' },
+  ],
+
+  // Teen & Young Adult
+  teen: [
+    { id: 33514, name: 'The Twilight Collection' },
+    { id: 2806, name: 'American Pie Collection' },
+    { id: 86092, name: 'Step Up Collection' },
+    { id: 86024, name: 'Legally Blonde Collection' },
+    { id: 86083, name: 'Grease Collection' },
+    { id: 86058, name: 'Dirty Dancing Collection' },
+  ],
+} as const;

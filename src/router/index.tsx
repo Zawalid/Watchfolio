@@ -14,10 +14,12 @@ import {
   Preferences,
   LibrarySettings,
   Landing,
-  Person,
+  CelebrityDetails,
   Celebrities,
   Collections,
   CollectionDetails,
+  Networks,
+  NetworkDetails,
   TermsOfService,
   PrivacyPolicy,
 } from '@/pages';
@@ -64,7 +66,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <Movies />,
+                Component: Movies,
                 loader: moviesLoader,
               },
             ],
@@ -84,7 +86,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <TV />,
+                Component: TV,
                 loader: tvShowsLoader,
               },
             ],
@@ -105,11 +107,11 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Celebrities />,
+            Component: Celebrities,
           },
           {
             path: ':slug',
-            element: <Person />,
+            Component: CelebrityDetails,
           },
         ],
       },
@@ -118,11 +120,11 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Collections />,
+            Component: Collections,
           },
           {
             path: ':slug',
-            element: <CollectionDetails />,
+            Component: CollectionDetails,
           },
         ],
       },
@@ -149,6 +151,19 @@ export const router = createBrowserRouter([
           {
             path: 'library',
             Component: LibrarySettings,
+          },
+        ],
+      },
+      {
+        path: 'networks',
+        children: [
+          {
+            index: true,
+            Component: Networks,
+          },
+          {
+            path: ':slug',
+            Component: NetworkDetails,
           },
         ],
       },

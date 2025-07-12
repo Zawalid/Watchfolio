@@ -22,7 +22,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   icon?: IconType;
   label?: string;
   parentClassname?: string;
-  error?: string;
+  error?: string | null;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(

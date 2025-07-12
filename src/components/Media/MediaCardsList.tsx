@@ -49,7 +49,7 @@ export default function MediaCardsList({
 
   // Only enable navigation when this navigator is active
   const navigationEnabled =
-    isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
+  isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
 
   useListNavigator({
     containerRef: cardsContainerRef,

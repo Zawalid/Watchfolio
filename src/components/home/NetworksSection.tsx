@@ -34,7 +34,7 @@ export default function NetworksSection() {
         {NETWORKS.slice(0, 12).map((network) => (
           <Slider.Slide key={network.id} className='group w-[250px] sm:w-[300px]!'>
             <Link
-              to={`/networks/${network.id}`}
+              to={`/networks/${network.slug}`}
               className='hover:bg-blur grid aspect-video place-content-center rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20 '
             >
               <img

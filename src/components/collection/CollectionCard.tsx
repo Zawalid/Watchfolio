@@ -8,7 +8,7 @@ import { cn, slugify } from '@/utils';
 import { getCollection } from '@/lib/api/TMDB/movies';
 import { queryKeys } from '@/lib/react-query';
 import { Rating } from '@/components/ui/Rating';
-import { getRating, getReleaseYear } from '@/utils/media';
+import { getReleaseYear } from '@/utils/media';
 
 interface CollectionCardProps {
   collection: { id: number; name: string; category: string };
@@ -165,7 +165,7 @@ export default function CollectionCard({ collection, tabIndex = 0 }: CollectionC
                 {/* Average rating */}
                 {details.parts && details.parts.length > 0 && (
                   <Rating
-                    rating={+getRating(Math.max(...details.parts.map((p) => p.vote_average || 0)))}
+                    rating={Math.max(...details.parts.map((p) => p.vote_average || 0))}
                     className='*:text-xs [&_svg]:size-3!'
                   />
                 )}

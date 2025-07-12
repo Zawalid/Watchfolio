@@ -3,7 +3,7 @@ import { Star } from 'lucide-react';
 import { cn } from '@/utils';
 import { getRating } from '@/utils/media';
 
-export function Rating({ rating, className }: { rating: number; className?: string }) {
+export function Rating({ rating, className }: { rating?: number; className?: string }) {
   const getBgColor = (rating: number) => {
     if (rating >= 8) return 'bg-Success-500/20 border-Success-500/50 text-Success-400 ring-Success-500/30';
     if (rating >= 7) return 'bg-Success-500/20 border-Success-500/50 text-Success-400 ring-Success-500/30';
@@ -16,12 +16,12 @@ export function Rating({ rating, className }: { rating: number; className?: stri
     <motion.div
       className={cn(
         'flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md',
-        getBgColor(rating),
+        getBgColor(rating || 0),
         className
       )}
     >
       <Star className='size-4' />
-      <span>{getRating(rating)}</span>
+      <span>{getRating(rating || 0)}</span>
     </motion.div>
   );
 }

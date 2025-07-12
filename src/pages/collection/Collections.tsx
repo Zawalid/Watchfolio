@@ -142,7 +142,7 @@ export default function Collections() {
                 className={cn(
                   'group flex items-center gap-2 rounded-xl border px-4 py-2.5 transition-all duration-200',
                   isActive
-                    ? 'from-Primary-500 to-Secondary-500 border-white/20 bg-gradient-to-r text-white shadow-lg shadow-black/20'
+                    ? 'from-Secondary-500 to-Secondary-600 border-white/20 bg-gradient-to-r text-white shadow-lg shadow-black/20'
                     : 'bg-Grey-800/50 text-Grey-300 border-Grey-700/50 hover:bg-Grey-700/50 hover:border-Grey-600/50 hover:text-white'
                 )}
               >

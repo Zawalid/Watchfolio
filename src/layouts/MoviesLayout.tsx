@@ -42,7 +42,7 @@ export default function MoviesLayout() {
         { key: 'release_date', label: 'Release Date' },
         { key: 'title', label: 'Title' },
       ]}
-      filterOptions={['genres', 'networks', 'language', 'ratingRange', 'releaseYear']}
+      filterOptions={['genres', 'language', 'ratingRange', 'releaseYear']}
       filterTitle='Movie Filters'
     />
   );

@@ -147,7 +147,7 @@ export default function MediaLayout({
       </div>
 
       {/* Results Header */}
-      <div className='border-Grey-800/50 flex items-center justify-between border-b pb-4'>
+      <div className='border-white/5 flex items-center justify-between border-b pb-4'>
         <div>
           <h2 className='text-lg font-semibold text-white'>{getDisplayTitle()}</h2>
           <p className='text-Grey-400 mt-1 text-sm'>

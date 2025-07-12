@@ -40,7 +40,7 @@ const sortCredits = (items: Credit[], sortBy: string, sortDir: string): Credit[]
   });
 };
 
-export default function Celebrity() {
+export default function CelebrityDetails() {
   const { slug } = useParams();
   const personId = parseInt(slug!);
   const [category, setCategory] = useQueryState('category', parseAsString.withDefault('known-for'));

@@ -10,7 +10,6 @@ import { Error } from '@/components/Status';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { formatDate } from '@/utils';
-import { getRating } from '@/utils/media';
 import { Rating } from '@/components/ui/Rating';
 
 export default function CollectionDetails() {
@@ -27,7 +26,6 @@ export default function CollectionDetails() {
     enabled: !!collectionId,
   });
 
-  
   if (isLoading) return <CollectionDetailsSkeleton />;
   if (isError || !collection) return <Error message='Failed to load collection details.' />;
 
@@ -55,7 +53,7 @@ export default function CollectionDetails() {
                 <Film className='size-4' />
                 <span>{totalMovies} Movies</span>
               </div>
-              {averageRating > 0 && <Rating rating={+getRating(averageRating)} />}
+              <Rating rating={averageRating} />
               <div className='border-Primary-400/30 bg-Primary-500/20 text-Primary-300 flex items-center gap-1 rounded-full border px-2.5 py-1 text-sm font-medium backdrop-blur-md'>
                 <Calendar className='size-4' />
                 {formatDate(parts[0].release_date)}- {formatDate(parts[parts.length - 1].release_date)}
