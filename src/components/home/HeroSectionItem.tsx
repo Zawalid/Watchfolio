@@ -12,10 +12,9 @@ import { getImages } from '@/lib/api/TMDB';
 
 interface HeroItemProps {
   item: Media;
-  isActive?: boolean;
 }
 
-export default function HeroItem({ item, isActive = false }: HeroItemProps) {
+export default function HeroItem({ item }: HeroItemProps) {
   const { data: images } = useQuery({
     queryKey: ['logo', item.id],
     queryFn: async () => await getImages(item.id, item.media_type),
@@ -45,9 +44,9 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
 
   return (
     <motion.div
-      className={cn('absolute inset-0 h-screen min-h-[600px] w-full overflow-hidden', isActive ? 'z-10' : 'z-0')}
+      className='absolute inset-0 h-screen min-h-[600px] w-full overflow-hidden z-10'
       initial={{ opacity: 0 }}
-      animate={{ opacity: isActive ? 1 : 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
     >
       {/* Background Image */}
@@ -72,7 +71,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
         <div className='max-w-3xl space-y-6'>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className='flex items-center gap-3'
           >
@@ -88,7 +87,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 30 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className='text-5xl font-black text-white drop-shadow-lg md:text-6xl lg:text-7xl'
           >
@@ -102,7 +101,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
           {/* Meta information with glassy pill design */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className='flex items-center gap-3'
           >
@@ -122,7 +121,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
             className='line-clamp-3 max-w-2xl text-lg leading-relaxed text-white/90 drop-shadow-sm'
           >
@@ -131,7 +130,7 @@ export default function HeroItem({ item, isActive = false }: HeroItemProps) {
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
             className='flex items-center gap-4'
           >

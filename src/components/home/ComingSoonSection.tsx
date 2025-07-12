@@ -44,7 +44,7 @@ export default function ComingSoonSection() {
         }}
         asSlider={true}
         slideClassName='w-[200px]! sm:w-[250px]!'
-        sliderProps={{autoplay : true}}
+        sliderProps={{autoplay : true,loop : true}}
       />
     </div>
   );

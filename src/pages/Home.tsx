@@ -5,7 +5,6 @@ import HeroSection from '@/components/home/HeroSection';
 import TrendingSection from '@/components/home/TrendingSection';
 import Top10Section from '@/components/home/Top10Section';
 import NetworksSection from '@/components/home/NetworksSection';
-import CriticsChoiceSection from '@/components/home/CriticsChoiceSection';
 import ComingSoonSection from '@/components/home/ComingSoonSection';
 import TopRatedSection from '@/components/home/TopRatedSection';
 import FranchisesSection from '@/components/home/FranchisesSection';
@@ -50,42 +49,37 @@ export default function Home() {
       initial='hidden'
       animate='visible'
     >
-      <motion.section id="hero" className='h-[90vh]' variants={sectionVariants}>
+      <motion.section id='hero' className='h-[90vh]' variants={sectionVariants}>
         <HeroSection />
       </motion.section>
 
-      <motion.section id="trending" variants={sectionVariants}>
+      <motion.section id='trending' variants={sectionVariants}>
         <TrendingSection />
       </motion.section>
 
-      <motion.section id="top-10" variants={sectionVariants}>
+      <motion.section id='top-10' variants={sectionVariants}>
         <Top10Section />
       </motion.section>
 
-      <motion.section id="networks" variants={sectionVariants}>
+      <motion.section id='networks' variants={sectionVariants}>
         <NetworksSection />
       </motion.section>
 
-      <motion.section id="critics-choice" variants={sectionVariants}>
-        <CriticsChoiceSection />
-      </motion.section>
-
-      <motion.section id="coming-soon" variants={sectionVariants}>
+      <motion.section id='coming-soon' variants={sectionVariants}>
         <ComingSoonSection />
       </motion.section>
 
-      <motion.section id="top-rated" variants={sectionVariants}>
+      <motion.section id='top-rated' variants={sectionVariants}>
         <TopRatedSection />
       </motion.section>
 
-      <motion.section id="popular-people" variants={sectionVariants}>
+      <motion.section id='popular-people' variants={sectionVariants}>
         <PopularCelebritiesSection />
       </motion.section>
-      
-      <motion.section id="franchises" variants={sectionVariants}>
+
+      <motion.section id='franchises' variants={sectionVariants}>
         <FranchisesSection />
       </motion.section>
-
     </motion.div>
   );
 }

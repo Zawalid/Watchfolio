@@ -1,6 +1,6 @@
 import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import { SwiperEvents, Swiper as SwiperType } from 'swiper/types';
-import { Navigation, A11y, Keyboard, Mousewheel, Autoplay, FreeMode } from 'swiper/modules';
+import { Navigation, A11y, Keyboard, Mousewheel, Autoplay, FreeMode,EffectCreative, Pagination, EffectCube } from 'swiper/modules';
 import { LEFT_ARROW_ICON, RIGHT_ARROW_ICON } from './Icons';
 import { useRef, useState, useEffect } from 'react';
 
@@ -142,19 +142,15 @@ export function Slider({
     <Swiper
       ref={swiperRef}
       className={`relative ${className}`}
-      modules={[Navigation, A11y, Keyboard, Mousewheel, Autoplay, FreeMode]}
+      modules={[Navigation, A11y, Keyboard, Mousewheel, Autoplay,Pagination, FreeMode,EffectCreative,EffectCube]}
       spaceBetween={spaceBetween}
       slidesPerView={slidesPerView}
       centeredSlides={false}
-      navigation={
-        showNavigation && !smartSlide
-          ? {
-              nextEl: `#${navigationIds.next}`,
-              prevEl: `#${navigationIds.prev}`,
-              disabledClass: 'opacity-50 cursor-not-allowed',
-            }
-          : false
-      }
+      navigation={{
+        nextEl: `#${navigationIds.next}`,
+        prevEl: `#${navigationIds.prev}`,
+        disabledClass: 'opacity-0',
+      }}
       mousewheel={{ forceToAxis: true }}
       freeMode={true}
       speed={speed}
@@ -195,4 +191,3 @@ export function Slider({
 }
 
 Slider.Slide = SwiperSlide;
-

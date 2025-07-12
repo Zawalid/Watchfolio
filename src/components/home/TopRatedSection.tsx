@@ -46,7 +46,7 @@ export default function TopRatedSection() {
           queryOptions={selectedTab === 'movie' ? movieQuery : tvQuery}
           asSlider={true}
           slideClassName='w-[200px]! sm:w-[250px]!'
-          sliderProps={{ autoplay: true }}
+          sliderProps={{ autoplay: true,loop : true }}
         />
       </div>
     </div>

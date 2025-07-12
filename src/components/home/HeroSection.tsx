@@ -1,14 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getTrendingAll } from '@/lib/api/TMDB';
-import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import HeroItem from './HeroSectionItem';
-import { cn } from '@/utils';
 import { placeholder } from '@/utils/shimmer-placeholder';
+import { Slider } from '../ui/slider';
 
 export default function HeroSection() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
   const { data: featuredData, isLoading } = useQuery({
     queryKey: ['featured-content'],
     queryFn: async () => await getTrendingAll('week', 1),
@@ -16,50 +13,6 @@ export default function HeroSection() {
   });
 
   const featuredItems = (featuredData?.results as Media[])?.slice(0, 10) || [];
-
-  // Auto-advance hero items
-  useEffect(() => {
-    if (featuredItems.length <= 1) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % featuredItems.length);
-    }, 8000); // Change every 8 seconds (slightly longer for better UX)
-
-    return () => clearInterval(interval);
-  }, [featuredItems.length]);
-
-  const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % featuredItems.length);
-  }, [featuredItems.length]);
-
-  const goToPrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + featuredItems.length) % featuredItems.length);
-  }, [featuredItems.length]);
-
-  const goToSlide = useCallback((index: number) => {
-    setCurrentIndex(index);
-  }, []);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (featuredItems.length <= 1) return;
-
-      switch (event.key) {
-        case 'ArrowLeft':
-          event.preventDefault();
-          goToPrevious();
-          break;
-        case 'ArrowRight':
-          event.preventDefault();
-          goToNext();
-          break;
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [featuredItems.length, goToNext, goToPrevious]);
 
   if (isLoading) {
     return (
@@ -121,29 +74,33 @@ export default function HeroSection() {
   return (
     <div className='absolute top-0 left-0 h-screen w-screen overflow-hidden'>
       {/* Hero Items - All positioned absolutely to overlay */}
-      {featuredItems.map((item, index) => (
-        <HeroItem key={`${item.id}-${index}`} item={item} isActive={index === currentIndex} />
-      ))}
+      <Slider
+        className='size-full'
+        freeMode={false}
+        showNavigation={false}
+        loop={true}
+        autoplay={{ delay: 8000, }}
+        creativeEffect={{ prev: { shadow: true, translate: [0, 0, -400] }, next: { translate: ['100%', 0, 0] } }}
+        effect={'creative'}
+        pagination={{
+          enabled: true,
+          clickable: true,
+          bulletClass:
+            'inline-block bg-white/50 cursor-pointer hover:scale-125 hover:bg-white/80 focus:ring-Primary-500/50 size-2.5 ml-2 rounded-full transition-all duration-500 focus:ring-2 focus:outline-none',
+          bulletActiveClass: 'bg-Primary-400! hover:scale-100! shadow-Primary-500/50 w-8 shadow-lg',
+        }}
+      >
+        {featuredItems.map((item, index) => (
+          <Slider.Slide key={`${item.id}-${index}`} className='w-screen!'>
+            <HeroItem key={`${item.id}-${index}`} item={item} />
+          </Slider.Slide>
+        ))}
+      </Slider>
 
-      {featuredItems.length > 1 && (
-        <>
-          <button
-            onClick={goToPrevious}
-            className='focus:ring-Primary-500/50 absolute top-1/2 left-2 z-20 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/60 focus:ring-2 focus:outline-none'
-            aria-label='Previous slide'
-          >
-            <ChevronLeft className='h-6 w-6' />
-          </button>
-
-          <button
-            onClick={goToNext}
-            className='focus:ring-Primary-500/50 absolute top-1/2 right-2 z-20 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white backdrop-blur-sm transition-all hover:scale-110 hover:bg-black/60 focus:ring-2 focus:outline-none'
-            aria-label='Next slide'
-          >
-            <ChevronRight className='h-6 w-6' />
-          </button>
-
-          <div className='absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-3'>
+      {/* {featuredItems.length > 1 && (
+        
+          )} */}
+      {/* <div className='absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-3'>
             {featuredItems.map((_, index) => (
               <button
                 key={index}
@@ -157,9 +114,7 @@ export default function HeroSection() {
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
-          </div>
-        </>
-      )}
+          </div> */}
     </div>
   );
 }
