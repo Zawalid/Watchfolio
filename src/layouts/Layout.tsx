@@ -8,6 +8,7 @@ import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import AuthModal from '@/components/auth/AuthModal';
 import Navbar from '@/components/Navbar';
 import { ResponsiveScreen } from '@/components/ui/ResponsiveScreen';
+import Footer from '@/components/Footer';
 
 export default function Layout() {
   const location = useLocation();
@@ -41,6 +42,7 @@ export default function Layout() {
           <main className='container flex-1 px-4 pb-10 pt-16 md:pt-20 lg:px-6 lg:pt-24'>
             <Outlet />
           </main>
+          <Footer />
           <OnboardingModal />
           <AuthModal />
         </div>

@@ -14,5 +14,7 @@ export { default as Preferences } from './settings/Preferences';
 export { default as PrivacySecurity } from './settings/PrivacySecurity';
 export { default as LibrarySettings } from './settings/Library';
 export { default as Collections } from './collection/Collections'
-export { default as CollectionDetails } from './collection/CollectionDetails'
+export { default as CollectionDetails } from './collection/CollectionDetails';
+export { default as TermsOfService } from './legal/TermsOfService';
+export { default as PrivacyPolicy } from './legal/PrivacyPolicy';
 ;

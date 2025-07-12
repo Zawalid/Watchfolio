@@ -18,6 +18,8 @@ import {
   Celebrities,
   Collections,
   CollectionDetails,
+  TermsOfService,
+  PrivacyPolicy,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -147,6 +149,19 @@ export const router = createBrowserRouter([
           {
             path: 'library',
             Component: LibrarySettings,
+          },
+        ],
+      },
+      {
+        path: 'legal',
+        children: [
+          {
+            path: 'terms-of-service',
+            Component: TermsOfService,
+          },
+          {
+            path: 'privacy-policy',
+            Component: PrivacyPolicy,
           },
         ],
       },

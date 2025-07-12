@@ -83,15 +83,6 @@
   --color-blur: rgba(18, 24, 41, 0.8);
   --color-border: #292f46;
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.5rem;
-  --text-2xl: 2rem;
-  --text-3xl: 3rem;
-  --text-4xl: 4rem;
-
   --font-poppins: Poppins;
 
   --breakpoint-xs: 400px;
@@ -281,4 +272,32 @@ body {
     }
   }
 
+}
+
+.prose-custom {
+  @apply text-Grey-300;
+  h2 {
+    @apply text-2xl font-bold text-white mt-12 mb-4 border-b border-white/10 pb-4;
+  }
+  p, ul {
+    @apply text-base leading-relaxed mb-4;
+  }
+  ul {
+    @apply list-disc pl-6 space-y-2;
+  }
+  a {
+    @apply text-Primary-400 hover:text-Primary-300 transition-colors;
+  }
+  strong {
+    @apply text-white;
+  }
+  .summary-box {
+    @apply bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 my-6 flex items-start gap-3;
+  }
+  .summary-box p {
+    @apply text-yellow-400/90 text-sm m-0;
+  }
+  .summary-box strong {
+    @apply text-yellow-300;
+  }
 }
