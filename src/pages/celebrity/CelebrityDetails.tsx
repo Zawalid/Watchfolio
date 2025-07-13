@@ -11,6 +11,7 @@ import CelebrityCategories from '@/components/celebrity/details/CelebrityCategor
 import CelebrityCredits from '@/components/celebrity/details/CelebrityCredits';
 import CelebritySkeleton from '@/components/celebrity/details/CelebritySkeleton';
 import { Status } from '@/components/ui/Status';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.1 } } };
 const sectionVariants = {
@@ -66,6 +67,8 @@ export default function CelebrityDetails() {
     isError: personResult.isError || creditsResult.isError,
     // error: personResult.error || creditsResult.error,
   };
+
+  usePageTitle(isLoading ? 'Loading...' : person?.name || '');
 
   const { categorized, knownForItems, availableCategories } = useMemo(() => {
     if (!combinedCredits) return { categorized: null, knownForItems: [], availableCategories: [] };
@@ -126,7 +129,7 @@ export default function CelebrityDetails() {
   );
 
   if (isLoading) return <CelebritySkeleton />;
-  if (!isError) return <Status.Error message='There was an error loading the celebrity details. Please try again.' />;
+  if (isError) return <Status.Error message='There was an error loading the celebrity details. Please try again.' />;
   if (!person)
     return (
       <Status.NotFound

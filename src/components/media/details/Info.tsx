@@ -67,7 +67,7 @@ export default function Info({ media }: { media: Media }) {
                 {getFormattedRuntime(media)}
               </motion.span>
             </div>
-            <h1 className='mb-5 text-2xl font-bold text-white lg:text-3xl'>{title}</h1>
+            <h1 className='mb-5 heading gradient'>{title}</h1>
             <div className='flex flex-wrap gap-2'>
               {genres?.map((genre, index) => (
                 <motion.span

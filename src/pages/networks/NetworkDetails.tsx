@@ -12,6 +12,7 @@ import { useDiscoverParams } from '@/hooks/useDiscoverParams';
 import FiltersModal from '@/components/FiltersModal';
 import { useDisclosure } from '@heroui/modal';
 import { Status } from '@/components/ui/Status';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function NetworkDetails() {
   const { slug } = useParams();
@@ -19,6 +20,8 @@ export default function NetworkDetails() {
   const filtersDisclosure = useDisclosure();
 
   const network = NETWORKS.find((n) => n.slug === slug);
+
+  usePageTitle(network?.name || 'TV Network');
 
   if (!network)
     return (

@@ -11,6 +11,7 @@ import { LazyImage } from '@/components/ui/LazyImage';
 import { formatDate } from '@/utils';
 import { Rating } from '@/components/ui/Rating';
 import { Status } from '@/components/ui/Status';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function CollectionDetails() {
   const { slug } = useParams();
@@ -25,6 +26,8 @@ export default function CollectionDetails() {
     queryFn: () => getCollection(collectionId),
     enabled: !!collectionId,
   });
+
+  usePageTitle(isLoading ? 'Loading...' : collection?.name || '');
 
   if (isLoading) return <CollectionDetailsSkeleton />;
   if (isError) return <Status.Error message='There was an error loading the collection details. Please try again.' />;

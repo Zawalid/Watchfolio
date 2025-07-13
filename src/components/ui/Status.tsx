@@ -21,6 +21,7 @@ import {
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
 import { useFilters } from '@/hooks/useFilters';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -65,6 +66,8 @@ function StatusContainer({ children }: { children: ReactNode }) {
 function NoResults({ title, message, children }: { title?: string; message?: string; children?: ReactNode }) {
   const { hasFilters, clearAllFilters } = useFilters();
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
+
+  usePageTitle(hasFilters ? 'No matches found' : query ? 'No results found' : 'Nothing here yet');
 
   return (
     <StatusContainer>
@@ -129,7 +132,7 @@ function NoResults({ title, message, children }: { title?: string; message?: str
 function Empty({
   Icon,
   iconColor,
-  title,
+  title = 'Nothing here yet',
   message,
   children,
 }: {
@@ -148,7 +151,7 @@ function Empty({
         {Icon ? <Icon className={`size-12 ${iconColor}`} /> : <CircleOff className='text-Grey-400 size-12' />}
       </motion.div>
       <motion.div variants={itemVariants} className='space-y-4'>
-        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>{title || 'Nothing here yet'}</h3>
+        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>{title}</h3>
         <p className='text-Grey-400 max-w-md'>{message || 'No content yet'}</p>
       </motion.div>
       {children && <motion.div variants={itemVariants}>{children}</motion.div>}
@@ -157,7 +160,7 @@ function Empty({
 }
 
 export function Error({
-  title,
+  title = 'Oops! Something went wrong',
   message,
   children,
   onRetry,
@@ -167,6 +170,7 @@ export function Error({
   children?: ReactNode;
   onRetry?: () => void;
 }) {
+  usePageTitle(title);
   return (
     <StatusContainer>
       <motion.div variants={itemVariants}>
@@ -196,7 +200,7 @@ export function Error({
       </motion.div>
 
       <motion.div variants={itemVariants} className='space-y-4'>
-        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>{title || ' Oops! Something went wrong'}</h3>
+        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>{title}</h3>
         <p className='text-Grey-400 max-w-md'>
           {message || 'There was an error processing your request. Please try again.'}
         </p>
@@ -216,8 +220,17 @@ export function Error({
   );
 }
 
-function NotFound({ title, message, children }: { title?: string; message?: string; children?: ReactNode }) {
+function NotFound({
+  title = 'Page Not Found',
+  message,
+  children,
+}: {
+  title?: string;
+  message?: string;
+  children?: ReactNode;
+}) {
   const navigate = useNavigate();
+  usePageTitle(title);
 
   return (
     <StatusContainer>
@@ -261,7 +274,7 @@ function NotFound({ title, message, children }: { title?: string; message?: stri
 
       {/* Title and description */}
       <motion.div variants={itemVariants} className='max-w-lg space-y-4'>
-        <h2 className='heading gradient'>{title || 'Page Not Found'}</h2>
+        <h2 className='heading gradient'>{title}</h2>
         <p className='text-Grey-300 text-base leading-relaxed'>
           {message || 'There was an error processing your request. Please try again.'}
         </p>

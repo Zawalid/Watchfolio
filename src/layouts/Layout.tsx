@@ -39,7 +39,7 @@ export default function Layout() {
       ) : (
         <div className='flex h-full min-h-dvh flex-col'>
           <Navbar />
-          <main className='container flex-1 px-4 pb-10 pt-16 md:pt-20 lg:px-6 lg:pt-24 min-h-screen'>
+          <main className='container flex-1 mx-auto px-4 pb-10 pt-16 md:pt-20 lg:px-6 lg:pt-24 min-h-screen'>
             <Outlet />
           </main>
           <Footer />

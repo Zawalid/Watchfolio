@@ -3,6 +3,8 @@ import MediaCardsList from '@/components/media/MediaCardsList';
 import { discoverMovies, discoverTvShows, getMovies, getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { useDiscoverParams } from '@/hooks/useDiscoverParams';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { slugify } from '@/utils';
 
 interface MediaPageProps {
   type: MediaType;
@@ -12,6 +14,8 @@ interface MediaPageProps {
 export default function MediaPage({ type, categories }: MediaPageProps) {
   const [category] = useQueryState('category', parseAsString);
   const { discoverParams, page } = useDiscoverParams(type);
+
+  usePageTitle(`${category ? slugify(category, { reverse: true }) : ''} ${type === 'movie' ? 'Movies' : 'TV Shows'}`);
 
   const isValidCategory = category && categories.includes(category as Categories);
 

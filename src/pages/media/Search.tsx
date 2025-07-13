@@ -13,6 +13,7 @@ import { queryKeys } from '@/lib/react-query';
 import SearchInput from '@/components/SearchInput';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
 import { cn } from '@/utils';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const SEARCH_TABS = [
   {
@@ -49,6 +50,8 @@ export default function Search() {
   const location = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
   const [searchQuery, setSearchQuery] = useState(query);
+  
+  usePageTitle(`Search results for ${query}`);
 
   // Sync searchQuery with query state
   useEffect(() => {

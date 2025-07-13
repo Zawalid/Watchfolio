@@ -9,20 +9,22 @@ import Similar from '@/components/media/details/Similar';
 import { useQuery } from '@tanstack/react-query';
 import { getDetails } from '@/lib/api/TMDB';
 import { Status } from '@/components/ui/Status';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
   const { slug } = useParams();
   const {
     data: media,
-    isPending,
+    isLoading,
     isError,
   } = useQuery({
     queryKey: ['details', type, slug],
     queryFn: async () => await getDetails(type, slug!),
   });
 
-  if (isPending) return <DetailsSkeleton type={type} />;
-  if (isError) return <Status.Error message='There was an error loading the media details. Please try again.' />;
+  usePageTitle(isLoading ? 'Loading...' : (media as Movie)?.title || (media as TvShow)?.name || '');
+
+  if (isLoading) return <DetailsSkeleton type={type} />;
   if (!media)
     return (
       <Status.NotFound
@@ -30,6 +32,7 @@ export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
         message='The media you are looking for does not exist. Please try again with a different media.'
       />
     );
+  if (isError) return <Status.Error message='There was an error loading the media details. Please try again.' />;
 
   return (
     <div>

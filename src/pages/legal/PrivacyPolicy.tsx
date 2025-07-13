@@ -1,3 +1,4 @@
+import { usePageTitle } from '@/hooks/usePageTitle';
 import LegalLayout from '@/layouts/LegalLayout';
 
 const sections = [
@@ -12,6 +13,7 @@ const sections = [
 ];
 
 export default function PrivacyPolicy() {
+  usePageTitle('Privacy Policy');
   return (
     <LegalLayout title='Privacy Policy' lastUpdated='July 12, 2025' sections={sections}>
       <section id='introduction'>

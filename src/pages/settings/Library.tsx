@@ -10,14 +10,19 @@ import { useState } from 'react';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function Library() {
-  const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(localStorage.getItem(`${LOCAL_STORAGE_PREFIX}auto-sync`) !== 'false');
+  const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(
+    localStorage.getItem(`${LOCAL_STORAGE_PREFIX}auto-sync`) !== 'false'
+  );
   const { isAuthenticated } = useAuthStore();
   const { library } = useLibraryStore();
   const syncStore = useSyncStore();
   const { handleClearLibrary } = useClearLibrary();
   const importExportDisclosure = useDisclosure();
+
+  usePageTitle('Settings - Library');
 
   const handleAutoSyncToggle = (enabled: boolean) => {
     if (!isAuthenticated) {

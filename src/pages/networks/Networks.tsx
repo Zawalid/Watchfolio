@@ -3,8 +3,11 @@ import { Tv } from 'lucide-react';
 import { NETWORKS } from '@/utils/constants/TMDB';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import NetworkCard from './NetworkCard';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function Networks() {
+  usePageTitle('TV Networks');
+  
   return (
     <motion.div variants={containerVariants} className='container mx-auto space-y-8 px-4 py-8'>
       <motion.div className='flex items-center gap-4' variants={itemVariants}>

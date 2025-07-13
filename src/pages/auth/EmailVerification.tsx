@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router';
 import { Button } from '@heroui/button';
 import { addToast } from '@heroui/toast';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function EmailVerification() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function EmailVerification() {
   const { confirmEmailVerification, user } = useAuthStore();
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<'success' | 'error' | 'pending'>('pending');
+
+  usePageTitle('Verify your email');
 
   useEffect(() => {
     const userId = searchParams.get('userId');

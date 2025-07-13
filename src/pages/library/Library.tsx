@@ -1,6 +1,8 @@
 import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import LibraryCardsList from '@/components/library/LibraryCardsList';
+import { usePageTitle } from '@/hooks/usePageTitle';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 const sortItems = (items: LibraryMedia[], sortBy: string, sortDir: string): LibraryMedia[] => {
   return [...items].sort((a, b) => {
@@ -31,6 +33,9 @@ export default function Library({ status }: { status: LibraryFilterStatus }) {
   const [selectedPlatforms] = useQueryState('platforms', parseAsArrayOf(parseAsString));
   const [selectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
 
+  usePageTitle(
+    status === 'all' ? 'Your Library' : LIBRARY_MEDIA_STATUS.find((m) => m.value === status)?.label || status
+  );
 
   const { getAllItems, getItemsByStatus } = useLibraryStore();
 

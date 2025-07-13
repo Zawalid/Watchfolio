@@ -4,9 +4,12 @@ import { addToast } from '@heroui/toast';
 import { Switch } from '@/components/ui/Switch';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { cn } from '@/utils';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading } = useAuthStore();
+
+  usePageTitle('Settings - Preferences');
 
   const handleConfirmationToggle = async (setting: ConfirmationPreferences, enabled: boolean) => {
     if (!user?.preferences) return;

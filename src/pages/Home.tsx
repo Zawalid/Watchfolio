@@ -9,6 +9,7 @@ import ComingSoonSection from '@/components/home/ComingSoonSection';
 import TopRatedSection from '@/components/home/TopRatedSection';
 import FranchisesSection from '@/components/home/FranchisesSection';
 import PopularCelebritiesSection from '@/components/home/PopularCelebritiesSection';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -31,6 +32,8 @@ const sectionVariants = {
 
 export default function Home() {
   const location = useLocation();
+
+  usePageTitle('Home');
 
   useEffect(() => {
     if (location.hash) {

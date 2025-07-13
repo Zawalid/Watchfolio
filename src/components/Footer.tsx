@@ -44,7 +44,7 @@ export default function Footer() {
         <div className='grid grid-cols-1 gap-10 md:grid-cols-12'>
           {/* Logo and Tagline */}
           <div className='md:col-span-4'>
-            <Link to='/' className='flex items-center space-x-3 w-fit'>
+            <Link to='/' className='flex w-fit items-center space-x-3'>
               <img src='/images/logo.svg' alt='Watchfolio' className='h-10 w-auto' />
               <span className='heading gradient text-2xl'>Watchfolio</span>
             </Link>
@@ -70,9 +70,7 @@ export default function Footer() {
                           {link.icon && <span className='opacity-60'>{link.icon}</span>}
                           {link.label}
                         </Link>
-                        <li key={link.label}>
-                          <span className='bg-Primary-400 absolute -bottom-0.5 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full'></span>
-                        </li>
+                        <span className='bg-Primary-400 absolute -bottom-0.5 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full'></span>
                       </motion.div>
                     </li>
                   ))}

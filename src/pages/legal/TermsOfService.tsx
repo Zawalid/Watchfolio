@@ -1,3 +1,4 @@
+import { usePageTitle } from '@/hooks/usePageTitle';
 import LegalLayout from '@/layouts/LegalLayout';
 
 const sections = [
@@ -11,6 +12,7 @@ const sections = [
 ];
 
 export default function TermsOfService() {
+  usePageTitle('Terms of Service');
   return (
     <LegalLayout title='Terms of Service' lastUpdated='July 12, 2025' sections={sections}>
       <section id='introduction'>

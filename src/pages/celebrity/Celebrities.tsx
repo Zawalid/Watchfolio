@@ -6,6 +6,7 @@ import { queryKeys } from '@/lib/react-query';
 import { getPopularPeople, getTrendingPeople } from '@/lib/api/TMDB';
 import { cn } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const CELEBRITY_CATEGORIES = [
   {
@@ -25,6 +26,8 @@ const CELEBRITY_CATEGORIES = [
 export default function Celebrities() {
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [category, setCategory] = useQueryState('category', parseAsString.withDefault('popular'));
+  
+  usePageTitle(`${category ? CELEBRITY_CATEGORIES.find((c) => c.id === category)?.label : ''} Celebrities`);
 
   const handleCategorySelect = (categoryId: string) => {
     setCategory(categoryId);

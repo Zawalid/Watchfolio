@@ -9,6 +9,7 @@ import { cn, slugify } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { useNavigate } from 'react-router';
 import { useListNavigator } from '@/hooks/useListNavigator';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 type CollectionCategory = keyof typeof MOVIE_COLLECTIONS;
 
@@ -74,6 +75,8 @@ export default function Collections() {
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  usePageTitle(`${category ? COLLECTION_CATEGORIES.find((c) => c.id === category)?.label : ''} Movie Collections`);
 
   useEffect(() => {
     setFocusIndex(-1);

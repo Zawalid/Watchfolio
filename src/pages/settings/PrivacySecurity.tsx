@@ -1,10 +1,13 @@
 import ChangePassword from '@/components/settings/ChangePassword';
 import DeleteAccount from '@/components/settings/DeleteAccount';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { AlertTriangle, ShieldCheck, Lock } from 'lucide-react';
 
 export default function PrivacySecurity() {
   const { isAuthenticated } = useAuthStore();
+
+  usePageTitle('Settings - Privacy & Security');
 
   if (!isAuthenticated) {
     return (
