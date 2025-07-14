@@ -1,5 +1,5 @@
 import { Tv, TrendingUp, Star, Calendar, Zap } from 'lucide-react';
-import MediaLayout from '@/components/media/MediaLayout';
+import MediaLayout from '@/layouts/MediaLayout';
 
 const TV_CATEGORIES = [
   {

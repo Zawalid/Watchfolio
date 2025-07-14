@@ -22,7 +22,7 @@ export default function Library() {
   const { handleClearLibrary } = useClearLibrary();
   const importExportDisclosure = useDisclosure();
 
-  usePageTitle('Settings - Library');
+  usePageTitle('Library - Settings');
 
   const handleAutoSyncToggle = (enabled: boolean) => {
     if (!isAuthenticated) {

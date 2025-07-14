@@ -7,7 +7,7 @@ import { AlertTriangle, ShieldCheck, Lock } from 'lucide-react';
 export default function PrivacySecurity() {
   const { isAuthenticated } = useAuthStore();
 
-  usePageTitle('Settings - Privacy & Security');
+  usePageTitle(' Privacy & Security - Settings');
 
   if (!isAuthenticated) {
     return (

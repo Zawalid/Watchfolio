@@ -1,5 +1,5 @@
 import { Film, TrendingUp, Star, Calendar, PlayCircle } from 'lucide-react';
-import MediaLayout from '@/components/media/MediaLayout';
+import MediaLayout from '@/layouts/MediaLayout';
 
 const MOVIE_CATEGORIES = [
   {

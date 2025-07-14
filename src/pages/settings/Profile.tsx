@@ -6,7 +6,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 export default function Profile() {
   const { isAuthenticated } = useAuthStore();
 
-  usePageTitle('Settings - Profile');
+  usePageTitle('Profile - Settings');
 
   if (!isAuthenticated) {
     return (

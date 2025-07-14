@@ -9,7 +9,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading } = useAuthStore();
 
-  usePageTitle('Settings - Preferences');
+  usePageTitle('Preferences - Settings');
 
   const handleConfirmationToggle = async (setting: ConfirmationPreferences, enabled: boolean) => {
     if (!user?.preferences) return;

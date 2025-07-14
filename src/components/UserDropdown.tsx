@@ -54,7 +54,10 @@ export default function UserDropdown() {
   };
 
   return (
-    <Dropdown classNames={DROPDOWN_CLASSNAMES} placement='bottom-end'>
+    <Dropdown
+      classNames={{ ...DROPDOWN_CLASSNAMES, content: DROPDOWN_CLASSNAMES.content.replace('bg-white/5', 'bg-blur') }}
+      placement='bottom-end'
+    >
       <DropdownTrigger>
         <button className='flex items-center gap-3 rounded-xl border border-white/10 px-3 py-2 transition-all duration-200 hover:border-white/20 hover:bg-white/5'>
           <Avatar src={avatarUrl} classNames={AVATAR_CLASSNAMES} size='sm' />

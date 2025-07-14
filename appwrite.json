@@ -327,21 +327,20 @@
           "default": null
         },
         {
-          "key": "username",
+          "key" : "bio",
           "type": "string",
           "required": false,
           "array": false,
-          "size": 50,
+          "size": 500,
           "default": null
         },
         {
-          "key": "mediaPreference",
+          "key": "username",
           "type": "string",
-          "required": false,
+          "required": true,
           "array": false,
-          "elements": ["movies", "series", "both"],
-          "format": "enum",
-          "default": "both"
+          "size": 50,
+          "default": null
         },
         {
           "key": "userId",
@@ -350,6 +349,15 @@
           "array": false,
           "size": 50,
           "default": null
+        },
+        {
+          "key": "visibility",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["public", "private"],
+          "format": "enum",
+          "default": "public"
         },
         {
           "key": "library",
@@ -374,6 +382,38 @@
           "twoWayKey": "6859623500109c64bc5e",
           "onDelete": "cascade",
           "side": "parent"
+        },
+        {
+          "key": "favoriteContentType",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["movies", "series", "both"],
+          "format": "enum",
+          "default": "both"
+        },
+        {
+          "key": "favoriteGenres",
+          "type": "string",
+          "required": false,
+          "array": true,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "contentPreferences",
+          "type": "string",
+          "required": false,
+          "array": true,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "favoriteNetworks",
+          "type": "integer",
+          "required": false,
+          "array": true,
+          "default": null
         }
       ],
       "indexes": [

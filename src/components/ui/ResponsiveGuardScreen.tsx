@@ -10,7 +10,7 @@ export function ResponsiveScreen() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 100, damping: 15 }}
-          className='flex min-h-[500px] flex-1 flex-col items-center justify-center gap-8 text-center'
+          className='flex min-h-[500px] flex-1 flex-col items-center justify-center gap-8 text-center px-5'
         >
           {/* Main icon with animated rings */}
           <motion.div

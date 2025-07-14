@@ -7,7 +7,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import AuthModal from '@/components/auth/AuthModal';
 import Navbar from '@/components/Navbar';
-import { ResponsiveScreen } from '@/components/ui/ResponsiveScreen';
+import { ResponsiveScreen } from '@/components/ui/ResponsiveGuardScreen';
 import Footer from '@/components/Footer';
 
 export default function Layout() {

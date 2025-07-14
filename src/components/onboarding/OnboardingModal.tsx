@@ -40,7 +40,10 @@ export default function OnboardingModal() {
     useOnboardingStore();
   const disclosure = useDisclosure({
     isOpen: showModal,
-    onClose: closeModal,
+    onClose: () => {
+      closeModal();
+      completeOnboarding();
+    },
   });
 
   const CurrentStepComponent = steps[currentStep]?.component;
