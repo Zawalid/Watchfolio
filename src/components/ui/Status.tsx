@@ -50,13 +50,16 @@ const itemVariants = {
   },
 };
 
-function StatusContainer({ children,className }: { children: ReactNode,className?:string }) {
+function StatusContainer({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <motion.div
       variants={containerVariants}
       initial='hidden'
       animate='visible'
-      className={cn('flex h-full min-h-[70vh] flex-1 flex-col items-center justify-center gap-6 px-4 text-center',className)}
+      className={cn(
+        'flex h-full min-h-[70vh] flex-1 flex-col items-center justify-center gap-6 px-4 text-center',
+        className
+      )}
     >
       {children}
     </motion.div>
@@ -128,21 +131,16 @@ function NoResults({ title, message, children }: { title?: string; message?: str
   );
 }
 
-function Empty({
-  Icon,
-  iconColor,
-  title = 'Nothing here yet',
-  message,
-  children,
-  className
-}: {
+export type EmptyProps = {
   Icon?: ElementType;
   iconColor?: string;
   title?: string;
   message?: string;
   children?: ReactNode;
-  className?:string
-}) {
+  className?: string;
+};
+
+function Empty({ Icon, iconColor, title = 'Nothing here yet', message, children, className }: EmptyProps) {
   return (
     <StatusContainer className={className}>
       <motion.div
@@ -226,13 +224,13 @@ function NotFound({
   title = 'Page Not Found',
   message,
   children,
-  animatedRingProps
+  animatedRingProps,
 }: {
   Icon?: ElementType;
   title?: string;
   message?: string;
   children?: ReactNode;
-  animatedRingProps?: Omit<AnimatedRingProps,'children'>
+  animatedRingProps?: Omit<AnimatedRingProps, 'children'>;
 }) {
   const navigate = useNavigate();
   usePageTitle(title);
@@ -274,7 +272,7 @@ function NotFound({
           ]}
           {...animatedRingProps}
         >
-          <Icon className=' size-16' />
+          <Icon className='size-16' />
         </AnimatedRing>
       </motion.div>
 

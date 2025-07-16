@@ -1,26 +1,17 @@
 import { motion } from 'framer-motion';
-import {
-  Share2,
-  Lock,
-  Globe,
-  UserRoundPen,
-  Check,
-  Film,
-  Tv,
-  Clapperboard,
-  CalendarDays,
-  Clock,
-} from 'lucide-react';
+import { Share2, Lock, Globe, UserRoundPen, Check, Film, Tv, Clapperboard, CalendarDays, Clock } from 'lucide-react';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
 import { Avatar } from '@heroui/avatar';
 import { AVATAR_CLASSNAMES } from '@/styles/heroui';
-import { cn, formatDate} from '@/utils';
+import { cn, formatDate } from '@/utils';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 interface ProfileHeaderProps {
   profile: Profile;
   isOwnProfile?: boolean;
+  totalItems: number;
+  watchTime: number;
 }
 
 const getContentType = (type: string) => {
@@ -34,7 +25,7 @@ const getContentType = (type: string) => {
   }
 };
 
-export default function ProfileHeader({ profile, isOwnProfile = false }: ProfileHeaderProps) {
+export default function ProfileHeader({ profile, isOwnProfile = false, totalItems, watchTime }: ProfileHeaderProps) {
   const { copied, copy } = useCopyToClipboard();
   const joinedDate = profile.$createdAt ? formatDate(profile.$createdAt) : null;
 
@@ -84,12 +75,12 @@ export default function ProfileHeader({ profile, isOwnProfile = false }: Profile
               >
                 <div className='bg-Grey-800/60 flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-sm backdrop-blur-sm'>
                   <Film className='text-Primary-400 h-4 w-4' />
-                  <span className='font-medium text-white'>{600}</span>
+                  <span className='font-medium text-white'>{totalItems}</span>
                   <span className='text-Grey-400'>Watched</span>
                 </div>
                 <div className='bg-Grey-800/60 flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-sm backdrop-blur-sm'>
                   <Clock className='text-Secondary-400 h-4 w-4' />
-                  <span className='font-medium text-white'>{`${2030}h`}</span>
+                  <span className='font-medium text-white'>{`${watchTime}h`}</span>
                   <span className='text-Grey-400'>Watch Time</span>
                 </div>
               </motion.div>

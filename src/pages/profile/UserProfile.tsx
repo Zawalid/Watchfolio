@@ -18,13 +18,14 @@ export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const { checkIsOwnProfile } = useAuthStore();
 
-  const { data: profile, isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['user', username],
-    queryFn: async () => await appwriteService.profiles.getByUsername(username!),
+    queryFn: async () => await appwriteService.profiles.getUserProfile(username!),
     enabled: !!username,
   });
 
   const isOwnProfile = checkIsOwnProfile(username);
+  const profile = data?.profile;
 
   usePageTitle(
     isLoading
@@ -63,7 +64,7 @@ export default function ProfilePage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-8'>
-      <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
+      <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} totalItems={data.stats.all} watchTime={2023} />
 
       <Tabs classNames={TABS_CLASSNAMES}>
         <Tab
@@ -89,7 +90,7 @@ export default function ProfilePage() {
           }
         >
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <StatsInsights isOwnProfile={isOwnProfile} />
+            <StatsInsights stats={data.stats} isOwnProfile={isOwnProfile} />
           </motion.div>
         </Tab>
         <Tab

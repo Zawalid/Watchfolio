@@ -137,7 +137,7 @@ export const useLibraryStore = create<LibraryState>()(
         const item = library[key];
 
         if (item) {
-          const updatedItem = { ...item, status: 'none' as LibraryMediaStatus };
+          const updatedItem = { ...item, status: 'none' as WatchStatus };
           if (shouldRemoveItem(updatedItem)) {
             set((state) => {
               const newLibrary = { ...state.library };
@@ -147,7 +147,7 @@ export const useLibraryStore = create<LibraryState>()(
           } else {
             const newItem: LibraryMedia = {
               ...item,
-              status: 'none' as LibraryMediaStatus,
+              status: 'none' as WatchStatus,
               lastUpdatedAt: new Date().toISOString(),
             };
 
@@ -178,7 +178,7 @@ export const useLibraryStore = create<LibraryState>()(
 
       getCount: (filter, mediaType) => {
         const { library } = get();
-        return getLibraryCount(Object.values(library), filter, mediaType);
+        return getLibraryCount({ items: Object.values(library), filter, mediaType }) as number;
       },
 
       exportLibrary: (items, format = 'json') => {

@@ -5,12 +5,12 @@ type Link = {
   checks?: string[];
 };
 
-declare type Links = {
+type Links = {
   authenticated: Link[];
   unauthenticated: Link[];
 };
 
-declare type FormError = {
+type FormError = {
   email?: string[];
   password?: string[];
   name?: string[];
@@ -18,11 +18,16 @@ declare type FormError = {
   confirm_password?: string[];
 };
 
-declare type Disclosure = {
+type Disclosure = {
   isOpen: boolean;
   onOpen: () => void;
   onOpenChange: (open: boolean) => void;
   onClose: () => void;
 };
 
-declare type Categories = 'popular' | 'top-rated' | 'now-playing' | 'upcoming' | 'on-tv' | 'airing-today';
+type Categories = 'popular' | 'top-rated' | 'now-playing' | 'upcoming' | 'on-tv' | 'airing-today';
+
+interface UserProfile {
+  profile: Profile;
+  stats: LibraryStats;
+}

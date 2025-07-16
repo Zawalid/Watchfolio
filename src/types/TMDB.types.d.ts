@@ -138,6 +138,7 @@ declare interface TvShow extends BaseMedia {
 
   status?: string;
   last_air_date?: string | null;
+  last_episode_to_air?: Episode;
   number_of_seasons?: number;
   number_of_episodes?: number;
   episode_run_time?: number[];

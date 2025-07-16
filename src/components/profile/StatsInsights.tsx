@@ -3,65 +3,8 @@ import { Star, Film, Tv, Clock, Target, BarChart3, Activity, Info, Award, Zap } 
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import StatCard, { StatCardProps } from './StatCard';
 import { LazyImage } from '@/components/ui/LazyImage';
-import { Status } from '@/components/ui/Status';
-import { cn,  formatTimeAgo } from '@/utils';
-
-const stats: LibraryStats = {
-  totalItems: 847,
-  watching: 23,
-  completed: 542,
-  willWatch: 156,
-  onHold: 12,
-  dropped: 12,
-  favorites: 89,
-  movies: 456,
-  tvShows: 391,
-  totalHoursWatched: 1247,
-  averageRating: 7,
-  topGenres: [
-    { name: 'Drama', count: 156 },
-    { name: 'Sci-Fi', count: 134 },
-    { name: 'Thriller', count: 98 },
-    { name: 'Comedy', count: 87 },
-    { name: 'Action', count: 76 },
-  ],
-  recentActivity: [
-    {
-      id: '1',
-      title: 'The Bear',
-      type: 'tv',
-      action: 'completed',
-      date: '2025-07-16T00:00:00Z',
-      rating: 5,
-      posterPath: '/rBuFWNej3pMPnAivQ3k5bafz6kk.jpg',
-    },
-    {
-      id: '2',
-      title: 'Oppenheimer',
-      type: 'movie',
-      action: 'rated',
-      date: '2024-01-08T00:00:00Z',
-      rating: 4,
-      posterPath: '/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
-    },
-    {
-      id: '3',
-      title: 'House of the Dragon',
-      type: 'tv',
-      action: 'added',
-      date: '2024-01-05T00:00:00Z',
-      posterPath: '/7QMsOTMUswlwxJP0rTTZfmz2tX2.jpg',
-    },
-    {
-      id: '4',
-      title: 'Dune: Part Two',
-      type: 'movie',
-      action: 'added',
-      date: '2024-01-03T00:00:00Z',
-      posterPath: '/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg',
-    },
-  ],
-};
+import { EmptyProps, Status } from '@/components/ui/Status';
+import { cn, formatTimeAgo } from '@/utils';
 
 const getStats = (stats: LibraryStats) => {
   const statusCards: StatCardProps[] = LIBRARY_MEDIA_STATUS.map((status) => ({
@@ -70,6 +13,7 @@ const getStats = (stats: LibraryStats) => {
     icon: status.icon,
     className: status.className,
     description: status.descriptions.stats,
+    percentage: Math.round((stats[status.value] / stats.all) * 100),
   }));
 
   return [
@@ -79,6 +23,7 @@ const getStats = (stats: LibraryStats) => {
       icon: Film,
       className: 'text-blue-400 bg-blue-500/20 border-blue-500/30',
       description: 'Movies tracked',
+      percentage: Math.round((stats.movies / stats.all) * 100),
     },
     {
       label: 'TV Shows',
@@ -86,6 +31,7 @@ const getStats = (stats: LibraryStats) => {
       icon: Tv,
       className: 'text-purple-400 bg-purple-500/20 border-purple-500/30',
       description: 'Series followed',
+      percentage: Math.round((stats.tvShows / stats.all) * 100),
     },
     ...statusCards,
   ];
@@ -104,8 +50,20 @@ const getActionIcon = (action: string) => {
   }
 };
 
-export default function StatsInsights({ isOwnProfile }: { isOwnProfile: boolean }) {
-  const hasNoData = stats.totalItems === 0;
+const renderEmptyState = (props: EmptyProps) => {
+  return (
+    <Status.Empty
+      Icon={props.Icon}
+      iconColor={props.iconColor}
+      title={props.title}
+      message={props.message}
+      className='min-h-[400px] rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.02] to-white/[0.01] p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20'
+    />
+  );
+};
+
+export default function StatsInsights({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile: boolean }) {
+  const hasNoData = stats.all === 0;
   const hasNoGenres = !stats.topGenres || stats.topGenres.length === 0;
   const hasNoActivity = !stats.recentActivity || stats.recentActivity.length === 0;
 
@@ -119,49 +77,40 @@ export default function StatsInsights({ isOwnProfile }: { isOwnProfile: boolean 
 
       <div className='grid gap-6 lg:grid-cols-3'>
         {hasNoData ? (
-          <Status.Empty
-            Icon={BarChart3}
-            iconColor='text-Primary-400'
-            title={isOwnProfile ? 'No stats yet' : 'No data to show'}
-            message={
-              isOwnProfile
-                ? 'Track movies and shows to see your watch stats here.'
-                : 'This user hasn’t added enough titles to generate stats yet.'
-            }
-            className='rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.02] to-white/[0.01] p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20 min-h-[500px]'
-          />
+          renderEmptyState({
+            Icon: BarChart3,
+            iconColor: 'text-Primary-400',
+            title: isOwnProfile ? 'No stats yet' : 'No data to show',
+            message: isOwnProfile
+              ? 'Track movies and shows to see your watch stats here.'
+              : "This user hasn't added enough titles to generate stats yet.",
+          })
         ) : (
           <Overview stats={stats} isOwnProfile={isOwnProfile} />
         )}
 
         {hasNoGenres ? (
-          <Status.Empty
-            Icon={Star}
-            iconColor='text-Tertiary-400'
-            title={isOwnProfile ? 'No genres tracked' : 'No genres to show'}
-            message={
-              isOwnProfile
-                ? 'Your top genres will show here as you rate and complete more content.'
-                : 'Not enough data to determine this user’s top genres.'
-            }
-               className='rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.02] to-white/[0.01] p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20 min-h-[500px]'
-          />
+          renderEmptyState({
+            Icon: Star,
+            iconColor: 'text-Tertiary-400',
+            title: isOwnProfile ? 'No genres tracked' : 'No genres to show',
+            message: isOwnProfile
+              ? 'Your top genres will show here as you rate and complete more content.'
+              : "Not enough data to determine this user's top genres.",
+          })
         ) : (
           <TopGenres stats={stats} isOwnProfile={isOwnProfile} />
         )}
 
         {hasNoActivity ? (
-          <Status.Empty
-            Icon={Activity}
-            iconColor='text-Secondary-400'
-            title={isOwnProfile ? 'No recent activity' : 'Nothing recent to show'}
-            message={
-              isOwnProfile
-                ? 'Start watching or rating content and it’ll appear here.'
-                : 'This user hasn’t been active lately.'
-            }
-               className='rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.02] to-white/[0.01] p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20 min-h-[500px]'
-          />
+          renderEmptyState({
+            Icon: Activity,
+            iconColor: 'text-Secondary-400',
+            title: isOwnProfile ? 'No recent activity' : 'Nothing recent to show',
+            message: isOwnProfile
+              ? "Start watching or rating content and it'll appear here."
+              : "This user hasn't been active lately.",
+          })
         ) : (
           <RecentActivity stats={stats} isOwnProfile={isOwnProfile} />
         )}
@@ -196,7 +145,7 @@ function Overview({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile: 
             <Target className='text-Secondary-400 h-4 w-4' />
             <span className='text-Grey-300 text-sm font-medium'>Total Items</span>
           </div>
-          <span className='text-lg font-bold text-white'>{stats.totalItems.toLocaleString()}</span>
+          <span className='text-lg font-bold text-white'>{stats.all.toLocaleString()}</span>
         </div>
 
         <div className='flex items-center justify-between rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
@@ -209,42 +158,125 @@ function Overview({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile: 
           <span className='text-lg font-bold text-white'>{`${stats.totalHoursWatched}h`}</span>
         </div>
 
+        <ContentTypeRatio movies={stats.movies} tvShows={stats.tvShows} />
+
         {/* Completion Rate */}
-        <div className='rounded-lg bg-white/[0.02] p-3'>
+        <div className='rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
           <div className='mb-2 flex items-center justify-between'>
             <span className='text-Grey-300 text-sm font-medium'>
               {isOwnProfile ? 'Your Completion Rate' : 'Completion Rate'}
             </span>
             <span className='text-Success-400 text-sm font-bold'>
-              {Math.round((stats.completed / stats.totalItems) * 100)}%
+              {Math.round((stats.completed / stats.all) * 100)}%
             </span>
           </div>
           <div className='bg-Grey-800 h-2 overflow-hidden rounded-full'>
             <motion.div
               initial={{ width: 0 }}
-              animate={{ width: `${(stats.completed / stats.totalItems) * 100}%` }}
+              animate={{ width: `${(stats.completed / stats.all) * 100}%` }}
               transition={{ duration: 1, delay: 0.8, ease: 'easeOut' }}
               className='from-Success-500 to-Success-400 h-full rounded-full bg-gradient-to-r'
             />
           </div>
         </div>
 
-        <div className='flex items-center justify-between rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
-          <div className='flex flex-col gap-3'>
+        <AverageRating averageRating={stats.averageRating} isOwnProfile={isOwnProfile} />
+      </div>
+    </motion.div>
+  );
+}
+
+function ContentTypeRatio({ movies, tvShows }: { movies: number; tvShows: number }) {
+  const totalContent = movies + tvShows;
+  const moviePercentage = totalContent > 0 ? (movies / totalContent) * 100 : 50;
+  const tvShowPercentage = totalContent > 0 ? 100 - moviePercentage : 50;
+
+  const getTitle = () => {
+    if (totalContent === 0) return 'Movies vs. Shows';
+    if (moviePercentage > 65) return 'Movie Enthusiast';
+    if (moviePercentage < 35) return 'Series Binger';
+    return 'Balanced Viewer';
+  };
+
+  // A small helper to prevent NaN if total is 0
+  const formatPercent = (percent: number) => (totalContent > 0 ? `${Math.round(percent)}%` : '-');
+
+  return (
+    <div className='rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
+      <div className='mb-2 flex items-center justify-between'>
+        <span className='text-Grey-300 text-sm font-medium'>{getTitle()}</span>
+      </div>
+
+      {/* Split Progress Bar */}
+      <div className='bg-Grey-800 flex h-2 overflow-hidden rounded-full'>
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${moviePercentage}%` }}
+          transition={{ duration: 0.8, delay: 0.7, ease: 'easeOut' }}
+          className='to-Secondary-400 from-Secondary-500 bg-gradient-to-r'
+          title={`${formatPercent(moviePercentage)} Movies`}
+        />
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${tvShowPercentage}%` }}
+          transition={{ duration: 0.8, delay: 0.7, ease: 'easeOut' }}
+          className='from-Primary-400 to-Primary-500 bg-gradient-to-r'
+          title={`${formatPercent(tvShowPercentage)} TV Shows`}
+        />
+      </div>
+
+      {/* Percentage Labels */}
+      <div className='text-Grey-400 mt-2 flex justify-between text-xs'>
+        <div className='flex items-center gap-1.5'>
+          <Film className='text-Secondary-400 size-3' />
+          <span>{formatPercent(moviePercentage)}</span>
+        </div>
+        <div className='flex items-center gap-1.5'>
+          <span>{formatPercent(tvShowPercentage)}</span>
+          <Tv className='text-Primary-400 size-3' />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AverageRating({ averageRating, isOwnProfile }: { averageRating: number; isOwnProfile: boolean }) {
+  return (
+    <div className='rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
+      {averageRating > 0 ? (
+        <div className='flex items-center justify-between'>
+          <div className='flex flex-col gap-2'>
             <span className='text-Grey-300 text-sm font-medium'>Average Rating</span>
             <div className='flex items-center gap-1'>
               {Array.from({ length: 10 }).map((_, i) => (
-                <Star key={i} className={i === 9 ? 'text-Grey-600 size-4' : 'text-Warning-400 size-4 fill-current'} />
+                <Star
+                  key={i}
+                  className={cn(
+                    'size-4',
+                    i < Math.round(averageRating) ? 'text-Warning-400 fill-Warning-400' : 'text-Grey-600'
+                  )}
+                />
               ))}
             </div>
           </div>
-          <div className='flex items-center gap-2'>
-            <span className='text-lg font-bold text-white'>{stats.averageRating}</span>
+          <div className='flex items-center gap-0.5'>
+            <span className='text-lg font-bold text-white'>{averageRating}</span>
             <span className='text-Grey-500 text-sm'>/10</span>
           </div>
         </div>
-      </div>
-    </motion.div>
+      ) : (
+        <div className='flex items-center gap-3'>
+          <div className='flex flex-1 flex-col gap-1'>
+            <span className='text-Grey-300 text-sm font-medium'>
+              {isOwnProfile ? 'Rate Your First Title' : 'No Ratings Yet'}
+            </span>
+            <span className='text-Grey-400 text-xs'>
+              {isOwnProfile ? 'Your average rating will appear here.' : 'This user hasn’t rated any titles.'}
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -266,7 +298,7 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
       </div>
 
       <div className='space-y-4'>
-        {stats.topGenres.slice(0, 5).map((genre, index) => (
+        {stats.topGenres.slice(0, 6).map((genre, index) => (
           <motion.div
             key={genre.name}
             initial={{ opacity: 0, x: -20 }}
@@ -283,7 +315,8 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
                     index === 1 && 'bg-Secondary-400',
                     index === 2 && 'bg-Tertiary-400',
                     index === 3 && 'bg-Warning-400',
-                    index === 4 && 'bg-Success-400'
+                    index === 4 && 'bg-Success-400',
+                    index === 5 && 'bg-green-400',
                   )}
                 />
                 <span className='text-Grey-300 text-sm font-medium transition-colors group-hover:text-white'>
@@ -292,7 +325,7 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
               </div>
               <div className='flex items-center gap-2'>
                 <span className='text-Grey-400 text-xs font-medium'>{genre.count} items</span>
-                <span className='text-Grey-500 text-xs'>({Math.round((genre.count / stats.totalItems) * 100)}%)</span>
+                <span className='text-Grey-500 text-xs'>({Math.round((genre.count / stats.all) * 100)}%)</span>
               </div>
             </div>
 
@@ -307,7 +340,8 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
                   index === 1 && 'from-Secondary-500 to-Secondary-400 bg-gradient-to-r',
                   index === 2 && 'from-Tertiary-500 to-Tertiary-400 bg-gradient-to-r',
                   index === 3 && 'from-Warning-500 to-Warning-400 bg-gradient-to-r',
-                  index === 4 && 'from-Success-500 to-Success-400 bg-gradient-to-r'
+                  index === 4 && 'from-Success-500 to-Success-400 bg-gradient-to-r',
+                  index === 5 && 'from-green-500 to-green-400 bg-gradient-to-r'
                 )}
               />
             </div>

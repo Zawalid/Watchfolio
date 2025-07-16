@@ -47,13 +47,13 @@ export default function BaseMediaCard({
   tabIndex = 0,
   celebrityRoles,
   primaryRole,
-  // isOwnProfile = true,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const { getItem } = useLibraryStore();
 
   const inLibrary = !!getItem(mediaType, id);
+
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
   const isInteractive = isHovered || isFocused;
   const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;

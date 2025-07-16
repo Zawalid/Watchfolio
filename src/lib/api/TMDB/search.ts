@@ -16,16 +16,16 @@ export const searchPerson = async (query: string, page?: number): Promise<TMDBRe
   return await fetchFromTMDB(`/search/person`, { query, page: String(page || 1) });
 };
 
-export const getDetails = async (type: 'movie' | 'tv', slug: string): Promise<Media | null> => {
+export const getDetails = async (type: 'movie' | 'tv', slug: string, append: boolean = true): Promise<Media | null> => {
   if (!type || !slug) throw new Error('Type and Slug are required');
-  const id = slug.split('-')[0];
+  const id = parseInt(slug);
 
   if (!id) return null;
 
   const details = await fetchFromTMDB<Media>(
     type === 'tv'
-      ? `/tv/${id}?append_to_response=credits,seasons,videos`
-      : `/movie/${id}?append_to_response=credits,videos`
+      ? `/tv/${id}${append ? '?append_to_response=credits,seasons,videos' : ''}`
+      : `/movie/${id}${append ? '?append_to_response=credits,videos' : ''}`
   );
 
   return details;

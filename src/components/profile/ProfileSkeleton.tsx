@@ -54,7 +54,7 @@ export default function ProfileSkeleton() {
         {[1, 2, 3].map((_, i) => (
           <div key={i} className='space-y-4 rounded-xl border border-white/5 bg-white/[0.015] p-4 backdrop-blur-sm'>
             <div className='flex items-center gap-3'>
-              <div className='to-Error-600 h-10 w-10 rounded-lg bg-gradient-to-br from-pink-500' />
+              <div className={`size-10 rounded-lg  ${shimmerBg}`} />
               <div>
                 <div className={`mb-1 h-4 w-32 rounded ${shimmerBg}`} />
                 <div className={`h-3 w-40 rounded ${shimmerBg}`} />

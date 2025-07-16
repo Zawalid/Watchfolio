@@ -1,568 +1,508 @@
 {
-    "projectId": "6727969400067a48d35e",
-    "projectName": "Watchfolio",
-    "databases": [
-        {
-            "$id": "68505e9b003074668c0c",
-            "name": "App",
-            "enabled": true
-        }
-    ],
-    "collections": [
-        {
-            "$id": "685060dd003abef0254f",
-            "$permissions": [
-                "create(\"users\")",
-                "read(\"users\")",
-                "update(\"users\")",
-                "delete(\"users\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "users_preferences",
-            "enabled": true,
-            "documentSecurity": true,
-            "attributes": [
-                {
-                    "key": "signOutConfirmation",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "format": "enum",
-                    "default": "enabled"
-                },
-                {
-                    "key": "theme",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "light",
-                        "dark",
-                        "system"
-                    ],
-                    "format": "enum",
-                    "default": "system"
-                },
-                {
-                    "key": "language",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 10,
-                    "default": "en"
-                },
-                {
-                    "key": "clearLibraryConfirmation",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "format": "enum",
-                    "default": "enabled"
-                },
-                {
-                    "key": "removeFromLibraryConfirmation",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "enabled",
-                        "disabled"
-                    ],
-                    "format": "enum",
-                    "default": "enabled"
-                }
-            ],
-            "indexes": []
-        },
-        {
-            "$id": "685083f50035559b8c41",
-            "$permissions": [
-                "create(\"users\")",
-                "read(\"users\")",
-                "update(\"users\")",
-                "delete(\"users\")",
-                "read(\"any\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "libraries",
-            "enabled": true,
-            "documentSecurity": true,
-            "attributes": [
-                {
-                    "key": "averageRating",
-                    "type": "double",
-                    "required": false,
-                    "array": false,
-                    "min": 0,
-                    "max": 10,
-                    "default": null
-                },
-                {
-                    "key": "items",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "68508402002d5329f64a",
-                    "relationType": "oneToMany",
-                    "twoWay": true,
-                    "twoWayKey": "library",
-                    "onDelete": "cascade",
-                    "side": "parent"
-                }
-            ],
-            "indexes": []
-        },
-        {
-            "$id": "68508402002d5329f64a",
-            "$permissions": [
-                "create(\"users\")",
-                "read(\"users\")",
-                "update(\"users\")",
-                "delete(\"users\")",
-                "read(\"any\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "library_items",
-            "enabled": true,
-            "documentSecurity": true,
-            "attributes": [
-                {
-                    "key": "status",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "watching",
-                        "willWatch",
-                        "onHold",
-                        "dropped",
-                        "none",
-                        "completed"
-                    ],
-                    "format": "enum",
-                    "default": "none"
-                },
-                {
-                    "key": "isFavorite",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
-                },
-                {
-                    "key": "userRating",
-                    "type": "integer",
-                    "required": false,
-                    "array": false,
-                    "min": 1,
-                    "max": 10,
-                    "default": null
-                },
-                {
-                    "key": "notes",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 2000,
-                    "default": null
-                },
-                {
-                    "key": "addedAt",
-                    "type": "datetime",
-                    "required": false,
-                    "array": false,
-                    "format": "",
-                    "default": null
-                },
-                {
-                    "key": "library",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "685083f50035559b8c41",
-                    "relationType": "oneToMany",
-                    "twoWay": true,
-                    "twoWayKey": "items",
-                    "onDelete": "cascade",
-                    "side": "child"
-                },
-                {
-                    "key": "media",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "6850840e000c60f5ca13",
-                    "relationType": "manyToOne",
-                    "twoWay": false,
-                    "twoWayKey": "68519efc001d1926b929",
-                    "onDelete": "setNull",
-                    "side": "parent"
-                }
-            ],
-            "indexes": [
-                {
-                    "key": "index_1",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "status"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_2",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "isFavorite"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_3",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "addedAt"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                }
-            ]
-        },
-        {
-            "$id": "6850840e000c60f5ca13",
-            "$permissions": [
-                "create(\"users\")",
-                "read(\"users\")",
-                "update(\"users\")",
-                "delete(\"users\")",
-                "read(\"any\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "tmdb_media",
-            "enabled": true,
-            "documentSecurity": false,
-            "attributes": [
-                {
-                    "key": "mediaType",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "elements": [
-                        "movie",
-                        "tv"
-                    ],
-                    "format": "enum",
-                    "default": null
-                },
-                {
-                    "key": "id",
-                    "type": "integer",
-                    "required": true,
-                    "array": false,
-                    "min": 1,
-                    "max": 2147483647,
-                    "default": null
-                },
-                {
-                    "key": "title",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "size": 255,
-                    "default": null
-                },
-                {
-                    "key": "overview",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 1000,
-                    "default": null
-                },
-                {
-                    "key": "releaseDate",
-                    "type": "datetime",
-                    "required": false,
-                    "array": false,
-                    "format": "",
-                    "default": null
-                },
-                {
-                    "key": "genres",
-                    "type": "string",
-                    "required": false,
-                    "array": true,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "rating",
-                    "type": "double",
-                    "required": false,
-                    "array": false,
-                    "min": 0,
-                    "max": 10,
-                    "default": null
-                },
-                {
-                    "key": "posterPath",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 50,
-                    "default": null
-                }
-            ],
-            "indexes": [
-                {
-                    "key": "index_1",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "mediaType",
-                        "id"
-                    ],
-                    "orders": [
-                        "ASC",
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_2",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "mediaType"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_3",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "title"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                }
-            ]
-        },
-        {
-            "$id": "6858abc3003a098f22d8",
-            "$permissions": [
-                "create(\"users\")",
-                "read(\"users\")",
-                "update(\"users\")",
-                "delete(\"users\")",
-                "read(\"any\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "users_profiles",
-            "enabled": true,
-            "documentSecurity": true,
-            "attributes": [
-                {
-                    "key": "name",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "size": 200,
-                    "default": null
-                },
-                {
-                    "key": "email",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "format": "email",
-                    "default": null
-                },
-                {
-                    "key": "avatarUrl",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "format": "url",
-                    "default": null
-                },
-                {
-                    "key": "username",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "userId",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "library",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "685083f50035559b8c41",
-                    "relationType": "oneToOne",
-                    "twoWay": false,
-                    "twoWayKey": "68596224003247dd479b",
-                    "onDelete": "cascade",
-                    "side": "parent"
-                },
-                {
-                    "key": "preferences",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "685060dd003abef0254f",
-                    "relationType": "oneToOne",
-                    "twoWay": false,
-                    "twoWayKey": "6859623500109c64bc5e",
-                    "onDelete": "cascade",
-                    "side": "parent"
-                },
-                {
-                    "key": "bio",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 500,
-                    "default": null
-                },
-                {
-                    "key": "visibility",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "public",
-                        "private"
-                    ],
-                    "format": "enum",
-                    "default": "public"
-                },
-                {
-                    "key": "favoriteGenres",
-                    "type": "string",
-                    "required": false,
-                    "array": true,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "contentPreferences",
-                    "type": "string",
-                    "required": false,
-                    "array": true,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "favoriteNetworks",
-                    "type": "integer",
-                    "required": false,
-                    "array": true,
-                    "min": -9223372036854775808,
-                    "max": 9223372036854775807,
-                    "default": null
-                },
-                {
-                    "key": "favoriteContentType",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "movies",
-                        "series",
-                        "both"
-                    ],
-                    "format": "enum",
-                    "default": "both"
-                }
-            ],
-            "indexes": [
-                {
-                    "key": "index_1",
-                    "type": "unique",
-                    "status": "available",
-                    "attributes": [
-                        "email"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_3",
-                    "type": "unique",
-                    "status": "available",
-                    "attributes": [
-                        "username"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                }
-            ]
-        }
-    ],
-    "settings": {
-        "services": {
-            "account": true,
-            "avatars": true,
-            "databases": true,
-            "locale": true,
-            "health": true,
-            "storage": true,
-            "teams": true,
-            "users": true,
-            "functions": true,
-            "graphql": true,
-            "messaging": true
-        },
-        "auth": {
-            "methods": {
-                "jwt": true,
-                "phone": true,
-                "invites": true,
-                "anonymous": true,
-                "email-otp": true,
-                "magic-url": true,
-                "email-password": true
-            },
-            "security": {
-                "duration": 31536000,
-                "limit": 0,
-                "sessionsLimit": 10,
-                "passwordHistory": 0,
-                "passwordDictionary": false,
-                "personalDataCheck": false,
-                "sessionAlerts": false,
-                "mockNumbers": []
-            }
-        }
+  "projectId": "6727969400067a48d35e",
+  "projectName": "Watchfolio",
+  "databases": [
+    {
+      "$id": "68505e9b003074668c0c",
+      "name": "App",
+      "enabled": true
     }
+  ],
+  "collections": [
+    {
+      "$id": "685060dd003abef0254f",
+      "$permissions": ["create(\"users\")", "read(\"users\")", "update(\"users\")", "delete(\"users\")"],
+      "databaseId": "68505e9b003074668c0c",
+      "name": "users_preferences",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "signOutConfirmation",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["enabled", "disabled"],
+          "format": "enum",
+          "default": "enabled"
+        },
+        {
+          "key": "theme",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["light", "dark", "system"],
+          "format": "enum",
+          "default": "system"
+        },
+        {
+          "key": "language",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 10,
+          "default": "en"
+        },
+        {
+          "key": "clearLibraryConfirmation",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["enabled", "disabled"],
+          "format": "enum",
+          "default": "enabled"
+        },
+        {
+          "key": "removeFromLibraryConfirmation",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["enabled", "disabled"],
+          "format": "enum",
+          "default": "enabled"
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "$id": "685083f50035559b8c41",
+      "$permissions": [
+        "create(\"users\")",
+        "read(\"users\")",
+        "update(\"users\")",
+        "delete(\"users\")",
+        "read(\"any\")"
+      ],
+      "databaseId": "68505e9b003074668c0c",
+      "name": "libraries",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "averageRating",
+          "type": "double",
+          "required": false,
+          "array": false,
+          "min": 0,
+          "max": 10,
+          "default": null
+        },
+        {
+          "key": "items",
+          "type": "relationship",
+          "required": false,
+          "array": false,
+          "relatedCollection": "68508402002d5329f64a",
+          "relationType": "oneToMany",
+          "twoWay": true,
+          "twoWayKey": "library",
+          "onDelete": "cascade",
+          "side": "parent"
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "$id": "68508402002d5329f64a",
+      "$permissions": [
+        "create(\"users\")",
+        "read(\"users\")",
+        "update(\"users\")",
+        "delete(\"users\")",
+        "read(\"any\")"
+      ],
+      "databaseId": "68505e9b003074668c0c",
+      "name": "library_items",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "status",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["watching", "willWatch", "onHold", "dropped", "none", "completed"],
+          "format": "enum",
+          "default": "none"
+        },
+        {
+          "key": "isFavorite",
+          "type": "boolean",
+          "required": false,
+          "array": false,
+          "default": false
+        },
+        {
+          "key": "userRating",
+          "type": "integer",
+          "required": false,
+          "array": false,
+          "min": 1,
+          "max": 10,
+          "default": null
+        },
+        {
+          "key": "notes",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 2000,
+          "default": null
+        },
+        {
+          "key": "addedAt",
+          "type": "datetime",
+          "required": false,
+          "array": false,
+          "format": "",
+          "default": null
+        },
+        {
+          "key": "library",
+          "type": "relationship",
+          "required": false,
+          "array": false,
+          "relatedCollection": "685083f50035559b8c41",
+          "relationType": "oneToMany",
+          "twoWay": true,
+          "twoWayKey": "items",
+          "onDelete": "cascade",
+          "side": "child"
+        },
+        {
+          "key": "media",
+          "type": "relationship",
+          "required": false,
+          "array": false,
+          "relatedCollection": "6850840e000c60f5ca13",
+          "relationType": "manyToOne",
+          "twoWay": false,
+          "twoWayKey": "68519efc001d1926b929",
+          "onDelete": "setNull",
+          "side": "parent"
+        }
+      ],
+      "indexes": [
+        {
+          "key": "index_1",
+          "type": "key",
+          "status": "available",
+          "attributes": ["status"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "index_2",
+          "type": "key",
+          "status": "available",
+          "attributes": ["isFavorite"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "index_3",
+          "type": "key",
+          "status": "available",
+          "attributes": ["addedAt"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "6850840e000c60f5ca13",
+      "$permissions": [
+        "create(\"users\")",
+        "read(\"users\")",
+        "update(\"users\")",
+        "delete(\"users\")",
+        "read(\"any\")"
+      ],
+      "databaseId": "68505e9b003074668c0c",
+      "name": "tmdb_media",
+      "enabled": true,
+      "documentSecurity": false,
+      "attributes": [
+        {
+          "key": "mediaType",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "elements": ["movie", "tv"],
+          "format": "enum",
+          "default": null
+        },
+        {
+          "key": "id",
+          "type": "integer",
+          "required": true,
+          "array": false,
+          "min": 1,
+          "max": 2147483647,
+          "default": null
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 255,
+          "default": null
+        },
+        {
+          "key": "overview",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 1000,
+          "default": null
+        },
+        {
+          "key": "releaseDate",
+          "type": "datetime",
+          "required": false,
+          "array": false,
+          "format": "",
+          "default": null
+        },
+        {
+          "key": "genres",
+          "type": "string",
+          "required": false,
+          "array": true,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "rating",
+          "type": "double",
+          "required": false,
+          "array": false,
+          "min": 0,
+          "max": 10,
+          "default": null
+        },
+        {
+          "key": "posterPath",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "totalMinutesRuntime",
+          "type": "integer",
+          "required": false,
+          "array": false,
+          "min": 0,
+          "max": 10000,
+          "default": 0
+        }
+      ],
+      "indexes": [
+        {
+          "key": "index_1",
+          "type": "key",
+          "status": "available",
+          "attributes": ["mediaType", "id"],
+          "orders": ["ASC", "ASC"]
+        },
+        {
+          "key": "index_2",
+          "type": "key",
+          "status": "available",
+          "attributes": ["mediaType"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "index_3",
+          "type": "key",
+          "status": "available",
+          "attributes": ["title"],
+          "orders": ["ASC"]
+        }
+      ]
+    },
+    {
+      "$id": "6858abc3003a098f22d8",
+      "$permissions": [
+        "create(\"users\")",
+        "read(\"users\")",
+        "update(\"users\")",
+        "delete(\"users\")",
+        "read(\"any\")"
+      ],
+      "databaseId": "68505e9b003074668c0c",
+      "name": "users_profiles",
+      "enabled": true,
+      "documentSecurity": true,
+      "attributes": [
+        {
+          "key": "name",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 200,
+          "default": null
+        },
+        {
+          "key": "email",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "format": "email",
+          "default": null
+        },
+        {
+          "key": "avatarUrl",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "format": "url",
+          "default": null
+        },
+        {
+          "key": "username",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "userId",
+          "type": "string",
+          "required": true,
+          "array": false,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "library",
+          "type": "relationship",
+          "required": false,
+          "array": false,
+          "relatedCollection": "685083f50035559b8c41",
+          "relationType": "oneToOne",
+          "twoWay": false,
+          "twoWayKey": "68596224003247dd479b",
+          "onDelete": "cascade",
+          "side": "parent"
+        },
+        {
+          "key": "preferences",
+          "type": "relationship",
+          "required": false,
+          "array": false,
+          "relatedCollection": "685060dd003abef0254f",
+          "relationType": "oneToOne",
+          "twoWay": false,
+          "twoWayKey": "6859623500109c64bc5e",
+          "onDelete": "cascade",
+          "side": "parent"
+        },
+        {
+          "key": "bio",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "size": 500,
+          "default": null
+        },
+        {
+          "key": "visibility",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["public", "private"],
+          "format": "enum",
+          "default": "public"
+        },
+        {
+          "key": "favoriteGenres",
+          "type": "string",
+          "required": false,
+          "array": true,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "contentPreferences",
+          "type": "string",
+          "required": false,
+          "array": true,
+          "size": 50,
+          "default": null
+        },
+        {
+          "key": "favoriteNetworks",
+          "type": "integer",
+          "required": false,
+          "array": true,
+          "min": -9223372036854775808,
+          "max": 9223372036854775807,
+          "default": null
+        },
+        {
+          "key": "favoriteContentType",
+          "type": "string",
+          "required": false,
+          "array": false,
+          "elements": ["movies", "series", "both"],
+          "format": "enum",
+          "default": "both"
+        }
+      ],
+      "indexes": [
+        {
+          "key": "index_1",
+          "type": "unique",
+          "status": "available",
+          "attributes": ["email"],
+          "orders": ["ASC"]
+        },
+        {
+          "key": "index_3",
+          "type": "unique",
+          "status": "available",
+          "attributes": ["username"],
+          "orders": ["ASC"]
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "services": {
+      "account": true,
+      "avatars": true,
+      "databases": true,
+      "locale": true,
+      "health": true,
+      "storage": true,
+      "teams": true,
+      "users": true,
+      "functions": true,
+      "graphql": true,
+      "messaging": true
+    },
+    "auth": {
+      "methods": {
+        "jwt": true,
+        "phone": true,
+        "invites": true,
+        "anonymous": true,
+        "email-otp": true,
+        "magic-url": true,
+        "email-password": true
+      },
+      "security": {
+        "duration": 31536000,
+        "limit": 0,
+        "sessionsLimit": 10,
+        "passwordHistory": 0,
+        "passwordDictionary": false,
+        "personalDataCheck": false,
+        "sessionAlerts": false,
+        "mockNumbers": []
+      }
+    }
+  }
 }

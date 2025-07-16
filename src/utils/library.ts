@@ -1,3 +1,5 @@
+import { getDetails } from '@/lib/api/TMDB';
+
 /**
  * Generates a consistent key for a media item
  */
@@ -273,6 +275,7 @@ export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMe
     notes: libraryItem.notes || undefined,
     addedToLibraryAt: libraryItem.addedAt || new Date().toISOString(),
     lastUpdatedAt: libraryItem.$updatedAt,
+    totalMinutesRuntime: tmdbMedia?.totalMinutesRuntime,
   };
 };
 
@@ -283,6 +286,29 @@ export const mapToAppwriteData = async (
   tmdbMedia: CreateTmdbMediaInput;
   libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
 }> => {
+  const mediaDetails = await getDetails(media.media_type, String(media.id), false);
+
+  if (!mediaDetails) throw new Error(`Failed to fetch details for ${media.media_type} with ID ${media.id}`);
+
+  let totalMinutesRuntime = 0;
+
+  if (media.media_type === 'movie') {
+    totalMinutesRuntime = (mediaDetails as Movie).runtime || 0;
+  } else if (media.media_type === 'tv') {
+    const show = mediaDetails as TvShow;
+    const totalEpisodes = show.number_of_episodes || 0;
+    let runtime = 0;
+
+    // 1. Prioritize the runtime of the last aired episode
+    if (show.last_episode_to_air?.runtime) runtime = show.last_episode_to_air.runtime;
+    // 2. Fallback to the first value in the general episode_run_time array
+    else if (show.episode_run_time && show.episode_run_time?.length > 0) runtime = show.episode_run_time[0];
+    // 3. Final fallback to a sensible default if no data is available
+    else runtime = 45;
+
+    totalMinutesRuntime = Math.round(runtime * totalEpisodes);
+  }
+
   return {
     tmdbMedia: {
       id: media.id,
@@ -293,6 +319,7 @@ export const mapToAppwriteData = async (
       releaseDate: media.releaseDate || undefined,
       genres: media.genres || [],
       rating: media.rating || undefined,
+      totalMinutesRuntime,
     },
     libraryItem: {
       status: media.status,
@@ -304,7 +331,15 @@ export const mapToAppwriteData = async (
   };
 };
 
-export const getLibraryCount = (items: LibraryMedia[], filter: LibraryFilterStatus, mediaType?: MediaType) => {
+export const getLibraryCount = ({
+  items,
+  filter,
+  mediaType,
+}: {
+  items: LibraryMedia[];
+  filter?: LibraryFilterStatus;
+  mediaType?: MediaType;
+}) => {
   const counts: Record<LibraryFilterStatus, number> = {
     all: 0,
     watching: 0,
@@ -326,6 +361,6 @@ export const getLibraryCount = (items: LibraryMedia[], filter: LibraryFilterStat
     else if (item.status === 'dropped') counts.dropped++;
     if (item.isFavorite) counts.favorites++;
   });
-
-  return counts[filter] || 0;
+  if (filter) return counts[filter] || 0;
+  return counts;
 };

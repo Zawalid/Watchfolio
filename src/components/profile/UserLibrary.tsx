@@ -77,7 +77,7 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
               onChange={(status) => setStatus(status as LibraryFilterStatus)}
               tabs={[
                 {
-                  label: `All (${getLibraryCount(items, 'all')})`,
+                  label: `All (${getLibraryCount({ items, filter: 'all' })})`,
                   icon: <GalleryVerticalEnd className='size-4' />,
                   includes: true,
                   value: 'all',
@@ -85,7 +85,7 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
                 ...LIBRARY_MEDIA_STATUS.map((status) => {
                   const IconComponent = status.icon;
                   return {
-                    label: `${status.label} (${getLibraryCount(items, status.value)})`,
+                    label: `${status.label} (${getLibraryCount({ items, filter: status.value })})`,
                     icon: <IconComponent className='size-4' />,
                     value: status.value,
                   };

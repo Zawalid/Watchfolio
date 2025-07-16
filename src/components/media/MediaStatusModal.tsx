@@ -24,7 +24,7 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { addOrUpdateItem, removeItem } = useLibraryStore();
 
-  const handleStatusChange = (status: LibraryMediaStatus) => {
+  const handleStatusChange = (status: WatchStatus) => {
     if (status === 'none') removeItem(media.media_type, media.id);
     else addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
   };
@@ -63,8 +63,8 @@ function StatusSection({
   onClose,
   setCurrentRating,
 }: {
-  selectedStatus: LibraryMediaStatus;
-  setSelectedStatus: (status: LibraryMediaStatus) => void;
+  selectedStatus: WatchStatus;
+  setSelectedStatus: (status: WatchStatus) => void;
   onClose: () => void;
   setCurrentRating: (rating: number | undefined) => void;
 }) {
@@ -85,7 +85,7 @@ function StatusSection({
     currentIndex: focusIndex,
     onNavigate: setFocusIndex,
     onSelect: (index) => {
-      if (statusOptions[index]) setSelectedStatus(statusOptions[index].value as LibraryMediaStatus);
+      if (statusOptions[index]) setSelectedStatus(statusOptions[index].value as WatchStatus);
     },
     orientation: 'vertical',
     loop: true,
@@ -134,7 +134,7 @@ function StatusSection({
             status={option}
             isSelected={selectedStatus === option.value}
             onClick={() => {
-              setSelectedStatus(option.value as LibraryMediaStatus);
+              setSelectedStatus(option.value as WatchStatus);
               onClose();
             }}
           />

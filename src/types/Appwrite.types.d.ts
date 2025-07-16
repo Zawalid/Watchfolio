@@ -63,6 +63,7 @@ declare global {
     releaseDate?: string;
     genres?: string[];
     rating?: number;
+    totalMinutesRuntime?: number;
   }
 
   type CreateProfileInput = {
@@ -80,7 +81,7 @@ declare global {
   };
   type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Document> & { title: string }; // TO stop the type error in sync-service
 
-  type UpdateProfileInput = Partial<CreateProfileInput>;
+  type UpdateProfileInput = Partial<CreateProfileInput & { favoriteContentType: FavoriteContentType; bio: string }>;
   type UpdateUserPreferencesInput = Partial<CreateUserPreferencesInput>;
   type UpdateLibraryInput = Partial<CreateLibraryInput>;
   type UpdateLibraryItemInput = Partial<Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>>;

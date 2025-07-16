@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { type LucideIcon } from 'lucide-react';
+import { Percent, type LucideIcon } from 'lucide-react';
 import { cn } from '@/utils';
 
 export interface StatCardProps {
@@ -10,6 +10,7 @@ export interface StatCardProps {
   layoutClassName?: string;
   description?: string;
   delay?: number;
+  percentage?: number;
 }
 
 export default function StatCard({
@@ -20,6 +21,7 @@ export default function StatCard({
   layoutClassName,
   description,
   delay = 0,
+  percentage,
 }: StatCardProps) {
   return (
     <motion.div
@@ -71,6 +73,20 @@ export default function StatCard({
           )}
         </div>
       </div>
+      {!percentage || (
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: delay * 0.1 + 0.3 }}
+          className={cn(
+            'absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium',
+            className
+          )}
+        >
+          <Percent className={cn('h-3 w-3', percentage < 0 && 'rotate-180')} />
+          <span>{percentage}%</span>
+        </motion.div>
+      )}
 
       {/* Simple background pattern */}
       <div className='absolute -top-4 -right-4 opacity-5'>
