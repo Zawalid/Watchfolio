@@ -332,3 +332,50 @@ export function smartMergeLibraries(
 
   return { mergedLibrary, changes };
 }
+
+// Map Appwrite data back to LibraryMedia
+export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): LibraryMedia => {
+  return {
+    id: tmdbMedia?.id || 0,
+    media_type: tmdbMedia?.mediaType || 'movie',
+    title: tmdbMedia?.title,
+    posterPath: tmdbMedia?.posterPath || undefined,
+    releaseDate: tmdbMedia?.releaseDate || undefined,
+    genres: tmdbMedia?.genres || [],
+    rating: tmdbMedia?.rating || undefined,
+    status: libraryItem.status,
+    isFavorite: libraryItem.isFavorite,
+    userRating: libraryItem.userRating || undefined,
+    notes: libraryItem.notes || undefined,
+    addedToLibraryAt: libraryItem.addedAt || new Date().toISOString(),
+    lastUpdatedAt: libraryItem.$updatedAt,
+  };
+};
+
+// Map LibraryMedia to Appwrite LibraryItem + TmdbMedia
+export const mapToAppwriteData = async (
+  media: LibraryMedia
+): Promise<{
+  tmdbMedia: CreateTmdbMediaInput;
+  libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
+}> => {
+  return {
+    tmdbMedia: {
+      id: media.id,
+      mediaType: media.media_type,
+      title: media.title || `${media.media_type} ${media.id}`,
+      overview: undefined,
+      posterPath: media.posterPath || undefined,
+      releaseDate: media.releaseDate || undefined,
+      genres: media.genres || [],
+      rating: media.rating || undefined,
+    },
+    libraryItem: {
+      status: media.status,
+      isFavorite: media.isFavorite,
+      userRating: media.userRating || undefined,
+      notes: media.notes || undefined,
+      addedAt: media.addedToLibraryAt,
+    },
+  };
+};

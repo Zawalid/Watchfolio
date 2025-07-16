@@ -20,7 +20,7 @@ import { Rating } from '@/components/ui/Rating';
 interface BaseMediaCardProps {
   id: number;
   title: string;
-  mediaType: 'movie' | 'tv';
+  mediaType: MediaType;
   posterPath?: string | null;
   releaseDate?: string | null;
   rating?: number;
@@ -28,128 +28,12 @@ interface BaseMediaCardProps {
   item?: LibraryMedia;
   media?: Media;
   tabIndex?: number;
+  isOwnProfile?: boolean;
   // Person role props
   celebrityRoles?: string[];
   primaryRole?: 'acting' | 'voice' | 'guest' | 'production';
 }
 
-// Person Role Components (separated but in same file)
-const PersonRoleBadges = ({
-  roles,
-  primaryRole,
-  maxVisible = 2,
-}: {
-  roles: string[];
-  primaryRole?: string;
-  maxVisible?: number;
-}) => {
-  const displayRoles = roles.slice(0, maxVisible);
-  const remainingRoles = roles.slice(maxVisible);
-  const hasMore = remainingRoles.length > 0;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -10 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -10 }}
-      transition={{ duration: 0.3, staggerChildren: 0.1 }}
-      className='absolute top-3 left-3 z-20 flex flex-col items-start gap-1.5'
-    >
-      {displayRoles.map((role, index) => (
-        <RoleBadge key={index} role={role} primaryRole={primaryRole} delay={index * 0.1} />
-      ))}
-
-      {hasMore && <OverflowBadge remainingRoles={remainingRoles} delay={displayRoles.length * 0.1} />}
-    </motion.div>
-  );
-};
-
-const RoleBadge = ({ role, primaryRole, delay = 0 }: { role: string; primaryRole?: string; delay?: number }) => {
-  const getIcon = () => {
-    if (primaryRole === 'voice' || role.toLowerCase().includes('voice')) {
-      return <Mic className='h-3 w-3' />;
-    }
-    if (primaryRole === 'guest' || role.includes('Self') || role.includes('Host')) {
-      return <Users className='h-3 w-3' />;
-    }
-    if (role.includes('Director') || role.includes('Producer') || role.includes('Writer')) {
-      return <Clapperboard className='h-3 w-3' />;
-    }
-    return <User className='h-3 w-3' />;
-  };
-
-  const getColor = () => {
-    if (primaryRole === 'voice' || role.toLowerCase().includes('voice')) {
-      return 'bg-Tertiary-500/20 text-Tertiary-300 border-Tertiary-500/30';
-    }
-    if (primaryRole === 'guest') {
-      return 'bg-Secondary-500/20 text-Secondary-300 border-Secondary-500/30';
-    }
-    if (role.includes('Director')) {
-      return 'bg-Error-500/20 text-Error-300 border-Error-500/30';
-    }
-    if (role.includes('Producer')) {
-      return 'bg-Warning-500/20 text-Warning-300 border-Warning-500/30';
-    }
-    if (role.includes('Writer')) {
-      return 'bg-Success-500/20 text-Success-300 border-Success-500/30';
-    }
-    return 'bg-Primary-500/20 text-Primary-300 border-Primary-500/30';
-  };
-
-  const formatRole = (role: string) => {
-    return role.replace('as ', '').replace('Executive ', 'Exec ').replace('Associate ', 'Assoc ').replace('Co-', 'Co');
-  };
-
-  const fullRole = formatRole(role);
-  const isLongRole = fullRole.length > 12;
-
-  return (
-    <Tooltip content={isLongRole ? role : undefined} className='tooltip-secondary!' isDisabled={!isLongRole}>
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay }}
-        className={cn(
-          'flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md',
-          getColor()
-        )}
-      >
-        {getIcon()}
-        <span className={cn('line-clamp-1', isLongRole ? 'max-w-16' : 'max-w-20')}>{fullRole}</span>
-      </motion.div>
-    </Tooltip>
-  );
-};
-
-const OverflowBadge = ({ remainingRoles, delay = 0 }: { remainingRoles: string[]; delay?: number }) => {
-  return (
-    <Tooltip
-      content={
-        <div className='space-y-1'>
-          <p className='text-xs font-medium text-white'>Additional roles:</p>
-          {remainingRoles.map((role, index) => (
-            <p key={index} className='text-Grey-300 text-xs'>
-              {role}
-            </p>
-          ))}
-        </div>
-      }
-      className='tooltip-secondary!'
-    >
-      <motion.div
-        initial={{ opacity: 0, x: -10 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay }}
-        className='border-Grey-500/30 bg-Grey-500/20 text-Grey-300 flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md'
-      >
-        <span>+{remainingRoles.length}</span>
-      </motion.div>
-    </Tooltip>
-  );
-};
-
-// Main Component
 export default function BaseMediaCard({
   id,
   title,
@@ -163,42 +47,10 @@ export default function BaseMediaCard({
   tabIndex = 0,
   celebrityRoles,
   primaryRole,
+  // isOwnProfile = true,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
-  const { toggleFavorite, removeItem } = useLibraryStore();
-  const { openModal } = useMediaStatusModal();
-  const { confirm } = useConfirmationModal();
-
-  const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id: id });
-  const handleEditStatus = () => {
-    const target = item || media;
-    if (!target) return;
-    openModal({ ...target, media_type: mediaType });
-  };
-
-  const handleRemove = async () => {
-    if (item) {
-      const confirmed = await confirm({
-        title: 'Remove from Library',
-        message: `Are you sure you want to remove "${item.title || 'this item'}" from your library?`,
-        confirmText: 'Remove',
-        cancelText: 'Cancel',
-        confirmVariant: 'danger',
-        confirmationKey: 'remove-from-library',
-      });
-
-      if (confirmed) {
-        removeItem(item.media_type, item.id);
-      }
-    }
-  };
-
-  // Hotkeys
-  useHotkeys(getShortcut('toggleFavorite')?.hotkey || '', handleToggleFavorite, { enabled: isFocused });
-  useHotkeys(getShortcut('editStatus')?.hotkey || '', handleEditStatus, { enabled: isFocused });
-  useHotkeys(getShortcut('removeFromLibrary')?.hotkey || '', handleRemove, { enabled: isFocused });
 
   const isInteractive = isHovered || isFocused;
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
@@ -242,79 +94,8 @@ export default function BaseMediaCard({
 
       {/* Quick Actions - Show for ALL items on hover, including person context */}
       <AnimatePresence>
-        {isInteractive && (
-          <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.8 }}
-            transition={{ duration: 0.3, staggerChildren: 0.05 }}
-            className='absolute top-3 right-3 z-30 flex gap-1.5'
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Tooltip content={<ShortcutTooltip shortcutName='toggleFavorite' />} className='tooltip-secondary!'>
-                <Button
-                  isIconOnly
-                  size='sm'
-                  tabIndex={-1}
-                  className={cn(
-                    'h-8 w-8 border backdrop-blur-xl transition-all duration-300',
-                    'hover:scale-110 active:scale-95',
-                    item?.isFavorite
-                      ? 'border-pink-400/60 bg-pink-500/30 text-pink-200 shadow-lg shadow-pink-500/25'
-                      : 'border-white/30 bg-white/15 text-white hover:border-pink-400/60 hover:bg-pink-500/30 hover:text-pink-200'
-                  )}
-                  onPress={handleToggleFavorite}
-                  aria-label={item?.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                >
-                  <Heart className={cn('size-3.5 transition-all duration-300', item?.isFavorite && 'fill-current')} />
-                </Button>
-              </Tooltip>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.15 }}
-            >
-              <Tooltip content={<ShortcutTooltip shortcutName='editStatus' />} className='tooltip-secondary!'>
-                <Button
-                  isIconOnly
-                  size='sm'
-                  tabIndex={-1}
-                  className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-blue-400/60 hover:bg-blue-500/30 hover:text-blue-200 active:scale-95'
-                  onPress={handleEditStatus}
-                  aria-label='Edit library status'
-                >
-                  <Edit3 className='size-3.5' />
-                </Button>
-              </Tooltip>
-            </motion.div>
-
-            {status && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary!'>
-                  <Button
-                    isIconOnly
-                    size='sm'
-                    tabIndex={-1}
-                    className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-red-400/60 hover:bg-red-500/30 hover:text-red-200 active:scale-95'
-                    onPress={handleRemove}
-                    aria-label='Remove from library'
-                  >
-                    <Trash2 className='size-3.5' />
-                  </Button>
-                </Tooltip>
-              </motion.div>
-            )}
-          </motion.div>
+        {isInteractive  && (
+          <QuickActions id={id} mediaType={mediaType} media={media} item={item} isFocused={isFocused} />
         )}
       </AnimatePresence>
 
@@ -486,3 +267,230 @@ export default function BaseMediaCard({
     </motion.div>
   );
 }
+
+const PersonRoleBadges = ({
+  roles,
+  primaryRole,
+  maxVisible = 2,
+}: {
+  roles: string[];
+  primaryRole?: string;
+  maxVisible?: number;
+}) => {
+  const displayRoles = roles.slice(0, maxVisible);
+  const remainingRoles = roles.slice(maxVisible);
+  const hasMore = remainingRoles.length > 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -10 }}
+      transition={{ duration: 0.3, staggerChildren: 0.1 }}
+      className='absolute top-3 left-3 z-20 flex flex-col items-start gap-1.5'
+    >
+      {displayRoles.map((role, index) => (
+        <RoleBadge key={index} role={role} primaryRole={primaryRole} delay={index * 0.1} />
+      ))}
+
+      {hasMore && <OverflowBadge remainingRoles={remainingRoles} delay={displayRoles.length * 0.1} />}
+    </motion.div>
+  );
+};
+
+const RoleBadge = ({ role, primaryRole, delay = 0 }: { role: string; primaryRole?: string; delay?: number }) => {
+  const getIcon = () => {
+    if (primaryRole === 'voice' || role.toLowerCase().includes('voice')) {
+      return <Mic className='h-3 w-3' />;
+    }
+    if (primaryRole === 'guest' || role.includes('Self') || role.includes('Host')) {
+      return <Users className='h-3 w-3' />;
+    }
+    if (role.includes('Director') || role.includes('Producer') || role.includes('Writer')) {
+      return <Clapperboard className='h-3 w-3' />;
+    }
+    return <User className='h-3 w-3' />;
+  };
+
+  const getColor = () => {
+    if (primaryRole === 'voice' || role.toLowerCase().includes('voice')) {
+      return 'bg-Tertiary-500/20 text-Tertiary-300 border-Tertiary-500/30';
+    }
+    if (primaryRole === 'guest') {
+      return 'bg-Secondary-500/20 text-Secondary-300 border-Secondary-500/30';
+    }
+    if (role.includes('Director')) {
+      return 'bg-Error-500/20 text-Error-300 border-Error-500/30';
+    }
+    if (role.includes('Producer')) {
+      return 'bg-Warning-500/20 text-Warning-300 border-Warning-500/30';
+    }
+    if (role.includes('Writer')) {
+      return 'bg-Success-500/20 text-Success-300 border-Success-500/30';
+    }
+    return 'bg-Primary-500/20 text-Primary-300 border-Primary-500/30';
+  };
+
+  const formatRole = (role: string) => {
+    return role.replace('as ', '').replace('Executive ', 'Exec ').replace('Associate ', 'Assoc ').replace('Co-', 'Co');
+  };
+
+  const fullRole = formatRole(role);
+  const isLongRole = fullRole.length > 12;
+
+  return (
+    <Tooltip content={isLongRole ? role : undefined} className='tooltip-secondary!' isDisabled={!isLongRole}>
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay }}
+        className={cn(
+          'flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md',
+          getColor()
+        )}
+      >
+        {getIcon()}
+        <span className={cn('line-clamp-1', isLongRole ? 'max-w-16' : 'max-w-20')}>{fullRole}</span>
+      </motion.div>
+    </Tooltip>
+  );
+};
+
+const OverflowBadge = ({ remainingRoles, delay = 0 }: { remainingRoles: string[]; delay?: number }) => {
+  return (
+    <Tooltip
+      content={
+        <div className='space-y-1'>
+          <p className='text-xs font-medium text-white'>Additional roles:</p>
+          {remainingRoles.map((role, index) => (
+            <p key={index} className='text-Grey-300 text-xs'>
+              {role}
+            </p>
+          ))}
+        </div>
+      }
+      className='tooltip-secondary!'
+    >
+      <motion.div
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay }}
+        className='border-Grey-500/30 bg-Grey-500/20 text-Grey-300 flex cursor-default items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md'
+      >
+        <span>+{remainingRoles.length}</span>
+      </motion.div>
+    </Tooltip>
+  );
+};
+
+const QuickActions = ({
+  id,
+  mediaType,
+  item,
+  media,
+  isFocused,
+}: {
+  id: number;
+  mediaType: MediaType;
+  item?: LibraryMedia;
+  media?: Media;
+  isFocused: boolean;
+}) => {
+  const { toggleFavorite, removeItem } = useLibraryStore();
+  const { openModal } = useMediaStatusModal();
+  const { confirm } = useConfirmationModal();
+
+  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+
+  const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id: id });
+  const handleEditStatus = () => {
+    const target = item || media;
+    if (!target) return;
+    openModal({ ...target, media_type: mediaType });
+  };
+
+  const handleRemove = async () => {
+    if (item) {
+      const confirmed = await confirm({
+        title: 'Remove from Library',
+        message: `Are you sure you want to remove "${item.title || 'this item'}" from your library?`,
+        confirmText: 'Remove',
+        cancelText: 'Cancel',
+        confirmVariant: 'danger',
+        confirmationKey: 'remove-from-library',
+      });
+
+      if (confirmed) {
+        removeItem(item.media_type, item.id);
+      }
+    }
+  };
+
+  // Hotkeys
+  useHotkeys(getShortcut('toggleFavorite')?.hotkey || '', handleToggleFavorite, { enabled: isFocused });
+  useHotkeys(getShortcut('editStatus')?.hotkey || '', handleEditStatus, { enabled: isFocused });
+  useHotkeys(getShortcut('removeFromLibrary')?.hotkey || '', handleRemove, { enabled: isFocused });
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -20, scale: 0.8 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.8 }}
+      transition={{ duration: 0.3, staggerChildren: 0.05 }}
+      className='absolute top-3 right-3 z-30 flex gap-1.5'
+    >
+      <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
+        <Tooltip content={<ShortcutTooltip shortcutName='toggleFavorite' />} className='tooltip-secondary!'>
+          <Button
+            isIconOnly
+            size='sm'
+            tabIndex={-1}
+            className={cn(
+              'h-8 w-8 border backdrop-blur-xl transition-all duration-300',
+              'hover:scale-110 active:scale-95',
+              item?.isFavorite
+                ? 'border-pink-400/60 bg-pink-500/30 text-pink-200 shadow-lg shadow-pink-500/25'
+                : 'border-white/30 bg-white/15 text-white hover:border-pink-400/60 hover:bg-pink-500/30 hover:text-pink-200'
+            )}
+            onPress={handleToggleFavorite}
+            aria-label={item?.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Heart className={cn('size-3.5 transition-all duration-300', item?.isFavorite && 'fill-current')} />
+          </Button>
+        </Tooltip>
+      </motion.div>
+
+      <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
+        <Tooltip content={<ShortcutTooltip shortcutName='editStatus' />} className='tooltip-secondary!'>
+          <Button
+            isIconOnly
+            size='sm'
+            tabIndex={-1}
+            className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-blue-400/60 hover:bg-blue-500/30 hover:text-blue-200 active:scale-95'
+            onPress={handleEditStatus}
+            aria-label='Edit library status'
+          >
+            <Edit3 className='size-3.5' />
+          </Button>
+        </Tooltip>
+      </motion.div>
+
+      {status && (
+        <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
+          <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary!'>
+            <Button
+              isIconOnly
+              size='sm'
+              tabIndex={-1}
+              className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-red-400/60 hover:bg-red-500/30 hover:text-red-200 active:scale-95'
+              onPress={handleRemove}
+              aria-label='Remove from library'
+            >
+              <Trash2 className='size-3.5' />
+            </Button>
+          </Tooltip>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+};

@@ -5,7 +5,7 @@ declare global {
   type ConfirmationSetting = 'enabled' | 'disabled';
   type MediaType = 'movie' | 'tv';
   type WatchStatus = 'watching' | 'willWatch' | 'completed' | 'onHold' | 'dropped' | 'none';
-  type MediaPreferenceType = 'movies' | 'series' | 'both';
+  type FavoriteContentType = 'movies' | 'series' | 'both';
   type ConfirmationPreferences = 'signOutConfirmation' | 'removeFromLibraryConfirmation' | 'clearLibraryConfirmation';
   type ConfirmationKeys = 'sign-out' | 'remove-from-library' | 'clear-library' | 'delete-account';
 
@@ -21,12 +21,16 @@ declare global {
     userId: string;
     name: string;
     email: string;
-    mediaPreference: MediaPreferenceType;
+    visibility: string;
     bio?: string;
     avatarUrl?: string;
     username?: string;
     preferences?: UserPreferences;
     library?: Library;
+    favoriteContentType: FavoriteContentType;
+    favoriteGenres: string[];
+    contentPreferences: string[];
+    favoriteNetworks: string[];
   }
   interface UserPreferences extends Document {
     signOutConfirmation: ConfirmationSetting;

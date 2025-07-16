@@ -12,11 +12,11 @@ interface LibraryCardsListProps {
   items: LibraryMedia[];
   allItems: LibraryMedia[];
   status: LibraryFilterStatus;
-  query: string;
+  isOwnProfile : boolean;
   onReorder?: (reorderedItems: LibraryMedia[]) => void;
 }
 
-export default function LibraryCardsList({ items, status }: LibraryCardsListProps) {
+export default function LibraryCardsList({ items, status, isOwnProfile }: LibraryCardsListProps) {
   const [displayedItems, setDisplayedItems] = useState(items);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
@@ -56,7 +56,7 @@ export default function LibraryCardsList({ items, status }: LibraryCardsListProp
             {query
               ? 'Search Results'
               : status === 'all'
-                ? 'Your Library'
+                ? 'All '
                 : LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label || 'Library'}
           </h2>
           <div className='bg-Primary-500/20 text-Primary-300 flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium'>
@@ -82,7 +82,12 @@ export default function LibraryCardsList({ items, status }: LibraryCardsListProp
 
       <div ref={cardsContainerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
         {displayedItems.map((item, index) => (
-          <LibraryCard key={`${item.id}-${item.media_type}`} item={item} tabIndex={focusIndex === index ? 0 : -1} />
+          <LibraryCard
+            key={`${item.id}-${item.media_type}`}
+            item={item}
+            tabIndex={focusIndex === index ? 0 : -1}
+            isOwnProfile={isOwnProfile}
+          />
         ))}
       </div>
     </>

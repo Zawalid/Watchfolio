@@ -4,9 +4,10 @@ interface LibraryCardProps {
   item: LibraryMedia;
   tabIndex?: number;
   isFocused?: boolean;
+  isOwnProfile: boolean;
 }
 
-export default function LibraryCard({ item, tabIndex }: LibraryCardProps) {
+export default function LibraryCard({ item, tabIndex, isOwnProfile }: LibraryCardProps) {
   const title = item.title || 'Untitled';
 
   return (
@@ -16,10 +17,11 @@ export default function LibraryCard({ item, tabIndex }: LibraryCardProps) {
       mediaType={item.media_type}
       posterPath={item.posterPath}
       releaseDate={item.releaseDate}
-      rating={item.userRating}
+      rating={item.userRating || item.rating}
       genres={item.genres}
       item={item}
       tabIndex={tabIndex}
+      isOwnProfile={isOwnProfile}
     />
   );
 }

@@ -55,6 +55,7 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
         const { name, email, password } = data as SignUpFormData;
         await signUp(name, email, password);
         addToast({
+          // TODO : Improve
           title: 'Account created successfully!',
           description: 'You can now log in.',
           color: 'success',

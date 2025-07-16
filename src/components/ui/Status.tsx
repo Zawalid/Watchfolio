@@ -1,6 +1,5 @@
 import { ElementType, ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { useQueryState } from 'nuqs';
 import { motion } from 'framer-motion';
 import { Button } from '@heroui/button';
 import { Tooltip } from '@heroui/tooltip';
@@ -20,7 +19,7 @@ import {
 } from 'lucide-react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
-import { useFilters } from '@/hooks/useFilters';
+import { useFiltersParams } from '@/hooks/useFiltersParams';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 const containerVariants = {
@@ -64,8 +63,7 @@ function StatusContainer({ children }: { children: ReactNode }) {
 }
 
 function NoResults({ title, message, children }: { title?: string; message?: string; children?: ReactNode }) {
-  const { hasFilters, clearAllFilters } = useFilters();
-  const [query, setQuery] = useQueryState('query', { defaultValue: '' });
+  const { hasFilters, clearAllFilters, query, setQuery } = useFiltersParams();
 
   usePageTitle(hasFilters ? 'No matches found' : query ? 'No results found' : 'Nothing here yet');
 
@@ -221,10 +219,12 @@ export function Error({
 }
 
 function NotFound({
+  Icon = FileQuestion,
   title = 'Page Not Found',
   message,
   children,
 }: {
+  Icon?: ElementType;
   title?: string;
   message?: string;
   children?: ReactNode;
@@ -268,7 +268,7 @@ function NotFound({
             },
           ]}
         >
-          <FileQuestion className='text-Secondary-400 size-16' />
+          <Icon className='text-Secondary-400 size-16' />
         </AnimatedRing>
       </motion.div>
 

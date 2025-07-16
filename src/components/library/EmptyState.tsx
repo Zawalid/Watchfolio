@@ -3,6 +3,7 @@ import { Button } from '@heroui/button';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { Link } from 'react-router';
 import { Status } from '@/components/ui/Status';
+import { useFiltersParams } from '@/hooks/useFiltersParams';
 
 const getProps = (status: LibraryFilterStatus) => {
   switch (status) {
@@ -89,5 +90,7 @@ const getProps = (status: LibraryFilterStatus) => {
   }
 };
 export default function EmptyState({ status }: { status: LibraryFilterStatus }) {
+  const { query, hasFilters } = useFiltersParams();
+  if (query || hasFilters) return <Status.NoResults />;
   return <Status.Empty {...getProps(status)} />;
 }

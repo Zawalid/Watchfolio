@@ -4,6 +4,7 @@ import { Globe, Heart, Tv, Film } from 'lucide-react';
 import { CONTENT_PREFERENCES } from '@/utils/constants';
 import { GENRES, NETWORKS } from '@/utils/constants/TMDB';
 import { useOnboardingStore } from '@/stores/useOnboardingStore';
+import { cn } from '@/utils';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -12,7 +13,7 @@ const itemVariants = {
 
 export default function SetupStep() {
   const { preferences, updatePreferences } = useOnboardingStore();
-  const { selectedGenres, selectedContentPreferences, selectedNetworks, mediaPreference } = preferences;
+  const { selectedGenres, selectedContentPreferences, selectedNetworks, favoriteContentType } = preferences;
 
   const toggleGenre = (genre: string) => {
     const newGenres = selectedGenres.includes(genre)
@@ -76,8 +77,8 @@ export default function SetupStep() {
               <Button
                 key={option.value}
                 className='selectable-button! flex-1'
-                data-is-selected={mediaPreference === option.value}
-                onPress={() => updatePreferences({ mediaPreference: option.value as 'movies' | 'tv' | 'both' })}
+                data-is-selected={favoriteContentType === option.value}
+                onPress={() => updatePreferences({ favoriteContentType: option.value as 'movies' | 'tv' | 'both' })}
               >
                 <div className='flex items-center gap-2'>
                   <option.icon className='h-4 w-4' />
@@ -175,12 +176,20 @@ export default function SetupStep() {
             {NETWORKS.slice(0, 12).map((network) => (
               <Button
                 key={network.id}
-                className='selectable-button! h-28'
+                className='selectable-button! group h-28'
                 data-is-selected={selectedNetworks.includes(network.id)}
                 onPress={() => toggleNetwork(network.id)}
               >
                 {network.logo ? (
-                  <img src={network.logo} alt={network.name} className='mr-1 inline-block max-h-20' loading='lazy' />
+                  <img
+                    src={network.logo}
+                    alt={network.name}
+                    className={cn(
+                      'max-h-20 object-contain transition-all duration-300 group-hover:scale-105',
+                      network.invertOnHover && 'group-hover:invert'
+                    )}
+                    loading='lazy'
+                  />
                 ) : (
                   network.name
                 )}

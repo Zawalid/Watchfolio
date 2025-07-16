@@ -59,3 +59,27 @@ type SyncOperation = {
   data?: LibraryMedia;
   timestamp: string;
 };
+
+
+interface LibraryStats {
+  totalItems: number;
+  watching: number;
+  completed: number;
+  willWatch: number;
+  onHold: number;
+  dropped: number;
+  favorites: number;
+  movies: number;
+  tvShows: number;
+  totalHoursWatched: number;
+  averageRating: number;
+  topGenres: Array<{ name: string; count: number }>;
+  recentActivity: Array<{
+    id: string;
+    title: string;
+    type: 'movie' | 'tv';
+    action: 'added' | 'completed' | 'rated';
+    date: string;
+    rating?: number;
+  }>;
+}

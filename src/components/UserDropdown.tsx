@@ -100,7 +100,7 @@ export default function UserDropdown() {
                 : 'text-Grey-200 hover:text-Primary-50'
             }`}
             startContent={<UserIcon className='h-4 w-4' />}
-            onPress={() => navigate('/settings/profile')}
+            onPress={() => navigate(`/u/${user.profile.username}`)}
           >
             Profile
           </DropdownItem>

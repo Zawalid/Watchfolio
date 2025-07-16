@@ -6,7 +6,7 @@ import { Status } from '@/components/ui/Status';
 export default function NotFound() {
   return (
     <div className='blur-bg relative flex min-h-dvh items-center justify-center overflow-hidden'>
-      <Status.NotFound>
+      <Status.NotFound message="The page you're looking for doesn't exist. It might have been moved, deleted, or you entered the wrong URL.">
         <motion.div
           variants={itemVariants}
           className='mt-8 max-w-lg rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl'

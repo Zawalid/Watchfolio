@@ -1,0 +1,98 @@
+import { motion } from 'framer-motion';
+import { Heart, Tv, Globe } from 'lucide-react';
+import { containerVariants, itemVariants } from '@/lib/animations';
+import { CONTENT_PREFERENCES } from '@/utils/constants';
+import { NETWORKS } from '@/utils/constants/TMDB';
+import NetworkCard from '@/pages/networks/NetworkCard';
+
+interface PreferencesProps {
+  profile: Profile;
+}
+
+export default function Preferences({ profile }: PreferencesProps) {
+  return (
+    <motion.div variants={containerVariants} className='lg:grid-cols- grid gap-6'>
+      {profile.favoriteGenres && (
+        <motion.div
+          variants={itemVariants}
+          initial='hidden'
+          animate='visible'
+          transition={{ delay: 0.4 }}
+          className='space-y-4 rounded-xl border border-white/5 bg-white/[0.015] p-4 backdrop-blur-sm'
+        >
+          <div className='flex items-center gap-3'>
+            <div className='to-Error-600 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500'>
+              <Heart className='h-5 w-5 text-white' />
+            </div>
+            <div>
+              <h3 className='font-semibold text-white'>Favorite Genres</h3>
+              <p className='text-Grey-400 text-sm'>Preferred content categories</p>
+            </div>
+          </div>
+
+          <div className='flex flex-wrap gap-2'>
+            {profile.favoriteGenres.map((genre) => (
+              <span key={genre} className='pill-bg text-Grey-300 text-sm transition-colors hover:bg-white/10'>
+                {genre}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      )}
+      {profile.contentPreferences && (
+        <motion.div
+          variants={itemVariants}
+          initial='hidden'
+          animate='visible'
+          transition={{ delay: 0.4 }}
+          className='space-y-4 rounded-xl border border-white/5 bg-white/[0.015] p-4 backdrop-blur-sm'
+        >
+          <div className='flex items-center gap-3'>
+            <div className='to-Error-600 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500'>
+              <Globe className='h-5 w-5 text-white' />
+            </div>
+            <div>
+              <h3 className='font-semibold text-white'>Content Preferences</h3>
+              <p className='text-Grey-400 text-sm'>Preferred content types</p>
+            </div>
+          </div>
+
+          <div className='flex flex-wrap gap-2'>
+            {profile.contentPreferences.map((preference) => (
+              <span key={preference} className='pill-bg text-Grey-300 text-sm'>
+                {CONTENT_PREFERENCES.find((p) => p.code === preference)?.name || ''}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+      )}
+      {profile.favoriteNetworks && (
+        <motion.div
+          variants={itemVariants}
+          initial='hidden'
+          animate='visible'
+          transition={{ delay: 0.4 }}
+          className='col-span- space-y-4 rounded-xl border border-white/5 bg-white/[0.015] p-4 backdrop-blur-sm'
+        >
+          <div className='flex items-center gap-3'>
+            <div className='to-Error-600 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-pink-500'>
+              <Tv className='h-5 w-5 text-white' />
+            </div>
+            <div>
+              <h3 className='font-semibold text-white'>Favorite Networks</h3>
+              <p className='text-Grey-400 text-sm'>Preferred streaming platforms</p>
+            </div>
+          </div>
+
+          <div className='flex flex-wrap gap-2'>
+            {profile.favoriteNetworks.map((n) => {
+              const network = NETWORKS.find((net) => net.id === n);
+              if (!network) return null;
+              return <NetworkCard key={network.slug} network={network} className='h-22 w-32' />;
+            })}
+          </div>
+        </motion.div>
+      )}
+    </motion.div>
+  );
+}

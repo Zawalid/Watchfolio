@@ -30,7 +30,7 @@ export default function Details() {
     mode: 'onChange',
     defaultValues: {
       name: user?.profile?.name || '',
-      preference: user?.profile?.mediaPreference || 'both',
+      preference: user?.profile?.favoriteContentType || 'both',
       bio: user?.profile?.bio || '',
       avatarUrl: user?.profile?.avatarUrl || '',
     },
@@ -69,7 +69,7 @@ export default function Details() {
     const updatedData = Object.fromEntries(Object.entries(data).filter(([key]) => dirtyFields[key as keyof FormData])); // Map form field names to profile field names
     const profileData: UpdateProfileInput = {};
     if (updatedData.name) profileData.name = updatedData.name;
-    if (updatedData.preference) profileData.mediaPreference = updatedData.preference as MediaPreferenceType;
+    if (updatedData.preference) profileData.favoriteContentType = updatedData.preference as FavoriteContentType;
     if (updatedData.bio !== undefined) profileData.bio = updatedData.bio;
     if (updatedData.avatarUrl !== undefined) profileData.avatarUrl = updatedData.avatarUrl;
 

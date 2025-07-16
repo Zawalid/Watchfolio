@@ -1,76 +1,76 @@
-import { Link, useLocation, useSearchParams } from 'react-router';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation, useSearchParams, Link } from 'react-router';
 import { cn } from '@/utils';
 import { Tooltip } from '@heroui/tooltip';
 
 type TabItem = {
   label: string;
-  icon?: React.JSX.Element;
   value: string;
-  link?: string; // Optional now, only needed for URL mode
+  icon?: ReactNode;
+  link?: string;
   includes?: boolean;
-  tooltip?: string; // Optional tooltip for keyboard shortcuts
+  tooltip?: string;
 };
 
 type TabsProps = {
   tabs: TabItem[];
+  direction?: 'horizontal' | 'vertical';
   preserveSearchParams?: boolean;
+  activeTab?: string;
+  onChange?: (value: string) => void;
   className?: string;
   tabClassName?: string;
   indicatorClassName?: string;
-  activeTab?: string; // For controlled mode
-  onChange?: (value: string) => void; // For controlled mode
+  renderWrapper?: (tabContent: ReactNode, tab: TabItem) => ReactNode; // optional custom renderer
 };
 
 export function Tabs({
   tabs,
+  direction = 'vertical',
   preserveSearchParams = false,
+  activeTab,
+  onChange,
   className = '',
   tabClassName = '',
   indicatorClassName = '',
-  activeTab: controlledActiveTab,
-  onChange,
+  renderWrapper,
 }: TabsProps) {
   const [searchParams] = useSearchParams();
-  const pathname = useLocation().pathname;
-  const tabRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const { pathname } = useLocation();
+
+  const isControlled = activeTab !== undefined && onChange !== undefined;
   const containerRef = useRef<HTMLUListElement>(null);
+  const tabRefs = useRef<(HTMLLIElement | null)[]>([]);
   const [indicator, setIndicator] = useState({ left: 0, top: 0, width: 0, height: 0 });
 
-  // Determine if we're in URL mode or state-controlled mode
-  const isControlled = controlledActiveTab !== undefined && onChange !== undefined;
-
-  // Determine the active tab based on mode
   const activeTabValue = isControlled
-    ? controlledActiveTab
-    : tabs.find((tab) => tab.link && (pathname === tab.link || (tab.includes && pathname.includes(tab.link))))?.value ||
-      tabs[0].value;
+    ? activeTab
+    : (tabs.find((tab) => {
+        return tab.link && (pathname === tab.link || (tab.includes && pathname.includes(tab.link)));
+      })?.value ?? tabs[0].value);
 
   useEffect(() => {
-    const activeTabIndex = tabs.findIndex((tab) => tab.value === activeTabValue);
-    if (activeTabIndex !== -1 && tabRefs.current[activeTabIndex] && containerRef.current) {
-      const tabElement = tabRefs.current[activeTabIndex];
-      const containerElement = containerRef.current;
+    const index = tabs.findIndex((t) => t.value === activeTabValue);
+    const tabEl = tabRefs.current[index];
+    const containerEl = containerRef.current;
 
-      if (tabElement) {
-        const tabRect = tabElement.getBoundingClientRect();
-        const containerRect = containerElement.getBoundingClientRect();
+    if (tabEl && containerEl) {
+      const tabRect = tabEl.getBoundingClientRect();
+      const containerRect = containerEl.getBoundingClientRect();
 
-        setIndicator({
-          left: tabRect.left - containerRect.left,
-          top: tabRect.top - containerRect.top,
-          width: tabRect.width,
-          height: tabRect.height,
-        });
-      }
+      setIndicator({
+        left: tabRect.left - containerRect.left,
+        top: tabRect.top - containerRect.top,
+        width: tabRect.width,
+        height: tabRect.height,
+      });
     }
   }, [activeTabValue, tabs]);
 
-  // Handle tab click for state-controlled mode
-  const handleTabClick = (tab: TabItem, event: React.MouseEvent) => {
+  const handleClick = (tab: TabItem, e: React.MouseEvent) => {
     if (isControlled && onChange) {
-      event.preventDefault(); // Prevent navigation if we're in controlled mode
+      e.preventDefault();
       onChange(tab.value);
     }
   };
@@ -78,10 +78,15 @@ export function Tabs({
   return (
     <ul
       ref={containerRef}
-      className={cn('relative flex w-fit gap-5 rounded-xl bg-black/20 p-2 backdrop-blur-2xl', className)}
+      className={cn(
+        'relative isolate',
+        direction === 'horizontal' ? 'flex flex-row gap-4' : 'flex flex-col gap-4',
+        className
+      )}
     >
+      {/* Animated indicator */}
       <motion.li
-        className={cn('bg-Primary-400 absolute -z-10 rounded-lg', indicatorClassName)}
+        className={cn('bg-Primary-400 absolute -z-10 rounded-md', indicatorClassName)}
         animate={{
           left: indicator.left,
           top: indicator.top,
@@ -90,65 +95,65 @@ export function Tabs({
         }}
         transition={{
           type: 'spring',
-          stiffness: 300, // Reduced from 300 for slower movement
-          damping: 25, // Adjusted for smoother animation
-          duration: 0.1, // Added minimum duration for consistency
+          stiffness: 300,
+          damping: 25,
+          duration: 0.1,
         }}
       />
+
       {tabs.map((tab, index) => {
-        // Create the content element with proper styling
-        const tabContent = (
-          <span
-            data-active={activeTabValue === tab.value}
-            className={cn(
-              'data-[active=true]:text-Primary-50 text-Grey-300 hover:text-Grey-600 block size-full px-8 py-2 text-sm font-medium transition-colors duration-200',
-              tab.icon && 'flex items-center gap-2',
-              tabClassName
-            )}
-          >
-            {tab.icon && tab.icon}
+        const isActive = activeTabValue === tab.value;
+
+        const baseClasses = cn(
+          'transition-colors duration-200 px-4 py-2 rounded-md font-medium',
+          direction === 'vertical' ? 'w-full text-left' : 'inline-block',
+          isActive ? 'text-Primary-50' : 'text-Grey-300 hover:text-Grey-500',
+          tab.icon && 'flex items-center gap-2',
+          tabClassName
+        );
+
+        const content = (
+          <span data-active={isActive} className={baseClasses}>
+            {tab.icon}
             {tab.label}
           </span>
         );
 
-        const tabElement = (
+        const wrapped = tab.tooltip ? (
+          <Tooltip content={tab.tooltip} className='tooltip-secondary!'>
+            {content}
+          </Tooltip>
+        ) : (
+          content
+        );
+
+        const inner = renderWrapper ? (
+          renderWrapper(wrapped, tab)
+        ) : isControlled || !tab.link ? (
+          <button type='button' onClick={(e) => handleClick(tab, e)} className='w-full'>
+            {wrapped}
+          </button>
+        ) : (
+          <Link
+            to={{
+              pathname: tab.link,
+              search: preserveSearchParams ? searchParams.toString() : undefined,
+            }}
+          >
+            {wrapped}
+          </Link>
+        );
+
+        return (
           <li
             key={tab.value}
             ref={(el) => {
               tabRefs.current[index] = el;
             }}
           >
-            {/* Either render as link or button based on mode */}
-            {isControlled || !tab.link ? (
-              <button type='button' onClick={(e) => handleTabClick(tab, e)} className='block w-full text-left'>
-                {tab.tooltip ? (
-                  <Tooltip content={tab.tooltip} className='tooltip-secondary!'>
-                    {tabContent}
-                  </Tooltip>
-                ) : (
-                  tabContent
-                )}
-              </button>
-            ) : (
-              <Link
-                to={{
-                  pathname: tab.link,
-                  search: preserveSearchParams ? searchParams.toString() : undefined,
-                }}
-              >
-                {tab.tooltip ? (
-                  <Tooltip content={tab.tooltip} className='tooltip-secondary!'>
-                    {tabContent}
-                  </Tooltip>
-                ) : (
-                  tabContent
-                )}
-              </Link>
-            )}
+            {inner}
           </li>
         );
-
-        return tabElement;
       })}
     </ul>
   );

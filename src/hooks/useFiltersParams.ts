@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { parseAsArrayOf, parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 
-export function useFilters() {
+export function useFiltersParams() {
   const [language, setLanguage] = useQueryState('language', parseAsString);
   const [selectedGenres, setSelectedGenres] = useQueryState('genres', parseAsArrayOf(parseAsString));
   const [selectedNetworks, setSelectedNetworks] = useQueryState('networks', parseAsArrayOf(parseAsString));
@@ -10,6 +10,7 @@ export function useFilters() {
   const [minYear, setMinYear] = useQueryState('min_year', parseAsInteger);
   const [maxYear, setMaxYear] = useQueryState('max_year', parseAsInteger);
   const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
+  const [query, setQuery] = useQueryState('query', { defaultValue: '' });
 
   const clearAllFilters = () => {
     setSelectedGenres(null);
@@ -21,7 +22,7 @@ export function useFilters() {
   };
 
   const [hasFilters, numberOfFilters] = useMemo(() => {
-    const has= Boolean(
+    const has = Boolean(
       selectedGenres?.length ||
         selectedNetworks?.length ||
         selectedTypes?.length ||
@@ -53,8 +54,6 @@ export function useFilters() {
     selectedTypes?.length,
   ]);
 
-
-
   return {
     language,
     setLanguage,
@@ -75,5 +74,7 @@ export function useFilters() {
     hasFilters,
     numberOfFilters,
     clearAllFilters,
+    query,
+    setQuery,
   };
 }

@@ -6,7 +6,7 @@ interface OnboardingPreferences {
   selectedGenres: string[];
   selectedContentPreferences: string[];
   selectedNetworks: number[];
-  mediaPreference: 'movies' | 'tv' | 'both';
+  favoriteContentType: 'movies' | 'tv' | 'both';
 }
 
 interface OnboardingStore {
@@ -44,7 +44,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
         selectedGenres: [],
         selectedContentPreferences: ['hollywood'], // Default to Hollywood
         selectedNetworks: [],
-        mediaPreference: 'both',
+        favoriteContentType: 'both',
       },
 
       // Actions
@@ -93,7 +93,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
             selectedGenres: [],
             selectedContentPreferences: ['hollywood'],
             selectedNetworks: [],
-            mediaPreference: 'both',
+            favoriteContentType: 'both',
           },
         }),
 
@@ -109,7 +109,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
             selectedGenres: [],
             selectedContentPreferences: ['hollywood'],
             selectedNetworks: [],
-            mediaPreference: 'both',
+            favoriteContentType: 'both',
           },
         });
       },

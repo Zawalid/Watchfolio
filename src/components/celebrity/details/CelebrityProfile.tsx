@@ -81,13 +81,13 @@ export default function CelebrityProfile({ person, appearances }: CelebrityProfi
         <div className='mb-6'>
           <div className='mb-3 flex flex-wrap items-center gap-3'>
             {person.known_for_department && (
-              <motion.span className='bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
-                <Award className='mr-1 size-4' />
+              <motion.span className='gap-1.5 bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
+                <Award className='size-4' />
                 {person.known_for_department}
               </motion.span>
             )}
-            <motion.span className='bg-Tertiary-900/80 text-Tertiary-300 ring-Tertiary-500/30 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
-              <Clapperboard className='mr-1 size-4' />
+            <motion.span className='gap-1.5 bg-Tertiary-900/80 text-Tertiary-300 ring-Tertiary-500/30 flex items-center rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
+              <Clapperboard className='size-4' />
               {appearances} Appearances
             </motion.span>
 

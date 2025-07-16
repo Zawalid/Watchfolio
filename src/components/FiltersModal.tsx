@@ -14,7 +14,7 @@ import { cn } from '@/utils';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
-import { useFilters } from '@/hooks/useFilters';
+import { useFiltersParams } from '@/hooks/useFiltersParams';
 
 export type FilterOption = 'genres' | 'networks' | 'types' | 'language' | 'ratingRange' | 'releaseYear';
 
@@ -52,7 +52,7 @@ export default function FiltersModal({
   const { isOpen, onClose, onOpen } = disclosure;
   const { registerNavigator, unregisterNavigator } = useNavigation();
 
-  const { selectedTypes, setSelectedTypes, numberOfFilters, hasFilters, clearAllFilters } = useFilters();
+  const { selectedTypes, setSelectedTypes, numberOfFilters, hasFilters, clearAllFilters } = useFiltersParams();
 
   useHotkeys(getShortcut('toggleFilters')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
   useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
@@ -136,7 +136,7 @@ export default function FiltersModal({
 }
 
 function GenresFilter() {
-  const { selectedGenres, setSelectedGenres } = useFilters();
+  const { selectedGenres, setSelectedGenres } = useFiltersParams();
   const toggle = (slug: string) => {
     const list = selectedGenres || [];
     if (list.includes(slug)) {
@@ -173,7 +173,7 @@ function GenresFilter() {
 }
 
 function NetworksFilter() {
-  const { selectedNetworks, setSelectedNetworks } = useFilters();
+  const { selectedNetworks, setSelectedNetworks } = useFiltersParams();
   const toggle = (slug: string) => {
     const list = selectedNetworks || [];
     if (list.includes(slug)) {
@@ -248,7 +248,7 @@ function TypesFilter() {
 }
 
 function LanguageFilter() {
-  const { language, setLanguage } = useFilters();
+  const { language, setLanguage } = useFiltersParams();
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
@@ -275,7 +275,7 @@ function LanguageFilter() {
 }
 
 function RatingRangeFilter() {
-  const { minRating, maxRating, setMinRating, setMaxRating } = useFilters();
+  const { minRating, maxRating, setMinRating, setMaxRating } = useFiltersParams();
 
   let minError: string | null = null;
   let maxError: string | null = null;
@@ -340,7 +340,7 @@ function RatingRangeFilter() {
 
 function ReleaseYearFilter() {
   const currentYear = new Date().getFullYear();
-  const { minYear, maxYear, setMinYear, setMaxYear } = useFilters();
+  const { minYear, maxYear, setMinYear, setMaxYear } = useFiltersParams();
 
   let minError: string | null = null;
   let maxError: string | null = null;

@@ -3,15 +3,15 @@ import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { DiscoverParams } from '@/lib/api/TMDB';
 import { GENRES } from '@/utils/constants/TMDB';
 import { useDebounce } from './useDebounce';
-import { useFilters } from './useFilters';
+import { useFiltersParams } from './useFiltersParams';
 
 export function useDiscoverParams(type?: MediaType) {
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [sortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
   const [sortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
 
-  const { language, minRating, maxRating, minYear, maxYear, selectedGenres, selectedNetworks, selectedTypes } =
-    useFilters();
+  const { language, minRating, maxRating, minYear, maxYear, selectedGenres, selectedNetworks, selectedTypes ,query} =
+    useFiltersParams();
 
   const debouncedMinRating = useDebounce(minRating, 700);
   const debouncedMaxRating = useDebounce(maxRating, 700);
@@ -83,5 +83,6 @@ export function useDiscoverParams(type?: MediaType) {
     selectedGenres,
     selectedNetworks,
     selectedTypes,
+    query
   };
 }

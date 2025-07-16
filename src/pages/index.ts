@@ -19,3 +19,4 @@ export { default as TermsOfService } from './legal/TermsOfService';
 export { default as PrivacyPolicy } from './legal/PrivacyPolicy';
 export { default as Networks } from './networks/Networks'
 export { default as NetworkDetails } from './networks/NetworkDetails';
+export { default as UserProfile } from './profile/UserProfile';

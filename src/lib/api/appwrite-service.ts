@@ -3,7 +3,7 @@ import { databases, account, storage, locale, DATABASE_ID, COLLECTIONS, BUCKETS 
 
 function setPermissions(userId: string): string[] {
   return [
-    Permission.read(Role.user(userId)),
+    Permission.read(Role.any()),
     Permission.update(Role.user(userId)),
     Permission.delete(Role.user(userId)),
   ];
@@ -100,7 +100,11 @@ export class ProfileAPI extends BaseAPI {
       Query.equal('username', username),
       Query.limit(1),
     ]);
-    return result.documents[0] || null;
+    const profile = result.documents[0];
+    if (!profile || !profile.library) return null;
+    const library = await libraryService.get(profile.library.$id);
+    // Because Appwrite only support a max depth of three levels, which means i can't get the media relationship on the library items
+    return { ...profile, library };
   }
 }
 
