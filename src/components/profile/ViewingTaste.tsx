@@ -5,11 +5,12 @@ import { CONTENT_PREFERENCES } from '@/utils/constants';
 import { NETWORKS } from '@/utils/constants/TMDB';
 import NetworkCard from '@/pages/networks/NetworkCard';
 
-interface PreferencesProps {
+interface ViewingTasteProps {
   profile: Profile;
+  isOwnProfile:boolean
 }
 
-export default function Preferences({ profile }: PreferencesProps) {
+export default function ViewingTaste({ profile, isOwnProfile }: ViewingTasteProps) {
   return (
     <motion.div variants={containerVariants} className='lg:grid-cols- grid gap-6'>
       {profile.favoriteGenres && (
@@ -31,11 +32,19 @@ export default function Preferences({ profile }: PreferencesProps) {
           </div>
 
           <div className='flex flex-wrap gap-2'>
-            {profile.favoriteGenres.map((genre) => (
-              <span key={genre} className='pill-bg text-Grey-300 text-sm transition-colors hover:bg-white/10'>
-                {genre}
-              </span>
-            ))}
+            {profile.favoriteGenres.length > 0 ? (
+              profile.favoriteGenres.map((genre) => (
+                <span key={genre} className='pill-bg text-Grey-300 text-sm transition-colors hover:bg-white/10'>
+                  {genre}
+                </span>
+              ))
+            ) : (
+              <p className='text-Grey-400 text-sm italic'>
+                {isOwnProfile
+                  ? 'You haven’t picked any favorite genres yet. Update your profile to let others know what you love watching.'
+                  : 'No favorite genres listed. Looks like this user enjoys a bit of everything!'}
+              </p>
+            )}
           </div>
         </motion.div>
       )}
@@ -58,11 +67,19 @@ export default function Preferences({ profile }: PreferencesProps) {
           </div>
 
           <div className='flex flex-wrap gap-2'>
-            {profile.contentPreferences.map((preference) => (
-              <span key={preference} className='pill-bg text-Grey-300 text-sm'>
-                {CONTENT_PREFERENCES.find((p) => p.code === preference)?.name || ''}
-              </span>
-            ))}
+            {profile.contentPreferences.length > 0 ? (
+              profile.contentPreferences.map((preference) => (
+                <span key={preference} className='pill-bg text-Grey-300 text-sm'>
+                  {CONTENT_PREFERENCES.find((p) => p.code === preference)?.name || ''}
+                </span>
+              ))
+            ) : (
+              <p className='text-Grey-400 text-sm italic'>
+                {isOwnProfile
+                  ? 'You haven’t added any regional or stylistic preferences yet. You can set them in your profile settings.'
+                  : 'No content preferences set. This user might be exploring content from all over the world!'}
+              </p>
+            )}
           </div>
         </motion.div>
       )}
@@ -85,11 +102,19 @@ export default function Preferences({ profile }: PreferencesProps) {
           </div>
 
           <div className='flex flex-wrap gap-2'>
-            {profile.favoriteNetworks.map((n) => {
-              const network = NETWORKS.find((net) => net.id === n);
-              if (!network) return null;
-              return <NetworkCard key={network.slug} network={network} className='h-22 w-32' />;
-            })}
+            {profile.favoriteNetworks.length > 0 ? (
+              profile.favoriteNetworks.map((n) => {
+                const network = NETWORKS.find((net) => net.id === +n);
+                if (!network) return null;
+                return <NetworkCard key={network.slug} network={network} className='h-22 w-32' />;
+              })
+            ) : (
+              <p className='text-Grey-400 text-sm italic'>
+                {isOwnProfile
+                  ? 'No favorite streaming platforms selected yet. Add them to better tailor your recommendations.'
+                  : "No favorite networks yet — maybe they're watching off the grid!"}
+              </p>
+            )}
           </div>
         </motion.div>
       )}

@@ -60,7 +60,6 @@ type SyncOperation = {
   timestamp: string;
 };
 
-
 interface LibraryStats {
   totalItems: number;
   watching: number;
@@ -81,5 +80,6 @@ interface LibraryStats {
     action: 'added' | 'completed' | 'rated';
     date: string;
     rating?: number;
+    posterPath?: string;
   }>;
 }

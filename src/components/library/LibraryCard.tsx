@@ -4,7 +4,7 @@ interface LibraryCardProps {
   item: LibraryMedia;
   tabIndex?: number;
   isFocused?: boolean;
-  isOwnProfile: boolean;
+  isOwnProfile?: boolean;
 }
 
 export default function LibraryCard({ item, tabIndex, isOwnProfile }: LibraryCardProps) {

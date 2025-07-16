@@ -1444,6 +1444,7 @@ export const MOVIE_COLLECTIONS = {
     { id: 52785, name: 'xXx Collection' },
     { id: 86029, name: "Charlie's Angels Collection" },
     { id: 2467, name: 'Tomb Raider Collection' },
+    { id: 404609, name: 'John Wick Collection' },
   ],
 
   // Legendary Cinema

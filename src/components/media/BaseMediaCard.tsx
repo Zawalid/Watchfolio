@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { Calendar, Film, Tv, Heart, Trash2, Edit3, User, Mic, Users, Clapperboard } from 'lucide-react';
+import { Calendar, Film, Tv, Heart, Trash2, Edit3, User, Mic, Users, Clapperboard, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn } from '@/utils';
@@ -51,9 +51,11 @@ export default function BaseMediaCard({
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const { getItem } = useLibraryStore();
 
-  const isInteractive = isHovered || isFocused;
+  const inLibrary = !!getItem(mediaType, id);
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+  const isInteractive = isHovered || isFocused;
   const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;
 
   return (
@@ -115,7 +117,7 @@ export default function BaseMediaCard({
             </div>
 
             {/* Library status badge */}
-            {status && (
+            {inLibrary && status && (
               <div
                 className={cn(
                   'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium shadow-lg backdrop-blur-md',
@@ -396,11 +398,9 @@ const QuickActions = ({
   media?: Media;
   isFocused: boolean;
 }) => {
-  const { toggleFavorite, removeItem } = useLibraryStore();
+  const { toggleFavorite, removeItem, getItem } = useLibraryStore();
   const { openModal } = useMediaStatusModal();
   const { confirm } = useConfirmationModal();
-
-  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
 
   const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id }, media);
   const handleEditStatus = () => {
@@ -426,9 +426,13 @@ const QuickActions = ({
     }
   };
 
+  const inLibrary = !!getItem(mediaType, id);
+
   // Hotkeys
+  useHotkeys(getShortcut(inLibrary ? 'editStatus' : 'addToLibrary')?.hotkey || '', handleEditStatus, {
+    enabled: isFocused,
+  });
   useHotkeys(getShortcut('toggleFavorite')?.hotkey || '', handleToggleFavorite, { enabled: isFocused });
-  useHotkeys(getShortcut('editStatus')?.hotkey || '', handleEditStatus, { enabled: isFocused });
   useHotkeys(getShortcut('removeFromLibrary')?.hotkey || '', handleRemove, { enabled: isFocused });
 
   return (
@@ -461,21 +465,24 @@ const QuickActions = ({
       </motion.div>
 
       <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.15 }}>
-        <Tooltip content={<ShortcutTooltip shortcutName='editStatus' />} className='tooltip-secondary!'>
+        <Tooltip
+          content={<ShortcutTooltip shortcutName={inLibrary ? 'editStatus' : 'addToLibrary'} />}
+          className='tooltip-secondary!'
+        >
           <Button
             isIconOnly
             size='sm'
             tabIndex={-1}
             className='h-8 w-8 border border-white/30 bg-white/15 text-white backdrop-blur-xl transition-all duration-300 hover:scale-110 hover:border-blue-400/60 hover:bg-blue-500/30 hover:text-blue-200 active:scale-95'
             onPress={handleEditStatus}
-            aria-label='Edit library status'
+            aria-label={inLibrary ? 'Edit library status' : 'Add to library'}
           >
-            <Edit3 className='size-3.5' />
+            {inLibrary ? <Edit3 className='size-3.5' /> : <Plus className='size-3.5' />}
           </Button>
         </Tooltip>
       </motion.div>
 
-      {status && (
+      {inLibrary && (
         <motion.div initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
           <Tooltip content={<ShortcutTooltip shortcutName='removeFromLibrary' />} className='tooltip-secondary!'>
             <Button

@@ -46,7 +46,7 @@ export default function LibraryCardsList({ items, status, isOwnProfile }: Librar
     autoFocus: true,
   });
 
-  if (items.length === 0) return <EmptyState status={status} />;
+  if (items.length === 0) return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
 
   return (
     <>

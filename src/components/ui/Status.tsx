@@ -18,9 +18,10 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import { AnimatedRing } from '@/components/ui/AnimatedRing';
+import { AnimatedRing, AnimatedRingProps } from '@/components/ui/AnimatedRing';
 import { useFiltersParams } from '@/hooks/useFiltersParams';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { cn } from '@/utils';
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -49,13 +50,13 @@ const itemVariants = {
   },
 };
 
-function StatusContainer({ children }: { children: ReactNode }) {
+function StatusContainer({ children,className }: { children: ReactNode,className?:string }) {
   return (
     <motion.div
       variants={containerVariants}
       initial='hidden'
       animate='visible'
-      className='flex h-full min-h-[70vh] flex-1 flex-col items-center justify-center gap-6 px-4 text-center'
+      className={cn('flex h-full min-h-[70vh] flex-1 flex-col items-center justify-center gap-6 px-4 text-center',className)}
     >
       {children}
     </motion.div>
@@ -133,15 +134,17 @@ function Empty({
   title = 'Nothing here yet',
   message,
   children,
+  className
 }: {
   Icon?: ElementType;
   iconColor?: string;
   title?: string;
   message?: string;
   children?: ReactNode;
+  className?:string
 }) {
   return (
-    <StatusContainer>
+    <StatusContainer className={className}>
       <motion.div
         variants={itemVariants}
         className='rounded-full border border-white/10 bg-white/5 p-6 backdrop-blur-md'
@@ -223,11 +226,13 @@ function NotFound({
   title = 'Page Not Found',
   message,
   children,
+  animatedRingProps
 }: {
   Icon?: ElementType;
   title?: string;
   message?: string;
   children?: ReactNode;
+  animatedRingProps?: Omit<AnimatedRingProps,'children'>
 }) {
   const navigate = useNavigate();
   usePageTitle(title);
@@ -267,8 +272,9 @@ function NotFound({
               delay: 2,
             },
           ]}
+          {...animatedRingProps}
         >
-          <Icon className='text-Secondary-400 size-16' />
+          <Icon className=' size-16' />
         </AnimatedRing>
       </motion.div>
 

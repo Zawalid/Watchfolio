@@ -258,7 +258,6 @@ class AuthService {
         email,
         username,
         avatarUrl: getDefaultAvatarUrl(name, 'fun-emoji'),
-        favoriteContentType: 'both' as FavoriteContentType,
       };
       console.log('Creating user profile with data:', name, userId);
 

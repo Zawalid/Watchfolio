@@ -56,6 +56,8 @@ export const KEYBOARD_SHORTCUTS = {
     category: 'cardFocus',
   },
   editStatus: { hotkey: 'e', label: 'E', description: 'Edit status', category: 'cardFocus' },
+  addToLibrary: { hotkey: 'a', label: 'A', description: 'Add to library', category: 'cardFocus' },
+
   removeFromLibrary: {
     hotkey: 'delete',
     label: 'Delete',

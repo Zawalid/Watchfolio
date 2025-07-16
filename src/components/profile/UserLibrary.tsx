@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState } from 'nuqs';
 import { GalleryVerticalEnd, PanelLeftClose } from 'lucide-react';
@@ -9,26 +9,24 @@ import { Input } from '@/components/ui/Input';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tabs } from '@/components/ui/Tabs';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
-import { cn, slugify } from '@/utils';
+import { cn } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import FiltersModal from '@/components/FiltersModal';
 import SortBy from '@/components/SortBy';
 import LibraryCardsList from '@/components/library/LibraryCardsList';
-import { usePageTitle } from '@/hooks/usePageTitle';
 import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
 import { getLibraryCount, mapFromAppwriteData } from '@/utils/library';
 import { Status } from '@/components/ui/Status';
 import { useAuthStore } from '@/stores/useAuthStore';
 
-export default function UserLibrary({ profile, status }: { profile: Profile; status: LibraryFilterStatus }) {
+export default function UserLibrary({ profile }: { profile: Profile }) {
   const { checkIsOwnProfile } = useAuthStore();
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
   const [showTabs, setShowTabs] = useLocalStorageState('show-tabs-profile', true);
+  const [status, setStatus] = useState<LibraryFilterStatus>('all');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filtersDisclosure = useDisclosure();
-
-  usePageTitle(`${profile.name} Library`);
 
   useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => setShowTabs(!showTabs), [showTabs]);
   useHotkeys(getShortcut('focusSearch')?.hotkey || '', (e) => {
@@ -49,7 +47,7 @@ export default function UserLibrary({ profile, status }: { profile: Profile; sta
   if (!profile.library?.items?.length) return <Status.Empty />;
 
   return (
-    <div className='h-full space-y-8'>
+    <div className='h-full min-h-screen space-y-8'>
       <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>
         <div className='pointer-events-none absolute top-0 left-0 h-full w-0'>
           <aside
@@ -75,13 +73,14 @@ export default function UserLibrary({ profile, status }: { profile: Profile; sta
             <Tabs
               className='w-full bg-transparent'
               tabClassName='px-3 lg:px-4 text-sm lg:text-base'
+              activeTab={status}
+              onChange={(status) => setStatus(status as LibraryFilterStatus)}
               tabs={[
                 {
                   label: `All (${getLibraryCount(items, 'all')})`,
                   icon: <GalleryVerticalEnd className='size-4' />,
                   includes: true,
                   value: 'all',
-                  link: `/library/all`,
                 },
                 ...LIBRARY_MEDIA_STATUS.map((status) => {
                   const IconComponent = status.icon;
@@ -89,7 +88,6 @@ export default function UserLibrary({ profile, status }: { profile: Profile; sta
                     label: `${status.label} (${getLibraryCount(items, status.value)})`,
                     icon: <IconComponent className='size-4' />,
                     value: status.value,
-                    link: `/library/${slugify(status.value)}`,
                   };
                 }),
               ]}
@@ -149,12 +147,7 @@ export default function UserLibrary({ profile, status }: { profile: Profile; sta
             </div>
           </div>
           <div className='flex-1 space-y-8'>
-            <LibraryCardsList
-              items={filteredItems}
-              allItems={items}
-              status={status || 'all'}
-              isOwnProfile={isOwnProfile}
-            />
+            <LibraryCardsList items={filteredItems} allItems={items} status={status} isOwnProfile={isOwnProfile} />
           </div>
         </div>
       </div>

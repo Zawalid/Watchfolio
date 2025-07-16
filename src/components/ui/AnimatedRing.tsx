@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 
-interface AnimatedRingProps {
+export interface AnimatedRingProps {
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   color?: 'primary' | 'secondary' | 'tertiary' | 'error' | 'warning' | 'success';
@@ -34,6 +34,7 @@ const colorConfig = {
     ring2: 'border-Primary-400/20',
     glow: 'rgba(99, 102, 241, 0.3)',
     glowIntense: 'rgba(99, 102, 241, 0.5)',
+    text : "text-Primary-400"
   },
   secondary: {
     border: 'border-Secondary-400/30',
@@ -42,6 +43,7 @@ const colorConfig = {
     ring2: 'border-Secondary-400/20',
     glow: 'rgba(139, 92, 246, 0.3)',
     glowIntense: 'rgba(139, 92, 246, 0.5)',
+    text : "text-Secondary-400"
   },
   tertiary: {
     border: 'border-Tertiary-400/30',
@@ -50,6 +52,7 @@ const colorConfig = {
     ring2: 'border-Tertiary-400/20',
     glow: 'rgba(34, 197, 94, 0.3)',
     glowIntense: 'rgba(34, 197, 94, 0.5)',
+    text : "text-Tertiary-400"
   },
   error: {
     border: 'border-Error-400/30',
@@ -58,6 +61,7 @@ const colorConfig = {
     ring2: 'border-Error-400/20',
     glow: 'rgba(255, 97, 97, 0.3)',
     glowIntense: 'rgba(255, 97, 97, 0.5)',
+    text : "text-Error-400"
   },
   warning: {
     border: 'border-Warning-400/30',
@@ -66,6 +70,7 @@ const colorConfig = {
     ring2: 'border-Warning-400/20',
     glow: 'rgba(251, 191, 36, 0.3)',
     glowIntense: 'rgba(251, 191, 36, 0.5)',
+    text : "text-Warning-400"
   },
   success: {
     border: 'border-Success-400/30',
@@ -74,6 +79,7 @@ const colorConfig = {
     ring2: 'border-Success-400/20',
     glow: 'rgba(34, 197, 94, 0.3)',
     glowIntense: 'rgba(34, 197, 94, 0.5)',
+    text : "text-Success-400"
   },
 };
 
@@ -105,7 +111,7 @@ export function AnimatedRing({
   onHover = true,
 }: AnimatedRingProps) {
   const sizeStyles = sizeConfig[size];
-  const colorStyles = colorConfig[color];
+  const colorStyles = colorConfig[color || 'secondary'];
   const speedStyles = speedConfig[animationSpeed];
 
   const floatingVariants = {
@@ -207,7 +213,7 @@ export function AnimatedRing({
           ease: 'easeInOut',
         }}
       >
-        <motion.div variants={contentVariants} animate='animate'>
+        <motion.div variants={contentVariants} animate='animate' className={colorStyles.text}>
           {children}
         </motion.div>
       </motion.div>

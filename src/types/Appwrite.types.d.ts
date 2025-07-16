@@ -65,7 +65,13 @@ declare global {
     rating?: number;
   }
 
-  type CreateProfileInput = Omit<Profile, keyof Document | 'preferences' | 'library'>;
+  type CreateProfileInput = {
+    userId: string;
+    name: string;
+    email: string;
+    avatarUrl?: string;
+    username?: string;
+  };
   type CreateUserPreferencesInput = Omit<UserPreferences, keyof Document>;
   type CreateLibraryInput = Omit<Library, keyof Document | 'items'>;
   type CreateLibraryItemInput = Omit<LibraryItem, keyof Document | 'library' | 'media'> & {
