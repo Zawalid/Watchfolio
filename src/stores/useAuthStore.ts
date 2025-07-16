@@ -37,6 +37,9 @@ interface AuthState {
   openAuthModal: (type: 'signin' | 'signup') => void;
   closeAuthModal: () => void;
   switchAuthMode: (type: 'signin' | 'signup') => void;
+
+  //
+  checkIsOwnProfile: (username?: string) => boolean;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -235,6 +238,11 @@ export const useAuthStore = create<AuthState>()(
 
       switchAuthMode: (type: 'signin' | 'signup') => {
         set({ authModalType: type });
+      },
+
+      checkIsOwnProfile: (username) => {
+        if (!username) return false;
+        return get().isAuthenticated && get().user?.profile.username === username;
       },
     }),
     {

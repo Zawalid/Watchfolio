@@ -94,7 +94,7 @@ export default function BaseMediaCard({
 
       {/* Quick Actions - Show for ALL items on hover, including person context */}
       <AnimatePresence>
-        {isInteractive  && (
+        {isInteractive && (
           <QuickActions id={id} mediaType={mediaType} media={media} item={item} isFocused={isFocused} />
         )}
       </AnimatePresence>
@@ -402,7 +402,7 @@ const QuickActions = ({
 
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
 
-  const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id: id });
+  const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id }, media);
   const handleEditStatus = () => {
     const target = item || media;
     if (!target) return;

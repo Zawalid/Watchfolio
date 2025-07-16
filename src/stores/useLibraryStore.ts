@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { GENRES } from '@/utils/constants/TMDB';
 import { getRating } from '@/utils/media';
-import { serializeToJSON, serializeToCSV, mergeLibraryItems, generateMediaKey } from '@/utils/library';
+import { mergeLibraryItems, generateMediaKey, getLibraryCount } from '@/utils/library';
+import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { persistAndSync } from '@/utils/persistAndSync';
 
@@ -9,19 +10,19 @@ interface LibraryState {
   library: LibraryCollection;
 
   // Actions
-  getItem: (mediaType: 'movie' | 'tv', id: number) => LibraryMedia | undefined;
+  getItem: (mediaType: MediaType, id: number) => LibraryMedia | undefined;
   addOrUpdateItem: (
     media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id' | 'media_type'>,
     metadata?: Media
   ) => LibraryMedia | null;
-  removeItem: (mediaType: 'movie' | 'tv', id: number) => void;
+  removeItem: (mediaType: MediaType, id: number) => void;
   toggleFavorite: (
     media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id' | 'media_type'>,
     metadata?: Media
   ) => LibraryMedia | null;
   getAllItems: () => LibraryMedia[];
-  getItemsByStatus: (status: LibraryFilterStatus, mediaType?: 'movie' | 'tv') => LibraryMedia[];
-  getCount: (filter: LibraryFilterStatus, mediaType?: 'movie' | 'tv') => number;
+  getItemsByStatus: (status: LibraryFilterStatus, mediaType?: MediaType) => LibraryMedia[];
+  getCount: (filter: LibraryFilterStatus, mediaType?: MediaType) => number;
   exportLibrary: (items: LibraryMedia[], format: 'json' | 'csv') => string;
   importLibrary: (
     parsedItems: LibraryMedia[],
@@ -175,31 +176,9 @@ export const useLibraryStore = create<LibraryState>()(
         });
       },
 
-      getCount: (filter: LibraryFilterStatus, mediaType) => {
+      getCount: (filter, mediaType) => {
         const { library } = get();
-        const counts: Record<LibraryFilterStatus, number> = {
-          all: 0,
-          watching: 0,
-          willWatch: 0,
-          completed: 0,
-          onHold: 0,
-          dropped: 0,
-          favorites: 0,
-        };
-
-        Object.values(library).forEach((item) => {
-          if (mediaType && item.media_type !== mediaType) return;
-
-          counts.all++;
-          if (item.status === 'watching') counts.watching++;
-          else if (item.status === 'willWatch') counts['willWatch']++;
-          else if (item.status === 'completed') counts.completed++;
-          else if (item.status === 'onHold') counts['onHold']++;
-          else if (item.status === 'dropped') counts.dropped++;
-          if (item.isFavorite) counts.favorites++;
-        });
-
-        return counts[filter] || 0;
+        return getLibraryCount(Object.values(library), filter, mediaType);
       },
 
       exportLibrary: (items, format = 'json') => {

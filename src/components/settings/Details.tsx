@@ -97,12 +97,12 @@ export default function Details() {
     <div className='flex flex-col gap-5'>
       <div className='mb-5'>
         <AvatarManager
-          currentAvatarUrl={values.avatarUrl || getAvatarWithFallback(user.profile.avatarUrl, user.profile.name)}
-          userName={user.profile.name}
+          currentAvatarUrl={values.avatarUrl || getAvatarWithFallback(user.profile.avatarUrl, user.name)}
+          userName={user.name}
           onAvatarChange={handleAvatarChange}
         />{' '}
       </div>
-      <ChangeEmail email={user.profile.email} verified={user.emailVerification} />
+      <ChangeEmail email={user.email} verified={user.emailVerification} />
 
       {/* Email Verification Section */}
       {!user.emailVerification && (
@@ -129,7 +129,7 @@ export default function Details() {
         <Input
           {...register('name')}
           icon='name'
-          defaultValue={user.profile.name}
+          defaultValue={user.name}
           label='Name'
           placeholder='Your Name'
           error={errors.name?.message}

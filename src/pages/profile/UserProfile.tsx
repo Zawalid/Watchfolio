@@ -67,13 +67,16 @@ const mockLibraryStats: LibraryStats = {
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
-  const { user, isAuthenticated, isLoading: isUserLoading } = useAuthStore();
+  const { checkIsOwnProfile } = useAuthStore();
+
   const { data: profile, isLoading } = useQuery({
     queryKey: ['user', username],
     queryFn: async () => await appwriteService.profiles.getByUsername(username!),
     enabled: !!username,
   });
-  
+
+  const isOwnProfile = checkIsOwnProfile(username);
+
   if (isLoading) {
     return (
       <div className='flex h-96 items-center justify-center'>
@@ -96,26 +99,21 @@ export default function ProfilePage() {
   }
 
   // Check if profile is private and user doesn't have access
-  if (profile.visibility === 'private') {
-    // In real app, check if current user owns this profile or has permission
-    const hasAccess = true; // Replace with actual permission check
-
-    if (!hasAccess) {
-      return (
-        <div className='flex h-96 items-center justify-center'>
-          <div className='text-center'>
-            <AlertCircle className='text-Warning-400 mx-auto mb-4 h-12 w-12' />
-            <h2 className='mb-2 text-xl font-semibold text-white'>Private Profile</h2>
-            <p className='text-Grey-400'>This profile is set to private and cannot be viewed.</p>
-          </div>
+  if (profile.visibility === 'private' && !isOwnProfile) {
+    return (
+      <div className='flex h-96 items-center justify-center'>
+        <div className='text-center'>
+          <AlertCircle className='text-Warning-400 mx-auto mb-4 h-12 w-12' />
+          <h2 className='mb-2 text-xl font-semibold text-white'>Private Profile</h2>
+          <p className='text-Grey-400'>This profile is set to private and cannot be viewed.</p>
         </div>
-      );
-    }
+      </div>
+    );
   }
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-8'>
-      <ProfileHeader profile={profile} isOwnProfile={isAuthenticated && username === profile.username} />
+      <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
 
       <Tabs classNames={TABS_CLASSNAMES}>
         <Tab

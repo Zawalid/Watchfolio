@@ -50,12 +50,6 @@ export default function AuthModal() {
     setIsSigningInWithGoogle(true);
     try {
       await signInWithGoogle();
-      closeAuthModal();
-      addToast({
-        title: 'Welcome!',
-        description: 'You have successfully signed in.',
-        color: 'success',
-      });
     } catch (error) {
       console.error('Google sign in failed:', error);
       addToast({

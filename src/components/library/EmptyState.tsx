@@ -17,7 +17,7 @@ const getProps = (status: LibraryFilterStatus) => {
           <>
             <Button
               as={Link}
-              to='/'
+              to='/home'
               color='primary'
               size='md'
               className='font-medium'

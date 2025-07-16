@@ -300,7 +300,8 @@ class AuthService {
   async signInWithGoogle() {
     try {
       // Redirect to Google OAuth
-      const success = `${window.location.origin}/home`;
+      const success = `${window.location.origin}/library`;
+      // TODO : Use error screen or something
       const failure = `${window.location.origin}/signin`;
 
       await appwriteService.auth.createOAuth2Session(OAuthProvider.Google, success, failure);

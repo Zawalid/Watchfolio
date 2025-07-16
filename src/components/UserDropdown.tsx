@@ -75,10 +75,10 @@ export default function UserDropdown() {
           }}
         >
           <div className='flex items-center gap-3'>
-            <Avatar src={avatarUrl} classNames={AVATAR_CLASSNAMES} size='md' />
+            <Avatar src={avatarUrl} classNames={AVATAR_CLASSNAMES} size='lg' />
             <div className='min-w-0 flex-1'>
-              <h3 className='text-Primary-50 truncate font-semibold'>{user.name}</h3>
-              <p className='text-Grey-400 truncate text-sm'>{user.email}</p>
+              <h3 className='text-Primary-50 truncate text-lg font-semibold'>{user.name}</h3>
+              <p className='text-Secondary-400 text-sm font-medium'>@{user.profile.username}</p>
               <p className='text-Grey-500 mt-1 text-xs'>Member since {joinDate}</p>
             </div>
           </div>

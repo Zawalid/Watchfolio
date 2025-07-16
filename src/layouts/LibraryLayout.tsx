@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState } from 'nuqs';
@@ -34,13 +34,9 @@ import { useClearLibrary } from '@/hooks/useClearLibrary';
 import { AnimatePresence } from 'framer-motion';
 import SortBy from '@/components/SortBy';
 
-interface LibraryLayoutProps {
-  children?: ReactNode;
-  isOwnProfile?: boolean;
-  userName?: string;
-}
+// TODO : Display the sync status somewhere else when the sidebar is hidden
 
-export default function LibraryLayout({ children, isOwnProfile = true, userName = 'Your' }: LibraryLayoutProps) {
+export default function LibraryLayout() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
   const [showTabs, setShowTabs] = useLocalStorageState('show-tabs', true);
 
@@ -55,7 +51,6 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
   const [onboardingMessage, setOnboardingMessage] = useState({ show: false, action: null });
 
   useEffect(() => {
-    if (!isOwnProfile) return;
     const onboardingAction = location.state?.action;
     if (
       location.state?.fromOnboarding &&
@@ -63,18 +58,19 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
     ) {
       setOnboardingMessage({ show: true, action: onboardingAction });
     }
-  }, [location.state, isOwnProfile]);
+  }, [location.state]);
 
-  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => setShowTabs(!showTabs), [showTabs]);
-  useHotkeys(getShortcut('focusSearch')?.hotkey || '', (e) => {
-    e.preventDefault();
-    searchInputRef.current?.focus();
-  });
-  useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null));
-  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', handleClearLibrary, { enabled: isOwnProfile });
-
-  const pageTitle = isOwnProfile ? 'Your Library' : `${userName}'s Library`;
-  const searchLabel = isOwnProfile ? 'Search Your Library' : `Search ${userName}'s Library`;
+  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => setShowTabs(!showTabs), [showTabs], { useKey: true });
+  useHotkeys(
+    getShortcut('focusSearch')?.hotkey || '',
+    (e) => {
+      e.preventDefault();
+      searchInputRef.current?.focus();
+    },
+    { useKey: true }
+  );
+  useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null), { useKey: true });
+  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', handleClearLibrary, { useKey: true });
 
   return (
     <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>
@@ -85,8 +81,8 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
             showTabs ? 'translate-x-0' : '-translate-x-[200%]'
           )}
         >
-          <div className='mb-6 flex items-center justify-between pl-2'>
-            <h2 className='text-lg font-semibold text-white'>{pageTitle}</h2>
+          <div className='mb-6 flex items-center justify-between px-4'>
+            <h2 className='text-lg font-semibold text-white'>Library</h2>
             <Tooltip content={<ShortcutTooltip shortcutName='toggleSidebar' />} className='tooltip-secondary!'>
               <Button
                 isIconOnly
@@ -100,7 +96,7 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
             </Tooltip>
           </div>
           <Tabs
-            className='w-full bg-transparent'
+            className='flex-col bg-transparent'
             tabClassName='px-3 lg:px-4 text-sm lg:text-base'
             tabs={[
               {
@@ -108,7 +104,7 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
                 icon: <GalleryVerticalEnd className='size-4' />,
                 includes: true,
                 value: 'all',
-                link: `/library/all`,
+                link: '/library/all',
               },
               ...LIBRARY_MEDIA_STATUS.map((status) => {
                 const IconComponent = status.icon;
@@ -121,7 +117,8 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
               }),
             ]}
           />
-          {isOwnProfile && <SyncStatus className='mt-auto mb-3' />}
+
+          <SyncStatus className='mt-auto mb-3' />
         </aside>
       </div>
       <div
@@ -152,8 +149,8 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
               icon='search'
               parentClassname='w-80'
               name='search'
-              value={query || ''}
-              label={searchLabel}
+              value={query}
+              label='Search Your Library'
               placeholder='Search by title, genre, or status...'
               ref={searchInputRef}
               onChange={(e) => setQuery(e.target.value)}
@@ -162,106 +159,97 @@ export default function LibraryLayout({ children, isOwnProfile = true, userName 
           <div className='flex items-center gap-3'>
             <FiltersModal
               disclosure={filtersDisclosure}
-              title={`${userName}'s Library Filters`}
-              filterOptions={['genres', 'types']}
+              title='Library Filters'
+              filterOptions={['genres', 'networks', 'types']}
             />
             <SortBy
               options={[
                 { key: 'recent', label: 'Recently Added' },
                 { key: 'title', label: 'Title' },
-                {
-                  key: isOwnProfile ? 'rating' : 'vote_average',
-                  label: isOwnProfile ? 'Your Rating' : 'Public Rating',
-                },
+                { key: 'rating', label: 'Your Rating' },
                 { key: 'date', label: 'Release Date' },
               ]}
               defaultSort='recent'
             />
-            {isOwnProfile && (
-              <Dropdown placement='bottom-end' backdrop='opaque' classNames={DROPDOWN_CLASSNAMES}>
-                <DropdownTrigger>
-                  <Button isIconOnly className='button-secondary! relative' aria-label='More options'>
-                    <Tooltip content='More options' className='tooltip-secondary!'>
-                      <div className='absolute inset-0 size-full'></div>
-                    </Tooltip>
-                    <MoreVertical className='size-4' />
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu aria-label='Library actions'>
-                  <DropdownSection title='Library Management' showDivider>
-                    <DropdownItem
-                      key='import-export'
-                      startContent={<FileJson className='size-4 shrink-0' />}
-                      onPress={() => importExportDisclosure.onOpen()}
-                      description='Import or export your library'
-                      classNames={{ shortcut: 'p-0 border-none' }}
-                      shortcut={<ShortcutKey shortcutName='toggleImportExport' className='opacity-80' />}
-                    >
-                      Import / Export
-                    </DropdownItem>
-                    <DropdownItem
-                      key='clear-library'
-                      startContent={<Trash2 className='size-4 shrink-0' />}
-                      onPress={handleClearLibrary}
-                      className='text-danger'
-                      color='danger'
-                      description='Permanently delete all items'
-                      classNames={{ shortcut: 'p-0 border-none' }}
-                      shortcut={<ShortcutKey shortcutName='clearLibrary' className='opacity-80' />}
-                    >
-                      Clear Library
-                    </DropdownItem>
-                  </DropdownSection>
+            <Dropdown placement='bottom-end' backdrop='opaque' classNames={DROPDOWN_CLASSNAMES}>
+              <DropdownTrigger>
+                <Button isIconOnly className='button-secondary! relative' aria-label='More options'>
+                  <Tooltip content='More options' className='tooltip-secondary!'>
+                    <div className='absolute inset-0 size-full'></div>
+                  </Tooltip>
+                  <MoreVertical className='size-4' />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label='Library actions'>
+                <DropdownSection title='Library Management' showDivider>
+                  <DropdownItem
+                    key='import-export'
+                    startContent={<FileJson className='size-4 shrink-0' />}
+                    onPress={() => importExportDisclosure.onOpen()}
+                    description='Import or export your library'
+                    classNames={{ shortcut: 'p-0 border-none' }}
+                    shortcut={<ShortcutKey shortcutName='toggleImportExport' className='opacity-80' />}
+                  >
+                    Import / Export
+                  </DropdownItem>
+                  <DropdownItem
+                    key='clear-library'
+                    startContent={<Trash2 className='size-4 shrink-0' />}
+                    onPress={handleClearLibrary}
+                    className='text-danger'
+                    color='danger'
+                    description='Permanently delete all items'
+                    classNames={{ shortcut: 'p-0 border-none' }}
+                    shortcut={<ShortcutKey shortcutName='clearLibrary' className='opacity-80' />}
+                  >
+                    Clear Library
+                  </DropdownItem>
+                </DropdownSection>
 
-                  <DropdownSection title='Help & Settings'>
-                    <DropdownItem
-                      key='shortcuts'
-                      startContent={<HelpCircle className='size-4 shrink-0' />}
-                      onPress={() => keyboardShortcutsDisclosure.onOpen()}
-                      description='View keyboard shortcuts'
-                      classNames={{ shortcut: 'p-0 border-none' }}
-                      shortcut={<ShortcutKey shortcutName='toggleShortcutsHelp' className='kbd-sm! opacity-80' />}
-                    >
-                      Keyboard Shortcuts
-                    </DropdownItem>
-                  </DropdownSection>
-                </DropdownMenu>
-              </Dropdown>
-            )}
+                <DropdownSection title='Help & Settings'>
+                  <DropdownItem
+                    key='shortcuts'
+                    startContent={<HelpCircle className='size-4 shrink-0' />}
+                    onPress={() => keyboardShortcutsDisclosure.onOpen()}
+                    description='View keyboard shortcuts'
+                    classNames={{ shortcut: 'p-0 border-none' }}
+                    shortcut={<ShortcutKey shortcutName='toggleShortcutsHelp' className='kbd-sm! opacity-80' />}
+                  >
+                    Keyboard Shortcuts
+                  </DropdownItem>
+                </DropdownSection>
+              </DropdownMenu>
+            </Dropdown>
           </div>
         </div>
-        <div className='flex-1 space-y-8'>
+        <div className='flex-1 space-y-6'>
           <AnimatePresence>
-            {isOwnProfile && (
-              <WelcomeBanner
-                title={
-                  onboardingMessage.action === 'Start Rating'
-                    ? 'Ready to Rate Your Content!'
-                    : 'Welcome to Your Library!'
-                }
-                description={
-                  onboardingMessage.action === 'Start Rating'
-                    ? 'Rate movies and shows to build your taste profile. Look for unrated items to get started.'
-                    : 'This is where you organize and track your entertainment. Use filters and sorting to explore your collection.'
-                }
-                icon={
-                  onboardingMessage.action === 'Start Rating' ? (
-                    <Star className='text-Warning-400 h-5 w-5' />
-                  ) : (
-                    <TrendingUp className='text-Success-400 h-5 w-5' />
-                  )
-                }
-                variant={onboardingMessage.action === 'Start Rating' ? 'rating' : 'library'}
-                onDismiss={() => setOnboardingMessage({ show: false, action: null })}
-                show={onboardingMessage.show}
-              />
-            )}
+            <WelcomeBanner
+              title={
+                onboardingMessage.action === 'Start Rating' ? 'Ready to Rate Your Content!' : 'Welcome to Your Library!'
+              }
+              description={
+                onboardingMessage.action === 'Start Rating'
+                  ? 'Rate movies and shows to build your taste profile. Look for unrated items to get started.'
+                  : 'This is where you organize and track your entertainment. Use filters and sorting to explore your collection.'
+              }
+              icon={
+                onboardingMessage.action === 'Start Rating' ? (
+                  <Star className='text-Warning-400 h-5 w-5' />
+                ) : (
+                  <TrendingUp className='text-Success-400 h-5 w-5' />
+                )
+              }
+              variant={onboardingMessage.action === 'Start Rating' ? 'rating' : 'library'}
+              onDismiss={() => setOnboardingMessage({ show: false, action: null })}
+              show={onboardingMessage.show}
+            />
           </AnimatePresence>
-          {children || <Outlet />}
+          <Outlet />
         </div>
       </div>
-      {isOwnProfile && <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />}
-      {isOwnProfile && <ImportExportModal disclosure={importExportDisclosure} />}
+      <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
+      <ImportExportModal disclosure={importExportDisclosure} />
     </div>
   );
 }

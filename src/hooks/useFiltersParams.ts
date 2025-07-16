@@ -19,6 +19,7 @@ export function useFiltersParams() {
     setMaxRating(null);
     setMinYear(null);
     setMaxYear(null);
+    setSelectedTypes(null)
   };
 
   const [hasFilters, numberOfFilters] = useMemo(() => {
