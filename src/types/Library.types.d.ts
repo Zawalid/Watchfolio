@@ -72,13 +72,4 @@ interface LibraryStats {
   totalHoursWatched: number;
   averageRating: number;
   topGenres: Array<{ name: string; count: number }>;
-  recentActivity: Array<{
-    id: string;
-    title: string;
-    type: 'movie' | 'tv';
-    action: 'added' | 'completed' | 'rated';
-    date: string;
-    rating?: number;
-    posterPath?: string;
-  }>;
 }

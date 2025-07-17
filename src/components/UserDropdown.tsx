@@ -44,9 +44,8 @@ export default function UserDropdown() {
   });
 
   const isActive = (path: string) => {
-    if (path === '/settings/profile') return location.pathname === '/settings/profile';
-    if (path === '/settings')
-      return location.pathname.startsWith('/settings') && location.pathname !== '/settings/profile';
+    if (path === '/profile') return location.pathname === `/u/${user.profile.username}`
+    if (path === '/settings') return location.pathname.startsWith('/settings');
     if (path === '/library')
       return location.pathname.startsWith('/library') && location.pathname !== '/library/favorites';
     if (path === '/library/favorites') return location.pathname === '/library/favorites';
@@ -95,9 +94,7 @@ export default function UserDropdown() {
           <DropdownItem
             key='profile'
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
-              isActive('/settings/profile')
-                ? 'text-Primary-400 bg-Primary-500/20'
-                : 'text-Grey-200 hover:text-Primary-50'
+              isActive('/profile') ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-200 hover:text-Primary-50'
             }`}
             startContent={<UserIcon className='h-4 w-4' />}
             onPress={() => navigate(`/u/${user.profile.username}`)}

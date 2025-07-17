@@ -1,3 +1,4 @@
+import { profilesService } from '@/lib/api/appwrite-service';
 import { getDetails } from '@/lib/api/TMDB';
 
 /**
@@ -286,27 +287,28 @@ export const mapToAppwriteData = async (
   tmdbMedia: CreateTmdbMediaInput;
   libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
 }> => {
-  const mediaDetails = await getDetails(media.media_type, String(media.id), false);
-
-  if (!mediaDetails) throw new Error(`Failed to fetch details for ${media.media_type} with ID ${media.id}`);
-
   let totalMinutesRuntime = 0;
+  if (!media.totalMinutesRuntime) {
+    const mediaDetails = await getDetails(media.media_type, String(media.id), false);
 
-  if (media.media_type === 'movie') {
-    totalMinutesRuntime = (mediaDetails as Movie).runtime || 0;
-  } else if (media.media_type === 'tv') {
-    const show = mediaDetails as TvShow;
-    const totalEpisodes = show.number_of_episodes || 0;
-    let runtime = 0;
+    if (!mediaDetails) throw new Error(`Failed to fetch details for ${media.media_type} with ID ${media.id}`);
 
-    // 1. Prioritize the runtime of the last aired episode
-    if (show.last_episode_to_air?.runtime) runtime = show.last_episode_to_air.runtime;
-    // 2. Fallback to the first value in the general episode_run_time array
-    else if (show.episode_run_time && show.episode_run_time?.length > 0) runtime = show.episode_run_time[0];
-    // 3. Final fallback to a sensible default if no data is available
-    else runtime = 45;
+    if (media.media_type === 'movie') {
+      totalMinutesRuntime = (mediaDetails as Movie).runtime || 0;
+    } else if (media.media_type === 'tv') {
+      const show = mediaDetails as TvShow;
+      const totalEpisodes = show.number_of_episodes || 0;
+      let runtime = 0;
 
-    totalMinutesRuntime = Math.round(runtime * totalEpisodes);
+      // 1. Prioritize the runtime of the last aired episode
+      if (show.last_episode_to_air?.runtime) runtime = show.last_episode_to_air.runtime;
+      // 2. Fallback to the first value in the general episode_run_time array
+      else if (show.episode_run_time && show.episode_run_time?.length > 0) runtime = show.episode_run_time[0];
+      // 3. Final fallback to a sensible default if no data is available
+      else runtime = 45;
+
+      totalMinutesRuntime = Math.round(runtime * totalEpisodes);
+    }
   }
 
   return {
@@ -319,7 +321,7 @@ export const mapToAppwriteData = async (
       releaseDate: media.releaseDate || undefined,
       genres: media.genres || [],
       rating: media.rating || undefined,
-      totalMinutesRuntime,
+      totalMinutesRuntime: media.totalMinutesRuntime || totalMinutesRuntime,
     },
     libraryItem: {
       status: media.status,
@@ -363,4 +365,38 @@ export const getLibraryCount = ({
   });
   if (filter) return counts[filter] || 0;
   return counts;
+};
+
+export const logLibraryActivity = (
+  newItemData: LibraryMedia,
+  existingItem: LibraryMedia | undefined,
+  profileId: string
+) => {
+  const log = (action: ActivityAction, props?: Partial<Activity>) => {
+    profilesService.logActivity(profileId, {
+      ...props,
+      action,
+      mediaType: newItemData.media_type,
+      mediaId: newItemData.id,
+      mediaTitle: newItemData.title || 'Unknown Title',
+      posterPath: newItemData.posterPath,
+    });
+  };
+
+  // Condition 1: Log when a new item is added with meaningful data
+  if (!existingItem && (newItemData.status !== 'none' || newItemData.isFavorite)) {
+    console.log('ADDED');
+    log('added');
+  }
+
+  // Condition 2: Log when an item is first marked as completed
+  if (newItemData.status === 'completed' && existingItem?.status !== 'completed') {
+    console.log('COMPLETED');
+    log('completed');
+  }
+  // Condition 3: Log when a rating is added or changed
+  if (newItemData.userRating && newItemData.userRating !== existingItem?.userRating) {
+    console.log('RATED');
+    log('rated', { rating: newItemData.userRating });
+  }
 };

@@ -32,7 +32,7 @@ export default function Info({ media }: { media: Media }) {
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
           </motion.div>
 
-          <ActionButtons media={media} onPlayTrailer={() => {}} />
+          <ActionButtons media={{ ...media, media_type: type }} onPlayTrailer={() => {}} />
         </div>
 
         {/* Right Column - Info */}
@@ -67,7 +67,7 @@ export default function Info({ media }: { media: Media }) {
                 {getFormattedRuntime(media)}
               </motion.span>
             </div>
-            <h1 className='mb-5 heading gradient'>{title}</h1>
+            <h1 className='heading gradient mb-5'>{title}</h1>
             <div className='flex flex-wrap gap-2'>
               {genres?.map((genre, index) => (
                 <motion.span

@@ -8,6 +8,16 @@ declare global {
   type FavoriteContentType = 'movies' | 'series' | 'both';
   type ConfirmationPreferences = 'signOutConfirmation' | 'removeFromLibraryConfirmation' | 'clearLibraryConfirmation';
   type ConfirmationKeys = 'sign-out' | 'remove-from-library' | 'clear-library' | 'delete-account';
+  type ActivityAction = 'completed' | 'rated' | 'added';
+  type Activity = {
+    action: ActivityAction;
+    mediaType: 'movie' | 'tv';
+    mediaId: number;
+    mediaTitle: string;
+    posterPath?: string | null;
+    rating?: number;
+    timestamp: string;
+  };
 
   interface Document {
     $id: string;
@@ -31,6 +41,7 @@ declare global {
     favoriteGenres: string[];
     contentPreferences: string[];
     favoriteNetworks: string[];
+    recentActivity: Activity[];
   }
   interface UserPreferences extends Document {
     signOutConfirmation: ConfirmationSetting;
@@ -81,7 +92,9 @@ declare global {
   };
   type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Document> & { title: string }; // TO stop the type error in sync-service
 
-  type UpdateProfileInput = Partial<CreateProfileInput & { favoriteContentType: FavoriteContentType; bio: string }>;
+  type UpdateProfileInput = Partial<
+    CreateProfileInput & { favoriteContentType: FavoriteContentType; bio: string; recentActivity: string[] }
+  >;
   type UpdateUserPreferencesInput = Partial<CreateUserPreferencesInput>;
   type UpdateLibraryInput = Partial<CreateLibraryInput>;
   type UpdateLibraryItemInput = Partial<Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>>;

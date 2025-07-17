@@ -70,13 +70,48 @@ export function formatDate(dateString: string | null): string {
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-export const formatTimeAgo = (dateString: string) => {
+export const formatTimeAgo = (dateString: string): string => {
+  if (!dateString) return '';
+
   const date = new Date(dateString);
   const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const minute = 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+  const week = day * 7;
+
+  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+  if (seconds < 10) {
+    return 'just now';
+  }
+  if (seconds < minute) {
+    return rtf.format(-seconds, 'second');
+  }
+  if (seconds < hour) {
+    return rtf.format(-Math.floor(seconds / minute), 'minute');
+  }
+  if (seconds < day) {
+    return rtf.format(-Math.floor(seconds / hour), 'hour');
+  }
+  if (seconds < week) {
+    return rtf.format(-Math.floor(seconds / day), 'day');
+  }
+  // If older than a week, show the actual date
+  if (now.getFullYear() === date.getFullYear()) {
+    // If it's the same year, omit the year for clarity
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
+  // If it's a different year, include the year
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 };

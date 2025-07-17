@@ -449,6 +449,14 @@
           "elements": ["movies", "series", "both"],
           "format": "enum",
           "default": "both"
+        },
+        {
+          "key": "recentActivity",
+          "type": "string",
+          "required": false,
+          "array": true,
+          "size": 500,
+          "default": null
         }
       ],
       "indexes": [

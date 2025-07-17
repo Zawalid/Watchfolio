@@ -15,6 +15,11 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { toggleFavorite } = useLibraryStore();
 
+  const inLibrary = !!libraryItem;
+
+  console.log(media.media_type, media.id,libraryItem)
+
+
   const isFavorite = libraryItem?.isFavorite || false;
   const currentStatus = libraryItem?.status || 'none';
 
@@ -44,6 +49,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
           className='button-secondary! w-full'
           onPress={onPlayTrailer}
           startContent={<Film className='size-4' />}
+          isDisabled
         >
           Watch Trailer
         </Button>
@@ -63,12 +69,12 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
           <Button
             color='secondary'
             className={`button-secondary! transition-colors ${
-              currentStatus !== 'none' ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
+              inLibrary ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
             }`}
             onPress={() => openModal(media)}
-            startContent={currentStatus !== 'none' ? <Check className='size-4' /> : <LibraryBig className='size-4' />}
+            startContent={inLibrary ? <Check className='size-4' /> : <LibraryBig className='size-4' />}
           >
-            {currentStatus !== 'none' ? 'In Library' : 'Add to Library'}
+            {inLibrary ? 'In Library' : 'Add to Library'}
           </Button>
         </div>
       </motion.div>

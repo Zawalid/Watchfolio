@@ -1,10 +1,12 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Star, Film, Tv, Clock, Target, BarChart3, Activity, Info, Award, Zap } from 'lucide-react';
+import { Star, Film, Tv, Clock, Target, BarChart3, Activity, Award, Zap } from 'lucide-react';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import StatCard, { StatCardProps } from './StatCard';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { EmptyProps, Status } from '@/components/ui/Status';
 import { cn, formatTimeAgo } from '@/utils';
+import { Link } from 'react-router';
+import { generateMediaLink } from '@/utils/media';
 
 const getStats = (stats: LibraryStats) => {
   const statusCards: StatCardProps[] = LIBRARY_MEDIA_STATUS.map((status) => ({
@@ -37,19 +39,6 @@ const getStats = (stats: LibraryStats) => {
   ];
 };
 
-const getActionIcon = (action: string) => {
-  switch (action) {
-    case 'completed':
-      return <Award className='text-Success-400 h-3 w-3' />;
-    case 'rated':
-      return <Star className='text-Warning-400 h-3 w-3' />;
-    case 'added':
-      return <Zap className='text-Primary-400 h-3 w-3' />;
-    default:
-      return <Activity className='text-Grey-400 h-3 w-3' />;
-  }
-};
-
 const renderEmptyState = (props: EmptyProps) => {
   return (
     <Status.Empty
@@ -62,10 +51,18 @@ const renderEmptyState = (props: EmptyProps) => {
   );
 };
 
-export default function StatsInsights({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile: boolean }) {
+export default function StatsInsights({
+  stats,
+  recentActivity,
+  isOwnProfile,
+}: {
+  stats: LibraryStats;
+  recentActivity: Activity[];
+  isOwnProfile: boolean;
+}) {
   const hasNoData = stats.all === 0;
   const hasNoGenres = !stats.topGenres || stats.topGenres.length === 0;
-  const hasNoActivity = !stats.recentActivity || stats.recentActivity.length === 0;
+  const hasNoActivity = !recentActivity || recentActivity.length === 0;
 
   return (
     <div className='space-y-6'>
@@ -112,7 +109,7 @@ export default function StatsInsights({ stats, isOwnProfile }: { stats: LibraryS
               : "This user hasn't been active lately.",
           })
         ) : (
-          <RecentActivity stats={stats} isOwnProfile={isOwnProfile} />
+          <RecentActivity recentActivity={recentActivity} isOwnProfile={isOwnProfile} />
         )}
       </div>
     </div>
@@ -127,17 +124,12 @@ function Overview({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile: 
       transition={{ delay: 0.6 }}
       className='rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.02] to-white/[0.01] p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20'
     >
-      <div className='mb-5 flex items-center justify-between'>
-        <h3 className='flex items-center gap-2.5 text-lg font-semibold text-white'>
-          <div className='bg-Primary-500/20 flex h-8 w-8 items-center justify-center rounded-lg'>
-            <BarChart3 className='text-Primary-400 h-4 w-4' />
-          </div>
-          Overview
-        </h3>
-        <button className='flex h-6 w-6 items-center justify-center rounded-full bg-white/5 transition-colors hover:bg-white/10'>
-          <Info className='text-Grey-400 h-3 w-3' />
-        </button>
-      </div>
+      <h3 className='mb-5 flex items-center gap-2.5 text-lg font-semibold text-white'>
+        <div className='bg-Primary-500/20 flex h-8 w-8 items-center justify-center rounded-lg'>
+          <BarChart3 className='text-Primary-400 h-4 w-4' />
+        </div>
+        Overview
+      </h3>
 
       <div className='space-y-4'>
         <div className='flex items-center justify-between rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
@@ -193,8 +185,8 @@ function ContentTypeRatio({ movies, tvShows }: { movies: number; tvShows: number
 
   const getTitle = () => {
     if (totalContent === 0) return 'Movies vs. Shows';
-    if (moviePercentage > 65) return 'Movie Enthusiast';
-    if (moviePercentage < 35) return 'Series Binger';
+    if (moviePercentage > 60) return 'Movie Enthusiast';
+    if (moviePercentage < 40) return 'Series Binger';
     return 'Balanced Viewer';
   };
 
@@ -241,6 +233,7 @@ function ContentTypeRatio({ movies, tvShows }: { movies: number; tvShows: number
 }
 
 function AverageRating({ averageRating, isOwnProfile }: { averageRating: number; isOwnProfile: boolean }) {
+  const rating = Math.round(averageRating);
   return (
     <div className='rounded-lg bg-white/[0.02] p-3 transition-colors hover:bg-white/[0.04]'>
       {averageRating > 0 ? (
@@ -251,16 +244,13 @@ function AverageRating({ averageRating, isOwnProfile }: { averageRating: number;
               {Array.from({ length: 10 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={cn(
-                    'size-4',
-                    i < Math.round(averageRating) ? 'text-Warning-400 fill-Warning-400' : 'text-Grey-600'
-                  )}
+                  className={cn('size-4', i < rating ? 'text-Warning-400 fill-Warning-400' : 'text-Grey-600')}
                 />
               ))}
             </div>
           </div>
           <div className='flex items-center gap-0.5'>
-            <span className='text-lg font-bold text-white'>{averageRating}</span>
+            <span className='text-lg font-bold text-white'>{rating}</span>
             <span className='text-Grey-500 text-sm'>/10</span>
           </div>
         </div>
@@ -316,7 +306,7 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
                     index === 2 && 'bg-Tertiary-400',
                     index === 3 && 'bg-Warning-400',
                     index === 4 && 'bg-Success-400',
-                    index === 5 && 'bg-green-400',
+                    index === 5 && 'bg-green-400'
                   )}
                 />
                 <span className='text-Grey-300 text-sm font-medium transition-colors group-hover:text-white'>
@@ -341,7 +331,7 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
                   index === 2 && 'from-Tertiary-500 to-Tertiary-400 bg-gradient-to-r',
                   index === 3 && 'from-Warning-500 to-Warning-400 bg-gradient-to-r',
                   index === 4 && 'from-Success-500 to-Success-400 bg-gradient-to-r',
-                  index === 5 && 'from-green-500 to-green-400 bg-gradient-to-r'
+                  index === 5 && 'bg-gradient-to-r from-green-500 to-green-400'
                 )}
               />
             </div>
@@ -352,7 +342,19 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
   );
 }
 
-function RecentActivity({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile: boolean }) {
+const getActionDetails = (action: Activity['action']) => {
+  switch (action) {
+    case 'completed':
+      return { Icon: Award, className: 'text-Success-400' };
+    case 'rated':
+      return { Icon: Star, className: 'text-Warning-400' };
+    case 'added':
+    default:
+      return { Icon: Zap, className: 'text-Primary-400' };
+  }
+};
+
+function RecentActivity({ recentActivity, isOwnProfile }: { recentActivity: Activity[]; isOwnProfile: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -369,63 +371,78 @@ function RecentActivity({ stats, isOwnProfile }: { stats: LibraryStats; isOwnPro
         </h3>
       </div>
 
-      <div className='space-y-4'>
-        <AnimatePresence>
-          {stats.recentActivity.slice(0, 4).map((activity, index) => (
-            <motion.div
-              key={activity.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 + index * 0.1 }}
-              className='group flex cursor-pointer items-start gap-3 rounded-lg p-2 transition-colors hover:bg-white/[0.02]'
-            >
-              <div className='relative'>
-                <div className='bg-Grey-800 h-14 w-10 overflow-hidden rounded-md border border-white/10'>
-                  <LazyImage
-                    src={
-                      activity.posterPath
-                        ? `https://image.tmdb.org/t/p/w200${activity.posterPath}`
-                        : '/images/placeholder.png'
-                    }
-                    alt={activity.title}
-                    className='h-full w-full object-cover'
-                  />
-                </div>
-                <div className='bg-Grey-900 absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full border border-white/20'>
-                  {activity.type === 'movie' ? (
-                    <Film className='h-2 w-2 text-blue-400' />
-                  ) : (
-                    <Tv className='h-2 w-2 text-purple-400' />
-                  )}
-                </div>
-              </div>
+      {/* Timeline Container */}
+      <div className='relative flow-root'>
+        <div className='absolute top-3 left-3 -ml-px h-[calc(100%-16px)] w-0.5 bg-white/10'></div>
+        <ul className='-mb-4'>
+          <AnimatePresence>
+            {recentActivity.slice(0, 5).map((activity, index) => {
+              const { Icon, className } = getActionDetails(activity.action);
+              const { action, mediaId, mediaTitle, mediaType, timestamp, posterPath, rating } = activity;
 
-              <div className='min-w-0 flex-1'>
-                <p className='group-hover:text-Primary-300 truncate text-sm font-medium text-white transition-colors'>
-                  {activity.title}
-                </p>
-                <div className='text-Grey-400 mt-1 flex items-center gap-2 text-xs'>
-                  <span className='font-medium capitalize'>{activity.action}</span>
-                  {activity.rating && (
-                    <>
-                      <span className='text-Grey-600'>•</span>
-                      <div className='flex items-center gap-1'>
-                        <Star className='fill-Warning-400 text-Warning-400 h-3 w-3' />
-                        <span className='text-Warning-400 font-medium'>{activity.rating}</span>
+              return (
+                <motion.li
+                  key={timestamp}
+                  className='relative mb-5'
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.9 + index * 0.1 }}
+                >
+                  <div className='relative flex items-start gap-4'>
+                    {/* Timeline Dot/Icon */}
+                    <div className='bg-blur absolute top-0 -left-1 flex size-8 items-center justify-center rounded-full border border-white/15'>
+                      <Icon className={cn('size-4', className)} />
+                    </div>
+
+                    {/* Timeline Content */}
+                    <div className='min-w-0 flex-1 pl-10'>
+                      <div className='flex items-start gap-3'>
+                        <div className='bg-Grey-800 h-16 w-11 flex-shrink-0 overflow-hidden rounded-md border border-white/10'>
+                          <LazyImage
+                            src={`https://image.tmdb.org/t/p/w200${posterPath}`}
+                            alt={mediaTitle}
+                            className='h-full w-full object-cover'
+                          />
+                        </div>
+                        <div className='flex-1'>
+                          <Link
+                            to={generateMediaLink(mediaType, mediaId, mediaTitle)}
+                            className='hover:text-Secondary-500 truncate text-sm font-semibold text-white transition-colors'
+                            title={mediaTitle}
+                          >
+                            {mediaTitle}
+                          </Link>
+
+                          <div className='mt-1.5 flex items-center gap-2'>
+                            {/* Rated Action */}
+                            {action === 'rated' && (
+                              <div className='text-Warning-400 flex items-center gap-1.5 text-xs'>
+                                <Star className='size-3.5' />
+                                <span className='font-semibold'>{rating} / 10</span>
+                              </div>
+                            )}
+
+                            {/* Completed Action */}
+                            {action === 'completed' && (
+                              <span className='text-Success-400 text-xs font-semibold'>Completed</span>
+                            )}
+
+                            {/* Added Action */}
+                            {action === 'added' && (
+                              <span className='text-Secondary-400 text-xs font-semibold'>Added to library</span>
+                            )}
+                          </div>
+
+                          <p className='text-Grey-500 mt-1.5 text-xs'>{formatTimeAgo(timestamp)}</p>
+                        </div>
                       </div>
-                    </>
-                  )}
-                  <span className='text-Grey-600'>•</span>
-                  <span>{formatTimeAgo(activity.date)}</span>
-                </div>
-              </div>
-
-              <div className='mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/5 transition-colors group-hover:bg-white/10'>
-                {getActionIcon(activity.action)}
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                    </div>
+                  </div>
+                </motion.li>
+              );
+            })}
+          </AnimatePresence>
+        </ul>
       </div>
     </motion.div>
   );

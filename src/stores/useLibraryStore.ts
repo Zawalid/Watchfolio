@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { GENRES } from '@/utils/constants/TMDB';
 import { getRating } from '@/utils/media';
-import { mergeLibraryItems, generateMediaKey, getLibraryCount } from '@/utils/library';
+import { mergeLibraryItems, generateMediaKey, getLibraryCount, logLibraryActivity } from '@/utils/library';
 import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { persistAndSync } from '@/utils/persistAndSync';
+import { useAuthStore } from './useAuthStore';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -34,8 +35,7 @@ interface LibraryState {
 // Helper function to check if item should be removed
 const shouldRemoveItem = (item: LibraryMedia): boolean => {
   return (
-    !item.isFavorite && (item.status === 'none' || !item.status)
-    // && !item.userRating &&
+    !item.isFavorite && (item.status === 'none' || !item.status) && !item.userRating
     // !item.notes &&
     // (!item.watchDates || item.watchDates.length === 0) &&
     // !item.lastWatchedEpisode
@@ -93,6 +93,9 @@ export const useLibraryStore = create<LibraryState>()(
           ...media,
           lastUpdatedAt: now,
         };
+
+        const profileId = useAuthStore.getState().user?.profile?.$id;
+        if (profileId) logLibraryActivity(newItemData, existingItem, profileId);
 
         // Only set addedToLibraryAt for truly new meaningful additions
         if (!existingItem && (newItemData.isFavorite || newItemData.userRating || newItemData.status !== 'none')) {

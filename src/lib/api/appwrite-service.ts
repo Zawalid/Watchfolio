@@ -131,12 +131,27 @@ export class ProfileAPI extends BaseAPI {
       movies: getLibraryCount({ items, filter: 'all', mediaType: 'movie' }) as number,
       tvShows: getLibraryCount({ items, filter: 'all', mediaType: 'tv' }) as number,
       totalHoursWatched: Math.round(totalMinutesRuntime / 60),
-      recentActivity: [],
       averageRating,
       topGenres,
     };
 
-    return { profile: { ...profile, library }, stats };
+    return {
+      profile: { ...profile, library, recentActivity: profile.recentActivity.map((e) => JSON.parse(String(e))) },
+      stats,
+    };
+  }
+
+  async logActivity(profileId: string, newActivity: Omit<Activity, 'timestamp'>) {
+    const profile = await this.get(profileId);
+    if (!profile) return;
+
+    const existingActivities: Activity[] = (profile.recentActivity || []).map((entry) => JSON.parse(String(entry)));
+
+    const entryToLog: Activity = { ...newActivity, timestamp: new Date().toISOString() };
+
+    const recentActivity = [entryToLog, ...existingActivities].slice(0, 5).map((entry) => JSON.stringify(entry));
+
+    await this.update(profileId, { recentActivity });
   }
 }
 

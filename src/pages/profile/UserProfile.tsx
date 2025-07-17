@@ -64,9 +64,22 @@ export default function ProfilePage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-8'>
-      <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} totalItems={data.stats.all} watchTime={2023} />
+      <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} stats={data.stats} />
 
       <Tabs classNames={TABS_CLASSNAMES}>
+        <Tab
+          key='stats'
+          title={
+            <div className='flex items-center gap-2'>
+              <ChartBarStacked className='size-4' />
+              <span>Stats & Insights</span>
+            </div>
+          }
+        >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <StatsInsights stats={data.stats} recentActivity={profile.recentActivity} isOwnProfile={isOwnProfile} />
+          </motion.div>
+        </Tab>
         <Tab
           key='taste'
           title={
@@ -78,19 +91,6 @@ export default function ProfilePage() {
         >
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <ViewingTaste profile={profile} isOwnProfile={isOwnProfile} />
-          </motion.div>
-        </Tab>
-        <Tab
-          key='stats'
-          title={
-            <div className='flex items-center gap-2'>
-              <ChartBarStacked className='size-4' />
-              <span>Stats & Insights</span>
-            </div>
-          }
-        >
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <StatsInsights stats={data.stats} isOwnProfile={isOwnProfile} />
           </motion.div>
         </Tab>
         <Tab
