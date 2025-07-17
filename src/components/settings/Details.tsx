@@ -1,7 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { Button } from '@heroui/button';
 import { addToast } from '@heroui/toast';
 import { Input } from '@/components/ui/Input';
@@ -9,11 +8,11 @@ import { Textarea } from '@/components/ui/Textarea';
 import { useAuthStore } from '@/stores/useAuthStore';
 import ChangeEmail from './ChangeEmail';
 import AvatarManager from './AvatarManager';
-import { profileSchema } from '@/lib/validation/auth';
+import { profileInfoSchema } from '@/lib/validation/auth';
 import { getAvatarWithFallback } from '@/utils/avatar';
 import { useState } from 'react';
 
-type FormData = z.infer<typeof profileSchema>;
+type FormData = z.infer<typeof profileInfoSchema>;
 
 export default function Details() {
   const { user, updateUserProfile, sendEmailVerification, isLoading } = useAuthStore();
@@ -26,16 +25,14 @@ export default function Details() {
     setValue,
     formState: { errors, isValid, isDirty, isSubmitting, dirtyFields },
   } = useForm<FormData>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(profileInfoSchema),
     mode: 'onChange',
     defaultValues: {
       name: user?.profile?.name || '',
-      preference: user?.profile?.favoriteContentType || 'both',
       bio: user?.profile?.bio || '',
       avatarUrl: user?.profile?.avatarUrl || '',
     },
   });
-  const [parent] = useAutoAnimate();
   const values = watch();
 
   const handleSendVerification = async () => {
@@ -135,10 +132,6 @@ export default function Details() {
           error={errors.name?.message}
         />
 
-        <Preference
-          value={values.preference}
-          setValue={(value: 'movies' | 'series' | 'both') => setValue('preference', value, { shouldDirty: true })}
-        />
         <Textarea
           {...register('bio')}
           label='Bio'
@@ -146,7 +139,7 @@ export default function Details() {
           defaultValue={user.profile.bio}
           error={errors.bio?.message}
         />
-        <div className='flex items-center justify-end gap-4' ref={parent}>
+        <div className='flex items-center justify-end gap-4'>
           {isDirty && isValid && (
             <>
               <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={() => reset()}>
@@ -159,26 +152,6 @@ export default function Details() {
           )}
         </div>
       </form>
-    </div>
-  );
-}
-
-function Preference({ value, setValue }: { value: string; setValue: (value: 'movies' | 'series' | 'both') => void }) {
-  return (
-    <div className='flex flex-col gap-2'>
-      <label className='text-Grey-400 text-sm'>What are you into</label>
-      <div className='grid grid-cols-3 gap-5'>
-        {['movies', 'series', 'both'].map((p) => (
-          <Button
-            key={p}
-            className='selectable-button!'
-            data-is-selected={value === p}
-            onPress={() => setValue(p as 'movies' | 'series' | 'both')}
-          >
-            {p}
-          </Button>
-        ))}
-      </div>
     </div>
   );
 }

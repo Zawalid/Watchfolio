@@ -980,7 +980,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/wwemzKWzjKYJFfCeiB57q3r4Bcm.png',
     id: 213,
     invertOnHover: false,
-    provider_id: 8
+    provider_id: 8,
   },
   {
     name: 'HBO',
@@ -988,7 +988,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/tuomPhY2UtuPTqqFnKMVHvSb724.png',
     id: 49,
     invertOnHover: true,
-    provider_id: 3
+    provider_id: 3,
   },
   {
     name: 'Disney+',
@@ -996,7 +996,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/1edZOYAfoyZyZ3rklNSiUpXX30Q.png',
     id: 2739,
     invertOnHover: false,
-    provider_id: 337
+    provider_id: 337,
   },
   {
     name: 'Prime Video',
@@ -1004,7 +1004,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/ifhbNuuVnlwYy5oXA5VIb2YR8AZ.png',
     id: 1024,
     invertOnHover: false,
-    provider_id: 9
+    provider_id: 9,
   },
   {
     name: 'Apple TV+',
@@ -1012,7 +1012,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/4KAy34EHvRM25Ih8wb82AuGU7zJ.png',
     id: 2552,
     invertOnHover: true,
-    provider_id: 350
+    provider_id: 350,
   },
   {
     name: 'Hulu',
@@ -1020,7 +1020,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/pqUTCleNUiTLAVlelGxUgWn1ELh.png',
     id: 453,
     invertOnHover: false,
-    provider_id: 15
+    provider_id: 15,
   },
   {
     name: 'Max',
@@ -1028,7 +1028,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/rAb4M1LjGpWASxpk6Va791A7Nkw.png',
     id: 6783,
     invertOnHover: false,
-    provider_id: 1899
+    provider_id: 1899,
   },
   {
     name: 'HBO Max',
@@ -1036,7 +1036,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/nmU0UMDJB3dRRQSTUqawzF2Od1a.png',
     id: 3186,
     invertOnHover: true,
-    provider_id: 384
+    provider_id: 384,
   },
   {
     name: 'Paramount+',
@@ -1044,7 +1044,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/fi83B1oztoS47xxcemFdPMhIzK.png',
     id: 4330,
     invertOnHover: false,
-    provider_id: 531
+    provider_id: 531,
   },
   {
     name: 'Peacock',
@@ -1052,14 +1052,14 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/gIAcGTjKKr0KOHL5s4O36roJ8p7.png',
     id: 3353,
     invertOnHover: true,
-    provider_id: 386
+    provider_id: 386,
   },
   {
     name: 'CBS',
     slug: 'cbs',
     logo: 'https://image.tmdb.org/t/p/w500/wWA5mILSAyahtdNQh1WiADi6PRI.png',
     id: 16,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'NBC',
@@ -1067,7 +1067,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/cm111bsDVlYaC1foL0itvEI4yLG.png',
     id: 6,
     invertOnHover: true,
-    provider_id: 79
+    provider_id: 79,
   },
   {
     name: 'FOX',
@@ -1075,7 +1075,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/1DSpHrWyOORkL9N2QHX7Adt31mQ.png',
     id: 19,
     invertOnHover: true,
-    provider_id: 328
+    provider_id: 328,
   },
   {
     name: 'ABC',
@@ -1083,7 +1083,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/2uy2ZWcplrSObIyt4x0Y9rkG6qO.png',
     id: 2,
     invertOnHover: false,
-    provider_id: 148
+    provider_id: 148,
   },
   {
     name: 'The CW',
@@ -1091,14 +1091,14 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/hEpcdJ4O6eitG9ADSnDXNUrlovS.png',
     id: 71,
     invertOnHover: false,
-    provider_id: 83
+    provider_id: 83,
   },
   {
     name: 'Showtime',
     slug: 'showtime',
     logo: 'https://image.tmdb.org/t/p/w500/Allse9kbjiP6ExaQrnSpIhkurEi.png',
     id: 67,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'Starz',
@@ -1106,7 +1106,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/GMDGZk9iDG4WDijY3VgUgJeyus.png',
     id: 318,
     invertOnHover: true,
-    provider_id: 43
+    provider_id: 43,
   },
   {
     name: 'AMC',
@@ -1114,7 +1114,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/alqLicR1ZMHMaZGP3xRQxn9sq7p.png',
     id: 174,
     invertOnHover: true,
-    provider_id: 80
+    provider_id: 80,
   },
   {
     name: 'FX',
@@ -1122,7 +1122,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/aexGjtcs42DgRtZh7zOxayiry4J.png',
     id: 88,
     invertOnHover: true,
-    provider_id: 123
+    provider_id: 123,
   },
   {
     name: 'TNT',
@@ -1130,7 +1130,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/6ISsKwa2XUhSC6oBtHZjYf6xFqv.png',
     id: 41,
     invertOnHover: true,
-    provider_id: 363
+    provider_id: 363,
   },
   {
     name: 'Cartoon Network',
@@ -1138,49 +1138,49 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/c5OC6oVCg6QP4eqzW6XIq17CQjI.png',
     id: 56,
     invertOnHover: true,
-    provider_id: 2328
+    provider_id: 2328,
   },
   {
     name: 'Disney Channel',
     slug: 'disney-channel',
     logo: 'https://image.tmdb.org/t/p/w500/yeO3eLAa5peDwO4VQWRX7KqfVZ9.png',
     id: 54,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'Disney XD',
     slug: 'disney-xd',
     logo: 'https://image.tmdb.org/t/p/w500/nKM9EnV7jTpt3MKRbhBusJ03lAY.png',
     id: 44,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'BBC One',
     slug: 'bbc-one',
     logo: 'https://image.tmdb.org/t/p/w500/uJjcCg3O4DMEjM0xtno9OWFciRP.png',
     id: 4,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'BBC Two',
     slug: 'bbc-two',
     logo: 'https://image.tmdb.org/t/p/w500/7HVPn1p2w1nC5oRKBehXVHpss7e.png',
     id: 332,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'BBC Three',
     slug: 'bbc-three',
     logo: 'https://image.tmdb.org/t/p/w500/s22fRhj8xFPbiexrJwiAOcDEIrS.png',
     id: 3,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'ITV1',
     slug: 'itv1',
     logo: 'https://image.tmdb.org/t/p/w500/oz9pjTHnBUmlju8OkaTymhKbh6C.png',
     id: 9,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'Channel 4',
@@ -1188,7 +1188,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/hbifXPpM55B1fL5wPo7t72vzN78.png',
     id: 26,
     invertOnHover: true,
-    provider_id: 103
+    provider_id: 103,
   },
   {
     name: 'Channel 5',
@@ -1196,7 +1196,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/bMuKs6xuhI0GHSsq4WWd9FsntUN.png',
     id: 99,
     invertOnHover: false,
-    provider_id: 333
+    provider_id: 333,
   },
   {
     name: 'Crunchyroll',
@@ -1204,7 +1204,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/81QfupgVijSH5v1H3VUbdlPm2r8.png',
     id: 1112,
     invertOnHover: false,
-    provider_id: 283
+    provider_id: 283,
   },
   {
     name: 'Freeform',
@@ -1212,14 +1212,14 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/jk2Z7WH6JnHSZrxouYh4sireM3a.png',
     id: 1267,
     invertOnHover: false,
-    provider_id: 211
+    provider_id: 211,
   },
   {
     name: 'Syfy',
     slug: 'syfy',
     logo: 'https://image.tmdb.org/t/p/w500/iYfrkobwDhTOFJ4AXYPSLIEeaAT.png',
     id: 77,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'Adult Swim',
@@ -1227,7 +1227,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/tHZPHOLc6iF27G34cAZGPsMtMSy.png',
     id: 80,
     invertOnHover: true,
-    provider_id: 318
+    provider_id: 318,
   },
   {
     name: 'TBS',
@@ -1235,7 +1235,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/65r0kR6MfOBYF0gEQsJGM6v5fEG.png',
     id: 68,
     invertOnHover: true,
-    provider_id: 506
+    provider_id: 506,
   },
   {
     name: 'Paramount+ with Showtime',
@@ -1243,7 +1243,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/zFEsDBjBEj5OiM0FDRYY1NnG7a9.png',
     id: 6631,
     invertOnHover: false,
-    provider_id: 1770
+    provider_id: 1770,
   },
   {
     name: 'discovery+',
@@ -1251,7 +1251,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/1D1bS3Dyw4ScYnFWTlBOvJXC3nb.png',
     id: 4353,
     invertOnHover: false,
-    provider_id: 524
+    provider_id: 524,
   },
   {
     name: 'Stan',
@@ -1259,7 +1259,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/1akCJMjyZsiS4v3NTJD5Y0LFZ4R.png',
     id: 1255,
     invertOnHover: false,
-    provider_id: 21
+    provider_id: 21,
   },
   {
     name: 'Sky One',
@@ -1267,28 +1267,28 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/dVBHOr0nYCx9GSNesTVb1TT52Xj.png',
     id: 214,
     invertOnHover: false,
-    provider_id: 210
+    provider_id: 210,
   },
   {
     name: 'Sky Atlantic',
     slug: 'sky-atlantic',
     logo: 'https://image.tmdb.org/t/p/w500/6es7UmBjk2HTSZKq3NbtAxYEGCx.png',
     id: 1063,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'Sky Max',
     slug: 'sky-max',
     logo: 'https://image.tmdb.org/t/p/w500/g2IOt9G84UAjsDPMXQiqgr77AMV.png',
     id: 5237,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'Sky Comedy',
     slug: 'sky-comedy',
     logo: 'https://image.tmdb.org/t/p/w500/lpg9xIy2JPy046ebRBI8GL8IebE.png',
     id: 5213,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'Sky History',
@@ -1296,14 +1296,14 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/mzLlbqnnLiDIzriohlvfSbWlEfR.png',
     id: 1755,
     invertOnHover: false,
-    provider_id: 155
+    provider_id: 155,
   },
   {
     name: 'USA Network',
     slug: 'usa-network',
     logo: 'https://image.tmdb.org/t/p/w500/g1e0H0Ka97IG5SyInMXdJkHGKiH.png',
     id: 30,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'Epix',
@@ -1311,7 +1311,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/9aH86hGHVQfvhAqrDRv1EINoxua.png',
     id: 922,
     invertOnHover: false,
-    provider_id: 34
+    provider_id: 34,
   },
   {
     name: 'WWE Network',
@@ -1319,14 +1319,14 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/fNkVI38NJKpnWKMmEkSxxinuyAe.png',
     id: 1025,
     invertOnHover: true,
-    provider_id: 260
+    provider_id: 260,
   },
   {
     name: 'La Une',
     slug: 'la-une',
     logo: 'https://image.tmdb.org/t/p/w500/kR47hzfGe3zFsFipHTuC123qyCe.png',
     id: 1386,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'MGM+',
@@ -1334,35 +1334,35 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/89TXvQzvoKvyqD9EEogohzMJ8D6.png',
     id: 6219,
     invertOnHover: false,
-    provider_id: 34
+    provider_id: 34,
   },
   {
     name: 'Amazon Freevee',
     slug: 'amazon-freevee',
     logo: 'https://image.tmdb.org/t/p/w500/cCqeRYB0u4RfHbsFJo6uzCxQ9iI.png',
     id: 7385,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'IMDb TV',
     slug: 'imdb-tv',
     logo: 'https://image.tmdb.org/t/p/w500/to21uGi3vA3ACigdA7lKj3EsREk.png',
     id: 5495,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'CBS All Access',
     slug: 'cbs-all-access',
     logo: 'https://image.tmdb.org/t/p/w500/rSWD2WoY26KJmOw7QHvZjC5OEWG.png',
     id: 1709,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'HBO Asia',
     slug: 'hbo-asia',
     logo: 'https://image.tmdb.org/t/p/w500/e0TPhobVyxQ09bu9r5qj3rQLxkj.png',
     id: 1303,
-    invertOnHover: true
+    invertOnHover: true,
   },
   {
     name: 'Disney Junior',
@@ -1370,14 +1370,14 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/wlkOIl5YUluIn1VjUF829jau4y4.png',
     id: 281,
     invertOnHover: false,
-    provider_id: 508
+    provider_id: 508,
   },
   {
     name: 'DC Universe',
     slug: 'dc-universe',
     logo: 'https://image.tmdb.org/t/p/w500/eOL4PkiC0zkDpxKFQhBnmCtwx5p.png',
     id: 2243,
-    invertOnHover: false
+    invertOnHover: false,
   },
   {
     name: 'Investigation Discovery',
@@ -1385,7 +1385,7 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/3s6YJSYXW9mtJwoszTVI1BHDNc6.png',
     id: 244,
     invertOnHover: false,
-    provider_id: 408
+    provider_id: 408,
   },
   {
     name: 'AMC+',
@@ -1393,8 +1393,8 @@ export const NETWORKS: Network[] = [
     logo: 'https://image.tmdb.org/t/p/w500/hECpNxPnJowi91GQ1uAXevmk2g1.png',
     id: 4661,
     invertOnHover: true,
-    provider_id: 526
-  }
+    provider_id: 526,
+  },
 ];
 
 export const MOVIE_COLLECTIONS = {
@@ -1522,3 +1522,61 @@ export const MOVIE_COLLECTIONS = {
     { id: 86058, name: 'Dirty Dancing Collection' },
   ],
 } as const;
+
+export const CONTENT_PREFERENCES = [
+  {
+    code: 'hollywood',
+    name: 'Hollywood & English',
+    description: 'US/UK movies and shows',
+    tmdb: {
+      region: 'US',
+      languages: ['en'],
+    },
+  },
+  {
+    code: 'anime',
+    name: 'Anime & Japanese',
+    description: 'Anime, J-dramas, Japanese content',
+    tmdb: {
+      region: 'JP',
+      languages: ['ja'],
+      genres: [16], // Animation
+    },
+  },
+  {
+    code: 'kdrama',
+    name: 'K-Content',
+    description: 'K-dramas, K-movies, Korean content',
+    tmdb: {
+      region: 'KR',
+      languages: ['ko'],
+    },
+  },
+  {
+    code: 'bollywood',
+    name: 'Bollywood & Indian',
+    description: 'Hindi movies, Indian TV shows',
+    tmdb: {
+      region: 'IN',
+      languages: ['hi', 'te', 'ta', 'ml'],
+    },
+  },
+  {
+    code: 'european',
+    name: 'European Cinema',
+    description: 'French, German, Italian films',
+    tmdb: {
+      region: 'FR',
+      languages: ['fr', 'de', 'it', 'es'],
+    },
+  },
+  {
+    code: 'latin',
+    name: 'Latin American',
+    description: 'Spanish & Portuguese content',
+    tmdb: {
+      region: 'MX',
+      languages: ['es', 'pt'],
+    },
+  },
+];

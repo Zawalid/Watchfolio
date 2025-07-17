@@ -11,6 +11,7 @@ import ImportExportModal from '@/components/library/ImportExportModal';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { SettingSection } from '@/components/settings/SettingSection';
 
 export default function Library() {
   const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(
@@ -63,15 +64,7 @@ export default function Library() {
 
   return (
     <div className='flex flex-col gap-8'>
-      {/* Sync Settings */}
-      <section className='space-y-4'>
-        <div className='flex items-center gap-3'>
-          <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-2'>
-            <Cloud className='text-Primary-400 size-4' />
-          </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>Cloud Sync</h3>
-        </div>
-
+      <SettingSection Icon={Cloud} title='Cloud Sync'>
         <div className='relative'>
           {!isAuthenticated && (
             <div className='absolute inset-0 z-10 flex items-center justify-center rounded-xl'>
@@ -82,11 +75,7 @@ export default function Library() {
               </p>
             </div>
           )}
-          <div
-            className={`space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm transition-all duration-300 ${
-              !isAuthenticated ? 'pointer-events-none opacity-40 blur-[1px]' : ''
-            }`}
-          >
+          <div className={!isAuthenticated ? 'pointer-events-none opacity-40 blur-[1px]' : ''}>
             <div className='grid grid-cols-[1fr_auto] items-center gap-6'>
               <div>
                 <h4 className='text-Grey-200 font-semibold'>Auto-sync</h4>
@@ -123,68 +112,57 @@ export default function Library() {
             </div>
           </div>
         </div>
-      </section>
+      </SettingSection>
 
       {/* Library Management */}
-      <section className='space-y-4'>
-        <div className='flex items-center gap-3'>
-          <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-2'>
-            <Database className='text-Primary-400 size-4' />
-          </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>Library Management</h3>
-        </div>
-        <div className='space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
-          <div className='flex flex-col gap-4'>
-            <div className='flex items-center justify-between'>
-              <div>
-                <h4 className='text-Grey-200 font-semibold'>Import & Export</h4>
-                <p className='text-Grey-400 mt-1 text-sm'>Backup your library or import data from other sources</p>
-              </div>
-              <Button
-                startContent={<Database className='size-4' />}
-                className='button-secondary!'
-                onPress={importExportDisclosure.onOpen}
-              >
-                Import / Export
-              </Button>
-            </div>
-
-            <div className='text-Grey-400 flex items-center gap-4 text-xs'>
-              <div className='flex items-center gap-1'>
-                <Download className='size-3' />
-                <span>Export to JSON/CSV</span>
-              </div>
-              <div className='flex items-center gap-1'>
-                <Upload className='size-3' />
-                <span>Import from backup</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Danger Zone */}
-      <section className='space-y-4'>
-        <div className='flex items-center gap-3'>
-          <div className='rounded-lg border border-red-500/20 bg-red-500/10 p-2'>
-            <Trash2 className='size-4 text-red-400' />
-          </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>Danger Zone</h3>
-        </div>
-        <div className='space-y-6 rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
+      <SettingSection Icon={Database} title='Library Management'>
+        <div className='flex flex-col gap-4'>
           <div className='flex items-center justify-between'>
             <div>
-              <h4 className='font-semibold text-red-200'>Clear Library</h4>
-              <p className='text-Grey-400 mt-1 text-sm'>
-                Permanently delete all items from your library. This action cannot be undone.
-              </p>
+              <h4 className='text-Grey-200 font-semibold'>Import & Export</h4>
+              <p className='text-Grey-400 mt-1 text-sm'>Backup your library or import data from other sources</p>
             </div>
-            <Button color='danger' size='sm' onPress={handleClearLibrary} startContent={<Trash2 className='size-4' />}>
-              Clear Library
+            <Button
+              startContent={<Database className='size-4' />}
+              className='button-secondary!'
+              onPress={importExportDisclosure.onOpen}
+            >
+              Import / Export
             </Button>
           </div>
+
+          <div className='text-Grey-400 flex items-center gap-4 text-xs'>
+            <div className='flex items-center gap-1'>
+              <Download className='size-3' />
+              <span>Export to JSON/CSV</span>
+            </div>
+            <div className='flex items-center gap-1'>
+              <Upload className='size-3' />
+              <span>Import from backup</span>
+            </div>
+          </div>
         </div>
-      </section>
+      </SettingSection>
+
+      {/* Danger Zone */}
+      <SettingSection
+        Icon={Trash2}
+        title='Danger Zone'
+        iconClassName='text-red-400'
+        iconContainerClassName='border-red-500/20 bg-red-500/10'
+      >
+        <div className='flex items-center justify-between'>
+          <div>
+            <h4 className='font-semibold text-red-200'>Clear Library</h4>
+            <p className='text-Grey-400 mt-1 text-sm'>
+              Permanently delete all items from your library. This action cannot be undone.
+            </p>
+          </div>
+          <Button color='danger' size='sm' onPress={handleClearLibrary} startContent={<Trash2 className='size-4' />}>
+            Clear Library
+          </Button>
+        </div>
+      </SettingSection>
 
       <ImportExportModal disclosure={importExportDisclosure} />
     </div>

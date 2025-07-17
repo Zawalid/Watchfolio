@@ -90,60 +90,6 @@ export const LOCAL_STORAGE_PREFIX = 'watchfolio-';
 export const TMDB_MOVIE_CATEGORIES: Categories[] = ['popular', 'top-rated', 'now-playing', 'upcoming'];
 export const TMDB_TV_CATEGORIES: Categories[] = ['popular', 'top-rated', 'airing-today', 'on-tv'];
 
-export const CONTENT_PREFERENCES = [
-  {
-    code: 'hollywood',
-    name: 'Hollywood & English',
-    description: 'US/UK movies and shows',
-    tmdb: {
-      region: 'US',
-      languages: ['en'],
-    },
-  },
-  {
-    code: 'anime',
-    name: 'Anime & Japanese',
-    description: 'Anime, J-dramas, Japanese content',
-    tmdb: {
-      region: 'JP',
-      languages: ['ja'],
-      genres: [16], // Animation
-    },
-  },
-  {
-    code: 'kdrama',
-    name: 'K-Content',
-    description: 'K-dramas, K-movies, Korean content',
-    tmdb: {
-      region: 'KR',
-      languages: ['ko'],
-    },
-  },
-  {
-    code: 'bollywood',
-    name: 'Bollywood & Indian',
-    description: 'Hindi movies, Indian TV shows',
-    tmdb: {
-      region: 'IN',
-      languages: ['hi', 'te', 'ta', 'ml'],
-    },
-  },
-  {
-    code: 'european',
-    name: 'European Cinema',
-    description: 'French, German, Italian films',
-    tmdb: {
-      region: 'FR',
-      languages: ['fr', 'de', 'it', 'es'],
-    },
-  },
-  {
-    code: 'latin',
-    name: 'Latin American',
-    description: 'Spanish & Portuguese content',
-    tmdb: {
-      region: 'MX',
-      languages: ['es', 'pt'],
-    },
-  },
-];
+export const FAVORITE_GENRES_LIMIT = 5;
+export const FAVORITE_NETWORKS_LIMIT = 5;
+

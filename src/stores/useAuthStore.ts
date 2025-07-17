@@ -109,7 +109,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const user = await authService.getCurrentUser();
-
+          console.log(user);
           set({
             user,
             isAuthenticated: !!user,
@@ -247,8 +247,49 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: `${LOCAL_STORAGE_PREFIX}auth`,
-      include: ['user', 'isAuthenticated'],
       storage: 'cookie',
+      partialize: (state) => {
+        if (!state.user) return { isAuthenticated: state.isAuthenticated };
+
+        const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification'];
+        const profileKeysToKeep: (keyof Profile)[] = [
+          'username',
+          'avatarUrl',
+          'bio',
+          'visibility',
+          'contentPreferences',
+          'favoriteContentType',
+          'favoriteGenres',
+          'favoriteNetworks',
+          'preferences',
+        ];
+        const preferencesKeysToKeep: (keyof UserPreferences)[] = [
+          'removeFromLibraryConfirmation',
+          'signOutConfirmation',
+          'clearLibraryConfirmation',
+          'language',
+          'theme',
+        ];
+
+        const partialUser = pick(state.user, userKeysToKeep);
+        const partialProfile = pick(state.user.profile, profileKeysToKeep);
+        const partialPreferences = pick(state.user.profile.preferences, preferencesKeysToKeep);
+
+        return {
+          isAuthenticated: state.isAuthenticated,
+          user: { ...partialUser, profile: { ...partialProfile, preferences: partialPreferences } },
+        };
+      },
     }
   )
 );
+
+function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  const result = {} as Pick<T, K>;
+  keys.forEach((key) => {
+    if (key in obj) {
+      result[key] = obj[key];
+    }
+  });
+  return result;
+}

@@ -195,7 +195,6 @@ class AuthService {
       if (profileData.name) await this.updateUserName(profileData.name);
 
       const profile = await appwriteService.profiles.getByUserId(userId);
-      console.log('USERID IDDDDD ' + userId, 'PROFILEEE ' + profile);
       if (profile) {
         await appwriteService.profiles.update(profile.$id, profileData);
       }

@@ -10,14 +10,14 @@ import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 interface ProfileHeaderProps {
   profile: Profile;
   isOwnProfile?: boolean;
-  stats : LibraryStats
+  stats: LibraryStats;
 }
 
 const getContentType = (type: string) => {
   switch (type) {
     case 'movies':
       return { display: 'Movie Enthusiast', icon: <Film className='size-4' /> };
-    case 'series':
+    case 'tv':
       return { display: 'Series Binge-Watcher', icon: <Tv className='size-4' /> };
     default:
       return { display: 'Film & TV Aficionado', icon: <Clapperboard className='size-4' /> };

@@ -63,7 +63,7 @@ export default function ChangePassword() {
     );
   }
   return (
-    <div className='space-y-4 rounded-xl border border-white/5 bg-white/[0.015] p-6'>
+    <div className='space-y-4'>
       <div className='flex items-start justify-between'>
         <div className='flex gap-4'>
           <div className='space-y-2'>

@@ -96,7 +96,7 @@ export default function LibraryLayout() {
             </Tooltip>
           </div>
           <Tabs
-            className='flex-col bg-transparent'
+            className=' bg-transparent'
             tabClassName='px-3 lg:px-4 text-sm lg:text-base'
             tabs={[
               {

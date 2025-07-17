@@ -36,13 +36,14 @@ const stepVariants = {
 };
 
 export default function OnboardingModal() {
-  const { showModal, currentStep, totalSteps, closeModal, nextStep, prevStep, completeOnboarding } =
+  const { showModal, currentStep, totalSteps, closeModal, nextStep, prevStep, completeOnboarding,clearPreferences } =
     useOnboardingStore();
   const disclosure = useDisclosure({
-    isOpen: showModal,
+    isOpen: false, // TODO : update
     onClose: () => {
       closeModal();
       completeOnboarding();
+      clearPreferences()
     },
   });
 

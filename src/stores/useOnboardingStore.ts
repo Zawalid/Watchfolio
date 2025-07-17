@@ -3,10 +3,10 @@ import { persistAndSync } from '@/utils/persistAndSync';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 
 interface OnboardingPreferences {
-  selectedGenres: string[];
+  favoriteContentType: FavoriteContentType;
+  selectedGenres: number[];
   selectedContentPreferences: string[];
   selectedNetworks: number[];
-  favoriteContentType: 'movies' | 'tv' | 'both';
 }
 
 interface OnboardingStore {

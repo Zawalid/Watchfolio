@@ -1,5 +1,7 @@
-import { Cloud, User } from 'lucide-react';
+import { Cloud, Heart, User } from 'lucide-react';
 import Details from '@/components/settings/Details';
+import ViewingTaste from '@/components/settings/ViewingTaste';
+import { SettingSection } from '@/components/settings/SettingSection';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
@@ -49,18 +51,14 @@ export default function Profile() {
     );
   }
   return (
-    <div className='flex flex-col gap-8'>
-      <section className='space-y-4'>
-        <div className='flex items-center gap-3'>
-          <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-2'>
-            <User className='text-Primary-400 size-5' />
-          </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>Profile Information</h3>
-        </div>
-        <div className='rounded-xl border border-white/5 bg-white/[0.015] p-6 backdrop-blur-sm'>
-          <Details />
-        </div>
-      </section>
+    <div className='flex min-w-0 flex-col gap-8'>
+      <SettingSection Icon={User} title='Profile Information'>
+        <Details />
+      </SettingSection>
+      <SettingSection Icon={Heart} title='Viewing Taste'>
+        <ViewingTaste />
+      </SettingSection>
+    
     </div>
   );
 }

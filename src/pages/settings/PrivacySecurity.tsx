@@ -1,5 +1,6 @@
 import ChangePassword from '@/components/settings/ChangePassword';
 import DeleteAccount from '@/components/settings/DeleteAccount';
+import { SettingSection } from '@/components/settings/SettingSection';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { AlertTriangle, ShieldCheck, Lock } from 'lucide-react';
@@ -52,29 +53,18 @@ export default function PrivacySecurity() {
 
   return (
     <div className='flex flex-col gap-8'>
-      {/* Security Section */}
-      <section className='space-y-4'>
-        <div className='flex items-center gap-3'>
-          <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-2'>
-            <ShieldCheck className='text-Primary-400 size-4' />
-          </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>Security</h3>
-        </div>
-
+      <SettingSection Icon={ShieldCheck} title='Security'>
         <ChangePassword />
-      </section>
+      </SettingSection>
 
-      {/* Danger Zone Section */}
-      <section className='space-y-4'>
-        <div className='flex items-center gap-3'>
-          <div className='rounded-lg border border-red-500/20 bg-red-500/10 p-2'>
-            <AlertTriangle className='size-4 text-red-400' />
-          </div>
-          <h3 className='text-Primary-100 text-xl font-semibold'>Danger Zone</h3>
-        </div>
-
+      <SettingSection
+        Icon={AlertTriangle}
+        title='Danger Zone'
+        iconClassName='text-red-400'
+        iconContainerClassName='border-red-500/20 bg-red-500/10'
+      >
         <DeleteAccount />
-      </section>
+      </SettingSection>
     </div>
   );
 }

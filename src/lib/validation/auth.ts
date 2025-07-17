@@ -27,12 +27,8 @@ export const resetPasswordSchema = z
     path: ['confirm_password'],
   });
 
-export const profileSchema = z.object({
+export const profileInfoSchema = z.object({
   name: common.name,
-  preference: z.enum(['movies', 'series', 'both'], {
-    required_error: 'Please select a preference',
-    invalid_type_error: 'Please select a valid preference',
-  }),
   bio: z
     .string()
     .min(1, { message: 'Please enter your bio' })
@@ -41,6 +37,13 @@ export const profileSchema = z.object({
     .optional()
     .or(z.literal('')),
   avatarUrl: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
+});
+
+export const viewingTasteSchema = z.object({
+  favoriteContentType: z.enum(['movies', 'tv', 'both']),
+  favoriteGenres: z.array(z.number()).max(5, 'You can select up to 5 genres.'),
+  favoriteNetworks: z.array(z.number()).max(5, 'You can select up to 5 networks.'),
+  contentPreferences: z.array(z.string()),
 });
 
 export const changeEmailSchema = z

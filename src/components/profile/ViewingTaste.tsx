@@ -1,8 +1,7 @@
 import { motion } from 'framer-motion';
 import { Heart, Tv, Globe } from 'lucide-react';
 import { containerVariants, itemVariants } from '@/lib/animations';
-import { CONTENT_PREFERENCES } from '@/utils/constants';
-import { NETWORKS } from '@/utils/constants/TMDB';
+import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import NetworkCard from '@/pages/networks/NetworkCard';
 
 interface ViewingTasteProps {
@@ -33,9 +32,9 @@ export default function ViewingTaste({ profile, isOwnProfile }: ViewingTasteProp
 
           <div className='flex flex-wrap gap-2'>
             {profile.favoriteGenres.length > 0 ? (
-              profile.favoriteGenres.map((genre) => (
-                <span key={genre} className='pill-bg text-Grey-300 text-sm transition-colors hover:bg-white/10'>
-                  {genre}
+              profile.favoriteGenres.map((genreId) => (
+                <span key={genreId} className='pill-bg text-Grey-300 text-sm transition-colors hover:bg-white/10'>
+                  {GENRES.find((g) => g.id === genreId)?.label || ''}
                 </span>
               ))
             ) : (
@@ -103,8 +102,8 @@ export default function ViewingTaste({ profile, isOwnProfile }: ViewingTasteProp
 
           <div className='flex flex-wrap gap-2'>
             {profile.favoriteNetworks.length > 0 ? (
-              profile.favoriteNetworks.map((n) => {
-                const network = NETWORKS.find((net) => net.id === +n);
+              profile.favoriteNetworks.map((networkId) => {
+                const network = NETWORKS.find((net) => net.id === networkId);
                 if (!network) return null;
                 return <NetworkCard key={network.slug} network={network} className='h-22 w-32' />;
               })
