@@ -78,6 +78,18 @@
                     ],
                     "format": "enum",
                     "default": "enabled"
+                },
+                {
+                    "key": "enableAnimations",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "enabled",
+                        "disabled"
+                    ],
+                    "format": "enum",
+                    "default": "enabled"
                 }
             ],
             "indexes": []

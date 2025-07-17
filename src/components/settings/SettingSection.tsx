@@ -32,6 +32,7 @@ interface SettingItemProps {
   requiresAuth?: boolean;
   className?: string;
   comingSoon?: boolean;
+  tag?:string
 }
 
 export function SettingItem({
@@ -42,6 +43,7 @@ export function SettingItem({
   requiresAuth = false,
   className,
   comingSoon = false,
+  tag
 }: SettingItemProps) {
   return (
     <div className={cn('relative grid grid-cols-[1fr_auto] items-center gap-6', className)}>
@@ -50,6 +52,7 @@ export function SettingItem({
           <h4 className='text-Grey-200 font-semibold'>{title}</h4>
           {requiresAuth && isDisabled && <Lock className='text-Grey-500 size-3' />}
           {comingSoon && <span className='text-Grey-500 text-xs'>Coming Soon</span>}
+          {tag && <span className='text-Grey-500 text-xs'>{tag}</span>}
         </div>
         <p className='text-Grey-400 mt-1 text-sm'>{description}</p>
       </div>

@@ -92,6 +92,14 @@
   --breakpoint-mobile: 500px;
 }
 
+body[data-animations='false'] *,
+body[data-animations='false'] *::before,
+body[data-animations='false'] *::after {
+  transition-property: none !important;
+  animation: none !important;
+}
+
+
 @utility container {
   margin-inline: auto;
   padding-inline: 1rem;
@@ -279,27 +287,36 @@ body {
 
 .prose-custom {
   @apply text-Grey-300;
+
   h2 {
     @apply text-2xl font-bold text-white mt-12 mb-4 border-b border-white/10 pb-4;
   }
-  p, ul {
+
+  p,
+  ul {
     @apply text-base leading-relaxed mb-4;
   }
+
   ul {
     @apply list-disc pl-6 space-y-2;
   }
+
   a {
     @apply text-Primary-400 hover:text-Primary-300 transition-colors;
   }
+
   strong {
     @apply text-white;
   }
+
   .summary-box {
     @apply bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 my-6 flex items-start gap-3;
   }
+
   .summary-box p {
     @apply text-yellow-400/90 text-sm m-0;
   }
+
   .summary-box strong {
     @apply text-yellow-300;
   }

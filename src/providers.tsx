@@ -2,15 +2,19 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NuqsAdapter } from 'nuqs/adapters/react';
 import { ToastProvider } from '@heroui/toast';
-import { MediaStatusModalProvider, ConfirmationModalProvider, NavigationProvider } from '@/contexts/providers';
+import {
+  MediaStatusModalProvider,
+  ConfirmationModalProvider,
+  NavigationProvider,
+  AnimationProvider,
+} from '@/contexts/providers';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { MotionConfig } from 'framer-motion';
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <MotionConfig reducedMotion='always'>
+    <AnimationProvider>
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <NuqsAdapter>
@@ -28,6 +32,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           </NuqsAdapter>
         </QueryClientProvider>
       </ErrorBoundary>
-    </MotionConfig>
+    </AnimationProvider>
   );
 }

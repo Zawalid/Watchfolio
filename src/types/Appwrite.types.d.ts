@@ -49,6 +49,7 @@ declare global {
     clearLibraryConfirmation: ConfirmationSetting;
     theme: Theme;
     language: string;
+    enableAnimations : ConfirmationSetting
   }
   interface Library extends Document {
     averageRating?: number;
@@ -117,7 +118,6 @@ declare global {
   // Combined user type that merges auth, profile, preferences, and location
   interface UserWithProfile extends Models.User<Models.Preferences> {
     profile: Profile;
-    preferences: UserPreferences | null;
     location: UserLocation;
   }
 

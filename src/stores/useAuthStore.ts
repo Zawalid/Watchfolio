@@ -251,7 +251,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => {
         if (!state.user) return { isAuthenticated: state.isAuthenticated };
 
-        const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification'];
+        const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification','location'];
         const profileKeysToKeep: (keyof Profile)[] = [
           'username',
           'avatarUrl',

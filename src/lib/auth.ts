@@ -81,7 +81,6 @@ class AuthService {
         return {
           ...currentAccount,
           profile: userProfile,
-          preferences: userProfile.preferences || null,
           location: userLocation,
         };
       } catch {
@@ -127,12 +126,13 @@ class AuthService {
    * Create default user preferences
    */ private async createDefaultUserPreferences() {
     try {
-      const defaultPreferences = {
-        signOutConfirmation: 'enabled' as ConfirmationSetting,
-        removeFromLibraryConfirmation: 'enabled' as ConfirmationSetting,
-        clearLibraryConfirmation: 'enabled' as ConfirmationSetting,
+      const defaultPreferences: CreateUserPreferencesInput = {
+        signOutConfirmation: 'enabled',
+        removeFromLibraryConfirmation: 'enabled',
+        clearLibraryConfirmation: 'enabled',
         theme: 'system' as Theme,
         language: 'en',
+        enableAnimations: 'enabled',
       };
 
       // Let Appwrite generate the document ID automatically

@@ -10,8 +10,8 @@ export default function Preferences() {
 
   usePageTitle('Preferences - Settings');
 
-  const handleConfirmationToggle = async (setting: ConfirmationPreferences, enabled: boolean) => {
-    if (!user?.preferences) return;
+  const handleConfirmationToggle = async (setting: keyof UserPreferences, enabled: boolean) => {
+    if (!user?.profile?.preferences) return;
 
     try {
       await updateUserPreferences({ [setting]: enabled ? 'enabled' : 'disabled' });
@@ -39,7 +39,7 @@ export default function Preferences() {
           isDisabled={isLoading}
         >
           <Switch
-            checked={user?.preferences?.removeFromLibraryConfirmation === 'enabled'}
+            checked={user?.profile?.preferences?.removeFromLibraryConfirmation === 'enabled'}
             onChange={(e) => handleConfirmationToggle('removeFromLibraryConfirmation', e.target.checked)}
             disabled={isLoading}
           />
@@ -51,7 +51,7 @@ export default function Preferences() {
           isDisabled={isLoading}
         >
           <Switch
-            checked={user?.preferences?.clearLibraryConfirmation === 'enabled'}
+            checked={user?.profile?.preferences?.clearLibraryConfirmation === 'enabled'}
             onChange={(e) => handleConfirmationToggle('clearLibraryConfirmation', e.target.checked)}
             disabled={isLoading}
           />
@@ -64,7 +64,7 @@ export default function Preferences() {
           requiresAuth={true}
         >
           <Switch
-            checked={user?.preferences?.signOutConfirmation === 'enabled'}
+            checked={user?.profile?.preferences?.signOutConfirmation === 'enabled'}
             onChange={(e) => handleConfirmationToggle('signOutConfirmation', e.target.checked)}
             disabled={isLoading || !isAuthenticated}
           />
@@ -73,6 +73,18 @@ export default function Preferences() {
 
       {/* Appearance */}
       <SettingSection Icon={Palette} title='Appearance'>
+        <SettingItem
+          title='Enable Animations'
+          description='Enable UI animations and transitions across the app'
+          isDisabled={isLoading}
+          tag='(Recommended)'
+        >
+          <Switch
+            checked={user?.profile?.preferences?.enableAnimations === 'enabled'}
+            onChange={(e) => handleConfirmationToggle('enableAnimations', e.target.checked)}
+            disabled={isLoading}
+          />
+        </SettingItem>
         <SettingItem title='Theme' description='Choose your preferred theme' isDisabled={true} comingSoon={true}>
           <div className='flex items-center gap-2'>
             <span className='text-Grey-300 text-sm'>Dark</span>
@@ -106,8 +118,8 @@ export default function Preferences() {
         >
           <div className='flex items-center gap-2'>
             <img
-              src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${user?.location.countryCode}.svg`}
-              alt={user?.location.country}
+              src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${user?.location?.countryCode}.svg`}
+              alt={user?.location?.country}
               className='h-4 w-5 rounded-sm'
             />
             <span className='text-Grey-300 text-sm'>{user?.location.country}</span>
