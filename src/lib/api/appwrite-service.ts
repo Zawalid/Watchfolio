@@ -153,6 +153,22 @@ export class ProfileAPI extends BaseAPI {
 
     await this.update(profileId, { recentActivity });
   }
+
+  async isUsernameAvailable(username: string): Promise<boolean> {
+    if (!username.trim()) return false;
+
+    try {
+      const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
+        Query.equal('username', username),
+        Query.limit(1),
+        Query.select(['username']),
+      ]);
+      return result.total === 0;
+    } catch (error) {
+      console.error('Error checking username availability:', error);
+      return false; // Safer to assume unavailable on error
+    }
+  }
 }
 
 /**

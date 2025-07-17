@@ -5,7 +5,7 @@ import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/moda
 import { Button } from '@heroui/button';
 import { addToast } from '@heroui/toast';
 import { Modal } from '@/components/ui/Modal';
-import { changeEmailSchema } from '@/lib/validation/auth';
+import { changeEmailSchema } from '@/lib/validation/settings';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { UPDATE_ICON } from '@/components/ui/Icons';

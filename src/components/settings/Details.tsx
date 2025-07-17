@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/Textarea';
 import { useAuthStore } from '@/stores/useAuthStore';
 import ChangeEmail from './ChangeEmail';
 import AvatarManager from './AvatarManager';
-import { profileInfoSchema } from '@/lib/validation/auth';
+import { profileInfoSchema } from '@/lib/validation/settings';
 import { getAvatarWithFallback } from '@/utils/avatar';
 import { useState } from 'react';
 
@@ -28,7 +28,8 @@ export default function Details() {
     resolver: zodResolver(profileInfoSchema),
     mode: 'onChange',
     defaultValues: {
-      name: user?.profile?.name || '',
+      name: user?.name || '',
+      username: user?.profile?.username || '',
       bio: user?.profile?.bio || '',
       avatarUrl: user?.profile?.avatarUrl || '',
     },
@@ -66,12 +67,12 @@ export default function Details() {
     const updatedData = Object.fromEntries(Object.entries(data).filter(([key]) => dirtyFields[key as keyof FormData])); // Map form field names to profile field names
     const profileData: UpdateProfileInput = {};
     if (updatedData.name) profileData.name = updatedData.name;
-    if (updatedData.preference) profileData.favoriteContentType = updatedData.preference as FavoriteContentType;
     if (updatedData.bio !== undefined) profileData.bio = updatedData.bio;
     if (updatedData.avatarUrl !== undefined) profileData.avatarUrl = updatedData.avatarUrl;
+    if (updatedData.username !== undefined) profileData.username = updatedData.username;
 
     try {
-      await updateUserProfile(profileData);
+      await updateUserProfile(dirtyFields as UpdateProfileInput);
       reset(data);
       addToast({
         title: 'Profile updated',
@@ -130,6 +131,15 @@ export default function Details() {
           label='Name'
           placeholder='Your Name'
           error={errors.name?.message}
+        />
+
+        <Input
+          {...register('username')}
+          label='Username'
+          icon='at'
+          placeholder='your_username'
+          error={errors.username?.message}
+          description='Your unique username. Can only contain letters, numbers, and underscores.'
         />
 
         <Textarea

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { changePasswordSchema } from '@/lib/validation/auth';
+import { changePasswordSchema } from '@/lib/validation/settings';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/button';
 import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/modal';

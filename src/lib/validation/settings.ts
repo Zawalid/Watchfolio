@@ -1,4 +1,6 @@
+import { debounce } from '@/utils';
 import { z } from 'zod';
+import { profilesService } from '../api/appwrite-service';
 
 export const common = {
   name: z
@@ -16,19 +18,24 @@ export const common = {
     .max(32, { message: 'Password must be less than 32 characters' }),
 };
 
-export const signInSchema = z.object({ email: common.email, password: common.password });
-
-export const signUpSchema = z.object(common);
-
-export const resetPasswordSchema = z
-  .object({ password: common.password, confirm_password: common.password })
-  .refine((data) => data.password === data.confirm_password, {
-    message: 'Passwords do not match. Please check the password and confirm password.',
-    path: ['confirm_password'],
-  });
+const debouncedUsernameCheck = debounce(profilesService.isUsernameAvailable.bind(profilesService), 500);
 
 export const profileInfoSchema = z.object({
   name: common.name,
+  username: z
+    .string()
+    .min(3, 'Username must be at least 3 characters')
+    .max(30, 'Username must be 30 characters or less')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+    .refine(
+      async (username) => {
+        if (username.length < 3) return true;
+        return await debouncedUsernameCheck(username);
+      },
+      {
+        message: 'This username is already taken.',
+      }
+    ),
   bio: z
     .string()
     .min(1, { message: 'Please enter your bio' })
@@ -39,19 +46,19 @@ export const profileInfoSchema = z.object({
   avatarUrl: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
 });
 
-export const viewingTasteSchema = z.object({
-  favoriteContentType: z.enum(['movies', 'tv', 'both']),
-  favoriteGenres: z.array(z.number()).max(5, 'You can select up to 5 genres.'),
-  favoriteNetworks: z.array(z.number()).max(5, 'You can select up to 5 networks.'),
-  contentPreferences: z.array(z.string()),
-});
-
 export const changeEmailSchema = z
   .object({ email: common.email, confirm_email: common.email, password: common.password })
   .refine((data) => data.email === data.confirm_email, {
     message: 'Emails do not match. Please check the email and confirm email.',
     path: ['confirm_email'],
   });
+
+export const viewingTasteSchema = z.object({
+  favoriteContentType: z.enum(['movies', 'tv', 'both']),
+  favoriteGenres: z.array(z.number()).max(5, 'You can select up to 5 genres.'),
+  favoriteNetworks: z.array(z.number()).max(5, 'You can select up to 5 networks.'),
+  contentPreferences: z.array(z.string()),
+});
 
 export const changePasswordSchema = z
   .object({ password: common.password, new_password: common.password, confirm_password: common.password })
@@ -60,7 +67,9 @@ export const changePasswordSchema = z
     path: ['confirm_password'],
   });
 
-export const preferencesSchema = z.object({
-  sign_out_confirmation: z.enum(['enabled', 'disabled']),
-  remove_from_watchlist_confirmation: z.enum(['enabled', 'disabled']),
-});
+export const resetPasswordSchema = z
+  .object({ password: common.password, confirm_password: common.password })
+  .refine((data) => data.password === data.confirm_password, {
+    message: 'Passwords do not match. Please check the password and confirm password.',
+    path: ['confirm_password'],
+  });

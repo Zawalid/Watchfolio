@@ -5,7 +5,7 @@ import { Button } from '@heroui/button';
 import { addToast } from '@heroui/toast';
 import { useAuthStore } from '@/stores/useAuthStore';
 import TasteEditor from './TasteEditor';
-import { viewingTasteSchema } from '@/lib/validation/auth';
+import { viewingTasteSchema } from '@/lib/validation/settings';
 
 type FormData = z.infer<typeof viewingTasteSchema>;
 
@@ -32,7 +32,6 @@ export default function ViewingTaste() {
   const genres = values.favoriteGenres;
   const networks = values.favoriteNetworks;
   const preferences = values.contentPreferences;
-
 
   const onSubmit = async (data: FormData) => {
     console.log(data);

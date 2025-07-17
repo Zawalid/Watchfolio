@@ -2,9 +2,9 @@ import { cn } from '@/utils';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import type { JSX } from 'react';
 import { forwardRef } from 'react';
-import { NAME_ICON, EMAIL_ICON, PASSWORD_ICON, LINK_ICON, SEARCH_ICON, TITLE_ICON } from './Icons';
+import { NAME_ICON, EMAIL_ICON, PASSWORD_ICON, LINK_ICON, SEARCH_ICON, TITLE_ICON,AT_ICON } from './Icons';
 
-type IconType = 'name' | 'email' | 'search' | 'password' | 'title' | 'link';
+type IconType = 'name' | 'email' | 'search' | 'password' | 'title' | 'link' | 'at';
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const icons: Record<IconType, JSX.Element> = {
@@ -14,6 +14,7 @@ export const icons: Record<IconType, JSX.Element> = {
   link: LINK_ICON,
   search: SEARCH_ICON,
   title: TITLE_ICON,
+  at:AT_ICON
 };
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -23,17 +24,17 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   label?: string;
   parentClassname?: string;
   error?: string | null;
+  description?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { children, type, icon, label, parentClassname, error, ...props },
+  { children, type, icon, label, parentClassname, error,description, ...props },
   ref
 ) {
   const { placeholder } = props;
   const [parent] = useAutoAnimate();
 
   const Icon = icons[type as IconType] || (icon && icons[icon]);
-
 
   return (
     <div className={cn('flex flex-col gap-2', parentClassname)} ref={parent}>
@@ -67,6 +68,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         {children}
       </div>
       {error && <span className='text-Error-500 text-sm'>{error}</span>}
+      {description && <span className='text-Grey-400 text-sm'>{description}</span>}
     </div>
   );
 });
