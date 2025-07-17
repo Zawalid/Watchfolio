@@ -2,7 +2,7 @@ import { useRef, useState, useEffect, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { useLocation, useSearchParams, Link } from 'react-router';
 import { cn } from '@/utils';
-import { Tooltip } from '@heroui/tooltip';
+import { Tooltip } from '@heroui/react';
 
 type TabItem = {
   label: string;

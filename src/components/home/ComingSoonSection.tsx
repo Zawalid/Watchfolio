@@ -1,6 +1,6 @@
 import { Popcorn, ArrowRight, Clock } from 'lucide-react';
 import { Link } from 'react-router';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { getUpcomingContent } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import MediaCardsList from '@/components/media/MediaCardsList';
@@ -44,7 +44,7 @@ export default function ComingSoonSection() {
         }}
         asSlider={true}
         slideClassName='w-[200px]! sm:w-[250px]!'
-        sliderProps={{autoplay : true,loop : true}}
+        sliderProps={{ autoplay: true, loop: true }}
       />
     </div>
   );

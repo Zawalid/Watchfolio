@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useDisclosure } from '@heroui/modal';
+import { useDisclosure } from '@heroui/react';
 import MediaStatusModal from '../../components/media/MediaStatusModal';
 import { MediaStatusModalContext } from '../MediaStatusModalContext';
 

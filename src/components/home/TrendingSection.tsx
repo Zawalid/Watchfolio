@@ -1,6 +1,6 @@
 import { TrendingUp, ArrowRight, Flame } from 'lucide-react';
 import { Link } from 'react-router';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { getTrendingAll } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import MediaCardsList from '@/components/media/MediaCardsList';
@@ -44,7 +44,7 @@ export default function TrendingSection() {
         }}
         asSlider={true}
         slideClassName='w-[200px]! sm:w-[250px]!'
-        sliderProps={{ autoplay: true,loop : true }}
+        sliderProps={{ autoplay: true, loop: true }}
       />
     </div>
   );

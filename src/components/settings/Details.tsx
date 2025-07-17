@@ -1,8 +1,9 @@
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormClearErrors, UseFormRegister, UseFormSetError } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -10,7 +11,9 @@ import ChangeEmail from './ChangeEmail';
 import AvatarManager from './AvatarManager';
 import { profileInfoSchema } from '@/lib/validation/settings';
 import { getAvatarWithFallback } from '@/utils/avatar';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { profilesService } from '@/lib/api/appwrite-service';
+import { useDebounce } from '@/hooks/useDebounce';
 
 type FormData = z.infer<typeof profileInfoSchema>;
 
@@ -23,6 +26,8 @@ export default function Details() {
     handleSubmit,
     reset,
     setValue,
+    setError,
+    clearErrors,
     formState: { errors, isValid, isDirty, isSubmitting, dirtyFields },
   } = useForm<FormData>({
     resolver: zodResolver(profileInfoSchema),
@@ -72,7 +77,7 @@ export default function Details() {
     if (updatedData.username !== undefined) profileData.username = updatedData.username;
 
     try {
-      await updateUserProfile(dirtyFields as UpdateProfileInput);
+      await updateUserProfile(updatedData);
       reset(data);
       addToast({
         title: 'Profile updated',
@@ -98,7 +103,8 @@ export default function Details() {
           currentAvatarUrl={values.avatarUrl || getAvatarWithFallback(user.profile.avatarUrl, user.name)}
           userName={user.name}
           onAvatarChange={handleAvatarChange}
-        />{' '}
+          visibility={user.profile.visibility}
+        />
       </div>
       <ChangeEmail email={user.email} verified={user.emailVerification} />
 
@@ -133,13 +139,13 @@ export default function Details() {
           error={errors.name?.message}
         />
 
-        <Input
-          {...register('username')}
-          label='Username'
-          icon='at'
-          placeholder='your_username'
-          error={errors.username?.message}
-          description='Your unique username. Can only contain letters, numbers, and underscores.'
+        <Username
+          username={values.username}
+          currentUsername={user.profile.username}
+          error={values.username !== user.profile.username ? errors.username?.message : undefined}
+          register={register('username')}
+          setError={setError}
+          clearErrors={clearErrors}
         />
 
         <Textarea
@@ -149,19 +155,92 @@ export default function Details() {
           defaultValue={user.profile.bio}
           error={errors.bio?.message}
         />
-        <div className='flex items-center justify-end gap-4'>
-          {isDirty && isValid && (
-            <>
-              <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={() => reset()}>
-                Cancel
-              </Button>
-              <Button color='primary' type='submit' isLoading={isSubmitting || isLoading}>
-                Save Changes
-              </Button>
-            </>
-          )}
-        </div>
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className='flex items-center justify-end gap-4'
+          >
+            {isDirty && (
+              <>
+                <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={() => reset()}>
+                  Cancel
+                </Button>
+                <Button color='primary' type='submit' isDisabled={!isValid} isLoading={isSubmitting || isLoading}>
+                  Save Changes
+                </Button>
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </form>
     </div>
+  );
+}
+
+type UsernameProps = {
+  username: string;
+  currentUsername: string;
+  error?: string;
+  register: ReturnType<UseFormRegister<FormData>>;
+  setError: UseFormSetError<FormData>;
+  clearErrors: UseFormClearErrors<FormData>;
+};
+
+function Username({ username, currentUsername, error, register, setError, clearErrors }: UsernameProps) {
+  const [checking, setChecking] = useState(false);
+  const debouncedUsername = useDebounce(username, 500);
+
+  useEffect(() => {
+    if (!debouncedUsername || debouncedUsername.length < 3) return;
+
+    if (debouncedUsername === currentUsername) {
+      clearErrors('username');
+      return;
+    }
+
+    let isMounted = true;
+    setChecking(true);
+
+    profilesService
+      .isUsernameAvailable(debouncedUsername)
+      .then((available) => {
+        if (!isMounted) return;
+        if (!available) {
+          setError('username', {
+            type: 'manual',
+            message: 'This username is already taken.',
+          });
+        } else {
+          clearErrors('username');
+        }
+      })
+      .catch((err) => {
+        console.error('Username check failed:', err);
+      })
+      .finally(() => {
+        if (isMounted) setChecking(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [debouncedUsername, currentUsername, setError, clearErrors]);
+
+  return (
+    <Input
+      {...register}
+      label='Username'
+      icon='at'
+      placeholder='your_username'
+      error={error}
+      description={
+        checking
+          ? 'Checking availability...'
+          : 'Your unique username. Can only contain letters, numbers, and underscores.'
+      }
+    />
   );
 }

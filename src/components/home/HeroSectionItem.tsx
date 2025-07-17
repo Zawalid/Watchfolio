@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { Heart, Info, TrendingUp, Sparkles, LibraryBig, Check, Film, Tv } from 'lucide-react';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { Link } from 'react-router';
-import { getMediaType, generateMediaLink,  getReleaseYear } from '@/utils/media';
+import { getMediaType, generateMediaLink, getReleaseYear } from '@/utils/media';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
@@ -44,7 +44,7 @@ export default function HeroItem({ item }: HeroItemProps) {
 
   return (
     <motion.div
-      className='absolute inset-0 h-screen min-h-[600px] w-full overflow-hidden z-10'
+      className='absolute inset-0 z-10 h-screen min-h-[600px] w-full overflow-hidden'
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}

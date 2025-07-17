@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { Download } from 'lucide-react';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { Select, SelectItem } from '@heroui/select';
+import { Select, SelectItem } from '@heroui/react';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { estimateFileSize, formatDateForFilename } from '@/utils/export';
@@ -22,7 +22,11 @@ export default function Export({ onClose }: { onClose: () => void }) {
     try {
       const items = getItemsByStatus(exportFilter.status, exportedType);
       if (items.length === 0) {
-        addToast({ title: 'No items to export', description: 'No items to export with the current filter.', color: 'warning' });
+        addToast({
+          title: 'No items to export',
+          description: 'No items to export with the current filter.',
+          color: 'warning',
+        });
         return;
       }
       const data = exportLibrary(items, exportFormat);
@@ -41,7 +45,11 @@ export default function Export({ onClose }: { onClose: () => void }) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      addToast({ title: 'Export successful', description: `${items.length} items exported successfully!`, color: 'success' });
+      addToast({
+        title: 'Export successful',
+        description: `${items.length} items exported successfully!`,
+        color: 'success',
+      });
       onClose();
     } catch (error) {
       console.error('Export error:', error);
@@ -86,7 +94,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
               <SelectItem key='movie'>Movies</SelectItem>
               <SelectItem key='tv'>TV Shows</SelectItem>
             </Select>
-            
+
             <label htmlFor='export-filter' className='text-Grey-300 text-sm'>
               Content to Export
             </label>

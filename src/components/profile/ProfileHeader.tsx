@@ -1,11 +1,12 @@
 import { motion } from 'framer-motion';
-import { Share2, Lock, Globe, UserRoundPen, Check, Film, Tv, Clapperboard, CalendarDays, Clock } from 'lucide-react';
-import { Button } from '@heroui/button';
-import { Tooltip } from '@heroui/tooltip';
-import { Avatar } from '@heroui/avatar';
+import { Share2, UserRoundPen, Check, Film, Tv, Clapperboard, CalendarDays, Clock } from 'lucide-react';
+import { Button } from '@heroui/react';
+import { Tooltip } from '@heroui/react';
+import { Avatar } from '@heroui/react';
 import { AVATAR_CLASSNAMES } from '@/styles/heroui';
-import { cn, formatDate } from '@/utils';
+import { formatDate } from '@/utils';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { Link } from 'react-router';
 
 interface ProfileHeaderProps {
   profile: Profile;
@@ -40,19 +41,6 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
           <div className='flex flex-col gap-6 sm:flex-row sm:items-start'>
             <div className='relative'>
               <Avatar src={profile.avatarUrl} alt={profile.name} classNames={AVATAR_CLASSNAMES} className='size-28!' />
-              <Tooltip
-                content={profile.visibility === 'public' ? 'Public Profile' : 'Private Profile'}
-                className='tooltip-secondary!'
-              >
-                <div
-                  className={cn(
-                    'absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border-2 border-white/10 text-white/80 backdrop-blur-md',
-                    profile.visibility === 'public' ? 'bg-Success-500/50' : 'bg-Warning-500/50'
-                  )}
-                >
-                  {profile.visibility === 'public' ? <Globe className='size-3' /> : <Lock className='size-3' />}
-                </div>
-              </Tooltip>
             </div>
 
             {/* Name, username, bio, type */}
@@ -116,7 +104,12 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
             )}
 
             {isOwnProfile && (
-              <Button className='button-primary px-4 py-2' startContent={<UserRoundPen className='h-4 w-4' />}>
+              <Button
+                as={Link}
+                to='/settings/profile'
+                className='button-primary px-4 py-2'
+                startContent={<UserRoundPen className='h-4 w-4' />}
+              >
                 Customize Profile
               </Button>
             )}

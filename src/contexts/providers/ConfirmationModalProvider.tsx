@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { useDisclosure } from '@heroui/modal';
+import { useDisclosure } from '@heroui/react';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { ConfirmationModalContext, type ConfirmationOptions } from '../ConfirmationModalContext';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
@@ -34,9 +34,9 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
     (confirmationKey: string): boolean => {
       const preferenceKey = (kebabToCamelCase(confirmationKey) + 'Confirmation') as ConfirmationPreferences;
 
-      if (isAuthenticated && user?.preferences) {
+      if (isAuthenticated && user?.profile.preferences) {
         // Check if this preference exists in user preferences and is a confirmation setting
-        const preferences = user.preferences;
+        const preferences = user.profile.preferences;
         if (preferenceKey in preferences) {
           const value = preferences[preferenceKey];
           if (isConfirmationSetting(value)) return value === 'disabled';
@@ -72,7 +72,7 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
 
       if (isAuthenticated && updateUserPreferences) {
         // Check if this preference exists in user preferences
-        const preferences = user?.preferences;
+        const preferences = user?.profile.preferences;
         if (preferences && preferenceKey in preferences) {
           const currentValue = preferences[preferenceKey];
           // Only update if it's a confirmation setting

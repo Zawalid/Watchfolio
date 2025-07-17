@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Sparkles, LibraryBig, FolderHeart } from 'lucide-react';
 import { Link } from 'react-router';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { getCollection } from '@/lib/api/TMDB';
 import { LazyImage } from '@/components/ui/LazyImage';
 

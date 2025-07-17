@@ -1,5 +1,5 @@
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
-import { Select, SelectItem, SelectProps, SelectSection } from '@heroui/select';
+import { Select, SelectItem, SelectProps, SelectSection } from '@heroui/react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 

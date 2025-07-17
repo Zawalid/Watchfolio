@@ -1,6 +1,6 @@
 import { Keyboard } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { ModalBody } from '@heroui/modal';
+import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { getShortcut, getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';

@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
 import { AlertTriangle, CheckCircle2, Upload, HelpCircle } from 'lucide-react';
-import { Button } from '@heroui/button';
-import { Select, SelectItem, SelectSection } from '@heroui/select';
-import { Switch } from '@heroui/switch';
-import { Tooltip } from '@heroui/tooltip';
+import { Button } from '@heroui/react';
+import { Select, SelectItem, SelectSection } from '@heroui/react';
+import { Switch } from '@heroui/react';
+import { Tooltip } from '@heroui/react';
 import { FileDropper } from '@/components/ui/FileDropper';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { generateMediaKey } from '@/utils/library';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { useImportParser } from '@/hooks/useImportParser';
 import { LIBRARY_IMPORT_MAX_SIZE } from '@/utils/constants';
 

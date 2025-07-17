@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';
 

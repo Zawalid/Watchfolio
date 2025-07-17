@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { SquareArrowOutUpRight, Sparkles } from 'lucide-react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import LibraryCard from './LibraryCard';

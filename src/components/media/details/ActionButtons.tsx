@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 
@@ -17,8 +17,7 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
 
   const inLibrary = !!libraryItem;
 
-  console.log(media.media_type, media.id,libraryItem)
-
+  console.log(media.media_type, media.id, libraryItem);
 
   const isFavorite = libraryItem?.isFavorite || false;
   const currentStatus = libraryItem?.status || 'none';

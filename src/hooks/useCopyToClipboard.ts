@@ -1,4 +1,4 @@
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { useCallback, useState } from 'react';
 
 export function useCopyToClipboard() {

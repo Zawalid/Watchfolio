@@ -10,7 +10,7 @@ import { cn } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { useDiscoverParams } from '@/hooks/useDiscoverParams';
 import FiltersModal from '@/components/FiltersModal';
-import { useDisclosure } from '@heroui/modal';
+import { useDisclosure } from '@heroui/react';
 import { Status } from '@/components/ui/Status';
 import { usePageTitle } from '@/hooks/usePageTitle';
 

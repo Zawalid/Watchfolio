@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
-import { Tabs, Tab } from '@heroui/tabs';
+import { Tabs, Tab } from '@heroui/react';
 import { getTrendingMovies, getTrendingTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
 import MediaCard from '@/components/media/MediaCard';
 import { Slider } from '@/components/ui/slider';
-
 
 const movieQuery = {
   queryKey: queryKeys.trending('movie', 'day'),

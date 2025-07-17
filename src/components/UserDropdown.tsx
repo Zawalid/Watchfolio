@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from 'react-router';
-import { Avatar } from '@heroui/avatar';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
+import { Avatar } from '@heroui/react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
 import { ChevronDownIcon, UserIcon, Settings, Bookmark, Heart, LogOut } from 'lucide-react';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
@@ -44,7 +44,7 @@ export default function UserDropdown() {
   });
 
   const isActive = (path: string) => {
-    if (path === '/profile') return location.pathname === `/u/${user.profile.username}`
+    if (path === '/profile') return location.pathname === `/u/${user.profile.username}`;
     if (path === '/settings') return location.pathname.startsWith('/settings');
     if (path === '/library')
       return location.pathname.startsWith('/library') && location.pathname !== '/library/favorites';
@@ -93,21 +93,21 @@ export default function UserDropdown() {
         >
           <DropdownItem
             key='profile'
+            href={`/u/${user.profile.username}`}
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
               isActive('/profile') ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-200 hover:text-Primary-50'
             }`}
             startContent={<UserIcon className='h-4 w-4' />}
-            onPress={() => navigate(`/u/${user.profile.username}`)}
           >
             Profile
           </DropdownItem>
           <DropdownItem
             key='settings'
+            href='/settings'
             className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
               isActive('/settings') ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-200 hover:text-Primary-50'
             }`}
             startContent={<Settings className='h-4 w-4' />}
-            onPress={() => navigate('/settings')}
           >
             Settings
           </DropdownItem>
@@ -127,7 +127,7 @@ export default function UserDropdown() {
               isActive('/library') ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-200 hover:text-Primary-50'
             }`}
             startContent={<Bookmark className='h-4 w-4' />}
-            onPress={() => navigate('/library')}
+            href='/library'
           >
             My Library
           </DropdownItem>
@@ -139,7 +139,7 @@ export default function UserDropdown() {
                 : 'text-Grey-200 hover:text-Primary-50'
             }`}
             startContent={<Heart className='h-4 w-4' />}
-            onPress={() => navigate('/library/favorites')}
+            href='/library/favorites'
           >
             Favorites
           </DropdownItem>

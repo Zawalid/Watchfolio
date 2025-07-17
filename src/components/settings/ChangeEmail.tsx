@@ -1,9 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/modal';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
+import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { changeEmailSchema } from '@/lib/validation/settings';
 import { Input } from '@/components/ui/Input';

@@ -1,9 +1,9 @@
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { addToast } from '@heroui/toast';
-import { Button } from '@heroui/button';
+import { addToast } from '@heroui/react';
+import { Button } from '@heroui/react';
 import { useNavigate } from 'react-router';
-import {  Trash2, Info } from 'lucide-react';
+import { Trash2, Info } from 'lucide-react';
 
 export default function DeleteAccount() {
   const { confirm } = useConfirmationModal();
@@ -57,7 +57,6 @@ export default function DeleteAccount() {
             <p className='text-Grey-300 max-w-md text-sm'>
               Permanently delete your account and all associated data. This action cannot be undone.
             </p>
-           
           </div>
         </div>
         <Button

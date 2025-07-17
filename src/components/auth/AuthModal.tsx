@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/modal';
+import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { GOOGLE_ICON } from '@/components/ui/Icons';
 import AuthForm from './AuthForm';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 
 const tabVariants = {
   enter: (direction: number) => ({

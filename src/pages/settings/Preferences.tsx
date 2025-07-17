@@ -1,5 +1,5 @@
 import { Settings, Palette, Globe } from 'lucide-react';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { Switch } from '@/components/ui/Switch';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';

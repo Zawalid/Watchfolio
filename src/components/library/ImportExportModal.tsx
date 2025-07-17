@@ -1,8 +1,8 @@
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Upload, Download, FileJson } from 'lucide-react';
-import { ModalBody } from '@heroui/modal';
+import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { Tab, Tabs } from '@heroui/tabs';
+import { Tab, Tabs } from '@heroui/react';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import Import from './Import';
 import Export from './Export';

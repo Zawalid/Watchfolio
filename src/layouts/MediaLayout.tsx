@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useDisclosure } from '@heroui/modal';
+import { useDisclosure } from '@heroui/react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { LucideIcon } from 'lucide-react';
 import FiltersModal, { FilterOption } from '@/components/FiltersModal';
@@ -147,7 +147,7 @@ export default function MediaLayout({
       </div>
 
       {/* Results Header */}
-      <div className='border-white/5 flex items-center justify-between border-b pb-4'>
+      <div className='flex items-center justify-between border-b border-white/5 pb-4'>
         <div>
           <h2 className='text-lg font-semibold text-white'>{getDisplayTitle()}</h2>
           <p className='text-Grey-400 mt-1 text-sm'>

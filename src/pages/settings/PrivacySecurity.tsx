@@ -1,9 +1,10 @@
 import ChangePassword from '@/components/settings/ChangePassword';
 import DeleteAccount from '@/components/settings/DeleteAccount';
+import ProfileVisibility from '@/components/settings/ProfileVisibility';
 import { SettingSection } from '@/components/settings/SettingSection';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { AlertTriangle, ShieldCheck, Lock } from 'lucide-react';
+import { AlertTriangle, ShieldCheck, Lock, Globe } from 'lucide-react';
 
 export default function PrivacySecurity() {
   const { isAuthenticated } = useAuthStore();
@@ -53,6 +54,10 @@ export default function PrivacySecurity() {
 
   return (
     <div className='flex flex-col gap-8'>
+      <SettingSection Icon={Globe} title='Profile Visibility'>
+        <ProfileVisibility />
+      </SettingSection>
+
       <SettingSection Icon={ShieldCheck} title='Security'>
         <ChangePassword />
       </SettingSection>

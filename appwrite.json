@@ -531,6 +531,14 @@
                     "min": 0,
                     "max": 922337203685477600,
                     "default": null
+                },
+                {
+                    "key": "hiddenProfileSections",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 40,
+                    "default": null
                 }
             ],
             "indexes": [

@@ -109,7 +109,6 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const user = await authService.getCurrentUser();
-          console.log(user);
           set({
             user,
             isAuthenticated: !!user,
@@ -251,7 +250,7 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => {
         if (!state.user) return { isAuthenticated: state.isAuthenticated };
 
-        const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification','location'];
+        const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification', 'location'];
         const profileKeysToKeep: (keyof Profile)[] = [
           'username',
           'avatarUrl',
@@ -262,6 +261,7 @@ export const useAuthStore = create<AuthState>()(
           'favoriteGenres',
           'favoriteNetworks',
           'preferences',
+          'hiddenProfileSections',
         ];
         const preferencesKeysToKeep: (keyof UserPreferences)[] = [
           'removeFromLibraryConfirmation',

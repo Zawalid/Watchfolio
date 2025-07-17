@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
 import { Heart, Layers } from 'lucide-react';
-import { Tooltip } from '@heroui/tooltip';
+import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import {
   HOME_ICON,
@@ -16,7 +16,7 @@ import {
 import { MobileNavTrigger } from './MobileNav';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 
 const navigationItems = [
   {
@@ -39,7 +39,7 @@ const navigationItems = [
   },
   {
     label: 'Collections',
-    icon: <Layers className="w-4 h-4" />,
+    icon: <Layers className='h-4 w-4' />,
     href: '/collections',
     matches: ['/collections'],
   },

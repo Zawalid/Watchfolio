@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Tabs, Tab } from '@heroui/tabs';
+import { Tabs, Tab } from '@heroui/react';
 import { getMovies, getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
 import MediaCardsList from '@/components/media/MediaCardsList';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router';
 
@@ -46,7 +46,7 @@ export default function TopRatedSection() {
           queryOptions={selectedTab === 'movie' ? movieQuery : tvQuery}
           asSlider={true}
           slideClassName='w-[200px]! sm:w-[250px]!'
-          sliderProps={{ autoplay: true,loop : true }}
+          sliderProps={{ autoplay: true, loop: true }}
         />
       </div>
     </div>

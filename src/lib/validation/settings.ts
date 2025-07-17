@@ -1,6 +1,4 @@
-import { debounce } from '@/utils';
 import { z } from 'zod';
-import { profilesService } from '../api/appwrite-service';
 
 export const common = {
   name: z
@@ -18,24 +16,13 @@ export const common = {
     .max(32, { message: 'Password must be less than 32 characters' }),
 };
 
-const debouncedUsernameCheck = debounce(profilesService.isUsernameAvailable.bind(profilesService), 500);
-
 export const profileInfoSchema = z.object({
   name: common.name,
   username: z
     .string()
     .min(3, 'Username must be at least 3 characters')
     .max(30, 'Username must be 30 characters or less')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
-    .refine(
-      async (username) => {
-        if (username.length < 3) return true;
-        return await debouncedUsernameCheck(username);
-      },
-      {
-        message: 'This username is already taken.',
-      }
-    ),
+    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
   bio: z
     .string()
     .min(1, { message: 'Please enter your bio' })
@@ -44,6 +31,23 @@ export const profileInfoSchema = z.object({
     .optional()
     .or(z.literal('')),
   avatarUrl: z.string().url({ message: 'Please enter a valid URL' }).optional().or(z.literal('')),
+});
+
+export const privacySchema = z.object({
+  visibility: z.enum(['public', 'private']),
+  hiddenProfileSections: z.array(
+    z.enum([
+      'stats',
+      'taste',
+      'library',
+      'library.watching',
+      'library.completed',
+      'library.willWatch',
+      'library.onHold',
+      'library.dropped',
+      'library.favorites',
+    ])
+  ),
 });
 
 export const changeEmailSchema = z

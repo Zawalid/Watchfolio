@@ -1,4 +1,4 @@
-import { Modal as M, ModalContent, ModalProps } from '@heroui/modal';
+import { Modal as M, ModalContent, ModalProps } from '@heroui/react';
 import { cn } from '@/utils';
 
 interface Props extends ModalProps {

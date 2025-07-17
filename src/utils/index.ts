@@ -116,13 +116,3 @@ export const formatTimeAgo = (dateString: string): string => {
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const debounce = <T extends (...args: any[]) => any>(fn: T, delay: number) => {
-  let timeoutId: NodeJS.Timeout;
-  return function (...args: Parameters<T>): Promise<ReturnType<T>> {
-    clearTimeout(timeoutId);
-    return new Promise((resolve) => {
-      timeoutId = setTimeout(() => resolve(fn(...args)), delay);
-    });
-  };
-};

@@ -1,7 +1,7 @@
 import { Switch } from '@/components/ui/Switch';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
-import { useDisclosure } from '@heroui/modal';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
+import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw } from 'lucide-react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useSyncStore } from '@/stores/useSyncStore';

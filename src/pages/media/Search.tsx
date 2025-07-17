@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router';
 import { useIsFetching } from '@tanstack/react-query';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Search as SearchIcon, Film, Star, Heart, Tv, Users } from 'lucide-react';
@@ -50,7 +50,7 @@ export default function Search() {
   const location = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
   const [searchQuery, setSearchQuery] = useState(query);
-  
+
   usePageTitle(`Search results for ${query}`);
 
   // Sync searchQuery with query state

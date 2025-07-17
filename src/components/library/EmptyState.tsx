@@ -1,5 +1,5 @@
 import { Film, Tv, TrendingUp, Star, Sparkles } from 'lucide-react';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { Link } from 'react-router';
 import { Status } from '@/components/ui/Status';
@@ -109,5 +109,3 @@ export default function EmptyState({ status, isOwnProfile }: { status: LibraryFi
   if (query || hasFilters) return <Status.NoResults />;
   return <Status.Empty {...getProps(status, isOwnProfile)} />;
 }
-  
-  

@@ -3,8 +3,8 @@ import { useDropzone, FileRejection } from 'react-dropzone';
 import { Upload, X, File, CheckCircle2 } from 'lucide-react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { cn } from '@/utils';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
 
 interface FileUploadStatus {
   progress: number;

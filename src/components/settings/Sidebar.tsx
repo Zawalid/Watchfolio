@@ -3,8 +3,8 @@ import { Link, useLocation } from 'react-router';
 
 const links = [
   { href: '/settings/profile', label: 'Profile' },
-  { href: '/settings/preferences', label: 'Preferences' },
   { href: '/settings/privacy', label: 'Privacy & Security' },
+  { href: '/settings/preferences', label: 'Preferences' },
   { href: '/settings/library', label: 'Library' },
 ];
 

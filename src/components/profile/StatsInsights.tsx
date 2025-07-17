@@ -26,6 +26,7 @@ const getStats = (stats: LibraryStats) => {
       className: 'text-blue-400 bg-blue-500/20 border-blue-500/30',
       description: 'Movies tracked',
       percentage: Math.round((stats.movies / stats.all) * 100),
+      
     },
     {
       label: 'TV Shows',
@@ -34,6 +35,7 @@ const getStats = (stats: LibraryStats) => {
       className: 'text-purple-400 bg-purple-500/20 border-purple-500/30',
       description: 'Series followed',
       percentage: Math.round((stats.tvShows / stats.all) * 100),
+      
     },
     ...statusCards,
   ];

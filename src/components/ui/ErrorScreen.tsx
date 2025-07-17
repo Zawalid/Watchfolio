@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, Home, AlertTriangle, Zap, Code2 } from 'lucide-react';
 import { AnimatedRing } from './AnimatedRing';
@@ -9,7 +9,6 @@ interface ErrorScreenProps {
   error: Error;
   resetErrorBoundary: () => void;
 }
- 
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.8 },
@@ -36,7 +35,7 @@ const itemVariants = {
       damping: 20,
     },
   },
-}
+};
 
 export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
   const navigate = useNavigate();
@@ -54,10 +53,8 @@ export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
     setIsRetrying(false);
     resetErrorBoundary();
   };
-;
-
   return (
-    <div className='blur-bg relative flex min-h-dvh py-12 items-center justify-center overflow-auto'>
+    <div className='blur-bg relative flex min-h-dvh items-center justify-center overflow-auto py-12'>
       <div className='relative z-10 container'>
         <motion.div
           variants={containerVariants}

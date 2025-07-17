@@ -1,8 +1,8 @@
 import { ElementType, ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
-import { Button } from '@heroui/button';
-import { Tooltip } from '@heroui/tooltip';
+import { Button } from '@heroui/react';
+import { Tooltip } from '@heroui/react';
 import {
   Search,
   FunnelX,

@@ -1,4 +1,4 @@
-import { Tooltip } from '@heroui/tooltip';
+import { Tooltip } from '@heroui/react';
 import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useAuthStore } from '@/stores/useAuthStore';

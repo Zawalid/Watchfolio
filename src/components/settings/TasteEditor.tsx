@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { Globe, Heart, Tv, Film, X } from 'lucide-react';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { FAVORITE_GENRES_LIMIT, FAVORITE_NETWORKS_LIMIT } from '@/utils/constants';
 import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import { cn } from '@/utils';
@@ -182,7 +182,7 @@ export default function TasteEditor({
                     className={cn(
                       'max-h-20 object-contain transition-all duration-300 group-hover:scale-105',
                       selectedNetworks.includes(network.id) && 'invert',
-                      network.invertOnHover && 'group-hover:invert',
+                      network.invertOnHover && 'group-hover:invert'
                     )}
                     loading='lazy'
                   />

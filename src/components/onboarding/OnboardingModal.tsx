@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useOnboardingStore } from '@/stores/useOnboardingStore';
 import WelcomeStep from './steps/WelcomeStep';
@@ -8,7 +8,7 @@ import FeaturesStep from './steps/FeaturesStep';
 import SetupStep from './steps/SetupStep';
 import GetStartedStep from './steps/GetStartedStep';
 import { Modal } from '@/components/ui/Modal';
-import { ModalBody, ModalFooter, useDisclosure } from '@heroui/modal';
+import { ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 
 const steps = [
@@ -36,14 +36,14 @@ const stepVariants = {
 };
 
 export default function OnboardingModal() {
-  const { showModal, currentStep, totalSteps, closeModal, nextStep, prevStep, completeOnboarding,clearPreferences } =
+  const { showModal, currentStep, totalSteps, closeModal, nextStep, prevStep, completeOnboarding, clearPreferences } =
     useOnboardingStore();
   const disclosure = useDisclosure({
     isOpen: false, // TODO : update
     onClose: () => {
       closeModal();
       completeOnboarding();
-      clearPreferences()
+      clearPreferences();
     },
   });
 

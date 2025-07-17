@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button } from '@heroui/button';
-import { ModalBody, ModalFooter } from '@heroui/modal';
-import { Checkbox } from '@heroui/checkbox';
+import { Button } from '@heroui/react';
+import { ModalBody, ModalFooter } from '@heroui/react';
+import { Checkbox } from '@heroui/react';
 import { AlertTriangle } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { type ConfirmationOptions } from '@/contexts/ConfirmationModalContext';
@@ -21,7 +21,7 @@ interface ConfirmationModalProps {
   onCancel: (dontAskAgain: boolean) => void;
 }
 
-export  function ConfirmationModal({ disclosure, options, onConfirm, onCancel }: ConfirmationModalProps) {
+export function ConfirmationModal({ disclosure, options, onConfirm, onCancel }: ConfirmationModalProps) {
   const [dontAskAgain, setDontAskAgain] = useState(false);
 
   // Reset "don't ask again" when modal opens

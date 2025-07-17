@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Library, Star } from 'lucide-react';
-import { Button } from '@heroui/button';
-import { ModalBody } from '@heroui/modal';
+import { Button } from '@heroui/react';
+import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';

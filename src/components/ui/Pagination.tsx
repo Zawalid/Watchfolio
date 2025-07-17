@@ -1,4 +1,4 @@
-import { Pagination as P, PaginationProps } from '@heroui/pagination';
+import { Pagination as P, PaginationProps } from '@heroui/react';
 import { parseAsInteger, useQueryState } from 'nuqs';
 
 const className = 'bg-black/20  backdrop-blur-2xl w-fit px-2 [&[data-hover=true]:not([data-active=true])]:bg-black/40';
@@ -7,7 +7,7 @@ export function Pagination(props: PaginationProps) {
   const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
 
   return (
-    <div className='flex [&_[role="button"]]:cursor-pointer justify-center'>
+    <div className='flex justify-center [&_[role="button"]]:cursor-pointer'>
       <P
         showControls
         initialPage={1}

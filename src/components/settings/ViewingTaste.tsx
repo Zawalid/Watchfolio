@@ -1,8 +1,9 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Button } from '@heroui/button';
-import { addToast } from '@heroui/toast';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Button } from '@heroui/react';
+import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import TasteEditor from './TasteEditor';
 import { viewingTasteSchema } from '@/lib/validation/settings';
@@ -91,18 +92,26 @@ export default function ViewingTaste() {
         }}
       />
 
-      <div className='flex items-center justify-end gap-4'>
-        {isDirty && (
-          <>
-            <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={() => reset()}>
-              Cancel
-            </Button>
-            <Button color='primary' type='submit' isLoading={isSubmitting || isLoading}>
-              Save Changes
-            </Button>
-          </>
-        )}
-      </div>
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className='flex items-center justify-end gap-4'
+        >
+          {isDirty && (
+            <>
+              <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={() => reset()}>
+                Cancel
+              </Button>
+              <Button color='primary' type='submit' isLoading={isSubmitting || isLoading}>
+                Save Changes
+              </Button>
+            </>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </form>
   );
 }

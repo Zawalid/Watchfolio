@@ -1,4 +1,4 @@
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { ArrowRight, Users } from 'lucide-react';
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';

@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Avatar } from '@heroui/avatar';
-import { Button } from '@heroui/button';
-import { useDisclosure } from '@heroui/modal';
+import { Avatar } from '@heroui/react';
+import { Button } from '@heroui/react';
+import { useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { ModalBody, ModalFooter, ModalHeader } from '@heroui/modal';
+import { ModalBody, ModalFooter, ModalHeader } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import {
   AVATAR_STYLES,
   generateRandomAvatar,
@@ -14,17 +14,25 @@ import {
   type AvatarStyle,
 } from '@/utils/avatar';
 import { cn } from '@/utils';
-import { Shuffle } from 'lucide-react';
+import { Shuffle, Globe, Lock } from 'lucide-react';
 import { AVATAR_CLASSNAMES } from '@/styles/heroui';
+import { Tooltip } from '@heroui/react';
 
 interface AvatarManagerProps {
   currentAvatarUrl?: string;
   userName: string;
   onAvatarChange: (newAvatarUrl: string) => void;
   className?: string;
+  visibility: 'public' | 'private';
 }
 
-export default function AvatarManager({ currentAvatarUrl, userName, onAvatarChange, className }: AvatarManagerProps) {
+export default function AvatarManager({
+  currentAvatarUrl,
+  userName,
+  onAvatarChange,
+  className,
+  visibility,
+}: AvatarManagerProps) {
   const disclosure = useDisclosure();
   const [customUrl, setCustomUrl] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
@@ -85,7 +93,22 @@ export default function AvatarManager({ currentAvatarUrl, userName, onAvatarChan
   return (
     <>
       <div className={cn('flex items-center gap-5', className)}>
-        <Avatar src={currentUrl} className='size-24!' classNames={AVATAR_CLASSNAMES} />
+        <div className='relative'>
+          <Avatar src={currentUrl} className='size-24!' classNames={AVATAR_CLASSNAMES} />
+          <Tooltip
+            content={visibility === 'public' ? 'Public Profile' : 'Private Profile'}
+            className='tooltip-secondary!'
+          >
+            <div
+              className={cn(
+                'absolute -right-1 -bottom-1 flex size-7 items-center justify-center rounded-full border-2 border-white/10 text-white/80 backdrop-blur-md',
+                visibility === 'public' ? 'bg-Success-500/50' : 'bg-Warning-500/50'
+              )}
+            >
+              {visibility === 'public' ? <Globe className='size-3' /> : <Lock className='size-3' />}
+            </div>
+          </Tooltip>
+        </div>
         <div className='flex flex-col gap-2'>
           <div className='flex gap-2'>
             <Button color='primary' size='sm' onPress={disclosure.onOpen}>

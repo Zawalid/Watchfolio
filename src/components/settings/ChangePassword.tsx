@@ -3,10 +3,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { changePasswordSchema } from '@/lib/validation/settings';
 import { Modal } from '@/components/ui/Modal';
-import { Button } from '@heroui/button';
-import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/modal';
+import { Button } from '@heroui/react';
+import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
 import { PasswordInput } from '@/components/ui/PasswordInput';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { KeyRound, Info } from 'lucide-react';
 

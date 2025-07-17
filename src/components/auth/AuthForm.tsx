@@ -4,13 +4,13 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
-import { Button } from '@heroui/button';
+import { Button } from '@heroui/react';
 import { common } from '@/lib/validation/settings';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 
- const signInSchema = z.object({ email: common.email, password: common.password });
- const signUpSchema = z.object(common);
+const signInSchema = z.object({ email: common.email, password: common.password });
+const signUpSchema = z.object(common);
 
 interface AuthFormProps {
   type: 'signin' | 'signup';

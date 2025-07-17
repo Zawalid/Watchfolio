@@ -12,10 +12,10 @@ import {
   Trash2,
   TrendingUp,
 } from 'lucide-react';
-import { Button } from '@heroui/button';
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/dropdown';
-import { useDisclosure } from '@heroui/modal';
-import { Tooltip } from '@heroui/tooltip';
+import { Button } from '@heroui/react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
+import { useDisclosure } from '@heroui/react';
+import { Tooltip } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tabs } from '@/components/ui/Tabs';
@@ -96,7 +96,7 @@ export default function LibraryLayout() {
             </Tooltip>
           </div>
           <Tabs
-            className=' bg-transparent'
+            className='bg-transparent'
             tabClassName='px-3 lg:px-4 text-sm lg:text-base'
             tabs={[
               {

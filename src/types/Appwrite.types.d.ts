@@ -31,10 +31,10 @@ declare global {
     userId: string;
     name: string;
     email: string;
-    visibility: string;
+    visibility: 'public' | 'private';
     bio?: string;
     avatarUrl: string;
-    username?: string;
+    username: string;
     preferences: UserPreferences;
     library: Library;
     favoriteContentType: FavoriteContentType;
@@ -42,6 +42,7 @@ declare global {
     contentPreferences: string[];
     favoriteNetworks: number[];
     recentActivity: Activity[];
+    hiddenProfileSections: string[];
   }
   interface UserPreferences extends Document {
     signOutConfirmation: ConfirmationSetting;
@@ -49,7 +50,7 @@ declare global {
     clearLibraryConfirmation: ConfirmationSetting;
     theme: Theme;
     language: string;
-    enableAnimations : ConfirmationSetting
+    enableAnimations: ConfirmationSetting;
   }
   interface Library extends Document {
     averageRating?: number;

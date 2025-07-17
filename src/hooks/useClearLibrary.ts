@@ -1,4 +1,4 @@
-import { addToast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useSyncStore } from '@/stores/useSyncStore';
