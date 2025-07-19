@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import {  useEffect } from 'react';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
@@ -17,8 +17,6 @@ type CelebritiesCardsListProps = {
 export default function CelebritiesCardsList({ queryOptions }: CelebritiesCardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const cardsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const { data, isLoading, isError, refetch } = useQuery({
@@ -26,24 +24,19 @@ export default function CelebritiesCardsList({ queryOptions }: CelebritiesCardsL
     queryKey: [...new Set([...queryOptions.queryKey, query, page])],
   });
 
-  useEffect(() => {
-    setFocusIndex(-1);
-  }, [data?.results, query, page]);
-
-  useListNavigator({
-    containerRef: cardsContainerRef,
-    itemSelector: '[role="article"]',
+  const { containerRef, currentIndex, setCurrentIndex } = useListNavigator({
     itemCount: data?.results?.length || 0,
-    currentIndex: focusIndex,
-    onNavigate: setFocusIndex,
     onSelect: (index) => {
       if (index >= 0 && data?.results?.[index]) {
         const person = data.results[index];
         navigate(`/celebrities/${person.id}-${slugify(person.name)}`);
       }
     },
-    orientation: 'grid',
   });
+
+  useEffect(() => {
+    setCurrentIndex(-1);
+  }, [data?.results, query, page, setCurrentIndex]);
 
   if (isLoading) return <CelebritiesCardsListSkeleton length={20} />;
   if (isError)
@@ -68,9 +61,9 @@ export default function CelebritiesCardsList({ queryOptions }: CelebritiesCardsL
 
   return (
     <>
-      <div ref={cardsContainerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
+      <div ref={containerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
         {data?.results?.map((person, index) => (
-          <PersonCard key={person.id} person={person} tabIndex={focusIndex === index ? 0 : -1} />
+          <PersonCard key={person.id} person={person} tabIndex={currentIndex === index ? 0 : -1} />
         ))}
       </div>
       <Pagination

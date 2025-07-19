@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Library, Star } from 'lucide-react';
 import { Button } from '@heroui/react';
@@ -10,6 +10,7 @@ import { cn } from '@/utils';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
+import { useNavigation } from '@/contexts/NavigationContext';
 
 interface MediaStatusModalProps {
   disclosure: Disclosure;
@@ -20,6 +21,15 @@ const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_avera
 
 export default function MediaStatusModal({ disclosure, media }: MediaStatusModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);
+  const { registerNavigator, unregisterNavigator } = useNavigation();
+
+  useEffect(() => {
+    if (disclosure.isOpen) registerNavigator('media-status-modal');
+    else unregisterNavigator('media-status-modal');
+    return () => {
+      unregisterNavigator('media-status-modal');
+    };
+  }, [disclosure.isOpen, registerNavigator, unregisterNavigator]);
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { addOrUpdateItem, removeItem } = useLibraryStore();
@@ -69,26 +79,19 @@ function StatusSection({
   setCurrentRating: (rating: number | undefined) => void;
 }) {
   const statusOptions = LIBRARY_MEDIA_STATUS.filter((o) => o.value !== 'favorites');
-  const initialIndex = statusOptions.findIndex((o) => o.value === selectedStatus);
-  const [focusIndex, setFocusIndex] = useState(initialIndex > -1 ? initialIndex : 0);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const removeItem = () => {
     setSelectedStatus('none');
     onClose();
   };
 
-  useListNavigator({
-    containerRef: containerRef,
-    itemSelector: '[role="button"]',
+  const { containerRef } = useListNavigator({
     itemCount: statusOptions.length,
-    currentIndex: focusIndex,
-    onNavigate: setFocusIndex,
     onSelect: (index) => {
       if (statusOptions[index]) setSelectedStatus(statusOptions[index].value as WatchStatus);
     },
     orientation: 'vertical',
-    loop: true,
+    initialIndex: statusOptions.findIndex((o) => o.value === selectedStatus),
   });
 
   useHotkeys(getShortcut('removeFromMediaStatusModal')?.hotkey || '', removeItem);

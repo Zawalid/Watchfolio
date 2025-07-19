@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { motion } from 'framer-motion';
 import { Layers, Crown, Zap, Target, Heart, Skull, Laugh, Users, Grid3x3 } from 'lucide-react';
@@ -72,15 +72,9 @@ interface CollectionWithDetails {
 
 export default function Collections() {
   const [category, setCategory] = useQueryState('category', parseAsString);
-  const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const cardsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   usePageTitle(`${category ? COLLECTION_CATEGORIES.find((c) => c.id === category)?.label : ''} Movie Collections`);
-
-  useEffect(() => {
-    setFocusIndex(-1);
-  }, [category]);
 
   // Flatten all collections with their categories
   const allCollections = useMemo((): CollectionWithDetails[] => {
@@ -98,25 +92,24 @@ export default function Collections() {
     return allCollections.filter((collection) => collection.category === category);
   }, [allCollections, category]);
 
-  const handleCategorySelect = (categoryId: string) => {
-    const isActive = category === categoryId;
-    setCategory(isActive ? null : categoryId);
-  };
-
-  useListNavigator({
-    containerRef: cardsContainerRef,
-    itemSelector: '[role="article"]',
+  const { containerRef, currentIndex, setCurrentIndex } = useListNavigator({
     itemCount: displayedCollections.length,
-    currentIndex: focusIndex,
-    onNavigate: setFocusIndex,
     onSelect: (index) => {
       if (index >= 0 && displayedCollections[index]) {
         const collection = displayedCollections[index];
         navigate(`/collections/${collection.id}-${slugify(collection.name)}`);
       }
     },
-    orientation: 'grid',
   });
+
+  useEffect(() => {
+    setCurrentIndex(-1);
+  }, [category, setCurrentIndex]);
+
+  const handleCategorySelect = (categoryId: string) => {
+    const isActive = category === categoryId;
+    setCategory(isActive ? null : categoryId);
+  };
 
   return (
     <motion.div className='space-y-8' variants={containerVariants} initial='hidden' animate='visible'>
@@ -189,9 +182,9 @@ export default function Collections() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <div className='grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6' ref={cardsContainerRef}>
+        <div className='grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6' ref={containerRef}>
           {displayedCollections.map((collection, index) => (
-            <CollectionCard key={collection.id} collection={collection} tabIndex={focusIndex === index ? 0 : -1} />
+            <CollectionCard key={collection.id} collection={collection} tabIndex={currentIndex === index ? 0 : -1} />
           ))}
         </div>
       </motion.div>

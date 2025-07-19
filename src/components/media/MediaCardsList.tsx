@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
@@ -24,8 +24,6 @@ type MediaCardsListProps = {
 export default function MediaCardsList({ queryOptions, asSlider, slideClassName, sliderProps }: MediaCardsListProps) {
   const [query] = useQueryState('query', { defaultValue: '' });
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const cardsContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { isActive } = useNavigation();
 
@@ -34,20 +32,12 @@ export default function MediaCardsList({ queryOptions, asSlider, slideClassName,
     queryKey: [...new Set([...queryOptions.queryKey, query, page])],
   });
 
-  useEffect(() => {
-    setFocusIndex(-1);
-  }, [data?.results, query, page]);
-
   // Only enable navigation when this navigator is active
   const navigationEnabled =
     isActive('media-cards') && !isLoading && !isError && (data?.results?.length || 0) > 0 && !asSlider;
 
-  useListNavigator({
-    containerRef: cardsContainerRef,
-    itemSelector: '[role="article"]',
+  const { containerRef, currentIndex, setCurrentIndex } = useListNavigator({
     itemCount: data?.results?.length || 0,
-    currentIndex: focusIndex,
-    onNavigate: setFocusIndex,
     onSelect: (index) => {
       if (index >= 0 && data?.results?.[index]) {
         const media = data.results[index];
@@ -61,11 +51,12 @@ export default function MediaCardsList({ queryOptions, asSlider, slideClassName,
         );
       }
     },
-    orientation: 'grid',
     enabled: navigationEnabled,
-    loop: true,
-    autoFocus: true,
   });
+
+  useEffect(() => {
+    setCurrentIndex(-1);
+  }, [data?.results, query, page, setCurrentIndex]);
 
   if (isLoading) return <MediaCardsListSkeleton asSlider={asSlider} />;
   if (isError)
@@ -98,9 +89,9 @@ export default function MediaCardsList({ queryOptions, asSlider, slideClassName,
 
   return (
     <>
-      <div ref={cardsContainerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
+      <div ref={containerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
         {data?.results?.map((media, index) => (
-          <MediaCard key={media.id} media={media} tabIndex={focusIndex === index ? 0 : -1} />
+          <MediaCard key={media.id} media={media} tabIndex={currentIndex === index ? 0 : -1} />
         ))}
       </div>
       <Pagination

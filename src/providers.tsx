@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NuqsAdapter } from 'nuqs/adapters/react';
 import { HeroUIProvider } from '@heroui/react';
-import { ToastProvider } from '@heroui/react';
+import { ToastProvider } from '@heroui/toast';
 import {
   MediaStatusModalProvider,
   ConfirmationModalProvider,
@@ -18,11 +18,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   return (
-    <AnimationProvider>
-      <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <NuqsAdapter>
-            <HeroUIProvider navigate={navigate} useHref={useHref}>
+    <HeroUIProvider navigate={navigate} useHref={useHref}>
+      <AnimationProvider>
+        <ErrorBoundary>
+          <QueryClientProvider client={queryClient}>
+            <NuqsAdapter>
               <ToastProvider
                 placement='top-right'
                 toastOffset={60}
@@ -31,15 +31,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 }}
               />
               <ReactQueryDevtools initialIsOpen={false} />
-              <MediaStatusModalProvider>
-                <NavigationProvider>
+              <NavigationProvider>
+                <MediaStatusModalProvider>
                   <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
-                </NavigationProvider>
-              </MediaStatusModalProvider>
-            </HeroUIProvider>
-          </NuqsAdapter>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </AnimationProvider>
+                </MediaStatusModalProvider>
+              </NavigationProvider>
+            </NuqsAdapter>
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </AnimationProvider>
+    </HeroUIProvider>
   );
 }

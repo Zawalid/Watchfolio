@@ -42,11 +42,12 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
 
   // Clean up navigation registration on unmount
   useEffect(() => {
-    if (!showSuggestions) unregisterNavigator('search-suggestions');
+    if (showSuggestions) registerNavigator('search-suggestions');
+    else unregisterNavigator('search-suggestions');
     return () => {
       unregisterNavigator('search-suggestions');
     };
-  }, [showSuggestions, unregisterNavigator]);
+  }, [registerNavigator, showSuggestions, unregisterNavigator]);
 
   // Handle keyboard navigation for suggestions
   const handleKeyDown = useCallback(
@@ -119,7 +120,6 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
   const handleShowSuggestions = () => {
     if (!isLoading && suggestions.length > 0 && debouncedSearchQuery.trim().length >= 2) {
       setShowSuggestions(true);
-      registerNavigator('search-suggestions');
     }
   };
 

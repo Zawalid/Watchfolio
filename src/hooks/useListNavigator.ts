@@ -1,4 +1,4 @@
-import { useEffect, useCallback, RefObject } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 
 // Constants for grid calculation
 const DEFAULT_CARD_WIDTH = 200;
@@ -19,16 +19,10 @@ interface Keybindings {
 }
 
 interface UseListNavigatorOptions {
-  /** A ref to the container element holding the list items. */
-  containerRef: RefObject<HTMLElement | null>;
   /** A CSS selector to find all navigable items within the container. */
   itemSelector?: string;
   /** Total number of items in the list. */
   itemCount: number;
-  /** The currently focused index. */
-  currentIndex: number;
-  /** Callback to update the focused index when the user navigates. */
-  onNavigate: (newIndex: number) => void;
   /** Optional callback when an item is "selected" via Enter/Space key. */
   onSelect?: (selectedIndex: number) => void;
   /** The navigation pattern: 'grid' (4-way), 'vertical' (up/down), or 'horizontal' (left/right). */
@@ -45,6 +39,7 @@ interface UseListNavigatorOptions {
   cardWidth?: number;
   /** The gap between cards, used for grid calculation. */
   cardsGap?: number;
+  initialIndex?: number;
 }
 
 const defaultKeybindings: Required<Keybindings> = {
@@ -64,20 +59,21 @@ const defaultKeybindings: Required<Keybindings> = {
  * @param options - The configuration options for the navigator.
  */
 export function useListNavigator({
-  containerRef,
   itemSelector = '[role="article"], [role="option"], [role="button"]',
   itemCount,
-  currentIndex,
-  onNavigate,
   onSelect,
   orientation = 'grid',
   enabled = true,
-  loop = false,
+  loop = true,
   keybindings: customKeybindings,
   autoFocus = true,
   cardWidth = DEFAULT_CARD_WIDTH,
   cardsGap = DEFAULT_CARDS_GAP,
+  initialIndex,
 }: UseListNavigatorOptions) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(initialIndex && initialIndex > -1 ? initialIndex : -1);
+
   const keys = { ...defaultKeybindings, ...customKeybindings };
 
   const getItemsPerRow = useCallback(() => {
@@ -117,7 +113,7 @@ export function useListNavigator({
 
       const navigate = (newIndex: number) => {
         if (currentIndex === -1) {
-          onNavigate(0);
+          setCurrentIndex(0);
           return;
         }
 
@@ -128,7 +124,7 @@ export function useListNavigator({
           finalIndex = Math.max(0, Math.min(newIndex, itemCount - 1));
         }
         if (finalIndex !== currentIndex) {
-          onNavigate(finalIndex);
+          setCurrentIndex(finalIndex);
         }
       };
 
@@ -156,5 +152,11 @@ export function useListNavigator({
       document.removeEventListener('keydown', handleKeyDown);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, itemCount, currentIndex, getItemsPerRow, loop, onNavigate, onSelect, orientation]);
+  }, [enabled, itemCount, currentIndex, getItemsPerRow, loop, onSelect, orientation]);
+
+  return {
+    containerRef,
+    currentIndex,
+    setCurrentIndex,
+  };
 }

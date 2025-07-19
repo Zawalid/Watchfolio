@@ -288,28 +288,34 @@ export const mapToAppwriteData = async (
   libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
 }> => {
   let totalMinutesRuntime = 0;
-  if (!media.totalMinutesRuntime) {
-    const mediaDetails = await getDetails(media.media_type, String(media.id), false);
+  try {
+    if (!media.totalMinutesRuntime) {
+      const mediaDetails = await getDetails(media.media_type, String(media.id), false);
 
-    if (!mediaDetails) throw new Error(`Failed to fetch details for ${media.media_type} with ID ${media.id}`);
+      if (!mediaDetails) throw new Error(`Failed to fetch details for ${media.media_type} with ID ${media.id}`);
 
-    if (media.media_type === 'movie') {
-      totalMinutesRuntime = (mediaDetails as Movie).runtime || 0;
-    } else if (media.media_type === 'tv') {
-      const show = mediaDetails as TvShow;
-      const totalEpisodes = show.number_of_episodes || 0;
-      let runtime = 0;
+      if (media.media_type === 'movie') {
+        totalMinutesRuntime = (mediaDetails as Movie).runtime || 0;
+      } else if (media.media_type === 'tv') {
+        const show = mediaDetails as TvShow;
+        const totalEpisodes = show.number_of_episodes || 0;
+        let runtime = 0;
 
-      // 1. Prioritize the runtime of the last aired episode
-      if (show.last_episode_to_air?.runtime) runtime = show.last_episode_to_air.runtime;
-      // 2. Fallback to the first value in the general episode_run_time array
-      else if (show.episode_run_time && show.episode_run_time?.length > 0) runtime = show.episode_run_time[0];
-      // 3. Final fallback to a sensible default if no data is available
-      else runtime = 45;
+        // 1. Prioritize the runtime of the last aired episode
+        if (show.last_episode_to_air?.runtime) runtime = show.last_episode_to_air.runtime;
+        // 2. Fallback to the first value in the general episode_run_time array
+        else if (show.episode_run_time && show.episode_run_time?.length > 0) runtime = show.episode_run_time[0];
+        // 3. Final fallback to a sensible default if no data is available
+        else runtime = 45;
 
-      totalMinutesRuntime = Math.round(runtime * totalEpisodes);
+        totalMinutesRuntime = Math.round(runtime * totalEpisodes);
+      }
     }
+  } catch (error) {
+    console.log(error);
   }
+
+  // TODO : use similar approach to get the networks
 
   return {
     tmdbMedia: {

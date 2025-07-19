@@ -345,8 +345,8 @@
                     "required": false,
                     "array": false,
                     "min": 0,
-                    "max": 10000,
-                    "default": 0
+                    "max": 922337203685477600,
+                    "default": null
                 }
             ],
             "indexes": [

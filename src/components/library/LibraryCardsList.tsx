@@ -1,52 +1,44 @@
-import { useState, useEffect, useRef } from 'react';
-import { useQueryState } from 'nuqs';
+import { useEffect, useMemo } from 'react';
+import { parseAsInteger, useQueryState } from 'nuqs';
 import { useNavigate } from 'react-router';
 import { Search, X } from 'lucide-react';
 import EmptyState from './EmptyState';
 import LibraryCard from './LibraryCard';
-import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { ITEMS_PER_PAGE, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { generateMediaLink } from '@/utils/media';
+import { Pagination } from '../ui/Pagination';
 
 interface LibraryCardsListProps {
   items: LibraryMedia[];
-  allItems: LibraryMedia[];
   status: LibraryFilterStatus;
-  isOwnProfile : boolean;
-  onReorder?: (reorderedItems: LibraryMedia[]) => void;
+  isOwnProfile: boolean;
 }
 
 export default function LibraryCardsList({ items, status, isOwnProfile }: LibraryCardsListProps) {
-  const [displayedItems, setDisplayedItems] = useState(items);
-  const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const cardsContainerRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useQueryState('query');
-
+  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setDisplayedItems(items);
-    setFocusIndex(-1);
-  }, [items, query, status]);
+  const totalPages = Math.ceil((items?.length || 0) / ITEMS_PER_PAGE);
+  const displayedItems = useMemo(() => items.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE), [items, page]);
 
-  useListNavigator({
-    containerRef: cardsContainerRef,
-    itemSelector: '[role="article"]',
+  const { containerRef, currentIndex, setCurrentIndex } = useListNavigator({
     itemCount: displayedItems.length,
-    currentIndex: focusIndex,
-    onNavigate: setFocusIndex,
     onSelect: (index) => {
       const item = displayedItems[index];
-      if (index >= 0 && displayedItems[index])
-        navigate(generateMediaLink(item.media_type, item.id, item.title || 'Untitled'));
+      if (item) navigate(generateMediaLink(item.media_type, item.id, item.title || 'Untitled'));
     },
-    orientation: 'grid',
     enabled: displayedItems.length > 0,
-    loop: true,
-    autoFocus: true,
   });
 
-  if (items.length === 0) return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
+  useEffect(() => {
+    setPage(1);
+    setCurrentIndex(-1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, status]);
+
+  if (!items?.length) return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
 
   return (
     <>
@@ -56,12 +48,12 @@ export default function LibraryCardsList({ items, status, isOwnProfile }: Librar
             {query
               ? 'Search Results'
               : status === 'all'
-                ? 'All '
+                ? 'All'
                 : LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label || 'Library'}
           </h2>
           <div className='bg-Primary-500/20 text-Primary-300 flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium'>
-            <span>{displayedItems.length}</span>
-            <span className='text-Primary-400/60'>{displayedItems.length === 1 ? 'item' : 'items'}</span>
+            <span>{items.length}</span>
+            <span className='text-Primary-400/60'>{items.length === 1 ? 'item' : 'items'}</span>
           </div>
         </div>
 
@@ -80,16 +72,18 @@ export default function LibraryCardsList({ items, status, isOwnProfile }: Librar
         )}
       </div>
 
-      <div ref={cardsContainerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
+      <div ref={containerRef} className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4'>
         {displayedItems.map((item, index) => (
           <LibraryCard
             key={`${item.id}-${item.media_type}`}
             item={item}
-            tabIndex={focusIndex === index ? 0 : -1}
+            tabIndex={currentIndex === index ? 0 : -1}
             isOwnProfile={isOwnProfile}
           />
         ))}
       </div>
+
+      {totalPages > 1 && <Pagination className='mt-auto' total={totalPages} page={page} siblings={2} />}
     </>
   );
 }

@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router';
 import { Providers } from '@/providers';
 import { useLibrarySync } from '@/hooks/useLibrarySync';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
-import { useOnboarding } from '@/hooks/useOnboarding';
+// import { useOnboarding } from '@/hooks/useOnboarding';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import AuthModal from '@/components/auth/AuthModal';
 import Navbar from '@/components/Navbar';
@@ -16,7 +16,7 @@ export default function Layout() {
 
   useInitialAuth();
   useLibrarySync();
-  useOnboarding();
+  // useOnboarding();
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
