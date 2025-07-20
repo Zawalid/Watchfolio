@@ -79,11 +79,10 @@ export default function NetworkDetails() {
       </motion.div>
 
       <MediaCardsList
-        queryOptions={{
-          queryKey: queryKeys.network(network?.id, discoverParams),
-          queryFn: () => getTvShowsByNetwork(network!.id, discoverParams),
-          enabled: !!network?.id,
-        }}
+        queryKey={queryKeys.network(network?.id, discoverParams)}
+        queryFn={({ pageParam }) => getTvShowsByNetwork(network!.id, { ...discoverParams, page: pageParam })}
+        enabled={!!network?.id}
+        useInfiniteQuery={true}
       />
     </motion.div>
   );

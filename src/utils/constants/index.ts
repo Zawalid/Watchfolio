@@ -93,4 +93,6 @@ export const TMDB_TV_CATEGORIES: Categories[] = ['popular', 'top-rated', 'airing
 export const FAVORITE_GENRES_LIMIT = 5;
 export const FAVORITE_NETWORKS_LIMIT = 5;
 
-export const ITEMS_PER_PAGE = 20
+export const ITEMS_PER_PAGE = 20;
+
+export const MAX_TMDB_PAGES = 500;

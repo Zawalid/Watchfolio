@@ -38,10 +38,8 @@ export default function ComingSoonSection() {
       </div>
 
       <MediaCardsList
-        queryOptions={{
-          queryKey: [...queryKeys.category('movie', 'upcoming', 1), 'combined'],
-          queryFn: () => getUpcomingContent(1),
-        }}
+        queryKey={[...queryKeys.category('movie', 'upcoming', 1), 'combined']}
+        queryFn={() => getUpcomingContent(1)}
         asSlider={true}
         slideClassName='w-[200px]! sm:w-[250px]!'
         sliderProps={{ autoplay: true, loop: true }}

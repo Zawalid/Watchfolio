@@ -13,33 +13,29 @@ interface MediaPageProps {
 
 export default function MediaPage({ type, categories }: MediaPageProps) {
   const [category] = useQueryState('category', parseAsString);
-  const { discoverParams, page } = useDiscoverParams(type);
+  const { discoverParams } = useDiscoverParams(type);
 
   usePageTitle(`${category ? slugify(category, { reverse: true }) : ''} ${type === 'movie' ? 'Movies' : 'TV Shows'}`);
 
   const isValidCategory = category && categories.includes(category as Categories);
 
-  // If there's a valid category, use the category endpoint
   if (isValidCategory) {
     const getFn = type === 'movie' ? getMovies : getTvShows;
     return (
       <MediaCardsList
-        queryOptions={{
-          queryKey: queryKeys.category(type, category as Categories, page),
-          queryFn: async () => await getFn(category as Categories, page),
-        }}
+        queryKey={queryKeys.category(type, category as Categories)}
+        queryFn={async ({ pageParam }) => await getFn(category as Categories, pageParam)}
+        useInfiniteQuery={true}
       />
     );
   }
 
-  // Use discover for general browsing or when filters are applied
   const discoverFn = type === 'movie' ? discoverMovies : discoverTvShows;
   return (
     <MediaCardsList
-      queryOptions={{
-        queryKey: queryKeys.discover(type, discoverParams),
-        queryFn: async () => await discoverFn(discoverParams),
-      }}
+      queryKey={queryKeys.discover(type, discoverParams)}
+      queryFn={async ({ pageParam }) => await discoverFn({ ...discoverParams, page: pageParam })}
+      useInfiniteQuery={true}
     />
   );
 }

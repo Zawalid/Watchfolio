@@ -31,6 +31,6 @@ export const getMovies = async (category: Categories, page?: number): Promise<TM
   }
 };
 
-export const getCollection = async (collectionId: number) : Promise<Collection> => {
+export const getCollection = async (collectionId: number): Promise<Collection> => {
   return await fetchFromTMDB(`/collection/${collectionId}`);
 };

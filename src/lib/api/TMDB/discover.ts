@@ -31,6 +31,7 @@ export interface DiscoverParams {
   with_original_language?: string; // ISO 639-1 language code
   with_watch_providers?: string; // comma-separated provider IDs
   watch_region?: string;
+  include_adult?: boolean;
 
   // Date filtering
   'primary_release_date.gte'?: string; // YYYY-MM-DD (movies)
@@ -60,10 +61,14 @@ export interface DiscoverParams {
   without_keywords?: string; // comma-separated keyword IDs
 }
 
+const defaultParams = {
+  include_adult: 'false',
+  'vote_count.gte': '50',
+  'primary_release_date.gte': '2000-01-01',
+};
 export const discoverMovies = async (params: DiscoverParams = {}): Promise<TMDBResponse<Movie>> => {
-  const queryParams: Record<string, string> = {};
+  const queryParams: Record<string, string> = defaultParams;
 
-  // Convert all parameters to strings for the API call
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       queryParams[key] = String(value);
@@ -74,9 +79,8 @@ export const discoverMovies = async (params: DiscoverParams = {}): Promise<TMDBR
 };
 
 export const discoverTvShows = async (params: DiscoverParams = {}): Promise<TMDBResponse<TvShow>> => {
-  const queryParams: Record<string, string> = {};
+  const queryParams: Record<string, string> = defaultParams;
 
-  // Convert all parameters to strings for the API call
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
       queryParams[key] = String(value);

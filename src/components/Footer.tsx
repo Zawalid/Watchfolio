@@ -1,6 +1,20 @@
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { Github, Twitter, Instagram, Film, Tv, Layers, User, Settings, Home, Users, Tv2Icon } from 'lucide-react';
+import { Tooltip } from '@heroui/react';
+import {
+  Github,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Film,
+  Tv,
+  Layers,
+  User,
+  Settings,
+  Home,
+  Users,
+  Tv2Icon,
+} from 'lucide-react';
 
 const footerLinks = [
   {
@@ -32,9 +46,10 @@ const footerLinks = [
 ];
 
 const socialLinks = [
-  { icon: <Github className='size-5' />, href: '#', label: 'GitHub' },
-  { icon: <Twitter className='size-5' />, href: '#', label: 'Twitter' },
-  { icon: <Instagram className='size-5' />, href: '#', label: 'Instagram' },
+  { icon: <Github className='size-4' />, href: 'https://github.com/zawalid', label: 'GitHub' },
+  { icon: <Linkedin className='size-4' />, href: 'https://www.linkedin.com/in/zakan-walid/', label: 'Linkedin' },
+  { icon: <Twitter className='size-4' />, href: 'https://x.com/Zawaalid', label: 'X' },
+  { icon: <Instagram className='size-4' />, href: 'https://www.instagram.com/walidzakan/', label: 'Instagram' },
 ];
 
 export default function Footer() {
@@ -85,7 +100,7 @@ export default function Footer() {
           <p className='text-Grey-500 text-sm'>&copy; {new Date().getFullYear()} Watchfolio. All Rights Reserved.</p>
 
           <div className='flex items-center gap-3'>
-            <p className='text-Grey-500 text-xs'>Data provided by</p>
+            <p className='text-Grey-500 text-sm'>Data provided by</p>
             <a href='https://www.themoviedb.org/' target='_blank' rel='noopener noreferrer'>
               <img
                 src='https://files.readme.io/29c6fee-blue_short.svg'
@@ -95,21 +110,44 @@ export default function Footer() {
             </a>
           </div>
 
-          <div className='flex items-center space-x-5'>
-            {socialLinks.map((social) => (
-              <motion.a
-                key={social.label}
-                href={social.href}
-                aria-label={social.label}
-                whileHover={{ scale: 1.2, y: -3 }}
-                className='text-Grey-400 transition-colors duration-300 hover:text-white'
-              >
-                {social.icon}
-              </motion.a>
-            ))}
+          <div className='flex items-center gap-3'>
+            <p className='text-Grey-500 text-sm'>Made by</p>
+            <Tooltip
+              content={
+                <div className='flex flex-col gap-2.5 py-1.5'>
+                  <img
+                    src='https://avatars.githubusercontent.com/u/114166197?v=4'
+                    alt='Walid Zakan'
+                    className='h-36 w-full rounded-md object-cover'
+                  />
+                  <div className='space-y-2.5'>
+                    <div className='text-center'>
+                      <h2 className='text-lg font-semibold text-white'>Walid Zakan</h2>
+                      <h4 className='text-xs font-medium text-gray-400'>Full Stack Developer</h4>
+                    </div>
+                    <div className='flex justify-center gap-3 border-t border-white/10 pt-2'>
+                      {socialLinks.map((social) => (
+                        <motion.a
+                          key={social.label}
+                          href={social.href}
+                          aria-label={social.label}
+                          whileHover={{ scale: 1.2, y: -3 }}
+                          className='text-Grey-400 transition-colors duration-300 hover:text-white'
+                        >
+                          {social.icon}
+                        </motion.a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              }
+            >
+              <button className='heading gradient font-semibold text-base italic'>Walid Zakan</button>
+            </Tooltip>
           </div>
         </div>
       </div>
     </footer>
   );
 }
+

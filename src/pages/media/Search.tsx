@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useLocation } from 'react-router';
 import { useIsFetching } from '@tanstack/react-query';
 import { Button } from '@heroui/react';
-import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
+import { parseAsString, useQueryState } from 'nuqs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Search as SearchIcon, Film, Star, Heart, Tv, Users } from 'lucide-react';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
@@ -44,9 +44,8 @@ const SEARCH_TABS = [
 
 export default function Search() {
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
-  const [page, setPage] = useQueryState('page', parseAsInteger.withDefault(1));
   const [contentType, setContentType] = useQueryState('type', parseAsString.withDefault('all'));
-  const isFetching = useIsFetching({ queryKey: ['search', query, page, contentType] }) > 0;
+  const isFetching = useIsFetching({ queryKey: ['search', query, contentType] }) > 0;
   const location = useLocation();
   const [showWelcome, setShowWelcome] = useState(false);
   const [searchQuery, setSearchQuery] = useState(query);
@@ -62,33 +61,34 @@ export default function Search() {
   const handleSearch = useCallback(
     (searchTerm: string) => {
       setQuery(searchTerm);
-      setPage(1);
     },
-    [setQuery, setPage]
+    [setQuery]
   );
 
   // Handle tab change
   const handleTabChange = useCallback(
     (tabId: string) => {
       setContentType(tabId);
-      setPage(1); // Reset to first page when changing tabs
     },
-    [setContentType, setPage]
+    [setContentType]
   );
 
   // Get query function based on content type
-  const getQueryFunction = useCallback(() => {
-    switch (contentType) {
-      case 'movie':
-        return () => searchMovie(query, page);
-      case 'tv':
-        return () => searchTvShows(query, page);
-      case 'person':
-        return () => searchPerson(query, page);
-      default:
-        return () => search(query, page);
-    }
-  }, [contentType, query, page]);
+  const getQueryFunction = useCallback(
+    (pageParam: number) => {
+      switch (contentType) {
+        case 'movie':
+          return () => searchMovie(query, pageParam);
+        case 'tv':
+          return () => searchTvShows(query, pageParam);
+        case 'person':
+          return () => searchPerson(query, pageParam);
+        default:
+          return () => search(query, pageParam);
+      }
+    },
+    [contentType, query]
+  );
 
   // Check if user came from onboarding
   const fromOnboarding = location.state?.fromOnboarding;
@@ -171,19 +171,23 @@ export default function Search() {
         <div>
           {contentType === 'person' ? (
             <CelebritiesCardsList
-              queryOptions={{
-                queryKey: queryKeys.search(contentType, query, page),
-                queryFn: getQueryFunction() as () => Promise<TMDBResponse<Person>>,
-                enabled: !!query,
+              queryKey={queryKeys.search(contentType, query)}
+              queryFn={async ({ pageParam = 1 }) => {
+                const res = await getQueryFunction(pageParam as number)();
+                return res as TMDBResponse<Person>;
               }}
+              enabled={!!query}
+              useInfiniteQuery={true}
             />
           ) : (
             <MediaCardsList
-              queryOptions={{
-                queryKey: queryKeys.search(contentType, query, page),
-                queryFn: getQueryFunction() as () => Promise<TMDBResponse<Media>>,
-                enabled: !!query,
+              queryKey={queryKeys.search(contentType, query)}
+              queryFn={async ({ pageParam = 1 }) => {
+                const res = await getQueryFunction(pageParam as number)();
+                return res as TMDBResponse<Media>;
               }}
+              enabled={!!query}
+              useInfiniteQuery={true}
             />
           )}
         </div>

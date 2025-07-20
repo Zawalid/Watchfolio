@@ -38,10 +38,8 @@ export default function TrendingSection() {
       </div>
 
       <MediaCardsList
-        queryOptions={{
-          queryKey: queryKeys.trending('all', 'week'),
-          queryFn: () => getTrendingAll('week'),
-        }}
+        queryKey={queryKeys.trending('all', 'week')}
+        queryFn={() => getTrendingAll('week')}
         asSlider={true}
         slideClassName='w-[200px]! sm:w-[250px]!'
         sliderProps={{ autoplay: true, loop: true }}

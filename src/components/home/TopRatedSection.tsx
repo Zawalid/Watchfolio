@@ -16,7 +16,7 @@ export default function TopRatedSection() {
 
   return (
     <div className='space-y-6'>
-      <div className='items-cente flex justify-between'>
+      <div className='items-center flex justify-between'>
         <Title type={selectedTab} />
 
         <div className='flex flex-col items-end'>
@@ -43,7 +43,8 @@ export default function TopRatedSection() {
 
       <div className='relative'>
         <MediaCardsList
-          queryOptions={selectedTab === 'movie' ? movieQuery : tvQuery}
+          queryKey={selectedTab === 'movie' ? movieQuery.queryKey : tvQuery.queryKey}
+          queryFn={selectedTab === 'movie' ? movieQuery.queryFn : tvQuery.queryFn}
           asSlider={true}
           slideClassName='w-[200px]! sm:w-[250px]!'
           sliderProps={{ autoplay: true, loop: true }}

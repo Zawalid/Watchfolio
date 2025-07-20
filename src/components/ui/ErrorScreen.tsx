@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '@heroui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, Home, AlertTriangle, Zap, Code2 } from 'lucide-react';
+import { RefreshCw, Home, AlertTriangle, Zap, Code2, Copy } from 'lucide-react';
 import { AnimatedRing } from './AnimatedRing';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 interface ErrorScreenProps {
   error: Error;
@@ -40,6 +41,7 @@ const itemVariants = {
 export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
   const navigate = useNavigate();
   const [showDetails, setShowDetails] = useState(import.meta.env.DEV);
+  const { copied, copy } = useCopyToClipboard();
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleGoHome = () => {
@@ -122,15 +124,16 @@ export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
           <AnimatePresence>
             {import.meta.env.DEV && (
               <motion.div variants={itemVariants} className='w-full max-w-3xl'>
-                <motion.button
-                  onClick={() => setShowDetails(!showDetails)}
-                  className='pill-bg text-Grey-300 hover:text-Grey-100 mx-auto mb-4 flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all hover:bg-white/10'
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Code2 className='h-4 w-4' />
-                  {showDetails ? 'Hide' : 'Show'} Error Details
-                </motion.button>
+                <div className='flex justify-center gap-3 mb-3'>
+                  <Button className='button-secondary!' onPress={() => setShowDetails(!showDetails)}>
+                    <Code2 className='h-4 w-4' />
+                    {showDetails ? 'Hide' : 'Show'} Error Details
+                  </Button>
+                  <Button className='button-secondary!' onPress={() => copy(error.message)}>
+                    <Copy className='h-4 w-4' />
+                    {copied ? 'Copied' : 'Copy Error Message'}
+                  </Button>
+                </div>
 
                 <AnimatePresence>
                   {showDetails && (
