@@ -9,6 +9,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import Navbar from '@/components/Navbar';
 import { ResponsiveScreen } from '@/components/ui/ResponsiveGuardScreen';
 import Footer from '@/components/Footer';
+import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 export default function Layout() {
   const location = useLocation();
@@ -45,6 +46,7 @@ export default function Layout() {
           <Footer />
           <OnboardingModal />
           <AuthModal />
+          <ScrollToTopButton />
         </div>
       )}
     </Providers>

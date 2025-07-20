@@ -5,7 +5,7 @@ import { addToast } from '@heroui/react';
 import { FAVORITE_GENRES_LIMIT, FAVORITE_NETWORKS_LIMIT } from '@/utils/constants';
 import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import { cn } from '@/utils';
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/Slider';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },

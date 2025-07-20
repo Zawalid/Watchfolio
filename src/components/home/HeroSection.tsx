@@ -3,7 +3,7 @@ import { getTrendingAll } from '@/lib/api/TMDB';
 import { Sparkles } from 'lucide-react';
 import HeroItem from './HeroSectionItem';
 import { placeholder } from '@/utils/shimmer-placeholder';
-import { Slider } from '../ui/slider';
+import { Slider } from '../ui/Slider';
 
 export default function HeroSection() {
   const { data: featuredData, isLoading } = useQuery({
@@ -79,7 +79,7 @@ export default function HeroSection() {
         freeMode={false}
         showNavigation={false}
         loop={true}
-        autoplay={{ delay: 8000, }}
+        autoplay={{ delay: 8000 }}
         creativeEffect={{ prev: { shadow: true, translate: [0, 0, -400] }, next: { translate: ['100%', 0, 0] } }}
         effect={'creative'}
         pagination={{

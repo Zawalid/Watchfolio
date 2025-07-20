@@ -6,6 +6,7 @@ import { useListNavigator } from '@/hooks/useListNavigator';
 import { cn } from '@/utils';
 import { Status } from '@/components/ui/Status';
 import { Pagination } from '@/components/ui/Pagination';
+import { Slider } from '@/components/ui/Slider';
 
 export type InfiniteCardsListProps<T> = {
   queryKey: readonly unknown[];
@@ -53,7 +54,7 @@ export function InfiniteCardsList<T>({
   slideClassName,
   sliderProps,
   enabled = true,
-  useInfiniteQuery: useInfinite = true,
+  useInfiniteQuery: useInfinite = false,
   gridClassName = 'grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5',
   containerRef,
   errorMessage = 'There was an error loading the list.',
@@ -74,7 +75,7 @@ export function InfiniteCardsList<T>({
 
   // Infinite query for infinite scrolling
   const infiniteQuery = useInfiniteQuery<TMDBResponse<T>, Error, TMDBResponse<T>, readonly unknown[], number>({
-    queryKey,
+    queryKey: [...queryKey, 'infinite'],
     queryFn: queryFn as (ctx: QueryFunctionContext<readonly unknown[], number>) => Promise<TMDBResponse<T>>,
     enabled: useInfinite && enabled,
     getNextPageParam: getNextPageParamDefault,
@@ -142,25 +143,14 @@ export function InfiniteCardsList<T>({
   if (!results.length) return <Status.NoResults message={noResultsMessage} />;
   if (totalResults === 0) return <Status.Empty Icon={emptyIcon} title={emptyTitle} message={emptyMessage} />;
 
-  if (asSlider && sliderProps) {
-    const Slider = sliderProps.Slider;
-    const Slide = sliderProps.Slide;
+  if (asSlider) {
     return (
       <Slider {...sliderProps}>
         {results.map((item) => (
-          <Slide key={getItemKey(item)} className={cn('w-[160px] sm:w-[200px]!', slideClassName)}>
+          <Slider.Slide key={getItemKey(item)} className={cn('w-[160px] sm:w-[200px]!', slideClassName)}>
             <CardComponent item={item} />
-          </Slide>
+          </Slider.Slide>
         ))}
-        {useInfinite && (
-          <div
-            className='col-span-full w-full'
-            ref={sentinelRef}
-            style={{ height: infiniteQuery.isFetchingNextPage ? 'auto' : 1 }}
-          >
-            {infiniteQuery.isFetchingNextPage && <SkeletonComponent length={10} asSlider={asSlider} />}
-          </div>
-        )}
       </Slider>
     );
   }

@@ -1,6 +1,6 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
 import MediaCardsListSkeleton from '../MediaCardsListSkeleton';
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/Slider';
 
 const backgroundImage = { style: { backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' } };
 

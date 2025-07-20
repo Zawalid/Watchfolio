@@ -88,11 +88,12 @@ export default function Celebrities() {
 
       <motion.div variants={itemVariants}>
         <CelebritiesCardsList
-          queryOptions={{
-            queryKey: queryKeys.celebrities(category, page),
-            queryFn: async () =>
-              category === 'trending' ? await getTrendingPeople(page) : await getPopularPeople(page),
+          queryKey={queryKeys.celebrities(category, page)}
+          queryFn={async ({ pageParam = 1 }) => {
+            const res = category === 'trending' ? await getTrendingPeople(pageParam) : await getPopularPeople(pageParam);
+            return res as TMDBResponse<Person>;
           }}
+          useInfiniteQuery={true}
         />
       </motion.div>
     </motion.div>

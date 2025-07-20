@@ -1,7 +1,7 @@
 import { Button } from '@heroui/react';
 import { ArrowRight, Tv } from 'lucide-react';
 import { Link } from 'react-router';
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/Slider';
 import { NETWORKS } from '@/utils/constants/TMDB';
 
 export default function NetworksSection() {

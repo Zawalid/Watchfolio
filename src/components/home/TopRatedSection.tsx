@@ -16,7 +16,7 @@ export default function TopRatedSection() {
 
   return (
     <div className='space-y-6'>
-      <div className='items-center flex justify-between'>
+      <div className='flex justify-between'>
         <Title type={selectedTab} />
 
         <div className='flex flex-col items-end'>

@@ -11,6 +11,7 @@ import { Pagination } from '../ui/Pagination';
 
 interface LibraryCardsListProps {
   items: LibraryMedia[];
+  allItems?: LibraryMedia[];
   status: LibraryFilterStatus;
   isOwnProfile: boolean;
 }

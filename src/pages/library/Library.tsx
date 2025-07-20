@@ -18,5 +18,5 @@ export default function Library({ status }: { status: LibraryFilterStatus }) {
 
   const filteredItems = useFilteredLibrary(rawItems, status);
 
-  return <LibraryCardsList items={filteredItems} status={status || 'all'} isOwnProfile />;
+  return <LibraryCardsList items={filteredItems} allItems={rawItems} status={status || 'all'} isOwnProfile />;
 }

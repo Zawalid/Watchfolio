@@ -1,5 +1,5 @@
 import { SwiperSlide } from 'swiper/react';
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/Slider';
 import {
   MorphingDialog,
   MorphingDialogClose,

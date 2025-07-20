@@ -1,4 +1,4 @@
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/Slider';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { Link } from 'react-router';
 import { slugify } from '@/utils';

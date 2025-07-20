@@ -1,5 +1,5 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
-import { Slider } from '@/components/ui/slider';
+import { Slider } from '@/components/ui/Slider';
 
 function MediaCardSkeleton() {
   return (
@@ -13,10 +13,7 @@ function MediaCardSkeleton() {
 
       {/* Poster content */}
       <div className='relative block aspect-[2/3] overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900'>
-        <div
-          className='size-full'
-          style={{ backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' }}
-        />
+        <div className='size-full' style={{ backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' }} />
 
         {/* Gradients */}
         <div className='absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent' />
