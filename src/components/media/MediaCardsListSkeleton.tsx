@@ -1,7 +1,7 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
 import { Slider } from '@/components/ui/Slider';
 
-function MediaCardSkeleton() {
+export function MediaCardSkeleton() {
   return (
     <div className='group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] shadow-lg backdrop-blur-sm'>
       {/* Top left badges */}

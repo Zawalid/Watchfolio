@@ -67,10 +67,10 @@ const defaultParams = {
   'primary_release_date.gte': '2000-01-01',
 };
 export const discoverMovies = async (params: DiscoverParams = {}): Promise<TMDBResponse<Movie>> => {
-  const queryParams: Record<string, string> = defaultParams;
+  const queryParams: Record<string, string> = { ...defaultParams };
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
+    if (value !== undefined && value !== null && value !== '') {
       queryParams[key] = String(value);
     }
   });
@@ -79,10 +79,10 @@ export const discoverMovies = async (params: DiscoverParams = {}): Promise<TMDBR
 };
 
 export const discoverTvShows = async (params: DiscoverParams = {}): Promise<TMDBResponse<TvShow>> => {
-  const queryParams: Record<string, string> = defaultParams;
+  const queryParams: Record<string, string> = { ...defaultParams };
 
   Object.entries(params).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
+    if (value !== undefined && value !== null && value !== '') {
       queryParams[key] = String(value);
     }
   });

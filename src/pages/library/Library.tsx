@@ -1,5 +1,5 @@
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import LibraryCardsList from '@/components/library/LibraryCardsList';
+import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
@@ -18,5 +18,5 @@ export default function Library({ status }: { status: LibraryFilterStatus }) {
 
   const filteredItems = useFilteredLibrary(rawItems, status);
 
-  return <LibraryCardsList items={filteredItems} allItems={rawItems} status={status || 'all'} isOwnProfile />;
+  return <LibraryInfiniteCardsList items={filteredItems} allItems={rawItems} status={status || 'all'} isOwnProfile />;
 }

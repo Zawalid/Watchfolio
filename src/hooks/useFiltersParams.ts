@@ -12,6 +12,7 @@ export function useFiltersParams() {
   const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
 
+
   const clearAllFilters = () => {
     setSelectedGenres(null);
     setSelectedNetworks(null);

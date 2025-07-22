@@ -14,7 +14,7 @@ import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import FiltersModal from '@/components/FiltersModal';
 import SortBy from '@/components/SortBy';
-import LibraryCardsList from '@/components/library/LibraryCardsList';
+import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
 import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
 import { getLibraryCount, mapFromAppwriteData } from '@/utils/library';
 import { Status } from '@/components/ui/Status';
@@ -159,7 +159,12 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
           </div>
         </div>
         <div className='flex-1 space-y-8'>
-          <LibraryCardsList items={filteredItems} allItems={items} status={status} isOwnProfile={isOwnProfile} />
+          <LibraryInfiniteCardsList
+            items={filteredItems}
+            allItems={items}
+            status={status}
+            isOwnProfile={isOwnProfile}
+          />
         </div>
       </div>
     </div>

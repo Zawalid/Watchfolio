@@ -10,7 +10,7 @@ export function useDiscoverParams(type?: MediaType) {
   const [sortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
   const [sortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
 
-  const { language, minRating, maxRating, minYear, maxYear, selectedGenres, selectedNetworks, selectedTypes ,query} =
+  const { language, minRating, maxRating, minYear, maxYear, selectedGenres, selectedNetworks, selectedTypes, query } =
     useFiltersParams();
 
   const debouncedMinRating = useDebounce(minRating, 700);
@@ -26,7 +26,7 @@ export function useDiscoverParams(type?: MediaType) {
 
     // Apply filters only if they have valid values
     if (selectedGenres?.length) {
-      params.with_genres = selectedGenres.map((gen) => GENRES.find((g) => g.slug === gen)?.id).join(',');
+      params.with_genres = selectedGenres.map((gen) => GENRES.find((g) => g.slug === gen)?.id).join(','); // , = AND, | = OR
     }
 
     if (selectedNetworks?.length) {
@@ -83,6 +83,6 @@ export function useDiscoverParams(type?: MediaType) {
     selectedGenres,
     selectedNetworks,
     selectedTypes,
-    query
+    query,
   };
 }

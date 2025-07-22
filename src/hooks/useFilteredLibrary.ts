@@ -21,11 +21,11 @@ export function useFilteredLibrary(allMedia: LibraryMedia[] | undefined, status?
           return false;
         }
       }
-      if (genres && genres.length > 0) {
-        if (!item.genres?.some((g) => genres.includes(g.toLowerCase()))) {
-          return false;
-        }
-      }
+     if (genres && genres.length > 0) {
+       if (!genres.every((selected) => item.genres?.map((g) => g.toLowerCase()).includes(selected))) {
+         return false;
+       }
+     }
       if (types && types.length > 0) {
         if (!types.includes(item.media_type)) {
           return false;
