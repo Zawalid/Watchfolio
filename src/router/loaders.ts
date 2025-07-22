@@ -8,82 +8,49 @@ import {
   type DiscoverParams,
 } from '@/lib/api/TMDB';
 import { prefetchQuery, queryKeys } from '@/lib/react-query';
+import { TMDB_MOVIE_CATEGORIES, TMDB_TV_CATEGORIES } from '@/utils/constants';
 
-const createDetailsLoader =
-  (type: 'movie' | 'tv') =>
-  async ({ params }: LoaderFunctionArgs) => {
+const createListLoader = (type: 'movie' | 'tv') => {
+  return async ({ request }: LoaderFunctionArgs) => {
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+    const categories = type === 'movie' ? TMDB_MOVIE_CATEGORIES : TMDB_TV_CATEGORIES;
+
+    if (category && categories.includes(category as Categories)) {
+      const queryKey = queryKeys.category(type, category as Categories);
+      const fn = type === 'movie' ? getMovies : getTvShows;
+      const data = await prefetchQuery<TMDBResponse<Movie | TvShow>>(() => fn(category as Categories), queryKey);
+      return data.data;
+    }
+
+    const sortBy = url.searchParams.get('sort_by') || 'popularity';
+    const sortDir = url.searchParams.get('sort_dir') || 'desc';
+
+    const queryKey = queryKeys.discover(type, { sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'] });
+
+    const fn = type === 'movie' ? discoverMovies : discoverTvShows;
+    const data = await prefetchQuery<TMDBResponse<Movie | TvShow>>(
+      () => fn({ sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'] }),
+      queryKey
+    );
+    return data.data;
+  };
+};
+
+const createDetailsLoader = (type: 'movie' | 'tv') => {
+  return async ({ params }: LoaderFunctionArgs) => {
     const slug = params.slug as string;
     const queryKey = queryKeys.details(type, slug);
 
     const data = await prefetchQuery(() => getDetails(type, slug), queryKey);
     return data.data;
   };
-// Updated movies loader for both category and discover API
-export const moviesLoader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const page = Number(url.searchParams.get('page') || 1);
-  const category = url.searchParams.get('category');
-
-  // If category is selected, use category endpoints
-  if (category && ['popular', 'top-rated', 'now-playing', 'upcoming'].includes(category)) {
-    const queryKey = queryKeys.category('movie', category as Categories, page);
-    const data = await prefetchQuery(() => getMovies(category as Categories, page), queryKey);
-    return data.data;
-  }
-
-  // Otherwise use discover API
-  const sortBy = url.searchParams.get('sort_by') || 'popularity';
-  const sortDir = url.searchParams.get('sort_dir') || 'desc';
-
-  const queryKey = queryKeys.discover('movie',  {
-    page,
-    sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'],
-    'vote_count.gte': 50,
-  });
-
-  const data = await prefetchQuery(
-    () =>
-      discoverMovies({
-        page,
-        sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'],
-        'vote_count.gte': 50,
-      }),
-    queryKey
-  );
-  return data.data;
 };
-export const MovieLoader = createDetailsLoader('movie');
-export const tvShowsLoader = async ({ request }: LoaderFunctionArgs) => {
-  const url = new URL(request.url);
-  const page = Number(url.searchParams.get('page') || 1);
-  const category = url.searchParams.get('category');
 
-  // If category is selected, use category endpoints
-  if (category && ['popular', 'top-rated', 'airing-today', 'on-tv'].includes(category)) {
-    const queryKey = queryKeys.category('tv', category as Categories, page);
-    const data = await prefetchQuery(() => getTvShows(category as Categories, page), queryKey);
-    return data.data;
-  }
+export const moviesLoader = createListLoader('movie');
+export const movieDetailsLoader = createDetailsLoader('movie');
 
-  // Otherwise use discover API
-  const sortBy = url.searchParams.get('sort_by') || 'popularity';
-  const sortDir = url.searchParams.get('sort_dir') || 'desc';
-
-  const queryKey = queryKeys.discover('tv',  {
-    page,
-    sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'],
-    'vote_count.gte': 50,
-  });
-
-  const data = await prefetchQuery(
-    () =>
-      discoverTvShows({
-        page,
-        sort_by: `${sortBy}.${sortDir}` as DiscoverParams['sort_by'],
-        'vote_count.gte': 50,
-      }),
-    queryKey
-  );
-  return data.data;
-};
+export const tvShowsLoader = createListLoader('tv');
 export const tvDetailsLoader = createDetailsLoader('tv');
+
+// TODO: Add loaders for other routes

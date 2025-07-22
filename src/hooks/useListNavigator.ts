@@ -18,7 +18,7 @@ interface Keybindings {
   select?: string | string[] | false;
 }
 
-interface UseListNavigatorOptions {
+export interface UseListNavigatorOptions {
   /** A CSS selector to find all navigable items within the container. */
   itemSelector?: string;
   /** Total number of items in the list. */
@@ -49,7 +49,7 @@ const defaultKeybindings: Required<Keybindings> = {
   prevRow: 'ArrowUp',
   first: 'Home',
   last: 'End',
-  select: ['Enter', ' '],
+  select: ['Enter'],
 };
 
 /**

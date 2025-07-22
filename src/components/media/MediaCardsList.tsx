@@ -1,7 +1,10 @@
+import { useNavigate } from 'react-router';
 import { InfiniteCardsList, InfiniteCardsListProps } from '@/components/ui/InfiniteCardsList';
 import MediaCard from './MediaCard';
 import MediaCardsListSkeleton from './MediaCardsListSkeleton';
 import { Film } from 'lucide-react';
+import { getMediaType } from '@/utils/media';
+import { generateMediaLink } from '@/utils/media';
 
 export default function MediaCardsList(
   props: Omit<
@@ -16,6 +19,8 @@ export default function MediaCardsList(
     | 'emptyTitle'
   >
 ) {
+  const navigate = useNavigate();
+
   return (
     <InfiniteCardsList
       {...props}
@@ -29,6 +34,16 @@ export default function MediaCardsList(
       emptyMessage='It seems there are no media at the moment. Please come back and check later.'
       emptyIcon={Film}
       emptyTitle='No Media'
+      onSelect={(item) => {
+        const type = getMediaType(item);
+        navigate(
+          generateMediaLink(
+            type,
+            item.id,
+            (type === 'movie' ? (item as Movie).title : (item as TvShow).name) || 'Untitled'
+          )
+        );
+      }}
     />
   );
 }

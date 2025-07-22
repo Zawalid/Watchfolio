@@ -1,4 +1,4 @@
-import { parseAsInteger, parseAsString, useQueryState } from 'nuqs';
+import {  parseAsString, useQueryState } from 'nuqs';
 import { motion } from 'framer-motion';
 import { Users, TrendingUp, Sparkles } from 'lucide-react';
 import CelebritiesCardsList from '@/components/celebrity/CelebritiesCardsList';
@@ -24,7 +24,6 @@ const CELEBRITY_CATEGORIES = [
 ];
 
 export default function Celebrities() {
-  const [page] = useQueryState('page', parseAsInteger.withDefault(1));
   const [category, setCategory] = useQueryState('category', parseAsString.withDefault('popular'));
   
   usePageTitle(`${category ? CELEBRITY_CATEGORIES.find((c) => c.id === category)?.label : ''} Celebrities`);
@@ -88,7 +87,7 @@ export default function Celebrities() {
 
       <motion.div variants={itemVariants}>
         <CelebritiesCardsList
-          queryKey={queryKeys.celebrities(category, page)}
+          queryKey={queryKeys.celebrities(category)}
           queryFn={async ({ pageParam = 1 }) => {
             const res = category === 'trending' ? await getTrendingPeople(pageParam) : await getPopularPeople(pageParam);
             return res as TMDBResponse<Person>;

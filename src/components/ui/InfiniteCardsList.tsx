@@ -6,7 +6,8 @@ import { useListNavigator } from '@/hooks/useListNavigator';
 import { cn } from '@/utils';
 import { Status } from '@/components/ui/Status';
 import { Pagination } from '@/components/ui/Pagination';
-import { Slider } from '@/components/ui/Slider';
+import { Slider, SliderProps } from '@/components/ui/Slider';
+import { PaginationProps } from '@heroui/react';
 
 export type InfiniteCardsListProps<T> = {
   queryKey: readonly unknown[];
@@ -18,7 +19,7 @@ export type InfiniteCardsListProps<T> = {
   getItemKey: (item: T) => string | number;
   asSlider?: boolean;
   slideClassName?: string;
-  sliderProps?: any;
+  sliderProps?: Partial<SliderProps>;
   enabled?: boolean;
   useInfiniteQuery?: boolean;
   gridClassName?: string;
@@ -27,12 +28,13 @@ export type InfiniteCardsListProps<T> = {
   errorMessage?: string;
   noResultsMessage?: string;
   emptyMessage?: string;
-  emptyIcon?: React.ComponentType<any>;
+  emptyIcon?: React.ElementType;
   emptyTitle?: string;
-  paginationProps?: Record<string, any>;
+  paginationProps?: Partial<PaginationProps>;
+  onSelect?: (item: T) => void;
 };
 
-function getNextPageParamDefault(lastPage: { page: number; total_pages: number; results: any[] }) {
+function getNextPageParamDefault<T>(lastPage: TMDBResponse<T>) {
   if (
     !lastPage ||
     typeof lastPage.page !== 'number' ||
@@ -62,7 +64,8 @@ export function InfiniteCardsList<T>({
   emptyMessage = 'No items available.',
   emptyIcon,
   emptyTitle,
-  paginationProps = {},
+  paginationProps,
+  onSelect,
 }: InfiniteCardsListProps<T>) {
   const [query] = useQueryState('query', { defaultValue: '' });
 
@@ -88,6 +91,7 @@ export function InfiniteCardsList<T>({
     if (useInfinite && inView && infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage) {
       infiniteQuery.fetchNextPage();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useInfinite, inView, infiniteQuery.hasNextPage, infiniteQuery.isFetchingNextPage]);
 
   // Data extraction
@@ -96,7 +100,7 @@ export function InfiniteCardsList<T>({
   const refetch = useInfinite ? infiniteQuery.refetch : normalQuery.refetch;
 
   function isInfiniteData(data: unknown): data is InfiniteData<TMDBResponse<T>, number> {
-    return !!data && typeof data === 'object' && 'pages' in data && Array.isArray((data as any).pages);
+    return !!data && typeof data === 'object' && 'pages' in data && Array.isArray((data as { pages: unknown[] }).pages);
   }
   const infiniteData = useInfinite && isInfiniteData(infiniteQuery.data) ? infiniteQuery.data : undefined;
 
@@ -123,7 +127,12 @@ export function InfiniteCardsList<T>({
     setCurrentIndex,
   } = useListNavigator({
     itemCount: results.length,
-    onSelect: () => {},
+    onSelect: (index) => {
+      if (index >= 0 && results[index]) {
+        const item = results[index];
+        onSelect?.(item);
+      }
+    },
     enabled: !asSlider,
   });
 
@@ -131,6 +140,7 @@ export function InfiniteCardsList<T>({
     if (useInfinite && inView && infiniteQuery.hasNextPage && !infiniteQuery.isFetchingNextPage) {
       infiniteQuery.fetchNextPage();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [useInfinite, inView, infiniteQuery.hasNextPage, infiniteQuery.isFetchingNextPage]);
 
   useEffect(() => {

@@ -21,17 +21,17 @@ export const queryKeys = {
     type,
     ...Object.entries(params).map(([key, value]) => `${key}=${value}`),
   ],
-  category: (type: 'movie' | 'tv', category: Categories, page?: number) => [type, category, page],
+  category: (type: 'movie' | 'tv', category: Categories,) => [type, category],
   trending: (type: 'all' | 'movie' | 'tv', timeWindow: 'day' | 'week') => ['trending', type, timeWindow],
 
   details: (type: 'movie' | 'tv', id: string) => ['details', type, id],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
   season: (seasonNumber: number) => ['season', seasonNumber],
 
-  search: (contentType: string, query: string, page?: number) => ['search', contentType, query, page],
+  search: (contentType: string, query: string) => ['search', contentType, query],
   suggestions: (query: string) => ['suggestions', query],
 
-  celebrities: (category: string, page: number) => ['celebrities', category, page] as const,
+  celebrities: (category: string) => ['celebrities', category] as const,
   celebrity: (id: number) => ['celebrity', id] as const,
   personCredits: (id: number, type: 'movie' | 'tv' | 'combined') => ['person', id, 'credits', type] as const,
 

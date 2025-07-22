@@ -1,127 +1,166 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { SearchIcon } from 'lucide-react';
+import { SearchIcon, X as XIcon, Trash2 } from 'lucide-react';
 import { queryKeys } from '@/lib/react-query';
 import { getSuggestions } from '@/lib/api/TMDB';
 import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { useQueryState } from 'nuqs';
 
-interface SearchInputProps {
-  searchQuery: string;
-  setSearchQuery: (value: string) => void;
-  onSearch: (query: string) => void;
-}
+const HISTORY_KEY = 'search-history';
+const HISTORY_LIMIT = 12;
+const MIN_QUERY_LENGTH = 2;
+const DEBOUNCE_DELAY = 300;
+const CACHE_TIME = 1000 * 60 * 5;
 
-export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: SearchInputProps) {
+export default function SearchInput() {
+  const [query, setQuery] = useQueryState('query');
+  const [inputValue, setInputValue] = useState(query || '');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const [history, setHistory] = useLocalStorageState<string[]>(HISTORY_KEY, []);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const { registerNavigator, unregisterNavigator } = useNavigation();
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedInputValue = useDebounce(inputValue, DEBOUNCE_DELAY);
 
-  // Use React Query to fetch and cache suggestions
-  const { data: suggestions = [], isLoading } = useQuery({
-    queryKey: queryKeys.suggestions(debouncedSearchQuery),
-    queryFn: async () => {
-      if (!debouncedSearchQuery.trim() || debouncedSearchQuery.length < 2) return [];
-      try {
-        return await getSuggestions(debouncedSearchQuery, 10);
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
-        return [];
-      }
+  const queryOptions = useMemo(
+    () => ({
+      queryKey: queryKeys.suggestions(debouncedInputValue),
+      queryFn: async () => {
+        if (!debouncedInputValue.trim() || debouncedInputValue.length < MIN_QUERY_LENGTH) return [];
+        try {
+          return await getSuggestions(debouncedInputValue, 10);
+        } catch (error) {
+          console.error('Error fetching suggestions:', error);
+          return [];
+        }
+      },
+      enabled: debouncedInputValue.trim().length >= MIN_QUERY_LENGTH,
+      staleTime: CACHE_TIME,
+      refetchOnWindowFocus: false,
+    }),
+    [debouncedInputValue]
+  );
+
+  const { data: suggestions = [], isLoading } = useQuery(queryOptions);
+
+  // Optimized search handler with history management
+  const handleSearch = useCallback(
+    (query: string) => {
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery) return;
+      setHistory((prev) => {
+        const filtered = prev.filter((item) => item.toLowerCase() !== trimmedQuery.toLowerCase());
+        return [trimmedQuery, ...filtered].slice(0, HISTORY_LIMIT);
+      });
+      setInputValue(trimmedQuery);
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+      setQuery(trimmedQuery);
     },
-    enabled: debouncedSearchQuery.trim().length >= 2,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false,
-  });
+    [setHistory, setQuery]
+  );
 
-  // Clean up navigation registration on unmount
   useEffect(() => {
-    if (showSuggestions) registerNavigator('search-suggestions');
-    else unregisterNavigator('search-suggestions');
-    return () => {
+    if (showSuggestions) {
+      registerNavigator('search-suggestions');
+    } else {
       unregisterNavigator('search-suggestions');
-    };
+    }
+    return () => unregisterNavigator('search-suggestions');
   }, [registerNavigator, showSuggestions, unregisterNavigator]);
 
-  // Handle keyboard navigation for suggestions
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (!showSuggestions) return;
-
-      // Prevent default behavior and stop propagation to block other navigators
-      const navigationKeys = ['ArrowDown', 'ArrowUp', 'Enter', 'Escape'];
-      if (navigationKeys.includes(e.key)) {
+      const showingHistory = !inputValue && history.length > 0;
+      const totalOptions = showingHistory ? history.length : suggestions.length;
+      const isNavigationKey = ['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key);
+      if (isNavigationKey) {
         e.preventDefault();
         e.stopPropagation();
       }
-
       switch (e.key) {
         case 'ArrowDown':
-          setSelectedSuggestionIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0));
+          setSelectedSuggestionIndex((prev) => (prev < totalOptions - 1 ? prev + 1 : 0));
           break;
         case 'ArrowUp':
-          setSelectedSuggestionIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1));
+          setSelectedSuggestionIndex((prev) => (prev > 0 ? prev - 1 : totalOptions - 1));
           break;
         case 'Enter':
           if (selectedSuggestionIndex >= 0) {
-            const selectedSuggestion = suggestions[selectedSuggestionIndex];
-            onSearch(selectedSuggestion);
-            setSearchQuery(selectedSuggestion);
-            setShowSuggestions(false);
-          } else if (searchQuery.trim()) {
-            onSearch(searchQuery);
-            setShowSuggestions(false);
+            const selectedItem = showingHistory
+              ? history[selectedSuggestionIndex]
+              : suggestions[selectedSuggestionIndex];
+            setInputValue(selectedItem);
+            handleSearch(selectedItem);
+          } else if (inputValue.trim()) {
+            handleSearch(inputValue);
           }
           break;
         case 'Escape':
           setShowSuggestions(false);
           setSelectedSuggestionIndex(-1);
+          inputRef.current?.blur();
           break;
       }
     },
-    [showSuggestions, suggestions, selectedSuggestionIndex, searchQuery, onSearch, setSearchQuery]
+    [showSuggestions, suggestions, selectedSuggestionIndex, inputValue, handleSearch, history]
   );
 
-  // Handle suggestion click
-  const handleSuggestionClick = useCallback(
-    (suggestion: string) => {
-      onSearch(suggestion);
-      setSearchQuery(suggestion);
-      setShowSuggestions(false);
-      setSelectedSuggestionIndex(-1);
-    },
-    [onSearch, setSearchQuery]
-  );
+  const handleClearInput = useCallback(() => {
+    setInputValue('');
+    setShowSuggestions(false);
+    setSelectedSuggestionIndex(-1);
+    setQuery('');
+    inputRef.current?.focus();
+  }, [setQuery]);
 
-  // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Node;
+      const isOutsideSuggestions = suggestionsRef.current && !suggestionsRef.current.contains(target);
+      const isOutsideInput = inputRef.current && !inputRef.current.contains(target);
+      if (isOutsideSuggestions && isOutsideInput) {
         setShowSuggestions(false);
         setSelectedSuggestionIndex(-1);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleShowSuggestions = () => {
-    if (!isLoading && suggestions.length > 0 && debouncedSearchQuery.trim().length >= 2) {
+  const handleShowSuggestions = useCallback(() => {
+    const shouldShowSuggestions =
+      !isLoading &&
+      ((suggestions.length > 0 && debouncedInputValue.trim().length >= MIN_QUERY_LENGTH) ||
+        (!inputValue && history.length > 0));
+    if (shouldShowSuggestions) {
       setShowSuggestions(true);
+      setSelectedSuggestionIndex(-1);
     }
-  };
+  }, [isLoading, suggestions.length, debouncedInputValue, inputValue, history.length]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setInputValue(value);
+      setSelectedSuggestionIndex(-1);
+      setTimeout(handleShowSuggestions, 0);
+    },
+    [handleShowSuggestions]
+  );
+
+  const showingHistory = !inputValue && history.length > 0;
+  const shouldShowDropdown =
+    showSuggestions &&
+    (showingHistory || (suggestions.length > 0 && debouncedInputValue.trim().length >= MIN_QUERY_LENGTH));
 
   return (
     <div className='relative flex-1' ref={suggestionsRef}>
@@ -132,63 +171,139 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
         parentClassname='flex-1'
         className='h-14 text-base'
         name='query'
-        value={searchQuery}
-        onChange={(e) => {
-          setSearchQuery(e.target.value);
-          setSelectedSuggestionIndex(-1);
-          handleShowSuggestions();
-        }}
+        value={inputValue}
+        onChange={handleInputChange}
         onKeyDown={handleKeyDown}
         onFocus={handleShowSuggestions}
-        label='Search For Movies, TV Shows & People'
+        label='Search For Movies, TV Shows & Celebrities'
         placeholder='eg. Breaking Bad, Leonardo DiCaprio, The Matrix...'
         autoComplete='off'
       >
-        {searchQuery && (
+        {inputValue && (
           <button
             className='text-Grey-400 hover:text-Grey-300 absolute top-1/2 right-4 z-20 -translate-y-1/2 rounded-lg p-1 transition-all duration-200 hover:bg-white/10'
             type='button'
-            onClick={() => {
-              setSearchQuery('');
-              onSearch('');
-              setShowSuggestions(false);
-              setSelectedSuggestionIndex(-1);
-            }}
+            onClick={handleClearInput}
+            aria-label='Clear search'
           >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth='1.5'
-              stroke='currentColor'
-              className='h-5 w-5'
-            >
-              <path strokeLinecap='round' strokeLinejoin='round' d='M6 18 18 6M6 6l12 12' />
-            </svg>
+            <XIcon className='h-5 w-5' />
           </button>
         )}
       </Input>
-
-      {/* Auto-completion Suggestions Dropdown */}
       <AnimatePresence>
-        {showSuggestions && suggestions.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            className='bg-Grey-900/95 absolute top-full right-0 left-0 z-50 mt-2 max-h-80 overflow-y-auto rounded-xl border border-white/10 shadow-2xl backdrop-blur-lg'
-          >
-            {suggestions.map((suggestion, index) => (
-              <motion.button
-                key={`${suggestion}-${index}`}
+        {shouldShowDropdown && (
+          <SuggestionsDropdown
+            showingHistory={showingHistory}
+            history={history}
+            suggestions={suggestions}
+            selectedIndex={selectedSuggestionIndex}
+            onSuggestionClick={(suggestion: string) => {
+              setInputValue(suggestion);
+              handleSearch(suggestion);
+            }}
+            onClearHistory={() => setHistory([])}
+            onRemoveHistoryItem={(item: string) => {
+              setHistory((prev) => prev.filter((h) => h.toLowerCase() !== item.toLowerCase()));
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Memoized suggestions dropdown component
+const SuggestionsDropdown = React.memo(
+  ({
+    showingHistory,
+    history,
+    suggestions,
+    selectedIndex,
+    onSuggestionClick,
+    onClearHistory,
+    onRemoveHistoryItem,
+  }: {
+    showingHistory: boolean;
+    history: string[];
+    suggestions: string[];
+    selectedIndex: number;
+    onSuggestionClick: (suggestion: string) => void;
+    onClearHistory: () => void;
+    onRemoveHistoryItem: (item: string) => void;
+  }) => {
+    const handleRemoveClick = useCallback(
+      (e: React.MouseEvent, item: string) => {
+        e.stopPropagation();
+        onRemoveHistoryItem(item);
+      },
+      [onRemoveHistoryItem]
+    );
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className='bg-Grey-900/95 absolute top-full right-0 left-0 z-50 mt-2 max-h-80 overflow-y-auto rounded-xl border border-white/10 shadow-2xl backdrop-blur-lg'
+      >
+        {/* History Section */}
+        {showingHistory && (
+          <div>
+            <div className='text-Grey-400 flex items-center justify-between px-4 pt-3 pb-1 text-xs font-semibold uppercase'>
+              <span>Recent Searches</span>
+              <button
+                className='hover:text-Error-400 flex items-center gap-1 text-xs font-normal transition-colors'
+                onClick={onClearHistory}
                 type='button'
-                className={`w-full px-4 py-3 text-left text-base transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
-                  index === selectedSuggestionIndex
+              >
+                <Trash2 className='h-3 w-3' /> Clear All
+              </button>
+            </div>
+            {history.map((item, index) => (
+              <motion.button
+                key={`history-${item}-${index}`}
+                type='button'
+                className={`group flex w-full items-center justify-between px-4 py-2.5 text-left text-base transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
+                  index === selectedIndex
                     ? 'bg-Primary-500/20 text-Primary-300 border-Primary-500 border-l-2'
                     : 'text-Grey-200 hover:bg-white/5 hover:text-white'
                 }`}
-                onClick={() => handleSuggestionClick(suggestion)}
+                onClick={() => onSuggestionClick(item)}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className='flex items-center gap-3'>
+                  <SearchIcon className='h-4 w-4 opacity-60' />
+                  <span className='flex-1 truncate'>{item}</span>
+                </div>
+                <button
+                  className='text-Grey-500 hover:text-Error-400 ml-2 rounded p-1 transition-colors'
+                  onClick={(e) => handleRemoveClick(e, item)}
+                  type='button'
+                  tabIndex={-1}
+                  aria-label={`Remove "${item}" from history`}
+                >
+                  <XIcon className='h-4 w-4' />
+                </button>
+              </motion.button>
+            ))}
+          </div>
+        )}
+
+        {/* Suggestions Section */}
+        {!showingHistory && suggestions.length > 0 && (
+          <div>
+            {suggestions.map((suggestion, index) => (
+              <motion.button
+                key={`suggestion-${suggestion}-${index}`}
+                type='button'
+                className={`w-full px-4 py-3 text-left text-base transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
+                  index === selectedIndex
+                    ? 'bg-Primary-500/20 text-Primary-300 border-Primary-500 border-l-2'
+                    : 'text-Grey-200 hover:bg-white/5 hover:text-white'
+                }`}
+                onClick={() => onSuggestionClick(suggestion)}
                 whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -198,9 +313,9 @@ export default function SearchInput({ searchQuery, setSearchQuery, onSearch }: S
                 </div>
               </motion.button>
             ))}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </div>
-  );
-}
+      </motion.div>
+    );
+  }
+);
