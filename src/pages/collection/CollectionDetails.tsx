@@ -12,6 +12,7 @@ import { formatDate } from '@/utils';
 import { Rating } from '@/components/ui/Rating';
 import { Status } from '@/components/ui/Status';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { getTmdbImage } from '@/utils/media';
 
 export default function CollectionDetails() {
   const { slug } = useParams();
@@ -39,7 +40,7 @@ export default function CollectionDetails() {
       />
     );
 
-  const { name, overview, backdrop_path, parts } = collection;
+  const { name, overview,  parts } = collection;
   const formattedName = name.replace(' Collection', '').trim();
 
   const totalMovies = parts.length;
@@ -50,7 +51,7 @@ export default function CollectionDetails() {
       <motion.section variants={itemVariants}>
         <div className='relative flex min-h-[450px] flex-col justify-end overflow-hidden rounded-xl p-8 text-white shadow-2xl [&_:first-child]:inset-0 [&>div]:absolute'>
           <LazyImage
-            src={`https://image.tmdb.org/t/p/original${backdrop_path}`}
+            src={getTmdbImage(collection, 'original')}
             alt={formattedName}
             className='object-cover'
           />

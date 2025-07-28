@@ -88,38 +88,37 @@ declare interface Season {
  */
 declare interface BaseMedia {
   id: number;
+  media_type: MediaType;
+  overview: string;
   vote_average: number;
   vote_count: number;
   poster_path: string | null;
   backdrop_path: string | null;
-  overview: string;
+  genre_ids?: number[];
+  genres?: { id: number; name: string }[];
   original_language: string;
   adult: boolean;
   popularity: number;
+  status?: string;
+  credits?: { cast: Person[]; crew: Person[] };
+  videos?: { results: Video[] };
+  images?: Images;
+  production_companies?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
+  production_countries?: { iso_3166_1: string; name: string }[];
+  spoken_languages?: { english_name: string; iso_639_1: string; name: string }[];
 }
 
 /**
  * Movie information - works for both basic and detailed responses
  */
 declare interface Movie extends BaseMedia {
-  media_type: 'movie' | 'tv';
   title: string;
   original_title: string;
   release_date: string | null;
-
-  genre_ids?: number[];
-  genres?: { id: number; name: string }[];
-
   runtime?: number;
   budget?: number;
   revenue?: number;
-  status?: string;
   tagline?: string;
-  credits?: { cast: Person[]; crew: Person[] };
-  videos?: { results: Video[] };
-  production_companies?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
-  production_countries?: { iso_3166_1: string; name: string }[];
-  spoken_languages?: { english_name: string; iso_639_1: string; name: string }[];
   belongs_to_collection?: { id: number; name: string; poster_path: string | null; backdrop_path: string | null };
 }
 
@@ -127,16 +126,10 @@ declare interface Movie extends BaseMedia {
  * TV Show information - works for both basic and detailed responses
  */
 declare interface TvShow extends BaseMedia {
-  media_type: 'tv' | 'movie';
   name: string;
   original_name: string;
   first_air_date: string | null;
   origin_country: string[];
-
-  genre_ids?: number[];
-  genres?: { id: number; name: string }[];
-
-  status?: string;
   last_air_date?: string | null;
   last_episode_to_air?: Episode;
   number_of_seasons?: number;
@@ -144,14 +137,15 @@ declare interface TvShow extends BaseMedia {
   episode_run_time?: number[];
   seasons?: Season[];
   created_by?: Person[];
-  credits?: { cast: Person[]; crew: Person[] };
-  videos?: { results: Video[] };
-  production_companies?: { id: number; logo_path: string | null; name: string; origin_country: string }[];
-  production_countries?: { iso_3166_1: string; name: string }[];
-  spoken_languages?: { english_name: string; iso_639_1: string; name: string }[];
   networks?: { id: number; name: string; logo_path: string | null; origin_country: string }[];
   type?: string;
   in_production?: boolean;
+  networks?: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  };
 }
 
 type Media = Movie | TvShow;
@@ -182,7 +176,6 @@ type Image = {
 };
 declare interface Images {
   backdrops: Image[];
-  id: 1119878;
   logos: Image[];
   posters: Image[];
 }
@@ -215,3 +208,19 @@ interface Network {
   invertOnHover: boolean;
   provider_id?: number;
 }
+
+interface Suggestion {
+  id: number;
+  name: string;
+  year: string | null;
+  mediaType: MediaType | 'person';
+  poster_path: string | null;
+  profile_path: string | null;
+  popularity: number;
+  rating: number | null;
+  relevanceScore: number;
+}
+
+type TmdbImageSize = 'w500' | 'w780' | 'w1920_and_h800_multi_faces' | 'original' | 'w300' | 'w200';
+
+type ContentType = 'movie' | 'tv' | 'person';

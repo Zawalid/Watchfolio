@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { authService } from '@/lib/auth';
 import { persistAndSync } from '@/utils/persistAndSync';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { useLibraryStore } from './useLibraryStore';
 
 interface AuthState {
   user: UserWithProfile | null;
@@ -93,12 +94,12 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           await authService.signOut();
+          useLibraryStore.getState().clearLibrary();
           set({
             user: null,
             isAuthenticated: false,
             isLoading: false,
           });
-          // useLibraryStore.getState().clearLibrary();
         } catch (error) {
           set({ isLoading: false });
           throw error;

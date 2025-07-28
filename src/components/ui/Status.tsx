@@ -140,7 +140,14 @@ export type EmptyProps = {
   className?: string;
 };
 
-function Empty({ Icon, iconColor, title = 'Nothing here yet', message, children, className }: EmptyProps) {
+function Empty({
+  Icon,
+  iconColor = 'text-Secondary-400',
+  title = 'Nothing here yet',
+  message,
+  children,
+  className,
+}: EmptyProps) {
   return (
     <StatusContainer className={className}>
       <motion.div

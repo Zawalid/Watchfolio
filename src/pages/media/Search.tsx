@@ -5,13 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Search as SearchIcon, Film, Star, Heart, Tv, Users } from 'lucide-react';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import { search, searchMovie, searchPerson, searchTvShows } from '@/lib/api/TMDB';
-import MediaCardsList from '@/components/media/MediaCardsList';
-import CelebritiesCardsList from '@/components/celebrity/CelebritiesCardsList';
 import { queryKeys } from '@/lib/react-query';
 import SearchInput from '@/components/SearchInput';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
 import { cn } from '@/utils';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 
 const SEARCH_TABS = [
   {
@@ -131,7 +130,11 @@ export default function Search() {
       </div>
 
       {query ? (
-        <SearchResults contentType={contentType} query={query} getQueryFunction={getQueryFunction} />
+        <SearchResults
+          contentType={contentType as ContentType & 'all'}
+          query={query}
+          getQueryFunction={getQueryFunction}
+        />
       ) : (
         <NoSearchQuery handleSearch={handleSearch} />
       )}
@@ -177,12 +180,12 @@ const SearchResults = React.memo(
     query,
     getQueryFunction,
   }: {
-    contentType: string;
+    contentType: ContentType & 'all';
     query: string;
     getQueryFunction: (pageParam: number) => () => Promise<TMDBResponse<Media | Person>>;
   }) => (
     <div>
-      {contentType === 'person' ? (
+      {/* {contentType === 'person' ? (
         <CelebritiesCardsList
           queryKey={queryKeys.search(contentType, query)}
           queryFn={async ({ pageParam = 1 }) => {
@@ -193,7 +196,7 @@ const SearchResults = React.memo(
           useInfiniteQuery={true}
         />
       ) : (
-        <MediaCardsList
+        <MediaAndCelebritiesCardsList
           queryKey={queryKeys.search(contentType, query)}
           queryFn={async ({ pageParam = 1 }) => {
             const res = await getQueryFunction(pageParam as number)();
@@ -202,7 +205,17 @@ const SearchResults = React.memo(
           enabled={!!query}
           useInfiniteQuery={true}
         />
-      )}
+      )} */}
+      <MediaAndCelebritiesCardsList
+        contentType={contentType}
+        queryKey={queryKeys.search(contentType, query)}
+        queryFn={async ({ pageParam = 1 }) => {
+          const res = await getQueryFunction(pageParam as number)();
+          return res as TMDBResponse<Media | Person>;
+        }}
+        enabled={!!query}
+        useInfiniteQuery={true}
+      />
     </div>
   )
 );

@@ -1,12 +1,12 @@
-import {  parseAsString, useQueryState } from 'nuqs';
+import { parseAsString, useQueryState } from 'nuqs';
 import { motion } from 'framer-motion';
 import { Users, TrendingUp, Sparkles } from 'lucide-react';
-import CelebritiesCardsList from '@/components/celebrity/CelebritiesCardsList';
 import { queryKeys } from '@/lib/react-query';
 import { getPopularPeople, getTrendingPeople } from '@/lib/api/TMDB';
 import { cn } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 
 const CELEBRITY_CATEGORIES = [
   {
@@ -25,7 +25,7 @@ const CELEBRITY_CATEGORIES = [
 
 export default function Celebrities() {
   const [category, setCategory] = useQueryState('category', parseAsString.withDefault('popular'));
-  
+
   usePageTitle(`${category ? CELEBRITY_CATEGORIES.find((c) => c.id === category)?.label : ''} Celebrities`);
 
   const handleCategorySelect = (categoryId: string) => {
@@ -86,10 +86,12 @@ export default function Celebrities() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <CelebritiesCardsList
+        <MediaAndCelebritiesCardsList
+          contentType='person'
           queryKey={queryKeys.celebrities(category)}
           queryFn={async ({ pageParam = 1 }) => {
-            const res = category === 'trending' ? await getTrendingPeople(pageParam) : await getPopularPeople(pageParam);
+            const res =
+              category === 'trending' ? await getTrendingPeople(pageParam) : await getPopularPeople(pageParam);
             return res as TMDBResponse<Person>;
           }}
           useInfiniteQuery={true}

@@ -6,6 +6,7 @@ import { queryKeys } from '@/lib/react-query';
 import { getTvShowSeasonDetails } from '@/lib/api/TMDB';
 import { formatDate } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
+import { getTmdbImage } from '@/utils/media';
 
 export default function SeasonDetails({ season, show }: { season: Season; show: TvShow }) {
   const { data: seasonWithEps, isLoading } = useQuery({
@@ -23,11 +24,7 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
       <motion.div variants={itemVariants}>
         <div className='relative size-full overflow-hidden rounded-s-xl'>
           <img
-            src={
-              seasonWithEps.poster_path
-                ? `http://image.tmdb.org/t/p/w500${seasonWithEps.poster_path}`
-                : '/images/placeholder.png'
-            }
+            src={getTmdbImage(seasonWithEps, 'w500')}
             alt={`${show.name}: ${seasonWithEps.name}`}
             className='size-full object-cover transition-all duration-500 hover:scale-105'
           />

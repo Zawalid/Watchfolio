@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { SearchIcon, X as XIcon, Trash2 } from 'lucide-react';
+import { SearchIcon, X as XIcon, Trash2, Star } from 'lucide-react';
 import { queryKeys } from '@/lib/react-query';
 import { getSuggestions } from '@/lib/api/TMDB';
 import { Input } from '@/components/ui/Input';
@@ -9,6 +9,7 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useQueryState } from 'nuqs';
+import { getTmdbImage } from '@/utils/media';
 
 const HISTORY_KEY = 'search-history';
 const HISTORY_LIMIT = 12;
@@ -97,7 +98,7 @@ export default function SearchInput() {
           if (selectedSuggestionIndex >= 0) {
             const selectedItem = showingHistory
               ? history[selectedSuggestionIndex]
-              : suggestions[selectedSuggestionIndex];
+              : suggestions[selectedSuggestionIndex].name;
             setInputValue(selectedItem);
             handleSearch(selectedItem);
           } else if (inputValue.trim()) {
@@ -225,7 +226,7 @@ const SuggestionsDropdown = React.memo(
   }: {
     showingHistory: boolean;
     history: string[];
-    suggestions: string[];
+    suggestions: Array<Suggestion>;
     selectedIndex: number;
     onSuggestionClick: (suggestion: string) => void;
     onClearHistory: () => void;
@@ -294,25 +295,55 @@ const SuggestionsDropdown = React.memo(
         {/* Suggestions Section */}
         {!showingHistory && suggestions.length > 0 && (
           <div>
-            {suggestions.map((suggestion, index) => (
-              <motion.button
-                key={`suggestion-${suggestion}-${index}`}
-                type='button'
-                className={`w-full px-4 py-3 text-left text-base transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
-                  index === selectedIndex
-                    ? 'bg-Primary-500/20 text-Primary-300 border-Primary-500 border-l-2'
-                    : 'text-Grey-200 hover:bg-white/5 hover:text-white'
-                }`}
-                onClick={() => onSuggestionClick(suggestion)}
-                whileHover={{ x: 4 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className='flex items-center gap-3'>
-                  <SearchIcon className='h-4 w-4 opacity-60' />
-                  <span className='flex-1 truncate'>{suggestion}</span>
-                </div>
-              </motion.button>
-            ))}
+            {suggestions.map((suggestion, index) => {
+              return (
+                <motion.button
+                  key={`suggestion-${suggestion.id}-${suggestion.name}-${suggestion.year}-${index}`}
+                  type='button'
+                  className={`w-full px-4 py-3 text-left text-base transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
+                    index === selectedIndex
+                      ? 'bg-Primary-500/20 text-Primary-300 border-Primary-500 border-l-2'
+                      : 'text-Grey-200 hover:bg-white/5 hover:text-white'
+                  }`}
+                  onClick={() => onSuggestionClick(suggestion.name)}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className='flex items-center gap-3'>
+                    <img
+                      src={getTmdbImage(suggestion, 'w200')}
+                      alt={suggestion.name}
+                      className='h-14 w-10 rounded-md object-cover'
+                    />
+
+                    <div className='min-w-0 flex-1'>
+                      <div className='flex items-center gap-2'>
+                        <span className='truncate font-medium'>{suggestion.name}</span>
+                        {suggestion.year && (
+                          <span className='text-Grey-400 flex-shrink-0 text-sm'>({suggestion.year})</span>
+                        )}
+                      </div>
+                      <div className='mt-1 flex items-center gap-2'>
+                        {suggestion.mediaType !== 'person' && (
+                          <div className='flex items-center gap-2'>
+                            <span className='text-Grey-500 text-xs tracking-wide capitalize'>
+                              {suggestion.mediaType === 'movie' ? 'Movie' : 'TV Show'}
+                            </span>
+                            {suggestion.popularity > 50 && <span className='text-Primary-400 text-xs'>🔥 Popular</span>}
+                          </div>
+                        )}
+                        {!!suggestion.rating && (
+                          <div className='flex items-center gap-1'>
+                            <Star className='text-Warning-400 h-3 w-3 fill-current' />
+                            <span className='text-Grey-400 text-xs'>{suggestion.rating.toFixed(1)}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         )}
       </motion.div>

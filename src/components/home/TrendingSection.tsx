@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Button } from '@heroui/react';
 import { getTrendingAll } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
-import MediaCardsList from '@/components/media/MediaCardsList';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 
 export default function TrendingSection() {
   return (
@@ -37,11 +37,10 @@ export default function TrendingSection() {
         </Button>
       </div>
 
-      <MediaCardsList
+      <MediaAndCelebritiesCardsList
         queryKey={queryKeys.trending('all', 'week')}
         queryFn={() => getTrendingAll('week')}
         asSlider={true}
-        slideClassName='w-[200px]! sm:w-[250px]!'
         sliderProps={{ autoplay: true, loop: true }}
       />
     </div>

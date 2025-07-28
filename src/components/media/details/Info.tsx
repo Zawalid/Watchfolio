@@ -1,14 +1,26 @@
 import { Link } from 'react-router';
 import { motion } from 'framer-motion';
-import { LANGUAGES } from '@/utils/constants/TMDB';
+import { LANGUAGES, NETWORKS } from '@/utils/constants/TMDB';
 import { LazyImage } from '@/components/ui/LazyImage';
-import { getDirectorOrCreator, getFormattedRuntime, getMediaType, getRating, getReleaseYear } from '@/utils/media';
+import {
+  getDirectorOrCreator,
+  getFormattedRuntime,
+  getMediaType,
+  getRating,
+  getReleaseYear,
+  getTmdbImage,
+} from '@/utils/media';
 import ActionButtons from './ActionButtons';
 import { slugify } from '@/utils';
 import { Rating } from '@/components/ui/Rating';
+import NetworkCard from '@/pages/networks/NetworkCard';
 
-export default function Info({ media }: { media: Media }) {
-  const { vote_average, poster_path, genres } = media;
+interface InfoProps {
+  media: Media;
+}
+
+export default function Info({ media }: InfoProps) {
+  const { vote_average, genres } = media;
   const type = getMediaType(media);
 
   const title = type === 'movie' ? (media as Movie).title : (media as TvShow).name;
@@ -25,14 +37,14 @@ export default function Info({ media }: { media: Media }) {
             transition={{ duration: 0.3 }}
           >
             <LazyImage
-              src={poster_path ? `http://image.tmdb.org/t/p/original${poster_path}` : '/images/placeholder.png'}
+              src={getTmdbImage(media, 'original')}
               alt={title}
               className='size-full object-cover transition-transform duration-300 group-hover:scale-105'
             />
             <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
           </motion.div>
 
-          <ActionButtons media={{ ...media, media_type: type }} onPlayTrailer={() => {}} />
+          <ActionButtons media={{ ...media, media_type: type }} />
         </div>
 
         {/* Right Column - Info */}
@@ -93,11 +105,17 @@ export default function Info({ media }: { media: Media }) {
   );
 }
 
-
-
 function Details({ media }: { media: Media }) {
   const type = getMediaType(media);
   const directorOrCreator = getDirectorOrCreator(media);
+
+  const tvShowNetworks =
+    'networks' in media && media.networks
+      ? media.networks
+          .map((tvNetwork) => NETWORKS.find((network) => network.id === tvNetwork.id))
+          .filter(Boolean)
+          .slice(0, 4) as Network[]
+      : [];
 
   return (
     <div className='mt-4 space-y-4 border-t border-white/10 pt-4'>
@@ -139,6 +157,23 @@ function Details({ media }: { media: Media }) {
           </div>
         </div>
       </div>
+
+      {/* Networks section for TV shows */}
+      {tvShowNetworks.length > 0 && (
+        <div>
+          <h4 className='mb-1 text-xs font-medium text-gray-400'>Networks</h4>
+          <div className='flex flex-wrap gap-2'>
+            {tvShowNetworks.map((network) => (
+              <NetworkCard
+                key={network.id}
+                network={network}
+                className='h-18 w-30  p-4'
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       <div>
         <h4 className='mb-1 text-xs font-medium text-gray-400'>{type === 'movie' ? 'Director' : 'Creator'}</h4>
         <Link
@@ -148,11 +183,7 @@ function Details({ media }: { media: Media }) {
           className='pill-bg flex w-fit items-center gap-2.5 overflow-hidden py-0 pl-0 [&>div]:size-8'
         >
           <LazyImage
-            src={
-              directorOrCreator?.profile_path
-                ? `http://image.tmdb.org/t/p/w200${directorOrCreator?.profile_path}`
-                : '/images/placeholder-person.png'
-            }
+            src={getTmdbImage(directorOrCreator, 'w200')}
             alt={directorOrCreator?.name || 'Unknown'}
             className='rounded-e-l size-full object-cover'
           />

@@ -5,16 +5,13 @@ import { Link } from 'react-router';
 import { Button } from '@heroui/react';
 import { getCollection } from '@/lib/api/TMDB';
 import { LazyImage } from '@/components/ui/LazyImage';
+import { getTmdbImage } from '@/utils/media';
 
 const FEATURED_COLLECTIONS = [
-  { id: 10, name: 'Star Wars Collection', category: 'Epic Saga' },
-  { id: 263, name: 'The Dark Knight Collection', category: 'Superhero' },
-  { id: 645, name: 'James Bond Collection', category: 'Action' },
   { id: 230, name: 'The Godfather Collection', category: 'Classic' },
-  { id: 119, name: 'The Lord of the Rings Collection', category: 'Fantasy' },
-  { id: 264, name: 'Back to the Future Collection', category: 'Adventure' },
   { id: 86311, name: 'The Avengers Collection', category: 'Superhero' },
   { id: 1241, name: 'Harry Potter Collection', category: 'Fantasy' },
+  { id: 10, name: 'Star Wars Collection', category: 'Epic Saga' },
 ];
 
 export default function FranchisesSection() {
@@ -59,21 +56,9 @@ export default function FranchisesSection() {
             <CollectionCard collection={FEATURED_COLLECTIONS[2]} index={2} variant='medium' />
           </div>
 
-          <div className='col-span-4'>
-            <CollectionCard collection={FEATURED_COLLECTIONS[3]} index={3} variant='small' />
+          <div className='col-span-12'>
+            <CollectionCard collection={FEATURED_COLLECTIONS[3]} index={3} variant='wide' />
           </div>
-
-          <div className='col-span-4'>
-            <CollectionCard collection={FEATURED_COLLECTIONS[4]} index={4} variant='small' />
-          </div>
-
-          <div className='col-span-4'>
-            <CollectionCard collection={FEATURED_COLLECTIONS[5]} index={5} variant='small' />
-          </div>
-        </div>
-        <div className='col-span-12 grid max-h-80 grid-cols-2 gap-3 sm:gap-4'>
-          <CollectionCard collection={FEATURED_COLLECTIONS[6]} index={6} variant='wide' />
-          <CollectionCard collection={FEATURED_COLLECTIONS[7]} index={7} variant='wide' />
         </div>
       </div>
     </div>
@@ -163,11 +148,7 @@ function CollectionCard({ collection, index, variant }: CollectionCardProps) {
       <Link to={`/collection/${collection.id}`} className='block h-full w-full'>
         <div className='relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-sm transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:shadow-black/40'>
           <LazyImage
-            src={
-              collectionData?.backdrop_path || collectionData?.poster_path
-                ? `https://image.tmdb.org/t/p/${variant === 'medium' ? 'w500' : 'original'}${collectionData.backdrop_path || collectionData.poster_path}`
-                : '/images/placeholder.png'
-            }
+            src={getTmdbImage(collectionData, 'original')}
             alt={collection.name}
             className='h-full w-full object-cover transition-transform duration-700 group-hover:scale-110'
           />

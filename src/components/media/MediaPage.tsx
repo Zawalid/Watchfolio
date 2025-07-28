@@ -1,5 +1,5 @@
 import { parseAsString, useQueryState } from 'nuqs';
-import MediaCardsList from '@/components/media/MediaCardsList';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 import { discoverMovies, discoverTvShows, getMovies, getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { useDiscoverParams } from '@/hooks/useDiscoverParams';
@@ -22,7 +22,7 @@ export default function MediaPage({ type, categories }: MediaPageProps) {
   if (isValidCategory) {
     const getFn = type === 'movie' ? getMovies : getTvShows;
     return (
-      <MediaCardsList
+      <MediaAndCelebritiesCardsList
         queryKey={queryKeys.category(type, category as Categories)}
         queryFn={async ({ pageParam }) => await getFn(category as Categories, pageParam)}
         useInfiniteQuery={true}
@@ -32,7 +32,7 @@ export default function MediaPage({ type, categories }: MediaPageProps) {
 
   const discoverFn = type === 'movie' ? discoverMovies : discoverTvShows;
   return (
-    <MediaCardsList
+    <MediaAndCelebritiesCardsList
       queryKey={queryKeys.discover(type, discoverParams)}
       queryFn={async ({ pageParam }) => await discoverFn({ ...discoverParams, page: pageParam })}
       useInfiniteQuery={true}

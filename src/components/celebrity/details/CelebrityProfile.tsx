@@ -4,6 +4,7 @@ import { Calendar, Award, Heart, ChevronUp, ChevronDown, Clapperboard } from 'lu
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn } from '@/utils';
 import { Button } from '@heroui/react';
+import { getTmdbImage } from '@/utils/media';
 
 interface CelebrityProfileProps {
   person: Person;
@@ -42,11 +43,7 @@ export default function CelebrityProfile({ person, appearances }: CelebrityProfi
         transition={{ duration: 0.3 }}
       >
         <LazyImage
-          src={
-            person.profile_path
-              ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
-              : '/images/placeholder-person.png'
-          }
+          src={getTmdbImage(person, 'w500')}
           alt={person.name}
           className={cn(
             'size-full object-cover transition-transform duration-300 group-hover:scale-105',

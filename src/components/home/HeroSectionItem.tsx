@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Heart, Info, TrendingUp, Sparkles, LibraryBig, Check, Film, Tv } from 'lucide-react';
 import { Button } from '@heroui/react';
 import { Link } from 'react-router';
-import { getMediaType, generateMediaLink, getReleaseYear } from '@/utils/media';
+import { getMediaType, generateMediaLink, getReleaseYear, getTmdbImage } from '@/utils/media';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
@@ -52,11 +52,7 @@ export default function HeroItem({ item }: HeroItemProps) {
       {/* Background Image */}
       <div className='absolute inset-0'>
         <img
-          src={
-            item.backdrop_path
-              ? `https://image.tmdb.org/t/p/w1920_and_h800_multi_faces${item.backdrop_path}`
-              : '/images/placeholder.png'
-          }
+          src={getTmdbImage(item, 'w1920_and_h800_multi_faces')}
           alt={title}
           className='h-full w-full object-cover object-center'
         />
@@ -92,7 +88,11 @@ export default function HeroItem({ item }: HeroItemProps) {
             className='text-5xl font-black text-white drop-shadow-lg md:text-6xl lg:text-7xl'
           >
             {logoPath ? (
-              <img src={`https://image.tmdb.org/t/p/original${logoPath}`} alt={title} className='h-28 w-auto' />
+              <img
+                src={getTmdbImage({ logo_path: logoPath } as unknown as Media, 'original')}
+                alt={title}
+                className='h-28 w-auto'
+              />
             ) : (
               title
             )}

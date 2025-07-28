@@ -25,6 +25,20 @@ export const getMediaType = (media: Media): 'movie' | 'tv' => {
   throw new Error('Unknown media type');
 };
 
+export const getTmdbImage = (
+  item?: Media | Person | Collection | Episode | Image | Season | Suggestion | null,
+  size: TmdbImageSize = 'w500'
+): string => {
+  if (!item) return '/images/placeholder.png';
+  if ('poster_path' in item && item.poster_path) return `http://image.tmdb.org/t/p/${size}${item.poster_path}`;
+  if ('backdrop_path' in item && item.backdrop_path) return `http://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
+  if ('profile_path' in item && item.profile_path) return `http://image.tmdb.org/t/p/${size}${item.profile_path}`;
+  if ('still_path' in item && item.still_path) return `http://image.tmdb.org/t/p/${size}${item.still_path}`;
+  if ('file_path' in item && item.file_path) return `http://image.tmdb.org/t/p/${size}${item.file_path}`;
+  if ('logo_path' in item && item.logo_path) return `http://image.tmdb.org/t/p/${size}${item.logo_path}`;
+  return '/images/placeholder.png';
+};
+
 export const getFormattedRuntime = (media: Media): string => {
   const runtime = (media as Movie).runtime || (media as TvShow).episode_run_time?.[0];
 

@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/MorphingDialog';
 import { LazyImage } from '@/components/ui/LazyImage';
 import SeasonDetails from './SeasonDetails';
+import { getTmdbImage } from '@/utils/media';
 
 export default function Seasons({ seasons, show }: { seasons: Season[]; show: TvShow }) {
   if (!seasons?.length) return null;
@@ -31,11 +32,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
                 <MorphingDialogTrigger className='group w-full overflow-hidden rounded-lg'>
                   <div className='relative aspect-2/3 w-full'>
                     <LazyImage
-                      src={
-                        season.poster_path
-                          ? `http://image.tmdb.org/t/p/w500${season.poster_path}`
-                          : '/images/placeholder.png'
-                      }
+                      src={getTmdbImage(season, 'w500')}
                       alt={`${show.name}: ${season.name}`}
                       className='size-full object-cover transition-transform group-hover:scale-105'
                     />

@@ -7,6 +7,7 @@ import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
 import { getPersonDetails, getPersonCombinedCredits } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
+import { getTmdbImage } from '@/utils/media';
 
 interface CelebrityCardProps {
   person: Person;
@@ -134,11 +135,7 @@ export default function CelebrityCard({ person, tabIndex = 0 }: CelebrityCardPro
           className='size-full'
         >
           <LazyImage
-            src={
-              displayPerson.profile_path
-                ? `https://image.tmdb.org/t/p/w500${displayPerson.profile_path}`
-                : '/images/placeholder.png'
-            }
+            src={getTmdbImage(displayPerson, 'w500')}
             alt={displayPerson.name}
             className={cn('size-full object-cover', isDeceased && 'saturate-75')}
           />

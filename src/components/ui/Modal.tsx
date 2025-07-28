@@ -13,7 +13,7 @@ const defaultClassNames = {
   base: 'border-border backdrop-blur-xl bg-blur blur-bg text-[#a8b0d3] max-h-[90vh]',
   header: 'border-b-[1px] border-border',
   footer: 'border-t-[1px] border-border',
-  closeButton: 'border border-transparent hover:border-white/10 hover:bg-white/5',
+  closeButton: 'z-20 border border-transparent hover:border-white/10 hover:bg-white/5',
 };
 
 export function Modal({ children, disclosure, classNames = {}, ...props }: Props) {

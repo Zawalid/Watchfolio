@@ -2,7 +2,7 @@ import { useParams } from 'react-router';
 import Cast from '@/components/media/details/Cast';
 import Info from '@/components/media/details/Info';
 import Seasons from '@/components/media/details/Seasons';
-import Trailers from '@/components/media/details/Trailers';
+import Media from '@/components/media/details/Media';
 import DetailsSkeleton from '@/components/media/details/DetailsSkeleton';
 import Recommendations from '@/components/media/details/Recommendations';
 import Similar from '@/components/media/details/Similar';
@@ -22,6 +22,7 @@ export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
     queryFn: async () => await getDetails(type, slug!),
   });
 
+
   usePageTitle(isLoading ? 'Loading...' : (media as Movie)?.title || (media as TvShow)?.name || '');
 
   if (isLoading) return <DetailsSkeleton type={type} />;
@@ -34,13 +35,19 @@ export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
     );
   if (isError) return <Status.Error message='There was an error loading the media details. Please try again.' />;
 
+  const mediaTitle = type === 'movie' ? (media as Movie).title : (media as TvShow).name;
+
   return (
     <div>
       <Info media={media} />
       <div>
         {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons || []} show={media as TvShow} />}
         <Cast cast={media.credits?.cast || []} />
-        <Trailers videos={media.videos?.results || []} />
+        <Media 
+          videos={media.videos?.results || []} 
+          images={media.images}
+          mediaTitle={mediaTitle}
+        />
         <Similar type={type} id={media.id} />
         <Recommendations type={type} id={media.id} />
       </div>

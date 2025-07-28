@@ -1,26 +1,27 @@
 import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
-import { Button } from '@heroui/react';
+import { Button,  useDisclosure } from '@heroui/react';
+import { Modal } from '@/components/ui/Modal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 
 interface ActionButtonsProps {
   media: Media;
-  onPlayTrailer: () => void;
 }
 
-export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsProps) {
+export default function ActionButtons({ media }: ActionButtonsProps) {
   const { openModal } = useMediaStatusModal();
+  const trailerDisclosure = useDisclosure();
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { toggleFavorite } = useLibraryStore();
 
   const inLibrary = !!libraryItem;
 
-  console.log(media.media_type, media.id, libraryItem);
-
   const isFavorite = libraryItem?.isFavorite || false;
   const currentStatus = libraryItem?.status || 'none';
+
+  const trailer = media.videos?.results?.find((video: Video) => video.site === 'YouTube' && video.type === 'Trailer');
 
   const handleToggleFavorite = () => {
     toggleFavorite({ media_type: media.media_type, id: media.id }, media);
@@ -46,9 +47,9 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
         <Button
           color='secondary'
           className='button-secondary! w-full'
-          onPress={onPlayTrailer}
+          onPress={trailerDisclosure.onOpen}
           startContent={<Film className='size-4' />}
-          isDisabled
+          isDisabled={!trailer}
         >
           Watch Trailer
         </Button>
@@ -77,6 +78,25 @@ export default function ActionButtons({ media, onPlayTrailer }: ActionButtonsPro
           </Button>
         </div>
       </motion.div>
+
+      {trailer && (
+        <Modal
+          disclosure={trailerDisclosure}
+          className='max-w-[85vw]'
+          classNames={{closeButton: 'bg-white text-black hover:bg-white/90 hover:text-black/90',
+          }}
+        >
+          <div className='relative aspect-video size-full overflow-hidden rounded-xl'>
+            <iframe
+              src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`}
+              title={trailer.name}
+              className='size-full'
+              allowFullScreen
+              allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+            />
+          </div>
+        </Modal>
+      )}
     </>
   );
 }

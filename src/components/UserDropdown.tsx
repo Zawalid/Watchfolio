@@ -27,6 +27,7 @@ export default function UserDropdown() {
       if (!confirmed) return;
       await authSignOut();
       addToast({ title: 'Signed out successfully', description: 'You have been signed out.', color: 'success' });
+      navigate('/home');
       if (location.pathname.includes('settings')) navigate('/');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';

@@ -8,7 +8,7 @@ import { cn, slugify } from '@/utils';
 import { getCollection } from '@/lib/api/TMDB/movies';
 import { queryKeys } from '@/lib/react-query';
 import { Rating } from '@/components/ui/Rating';
-import { getReleaseYear } from '@/utils/media';
+import { getReleaseYear, getTmdbImage } from '@/utils/media';
 
 interface CollectionCardProps {
   collection: { id: number; name: string; category: string };
@@ -104,13 +104,7 @@ export default function CollectionCard({ collection, tabIndex = 0 }: CollectionC
           className='size-full'
         >
           <LazyImage
-            src={
-              details?.backdrop_path
-                ? `https://image.tmdb.org/t/p/w780${details.backdrop_path}`
-                : details?.poster_path
-                  ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
-                  : '/images/placeholder.png'
-            }
+            src={getTmdbImage(details, 'w780')}
             alt={formattedName}
             className='size-full object-cover'
           />

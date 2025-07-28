@@ -49,7 +49,7 @@ export default function MediaCardsListSkeleton({ length = 20, asSlider }: { leng
     return (
       <Slider>
         {Array.from({ length: 8 }).map((_, i) => (
-          <Slider.Slide key={i} className='w-[160px] sm:w-[200px]!'>
+          <Slider.Slide key={i} className='w-[200px]! sm:w-[250px]!'>
             <MediaCardSkeleton />
           </Slider.Slide>
         ))}

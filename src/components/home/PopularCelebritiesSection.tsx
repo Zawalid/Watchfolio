@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { getPopularPeople } from '@/lib/api/TMDB';
 import { itemVariants } from '@/lib/animations';
 import { queryKeys } from '@/lib/react-query';
-import CelebritiesCardsList from '@/components/celebrity/CelebritiesCardsList';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 
 export default function PopularCelebritiesSection() {
   return (
@@ -33,8 +33,9 @@ export default function PopularCelebritiesSection() {
         </Button>
       </div>
 
-      <CelebritiesCardsList
-        queryKey={queryKeys.celebrities('popular', 1)}
+      <MediaAndCelebritiesCardsList
+        contentType='person'
+        queryKey={queryKeys.celebrities('popular')}
         queryFn={async () => await getPopularPeople(1)}
         asSlider={true}
         slideClassName='w-[180px]! sm:w-[200px]!'

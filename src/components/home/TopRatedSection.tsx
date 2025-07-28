@@ -3,13 +3,13 @@ import { Tabs, Tab } from '@heroui/react';
 import { getMovies, getTvShows } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
-import MediaCardsList from '@/components/media/MediaCardsList';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 import { Button } from '@heroui/react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router';
 
-const movieQuery = { queryKey: queryKeys.category('movie', 'top-rated', 1), queryFn: () => getMovies('top-rated') };
-const tvQuery = { queryKey: queryKeys.category('tv', 'top-rated', 1), queryFn: () => getTvShows('top-rated') };
+const movieQuery = { queryKey: queryKeys.category('movie', 'top-rated'), queryFn: () => getMovies('top-rated') };
+const tvQuery = { queryKey: queryKeys.category('tv', 'top-rated'), queryFn: () => getTvShows('top-rated') };
 
 export default function TopRatedSection() {
   const [selectedTab, setSelectedTab] = useState<'movie' | 'tv'>('movie');
@@ -42,11 +42,10 @@ export default function TopRatedSection() {
       </div>
 
       <div className='relative'>
-        <MediaCardsList
+        <MediaAndCelebritiesCardsList
           queryKey={selectedTab === 'movie' ? movieQuery.queryKey : tvQuery.queryKey}
           queryFn={selectedTab === 'movie' ? movieQuery.queryFn : tvQuery.queryFn}
           asSlider={true}
-          slideClassName='w-[200px]! sm:w-[250px]!'
           sliderProps={{ autoplay: true, loop: true }}
         />
       </div>

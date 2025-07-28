@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { queryKeys } from '@/lib/react-query';
 import { NETWORKS } from '@/utils/constants/TMDB';
 import { getTvShowsByNetwork } from '@/lib/api/TMDB';
-import MediaCardsList from '@/components/media/MediaCardsList';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 import SortBy from '@/components/SortBy';
 import { Tv } from 'lucide-react';
 import { cn } from '@/utils';
@@ -78,7 +78,7 @@ export default function NetworkDetails() {
         </div>
       </motion.div>
 
-      <MediaCardsList
+      <MediaAndCelebritiesCardsList
         queryKey={queryKeys.network(network?.id, discoverParams)}
         queryFn={({ pageParam }) => getTvShowsByNetwork(network!.id, { ...discoverParams, page: pageParam })}
         enabled={!!network?.id}

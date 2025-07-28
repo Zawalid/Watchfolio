@@ -157,7 +157,7 @@ export function InfiniteCardsList<T>({
     return (
       <Slider {...sliderProps}>
         {results.map((item) => (
-          <Slider.Slide key={getItemKey(item)} className={cn('w-[160px] sm:w-[200px]!', slideClassName)}>
+          <Slider.Slide key={getItemKey(item)} className={cn('w-[200px]! sm:w-[250px]!', slideClassName)}>
             <CardComponent item={item} />
           </Slider.Slide>
         ))}

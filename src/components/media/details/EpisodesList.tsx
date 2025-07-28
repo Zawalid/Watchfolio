@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { formatDate } from '@/utils';
+import { getTmdbImage } from '@/utils/media';
 
 export default function EpisodesList({ episodes }: { episodes: Episode[] }) {
   if (!episodes || episodes.length === 0) {
@@ -22,7 +23,7 @@ export default function EpisodesList({ episodes }: { episodes: Episode[] }) {
           {episode.still_path ? (
             <div className='relative aspect-video w-32 shrink-0 self-stretch overflow-hidden rounded-s-md'>
               <img
-                src={`http://image.tmdb.org/t/p/w300${episode.still_path}`}
+                src={getTmdbImage(episode, 'w300')}
                 alt={`${episode.name} still`}
                 className='h-full w-full object-cover'
                 loading='lazy'

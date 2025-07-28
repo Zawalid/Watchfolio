@@ -2,6 +2,7 @@ import { Slider } from '@/components/ui/Slider';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { Link } from 'react-router';
 import { slugify } from '@/utils';
+import { getTmdbImage } from '@/utils/media';
 
 export default function Cast({ cast }: { cast: Person[] }) {
   if (!cast?.length) return null; // TODO: Handle empty cast array
@@ -16,11 +17,7 @@ export default function Cast({ cast }: { cast: Person[] }) {
               <Link to={`/celebrities/${member.id}-${slugify(member.name)}`}>
                 <div className='aspect-square overflow-hidden rounded-full'>
                   <LazyImage
-                    src={
-                      member.profile_path
-                        ? `http://image.tmdb.org/t/p/original${member.profile_path}`
-                        : '/images/placeholder.png'
-                    }
+                    src={getTmdbImage(member, 'original')}
                     alt={member.name}
                     className='size-full object-cover transition-transform duration-300 group-hover:scale-110'
                   />

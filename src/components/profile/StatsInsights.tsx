@@ -6,7 +6,7 @@ import { LazyImage } from '@/components/ui/LazyImage';
 import { EmptyProps, Status } from '@/components/ui/Status';
 import { cn, formatTimeAgo } from '@/utils';
 import { Link } from 'react-router';
-import { generateMediaLink } from '@/utils/media';
+import { generateMediaLink, getTmdbImage } from '@/utils/media';
 
 const getStats = (stats: LibraryStats) => {
   const statusCards: StatCardProps[] = LIBRARY_MEDIA_STATUS.map((status) => ({
@@ -401,7 +401,7 @@ function RecentActivity({ recentActivity, isOwnProfile }: { recentActivity: Acti
                       <div className='flex items-start gap-3'>
                         <div className='bg-Grey-800 h-16 w-11 flex-shrink-0 overflow-hidden rounded-md border border-white/10'>
                           <LazyImage
-                            src={`https://image.tmdb.org/t/p/w200${posterPath}`}
+                            src={getTmdbImage({ poster_path: posterPath } as Media, 'w200')}
                             alt={mediaTitle}
                             className='h-full w-full object-cover'
                           />

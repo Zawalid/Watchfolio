@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Button } from '@heroui/react';
 import { getUpcomingContent } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
-import MediaCardsList from '@/components/media/MediaCardsList';
+import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
 
 export default function ComingSoonSection() {
   return (
@@ -37,11 +37,10 @@ export default function ComingSoonSection() {
         </Button>
       </div>
 
-      <MediaCardsList
-        queryKey={[...queryKeys.category('movie', 'upcoming', 1), 'combined']}
+      <MediaAndCelebritiesCardsList
+        queryKey={[...queryKeys.category('movie', 'upcoming'), 'combined']}
         queryFn={() => getUpcomingContent(1)}
         asSlider={true}
-        slideClassName='w-[200px]! sm:w-[250px]!'
         sliderProps={{ autoplay: true, loop: true }}
       />
     </div>

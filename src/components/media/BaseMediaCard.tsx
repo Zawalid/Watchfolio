@@ -14,7 +14,7 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { generateMediaLink } from '@/utils/media';
+import { generateMediaLink, getTmdbImage } from '@/utils/media';
 import { Rating } from '@/components/ui/Rating';
 
 interface BaseMediaCardProps {
@@ -184,7 +184,7 @@ export default function BaseMediaCard({
           className='size-full'
         >
           <LazyImage
-            src={posterPath ? `http://image.tmdb.org/t/p/w500${posterPath}` : '/images/placeholder.png'}
+            src={getTmdbImage({ poster_path: posterPath } as Media, 'w500')}
             alt={title}
             className='size-full object-cover'
           />
