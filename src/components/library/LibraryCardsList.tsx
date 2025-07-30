@@ -24,7 +24,7 @@ export default function LibraryCardsList({ items, status, isOwnProfile, allItems
     itemCount: items.length,
     onSelect: (index) => {
       const item = items[index];
-      if (item) navigate(generateMediaLink(item.media_type, item.id, item.title || 'Untitled'));
+      if (item) navigate(generateMediaLink(item));
     },
     enabled: items.length > 0,
   });

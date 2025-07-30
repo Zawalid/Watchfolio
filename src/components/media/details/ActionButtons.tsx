@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
-import { Button,  useDisclosure } from '@heroui/react';
+import { Button, useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
@@ -83,8 +83,7 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
         <Modal
           disclosure={trailerDisclosure}
           className='max-w-[85vw]'
-          classNames={{closeButton: 'bg-white text-black hover:bg-white/90 hover:text-black/90',
-          }}
+          classNames={{ closeButton: 'bg-white text-black hover:bg-white/90 hover:text-black/90' }}
         >
           <div className='relative aspect-video size-full overflow-hidden rounded-xl'>
             <iframe

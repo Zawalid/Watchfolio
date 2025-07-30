@@ -50,11 +50,12 @@ export default function BaseMediaCard({
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const { getItem } = useLibraryStore();
 
-  const inLibrary = !!getItem(mediaType, id);
+  const libraryItem = useLibraryStore((state) => state.getItem(mediaType, id));
+  const finalItem = item || libraryItem;
+  const inLibrary = !!finalItem;
 
-  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === finalItem?.status);
   const isInteractive = isHovered || isFocused;
   const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;
 
@@ -79,7 +80,7 @@ export default function BaseMediaCard({
       }}
       whileTap={{ scale: 0.98 }}
     >
-      <Link className='absolute inset-0 z-10' to={generateMediaLink(mediaType, id, title)} />
+      <Link className='absolute inset-0 z-10' to={generateMediaLink(item || media)} />
 
       {/* Subtle glow effect for focus */}
       <AnimatePresence>
@@ -97,7 +98,7 @@ export default function BaseMediaCard({
       {/* Quick Actions - Show for ALL items on hover, including person context */}
       <AnimatePresence>
         {isInteractive && (
-          <QuickActions id={id} mediaType={mediaType} media={media} item={item} isFocused={isFocused} />
+          <QuickActions id={id} mediaType={mediaType} media={media} item={finalItem} isFocused={isFocused} />
         )}
       </AnimatePresence>
 
@@ -398,7 +399,7 @@ const QuickActions = ({
   media?: Media;
   isFocused: boolean;
 }) => {
-  const { toggleFavorite, removeItem, getItem } = useLibraryStore();
+  const { toggleFavorite, removeItem } = useLibraryStore();
   const { openModal } = useMediaStatusModal();
   const { confirm } = useConfirmationModal();
 
@@ -426,7 +427,7 @@ const QuickActions = ({
     }
   };
 
-  const inLibrary = !!getItem(mediaType, id);
+  const inLibrary = !!item;
 
   // Hotkeys
   useHotkeys(getShortcut(inLibrary ? 'editStatus' : 'addToLibrary')?.hotkey || '', handleEditStatus, {

@@ -408,7 +408,7 @@ function RecentActivity({ recentActivity, isOwnProfile }: { recentActivity: Acti
                         </div>
                         <div className='flex-1'>
                           <Link
-                            to={generateMediaLink(mediaType, mediaId, mediaTitle)}
+                            to={generateMediaLink({ id: mediaId, media_type: mediaType, title: mediaTitle } as Media)}
                             className='hover:text-Secondary-500 truncate text-sm font-semibold text-white transition-colors'
                             title={mediaTitle}
                           >

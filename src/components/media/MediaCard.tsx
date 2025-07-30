@@ -12,8 +12,7 @@ export default function MediaCard({ media, tabIndex }: MediaCardProps) {
   const type = getMediaType(media);
   const title = (type === 'movie' ? (media as Movie).title : (media as TvShow).name) || 'Untitled';
   const rating = getRating(vote_average || 0);
-  const { getItem } = useLibraryStore();
-  const item = getItem(type, id);
+  const item = useLibraryStore((state) => state.getItem(type, id));
 
   return (
     <BaseMediaCard

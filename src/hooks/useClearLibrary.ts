@@ -6,11 +6,19 @@ import { useAuthStore } from '@/stores/useAuthStore';
 
 export function useClearLibrary() {
   const { isAuthenticated } = useAuthStore();
-  const { clearLibrary } = useLibraryStore();
+  const { clearLibrary, getCount } = useLibraryStore();
   const syncStore = useSyncStore();
   const { confirm } = useConfirmationModal();
 
   const handleClearLibrary = async () => {
+    if (getCount('all') === 0) {
+      addToast({
+        title: 'No library to clear',
+        description: 'Your library is already empty',
+        color: 'warning',
+      });
+      return;
+    }
     const confirmed = await confirm({
       title: 'Clear Library',
       message: isAuthenticated
@@ -23,10 +31,8 @@ export function useClearLibrary() {
 
     if (confirmed) {
       try {
-        // Always clear local library
         clearLibrary();
 
-        // Only clear cloud if authenticated
         if (isAuthenticated) {
           await syncStore.clearCloudLibrary();
           addToast({

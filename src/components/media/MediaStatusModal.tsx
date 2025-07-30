@@ -32,11 +32,10 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   }, [disclosure.isOpen, registerNavigator, unregisterNavigator]);
 
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
-  const { addOrUpdateItem, removeItem } = useLibraryStore();
+  const { addOrUpdateItem } = useLibraryStore();
 
   const handleStatusChange = (status: WatchStatus) => {
-    if (status === 'none') removeItem(media.media_type, media.id);
-    else addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
+     addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
   };
 
   const handleRatingChange = (rating: number | undefined) =>
@@ -94,7 +93,7 @@ function StatusSection({
     initialIndex: statusOptions.findIndex((o) => o.value === selectedStatus),
   });
 
-  useHotkeys(getShortcut('removeFromMediaStatusModal')?.hotkey || '', removeItem);
+  useHotkeys(getShortcut('clearStatus')?.hotkey || '', removeItem);
 
   useHotkeys(
     getShortcut('rateMedia')?.hotkey || '',
@@ -114,20 +113,13 @@ function StatusSection({
           <div className='bg-Primary-500/20 rounded-lg p-2'>
             <Library className='text-Primary-400 size-5' />
           </div>
-          <h2 className='text-Primary-50 text-xl font-semibold'>Media Status</h2>
+          <h2 className='text-Primary-50 text-xl font-semibold'>Viewing Status</h2>
         </div>
         {selectedStatus !== 'none' && (
-          <div className='flex justify-end pt-2'>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='rounded-full border border-red-500/20 px-4 py-2 text-xs text-red-400 backdrop-blur-sm transition-all duration-300 hover:border-red-400/40 hover:bg-red-500/10 hover:text-red-300'
-              onPress={removeItem}
-            >
-              {getShortcut('removeFromMediaStatusModal')?.description}
-              <ShortcutKey shortcutName='removeFromMediaStatusModal' className='kbd-sm!' />
-            </Button>
-          </div>
+          <Button size='sm' className='button-secondary!' onPress={removeItem}>
+            {getShortcut('clearStatus')?.description}
+            <ShortcutKey shortcutName='clearStatus' className='kbd-sm!' />
+          </Button>
         )}
       </div>
       <div className='grid grid-cols-1 gap-3' ref={containerRef}>

@@ -4,19 +4,10 @@ import { motion } from 'framer-motion';
 import { Heart, Layers } from 'lucide-react';
 import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import {
-  HOME_ICON,
-  MOVIES_ICON,
-  SEARCH_ICON,
-  TV_ICON,
-  SIGN_IN_ICON,
-  COLLECTIONS_ICON,
-  SETTINGS_ICON,
-} from '@/components/ui/Icons';
+import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, COLLECTIONS_ICON, SETTINGS_ICON } from '@/components/ui/Icons';
 import { MobileNavTrigger } from './MobileNav';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
-import { Button } from '@heroui/react';
 
 const navigationItems = [
   {
@@ -106,29 +97,6 @@ function QuickActions() {
   );
 }
 
-function AuthActions() {
-  const { isAuthenticated, openAuthModal } = useAuthStore();
-
-  if (isAuthenticated) {
-    return (
-      <div className='flex items-center gap-3'>
-        <QuickActions />
-        <UserDropdown />
-      </div>
-    );
-  }
-
-  return (
-    <div className='hidden items-center gap-3 md:flex'>
-      <QuickActions />
-      <Button onPress={() => openAuthModal('signin')} size='sm' className='button-primary!'>
-        <span className='[&>svg]:h-4 [&>svg]:w-4'>{SIGN_IN_ICON}</span>
-        Sign In
-      </Button>
-    </div>
-  );
-}
-
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated } = useAuthStore();
@@ -173,7 +141,8 @@ export default function Navbar() {
           </div>
 
           <div className='flex items-center gap-3'>
-            <AuthActions />
+            <QuickActions />
+            <UserDropdown />
             <MobileNavTrigger />
           </div>
         </div>

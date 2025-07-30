@@ -7,9 +7,9 @@ export default function CollectionDetailsSkeleton() {
   return (
     <div className='space-y-8'>
       {/* Header Skeleton */}
-      <div className='relative min-h-[400px] rounded-xl overflow-hidden p-8 flex flex-col justify-end' {...backgroundImage}>
+      <div className='relative min-h-[500px] rounded-xl overflow-hidden p-8 flex flex-col justify-end' {...backgroundImage}>
         <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent' />
-        <div className='relative z-10 animate-pulse space-y-4'>
+        <div className='relative z-10 animate-pulse space-y-4 max-w-3xl'>
           <div className='bg-Grey-700/50 h-12 w-3/4 rounded-lg' />
           <div className='space-y-2'>
             <div className='bg-Grey-700/50 h-4 w-full rounded' />

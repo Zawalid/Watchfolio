@@ -28,6 +28,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 toastOffset={60}
                 toastProps={{
                   classNames: { base: 'bg-blur backdrop-blur-sm border border-white/10', closeButton: 'hidden' },
+                  timeout: 3000,
+                  shouldShowTimeoutProgress: true,
                 }}
               />
               <ReactQueryDevtools initialIsOpen={false} />

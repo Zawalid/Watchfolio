@@ -50,7 +50,7 @@ export default function LibraryInfiniteCardsList({
       </LibraryCardsList>
       {items.length && (
         <div ref={ref} className='flex justify-center py-6'>
-          {allItems?.length === visibleItems.length && (
+          {allItems?.length === visibleItems.length && allItems?.length >= 20 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='flex justify-center py-3'>
               <div className='text-Grey-400 text-sm'>
                 You've reached the end of your {statusLabel.toLowerCase()} items

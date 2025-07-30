@@ -62,8 +62,11 @@ export const getDirectorOrCreator = (media: Media): Person | null => {
   }
 };
 
-export const generateMediaLink = (type: string, id: number, title: string) => {
-  return `/${type === 'tv' ? 'tv' : 'movies'}/details/${id}-${slugify(title)}`;
+export const generateMediaLink = (item?: Media | LibraryMedia) => {
+  if (!item) return '/';
+  const mediaType = 'media_type' in item ? item.media_type : getMediaType(item);
+  const title = 'title' in item ? item.title : (item as TvShow).name;
+  return `/${mediaType === 'tv' ? 'tv' : 'movies'}/details/${item.id}-${slugify(title || '')}`;
 };
 
 export const getGenres = (genre_ids?: number[]) =>

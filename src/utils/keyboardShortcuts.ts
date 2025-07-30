@@ -112,10 +112,10 @@ export const KEYBOARD_SHORTCUTS = {
     description: 'Set status to "Dropped"',
     category: 'mediaStatus',
   },
-  removeFromMediaStatusModal: {
+  clearStatus: {
     hotkey: 'delete',
     label: 'Delete',
-    description: 'Remove from library',
+    description: 'Clear status',
     category: 'mediaStatus',
   },
   rateMedia: {

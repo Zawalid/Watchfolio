@@ -13,7 +13,7 @@ interface CelebrityCreditsProps {
 }
 
 export default function CelebrityCredits({ currentContent, category, isDeceased }: CelebrityCreditsProps) {
-  const { getItem } = useLibraryStore();
+  const getItem = useLibraryStore((state) => state.getItem);
 
   const getDisplayTitle = () => {
     const categoryData = CELEBRITY_CATEGORIES.find((c) => c.id === category);

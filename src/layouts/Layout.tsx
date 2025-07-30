@@ -9,6 +9,7 @@ import Navbar from '@/components/Navbar';
 import { ResponsiveScreen } from '@/components/ui/ResponsiveGuardScreen';
 import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
+import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 
 export default function Layout() {
   const location = useLocation();
@@ -45,6 +46,7 @@ export default function Layout() {
           <OnboardingModal />
           <AuthModal />
           <ScrollToTopButton />
+          <KeyboardShortcuts  />
         </div>
       )}
     </Providers>

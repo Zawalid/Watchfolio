@@ -197,7 +197,7 @@ export default function Media({ videos, images, mediaTitle }: MediaProps) {
                   <Video className='size-4' />
                   <span>Videos</span>
                   {hasVideos && (
-                    <span className='flex p-1 items-center justify-center rounded-full border border-white/5 bg-white/10 text-xs font-medium text-white'>
+                    <span className='flex min-w-6 items-center justify-center rounded-full border border-white/5 bg-white/10 p-1 text-xs font-medium text-white'>
                       {videos.length}
                     </span>
                   )}
@@ -211,7 +211,7 @@ export default function Media({ videos, images, mediaTitle }: MediaProps) {
                   <Image className='size-4' />
                   <span>Images</span>
                   {hasImages && (
-                    <span className='flex p-1 items-center justify-center rounded-full border border-white/5 bg-white/10 text-xs font-medium text-white'>
+                    <span className='flex min-w-6 items-center justify-center rounded-full border border-white/5 bg-white/10 p-1 text-xs font-medium text-white'>
                       {(images.backdrops?.length || 0) + (images.posters?.length || 0) + (images.logos?.length || 0)}
                     </span>
                   )}

@@ -161,7 +161,7 @@ export default function HeroItem({ item }: HeroItemProps) {
 
             <Button
               as={Link}
-              to={generateMediaLink(mediaType, item.id, title)}
+              to={generateMediaLink(item)}
               size='lg'
               variant='light'
               className='px-6 py-6 text-base font-semibold text-white/80 transition-all duration-200 hover:bg-white/10 hover:text-white'

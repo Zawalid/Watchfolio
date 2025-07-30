@@ -102,14 +102,7 @@ export const useLibraryStore = create<LibraryState>()(
           newItemData.addedToLibraryAt = now;
         } // Check if item should be removed after update
         if (shouldRemoveItem(newItemData)) {
-          console.log('YES');
-
-          set((state) => {
-            const newLibrary = { ...state.library };
-            delete newLibrary[key];
-            return { library: newLibrary };
-          });
-
+          get().removeItem(media.media_type, media.id);
           return null;
         }
 
@@ -135,33 +128,13 @@ export const useLibraryStore = create<LibraryState>()(
         );
       },
       removeItem: (mediaType, id) => {
-        const { library } = get();
         const key = generateMediaKey(mediaType, id);
-        const item = library[key];
 
-        if (item) {
-          const updatedItem = { ...item, status: 'none' as WatchStatus };
-          if (shouldRemoveItem(updatedItem)) {
-            set((state) => {
-              const newLibrary = { ...state.library };
-              delete newLibrary[key];
-              return { library: newLibrary };
-            });
-          } else {
-            const newItem: LibraryMedia = {
-              ...item,
-              status: 'none' as WatchStatus,
-              lastUpdatedAt: new Date().toISOString(),
-            };
-
-            set((state) => ({
-              library: {
-                ...state.library,
-                [key]: newItem,
-              },
-            }));
-          }
-        }
+        set((state) => {
+          const newLibrary = { ...state.library };
+          delete newLibrary[key];
+          return { library: newLibrary };
+        });
       },
 
       getAllItems: () => {

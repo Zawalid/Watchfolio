@@ -22,7 +22,6 @@ import { Tabs } from '@/components/ui/Tabs';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import FiltersModal from '@/components/FiltersModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
-import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import { SyncStatus } from '@/components/library/SyncStatus';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useLibraryStore } from '@/stores/useLibraryStore';
@@ -42,7 +41,6 @@ export default function LibraryLayout() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filtersDisclosure = useDisclosure();
-  const keyboardShortcutsDisclosure = useDisclosure();
   const importExportDisclosure = useDisclosure();
   const { getCount } = useLibraryStore();
   const { handleClearLibrary } = useClearLibrary();
@@ -210,7 +208,7 @@ export default function LibraryLayout() {
                   <DropdownItem
                     key='shortcuts'
                     startContent={<HelpCircle className='size-4 shrink-0' />}
-                    onPress={() => keyboardShortcutsDisclosure.onOpen()}
+                    onPress={() => document.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }))}
                     description='View keyboard shortcuts'
                     classNames={{ shortcut: 'p-0 border-none' }}
                     shortcut={<ShortcutKey shortcutName='toggleShortcutsHelp' className='kbd-sm! opacity-80' />}
@@ -248,7 +246,6 @@ export default function LibraryLayout() {
           <Outlet />
         </div>
       </div>
-      <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
       <ImportExportModal disclosure={importExportDisclosure} />
     </div>
   );

@@ -1,15 +1,11 @@
 import { Keyboard } from 'lucide-react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { ModalBody } from '@heroui/react';
+import { ModalBody, useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { getShortcut, getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 
-interface KeyboardShortcutsProps {
-  disclosure: Disclosure;
-}
 
-// Map category to human-readable title
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
   library: 'Library',
@@ -20,7 +16,8 @@ const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
 
 const CATEGORY_ORDER: ShortcutCategory[] = ['general', 'library', 'cardFocus', 'filters', 'modal'];
 
-export default function KeyboardShortcuts({ disclosure }: KeyboardShortcutsProps) {
+export default function KeyboardShortcuts(  ) {
+  const disclosure = useDisclosure();
   const { isOpen, onOpen, onClose } = disclosure;
 
   useHotkeys(getShortcut('toggleShortcutsHelp')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen], {

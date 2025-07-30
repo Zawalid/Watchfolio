@@ -5,7 +5,6 @@ import MediaCardsListSkeleton from './media/MediaCardsListSkeleton';
 import PersonCard from '@/components/celebrity/details/CelebrityCard';
 import CelebritiesCardsListSkeleton from '@/components/celebrity/CelebritiesCardsListSkeleton';
 import { Film, Users2Icon } from 'lucide-react';
-import { getMediaType } from '@/utils/media';
 import { generateMediaLink } from '@/utils/media';
 import { slugify } from '@/utils';
 
@@ -63,20 +62,8 @@ export default function MediaAndCelebritiesCardsList(
       emptyIcon={contentType === 'person' ? Users2Icon : Film}
       emptyTitle={contentType === 'person' ? 'No Celebrities' : 'No Media'}
       onSelect={(item) => {
-        if (isPerson(item)) {
-          // Navigate to celebrity details
-          navigate(`/celebrities/${item.id}-${slugify(item.name)}`);
-        } else {
-          // Navigate to media details
-          const type = getMediaType(item);
-          navigate(
-            generateMediaLink(
-              type,
-              item.id,
-              (type === 'movie' ? (item as Movie).title : (item as TvShow).name) || 'Untitled'
-            )
-          );
-        }
+        if (isPerson(item)) navigate(`/celebrities/${item.id}-${slugify(item.name)}`);
+        else navigate(generateMediaLink(item));
       }}
     />
   );
