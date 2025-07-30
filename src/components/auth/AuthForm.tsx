@@ -39,9 +39,9 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
   } = useForm<SignInFormData | SignUpFormData>({
     resolver: zodResolver(type === 'signin' ? signInSchema : signUpSchema),
     defaultValues: {
-      ...(type === 'signup' && { name: 'Walid Zakan' }),
-      email: 'walid@gmail.com',
-      password: 'password',
+      ...(type === 'signup' && { name: '' }),
+      email: '',
+      password: '',
     },
   });
 
