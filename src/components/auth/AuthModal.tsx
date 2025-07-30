@@ -30,7 +30,15 @@ const tabVariants = {
 };
 
 export default function AuthModal() {
-  const { showAuthModal, authModalType, closeAuthModal, switchAuthMode, signInWithGoogle, isLoading } = useAuthStore();
+  const {
+    showAuthModal,
+    authModalType,
+    closeAuthModal,
+    switchAuthMode,
+    signInWithGoogle,
+    isLoading,
+    setPendingOnboarding,
+  } = useAuthStore();
 
   const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
   const [previousType, setPreviousType] = useState<'signin' | 'signup'>('signin');
@@ -49,6 +57,7 @@ export default function AuthModal() {
   const handleGoogleSignIn = async () => {
     setIsSigningInWithGoogle(true);
     try {
+      if (authModalType === 'signup') setPendingOnboarding(true);
       await signInWithGoogle();
     } catch (error) {
       console.error('Google sign in failed:', error);
@@ -65,6 +74,11 @@ export default function AuthModal() {
   const handleSwitchMode = (newType: 'signin' | 'signup') => {
     setPreviousType(authModalType);
     switchAuthMode(newType);
+  };
+
+  const handleAuthSuccess = () => {
+    closeAuthModal();
+    if (authModalType === 'signup') setPendingOnboarding(true);
   };
 
   return (
@@ -87,7 +101,6 @@ export default function AuthModal() {
       </ModalHeader>
 
       <ModalBody className='relative space-y-4'>
-        {/* Animated Background Glow */}
         <motion.div
           className='pointer-events-none absolute inset-0 opacity-5'
           animate={{
@@ -98,7 +111,6 @@ export default function AuthModal() {
           transition={{ duration: 0.8, ease: 'easeInOut' }}
         />
 
-        {/* Auth Form Content */}
         <div className='relative overflow-hidden'>
           <AnimatePresence mode='wait' custom={direction}>
             <motion.div
@@ -128,7 +140,7 @@ export default function AuthModal() {
                 },
               }}
             >
-              <AuthForm type={authModalType} onSuccess={closeAuthModal} />
+              <AuthForm type={authModalType} onSuccess={handleAuthSuccess} />
             </motion.div>
           </AnimatePresence>
         </div>

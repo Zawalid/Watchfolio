@@ -61,12 +61,11 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
         addToast({
           // TODO : Improve
           title: 'Account created successfully!',
-          description: 'You can now log in.',
+          description: 'Please check your email for verification.',
           color: 'success',
         });
       }
 
-      // Call onSuccess callback if provided (for modal), otherwise navigate
       if (onSuccess) {
         onSuccess();
       } else {

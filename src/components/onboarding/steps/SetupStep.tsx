@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { useOnboardingStore } from '@/stores/useOnboardingStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 import TasteEditor from '@/components/settings/TasteEditor';
+import { useState, useEffect } from 'react';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -8,34 +9,67 @@ const itemVariants = {
 };
 
 export default function SetupStep() {
-  const { preferences, updatePreferences } = useOnboardingStore();
-  const { selectedGenres, selectedContentPreferences, selectedNetworks, favoriteContentType } = preferences;
+  const { updateUserProfile, isAuthenticated, user } = useAuthStore();
+  const [preferences, setPreferences] = useState({
+    favoriteContentType: user?.profile?.favoriteContentType || 'both',
+    selectedGenres: user?.profile?.favoriteGenres || [],
+    selectedContentPreferences: user?.profile?.contentPreferences || [],
+    selectedNetworks: user?.profile?.favoriteNetworks || [],
+  });
 
   const toggleGenre = (id: number) => {
-    updatePreferences({
-      selectedGenres: selectedGenres.includes(id) ? selectedGenres.filter((g) => g !== id) : [...selectedGenres, id],
-    });
+    setPreferences((prev) => ({
+      ...prev,
+      selectedGenres: prev.selectedGenres.includes(id)
+        ? prev.selectedGenres.filter((g) => g !== id)
+        : [...prev.selectedGenres, id],
+    }));
   };
 
   const toggleContentPreference = (preferenceCode: string) => {
-    updatePreferences({
-      selectedContentPreferences: selectedContentPreferences.includes(preferenceCode)
-        ? selectedContentPreferences.filter((p) => p !== preferenceCode)
-        : [...selectedContentPreferences, preferenceCode],
-    });
+    setPreferences((prev) => ({
+      ...prev,
+      selectedContentPreferences: prev.selectedContentPreferences.includes(preferenceCode)
+        ? prev.selectedContentPreferences.filter((p) => p !== preferenceCode)
+        : [...prev.selectedContentPreferences, preferenceCode],
+    }));
   };
 
   const toggleNetwork = (id: number) => {
-    updatePreferences({
-      selectedNetworks: selectedNetworks.includes(id)
-        ? selectedNetworks.filter((s) => s !== id)
-        : [...selectedNetworks, id],
-    });
+    setPreferences((prev) => ({
+      ...prev,
+      selectedNetworks: prev.selectedNetworks.includes(id)
+        ? prev.selectedNetworks.filter((s) => s !== id)
+        : [...prev.selectedNetworks, id],
+    }));
   };
 
   const handleContentTypeChange = (value: FavoriteContentType) => {
-    updatePreferences({ favoriteContentType: value });
+    setPreferences((prev) => ({ ...prev, favoriteContentType: value }));
   };
+
+  // Save preferences when component unmounts or when user completes
+  const savePreferences = async () => {
+    if (!isAuthenticated) return;
+    try {
+      await updateUserProfile({
+        favoriteContentType: preferences.favoriteContentType,
+        favoriteGenres: preferences.selectedGenres,
+        favoriteNetworks: preferences.selectedNetworks,
+        contentPreferences: preferences.selectedContentPreferences,
+      });
+    } catch (error) {
+      console.error('Failed to save preferences:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    return () => {
+      savePreferences();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preferences, isAuthenticated]);
 
   return (
     <div className='mx-auto max-w-4xl space-y-8'>
@@ -50,10 +84,10 @@ export default function SetupStep() {
       </motion.div>
 
       <TasteEditor
-        favoriteContentType={favoriteContentType}
-        selectedGenres={selectedGenres}
-        selectedNetworks={selectedNetworks}
-        selectedContentPreferences={selectedContentPreferences}
+        favoriteContentType={preferences.favoriteContentType}
+        selectedGenres={preferences.selectedGenres}
+        selectedNetworks={preferences.selectedNetworks}
+        selectedContentPreferences={preferences.selectedContentPreferences}
         onContentTypeChange={handleContentTypeChange}
         onGenreToggle={toggleGenre}
         onNetworkToggle={toggleNetwork}

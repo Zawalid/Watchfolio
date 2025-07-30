@@ -294,8 +294,7 @@ const features = [
   },
 ];
 
-export default function LandingPage() {
-  const { openAuthModal } = useAuthStore();
+export default function LandingPage() {const { openAuthModal } = useAuthStore();
 
   return (
     <div className='relative overflow-hidden'>
@@ -347,7 +346,7 @@ export default function LandingPage() {
                   Track what you watch. Discover what's next.
                   <br />
                   <span className='text-Grey-300'>Build your personal viewing journey.</span>
-                </motion.p>
+                  </motion.p>
               </motion.div>
 
               {/* CTA Buttons */}
@@ -432,7 +431,6 @@ export default function LandingPage() {
                                       <span>•</span>
                                       <span>{movie.genre}</span>
                                     </div>
-                                   
                                   </div>
                                 </div>
                               </div>

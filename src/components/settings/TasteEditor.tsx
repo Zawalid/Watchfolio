@@ -69,8 +69,8 @@ export default function TasteEditor({
         <div className='mb-4 space-y-1'>
           <h4 className='flex items-center gap-3 text-lg font-semibold text-white'>
             {showIcons && (
-              <div className='icon-container!'>
-                <Film className='icon!' />
+              <div className='bg-Grey-800 flex h-8 w-8 items-center justify-center rounded-lg border border-white/10'>
+                <Film className='text-Primary-400 h-4 w-4' />
               </div>
             )}
             Content Type
@@ -100,8 +100,8 @@ export default function TasteEditor({
         <div className='mb-3 flex items-baseline justify-between'>
           <div className='flex items-center gap-3'>
             {showIcons && (
-              <div className='icon-container!'>
-                <Heart className='icon-tertiary!' />
+              <div className='bg-Grey-800 flex h-8 w-8 items-center justify-center rounded-lg border border-white/10'>
+                <Heart className='text-Primary-400 h-4 w-4' />
               </div>
             )}
             <div>
@@ -129,8 +129,8 @@ export default function TasteEditor({
         <div className='mb-4 space-y-1'>
           <h4 className='flex items-center gap-3 text-lg font-semibold text-white'>
             {showIcons && (
-              <div className='icon-container!'>
-                <Globe className='icon!' />
+              <div className='bg-Grey-800 flex h-8 w-8 items-center justify-center rounded-lg border border-white/10'>
+                <Globe className='text-Primary-400 h-4 w-4' />
               </div>
             )}
             Content Preferences
@@ -156,8 +156,8 @@ export default function TasteEditor({
         <div className='mb-3 flex items-baseline justify-between'>
           <div className='flex items-center gap-3'>
             {showIcons && (
-              <div className='icon-container!'>
-                <Tv className='icon-secondary!' />
+              <div className='bg-Grey-800 flex h-8 w-8 items-center justify-center rounded-lg border border-white/10'>
+                <Tv className='text-Primary-400 h-4 w-4' />
               </div>
             )}
             <div>

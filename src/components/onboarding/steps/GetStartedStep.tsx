@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles, Play, Search, BookOpen, Star } from 'lucide-react';
-import { useOnboardingStore } from '@/stores/useOnboardingStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { useNavigate } from 'react-router';
 
 const quickStarts = [
@@ -46,11 +46,11 @@ const containerVariants = {
 };
 
 export default function GetStartedStep() {
-  const { completeOnboarding } = useOnboardingStore();
+  const { closeOnboardingModal } = useAuthStore();
   const navigate = useNavigate();
 
   const handleActionClick = (start: (typeof quickStarts)[0]) => {
-    completeOnboarding();
+    closeOnboardingModal();
     navigate(start.route, { state: { fromOnboarding: true, action: start.action } });
   };
 

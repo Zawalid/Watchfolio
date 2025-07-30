@@ -13,6 +13,8 @@ interface AuthState {
   // Modal State
   showAuthModal: boolean;
   authModalType: 'signin' | 'signup';
+  showOnboardingModal: boolean;
+  pendingOnboarding: boolean;
 
   // Auth Actions
   signIn: (email: string, password: string) => Promise<Models.Session>;
@@ -39,7 +41,11 @@ interface AuthState {
   closeAuthModal: () => void;
   switchAuthMode: (type: 'signin' | 'signup') => void;
 
-  //
+  openOnboardingModal: () => void;
+  closeOnboardingModal: () => void;
+  setPendingOnboarding: (value: boolean) => void;
+
+  // Utils
   checkIsOwnProfile: (username?: string) => boolean;
 }
 
@@ -51,6 +57,8 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       showAuthModal: false,
       authModalType: 'signin',
+      showOnboardingModal: false,
+      pendingOnboarding: false,
 
       signIn: async (email: string, password: string) => {
         set({ isLoading: true });
@@ -189,6 +197,7 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
             isLoading: false,
           });
+          useLibraryStore.getState().clearLibrary();
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -211,7 +220,6 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           await authService.signInWithGoogle();
-          // OAuth will redirect, so we don't need to do anything here
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -223,11 +231,10 @@ export const useAuthStore = create<AuthState>()(
       },
       confirmEmailVerification: async (userId: string, secret: string) => {
         await authService.confirmEmailVerification(userId, secret);
-        // Refresh user to get updated verification status
         await get().refreshUser();
       },
 
-      // Modal Actions
+      // Modal Actions  
       openAuthModal: (type: 'signin' | 'signup') => {
         set({ showAuthModal: true, authModalType: type });
       },
@@ -240,6 +247,17 @@ export const useAuthStore = create<AuthState>()(
         set({ authModalType: type });
       },
 
+      openOnboardingModal: () => {
+        set({ showOnboardingModal: true });
+      },
+      closeOnboardingModal: () => {
+        set({ showOnboardingModal: false });
+      },
+
+      setPendingOnboarding: (value: boolean) => {
+        set({ pendingOnboarding: value });
+      },
+
       checkIsOwnProfile: (username) => {
         if (!username) return false;
         return get().isAuthenticated && get().user?.profile.username === username;
@@ -249,7 +267,7 @@ export const useAuthStore = create<AuthState>()(
       name: `${LOCAL_STORAGE_PREFIX}auth`,
       storage: 'cookie',
       partialize: (state) => {
-        if (!state.user) return { isAuthenticated: state.isAuthenticated };
+        if (!state.user) return { isAuthenticated: state.isAuthenticated, pendingOnboarding: state.pendingOnboarding };
 
         const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification', 'location'];
         const profileKeysToKeep: (keyof Profile)[] = [

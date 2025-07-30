@@ -1,19 +1,19 @@
-import { useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@heroui/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useOnboardingStore } from '@/stores/useOnboardingStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 import WelcomeStep from './steps/WelcomeStep';
-import FeaturesStep from './steps/FeaturesStep';
 import SetupStep from './steps/SetupStep';
 import GetStartedStep from './steps/GetStartedStep';
 import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
+import { addToast } from '@heroui/react';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const steps = [
   { id: 'welcome', component: WelcomeStep },
-  { id: 'features', component: FeaturesStep },
   { id: 'setup', component: SetupStep },
   { id: 'get-started', component: GetStartedStep },
 ];
@@ -36,66 +36,64 @@ const stepVariants = {
 };
 
 export default function OnboardingModal() {
-  const { showModal, currentStep, totalSteps, closeModal, nextStep, prevStep, completeOnboarding, clearPreferences } =
-    useOnboardingStore();
-  const disclosure = useDisclosure({
-    isOpen: false, // TODO : update
-    onClose: () => {
-      closeModal();
-      completeOnboarding();
-      clearPreferences();
-    },
+  const { showOnboardingModal, closeOnboardingModal } = useAuthStore();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const totalSteps = steps.length;
+
+  const disclosure = useDisclosure({isOpen: showOnboardingModal,
   });
 
   const CurrentStepComponent = steps[currentStep]?.component;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
 
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (!showModal) return;
+  useHotkeys('left', () => {
+    if (!isFirstStep) prevStep();
+  });
+  useHotkeys('right', () => {
+    if (!isLastStep) nextStep();
+  });
+  useHotkeys('enter', () => {
+    if (isLastStep) handleComplete();
+    else nextStep();
+  });
+  useHotkeys('esc', () => {
+    closeOnboardingModal();
+  });
 
-      switch (e.key) {
-        case 'Escape':
-          closeModal();
-          break;
-        case 'ArrowRight':
-          if (!isLastStep) nextStep();
-          break;
-        case 'ArrowLeft':
-          if (!isFirstStep) prevStep();
-          break;
-        case 'Enter':
-          if (isLastStep) completeOnboarding();
-          else nextStep();
-          break;
-      }
-    },
-    [showModal, isFirstStep, isLastStep, closeModal, nextStep, prevStep, completeOnboarding]
-  );
+  const nextStep = () => {
+    setDirection(1);
+    setCurrentStep((prev) => Math.min(prev + 1, totalSteps - 1));
+  };
 
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+  const prevStep = () => {
+    setDirection(-1);
+    setCurrentStep((prev) => Math.max(prev - 1, 0));
+  };
 
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+  const handleComplete = async () => {
+    try {
+      addToast({
+        title: 'Welcome to Watchfolio!',
+        description: 'Your preferences have been saved. Start exploring and building your watchlist!',
+        color: 'success',
+      });
+      closeOnboardingModal();
+    } catch (error) {
+      console.error('Failed to complete onboarding:', error);
+      addToast({
+        title: 'Error',
+        description: 'Failed to save preferences. You can update them later in settings.',
+        color: 'danger',
+      });
+      closeOnboardingModal();
     }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [showModal]);
+  };
 
   const handleNext = () => {
     if (isLastStep) {
-      completeOnboarding();
+      handleComplete();
     } else {
       nextStep();
     }
@@ -104,7 +102,7 @@ export default function OnboardingModal() {
   if (!CurrentStepComponent) return null;
 
   return (
-    <Modal disclosure={disclosure} size='5xl'>
+    <Modal disclosure={disclosure} size='5xl' classNames={{closeButton : "hidden"}}>
       <ModalBody className=''>
         <div className='bg-Grey-800 absolute top-0 right-0 left-0 h-1'>
           <motion.div
@@ -117,10 +115,10 @@ export default function OnboardingModal() {
 
         {/* Step content */}
         <div className='relative h-full overflow-y-auto'>
-          <AnimatePresence mode='wait' custom={1}>
+          <AnimatePresence mode='wait' custom={direction}>
             <motion.div
               key={currentStep}
-              custom={1}
+              custom={direction}
               variants={stepVariants}
               initial='enter'
               animate='center'
@@ -157,6 +155,12 @@ export default function OnboardingModal() {
           >
             {isLastStep ? 'Get Started' : 'Next'}
           </Button>
+
+          {!isLastStep && (
+            <Button variant='light' className='text-Grey-400 hover:text-Grey-300' onPress={closeOnboardingModal}>
+              Skip for now
+            </Button>
+          )}
         </div>
       </ModalFooter>
     </Modal>
