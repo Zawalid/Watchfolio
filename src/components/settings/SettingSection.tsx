@@ -27,7 +27,7 @@ export function SettingSection({ Icon, title, children, iconClassName, iconConta
 interface SettingItemProps {
   title: string;
   description: string;
-  children: ReactNode;
+  children?: ReactNode;
   isDisabled?: boolean;
   requiresAuth?: boolean;
   className?: string;

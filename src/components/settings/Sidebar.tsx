@@ -20,7 +20,7 @@ export default function Sidebar() {
 function Item({ href, label }: { href: string; label: string }) {
   const location = useLocation();
   const pathname = location.pathname;
-  const isActive = pathname === href;
+  const isActive = pathname.includes(href);
 
   return (
     <li>

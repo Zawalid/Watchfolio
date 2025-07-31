@@ -116,3 +116,47 @@ export const formatTimeAgo = (dateString: string): string => {
   });
 };
 
+/**
+ * Performs a deep equality check between two values.
+ * Supports primitives, arrays, objects, dates, and handles edge cases.
+ * Does not support functions or circular references.
+ *
+ * @param a - First value to compare
+ * @param b - Second value to compare
+ * @returns boolean indicating if the values are deeply equal
+ */
+export function deepEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+
+  // Handle null and undefined
+  if (a == null || b == null) return a === b;
+
+  // Handle Date objects
+  if (a instanceof Date && b instanceof Date) {
+    return a.getTime() === b.getTime();
+  }
+
+  // Handle arrays
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+      if (!deepEqual(a[i], b[i])) return false;
+    }
+    return true;
+  }
+
+  // Handle objects (but not arrays or null)
+  if (typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) {
+    const aKeys = Object.keys(a as object);
+    const bKeys = Object.keys(b as object);
+    if (aKeys.length !== bKeys.length) return false;
+    for (const key of aKeys) {
+      if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
+      if (!deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])) return false;
+    }
+    return true;
+  }
+
+  // Fallback for all other cases (including functions)
+  return false;
+}

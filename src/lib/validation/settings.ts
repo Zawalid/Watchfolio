@@ -77,3 +77,13 @@ export const resetPasswordSchema = z
     message: 'Passwords do not match. Please check the password and confirm password.',
     path: ['confirm_password'],
   });
+
+export const preferencesSchema = z.object({
+  signOutConfirmation: z.enum(['enabled', 'disabled']),
+  removeFromLibraryConfirmation: z.enum(['enabled', 'disabled']),
+  clearLibraryConfirmation: z.enum(['enabled', 'disabled']),
+  theme: z.enum(['light', 'dark', 'system']),
+  language: z.string(),
+  enableAnimations: z.enum(['enabled', 'disabled']),
+  defaultMediaStatus: z.enum(['watching', 'willWatch', 'completed', 'onHold', 'dropped', 'none']),
+});

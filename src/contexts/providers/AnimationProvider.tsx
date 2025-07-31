@@ -9,7 +9,7 @@ interface AnimationContextType {
 const AnimationContext = createContext<AnimationContextType>({ animationsEnabled: 'enabled' });
 
 export function AnimationProvider({ children }: { children: React.ReactNode }) {
-  const animationsEnabled = useAuthStore((state) => state.user?.profile.preferences?.enableAnimations || 'enabled');
+  const animationsEnabled = useAuthStore((state) => state.userPreferences.enableAnimations);
 
   if (typeof document !== 'undefined') {
     document.body.dataset.animations = animationsEnabled === 'enabled' ? 'true' : 'false';
@@ -19,7 +19,9 @@ export function AnimationProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AnimationContext.Provider value={value}>
-      <MotionConfig reducedMotion={'always'}>{children}</MotionConfig>
+      <MotionConfig reducedMotion={animationsEnabled === 'enabled' ? 'user' : 'always'}>
+        {children}
+      </MotionConfig>
     </AnimationContext.Provider>
   );
 }

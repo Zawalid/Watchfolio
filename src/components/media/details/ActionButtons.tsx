@@ -16,7 +16,7 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
   const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
   const { toggleFavorite } = useLibraryStore();
 
-  const inLibrary = !!libraryItem;
+  const inLibrary = libraryItem && libraryItem.status !== 'none';
 
   const isFavorite = libraryItem?.isFavorite || false;
   const currentStatus = libraryItem?.status || 'none';
@@ -45,7 +45,6 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
         </Button>
 
         <Button
-          color='secondary'
           className='button-secondary! w-full'
           onPress={trailerDisclosure.onOpen}
           startContent={<Film className='size-4' />}

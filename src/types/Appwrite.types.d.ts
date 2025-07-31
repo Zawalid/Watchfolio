@@ -51,6 +51,8 @@ declare global {
     theme: Theme;
     language: string;
     enableAnimations: ConfirmationSetting;
+    defaultMediaStatus: WatchStatus;
+    autoSync: boolean;
   }
   interface Library extends Document {
     averageRating?: number;

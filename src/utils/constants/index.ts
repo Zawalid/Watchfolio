@@ -96,3 +96,14 @@ export const FAVORITE_NETWORKS_LIMIT = 5;
 export const ITEMS_PER_PAGE = 20;
 
 export const MAX_TMDB_PAGES = 500;
+
+export const DEFAULT_USER_PREFERENCES: CreateUserPreferencesInput = {
+  signOutConfirmation: 'enabled',
+  removeFromLibraryConfirmation: 'enabled',
+  clearLibraryConfirmation: 'enabled',
+  enableAnimations: 'enabled',
+  defaultMediaStatus: 'none',
+  theme: 'system',
+  language: 'en',
+  autoSync: true,
+};

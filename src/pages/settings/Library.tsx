@@ -2,22 +2,18 @@ import { Switch } from '@/components/ui/Switch';
 import { Button } from '@heroui/react';
 import { addToast } from '@heroui/react';
 import { useDisclosure } from '@heroui/react';
-import { Cloud, Database, Download, Upload, Trash2, RefreshCw } from 'lucide-react';
+import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { useState } from 'react';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
-import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingSection } from '@/components/settings/SettingSection';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 export default function Library() {
-  const [isAutoSyncEnabled, setIsAutoSyncEnabled] = useState(
-    localStorage.getItem(`${LOCAL_STORAGE_PREFIX}auto-sync`) !== 'false'
-  );
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
   const { library } = useLibraryStore();
   const syncStore = useSyncStore();
   const { handleClearLibrary } = useClearLibrary();
@@ -30,9 +26,8 @@ export default function Library() {
       addToast({ title: 'Sign in required', description: 'Please sign in to sync your library', color: 'warning' });
       return;
     }
-    // TODO : Add it as a user preference
-    localStorage.setItem(`${LOCAL_STORAGE_PREFIX}auto-sync`, enabled.toString());
-    setIsAutoSyncEnabled(enabled);
+
+    updateUserPreferences({ autoSync: enabled });
     addToast({
       title: enabled ? 'Auto-sync enabled' : 'Auto-sync disabled',
       description: enabled ? 'Your library will sync automatically' : 'Manual sync only',
@@ -62,6 +57,27 @@ export default function Library() {
     }
   };
 
+  const handleDefaultStatusChange = async (status: WatchStatus) => {
+    try {
+      const shouldReset = userPreferences.defaultMediaStatus === status;
+      await updateUserPreferences({ defaultMediaStatus: shouldReset ? 'none' : status });
+      addToast({
+        title: 'Default status updated',
+        description: shouldReset
+          ? 'No default status will be set when adding items to your library.'
+          : `Items will now be added with "${LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label}" status by default.`,
+        color: 'success',
+      });
+    } catch (error) {
+      console.error('Failed to update default status:', error);
+      addToast({
+        title: 'Error',
+        description: 'Failed to update default status. Please try again.',
+        color: 'danger',
+      });
+    }
+  };
+
   return (
     <div className='flex flex-col gap-8'>
       <SettingSection Icon={Cloud} title='Cloud Sync'>
@@ -81,34 +97,30 @@ export default function Library() {
                 <h4 className='text-Grey-200 font-semibold'>Auto-sync</h4>
                 <p className='text-Grey-400 mt-1 text-sm'>Automatically sync your library changes across devices</p>
               </div>
-              <Switch checked={isAutoSyncEnabled} onChange={(e) => handleAutoSyncToggle(e.target.checked)} />
+              <Switch checked={userPreferences?.autoSync} onChange={(e) => handleAutoSyncToggle(e.target.checked)} />
             </div>
-            <div className='border-t border-white/5 pt-6'>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <h4 className='text-Grey-200 font-semibold'>Manual Sync</h4>
-                  <p className='text-Grey-400 mt-1 text-sm'>
-                    {syncStore.status.lastSyncTime
-                      ? `Last synced: ${new Date(syncStore.status.lastSyncTime).toLocaleString()}`
-                      : 'Never synced'}
-                  </p>
-                  {syncStore.status.pendingOperations > 0 && (
-                    <p className='mt-1 text-xs text-amber-300'>
-                      {syncStore.status.pendingOperations} pending operations
-                    </p>
-                  )}
-                </div>
-                <Button
-                  color='primary'
-                  size='sm'
-                  onPress={handleManualSync}
-                  isLoading={syncStore.status.isSyncing}
-                  isDisabled={!isAuthenticated || !syncStore.status.isOnline}
-                  startContent={<RefreshCw className='size-4' />}
-                >
-                  Sync Now
-                </Button>
+            <div className='mt-6 flex items-center justify-between'>
+              <div>
+                <h4 className='text-Grey-200 font-semibold'>Manual Sync</h4>
+                <p className='text-Grey-400 mt-1 text-sm'>
+                  {syncStore.status.lastSyncTime
+                    ? `Last synced: ${new Date(syncStore.status.lastSyncTime).toLocaleString()}`
+                    : 'Never synced'}
+                </p>
+                {syncStore.status.pendingOperations > 0 && (
+                  <p className='mt-1 text-xs text-amber-300'>{syncStore.status.pendingOperations} pending operations</p>
+                )}
               </div>
+              <Button
+                color='primary'
+                size='sm'
+                onPress={handleManualSync}
+                isLoading={syncStore.status.isSyncing}
+                isDisabled={!isAuthenticated || !syncStore.status.isOnline}
+                startContent={<RefreshCw className='size-4' />}
+              >
+                Sync Now
+              </Button>
             </div>
           </div>
         </div>
@@ -140,6 +152,32 @@ export default function Library() {
               <Upload className='size-3' />
               <span>Import from backup</span>
             </div>
+          </div>
+        </div>
+      </SettingSection>
+
+      {/* Library Preferences */}
+      <SettingSection Icon={LibraryIcon} title='Library Preferences'>
+        <div className='space-y-4'>
+          <div>
+            <h4 className='text-Grey-200 font-semibold'>Default Media Status</h4>
+            <p className='text-Grey-400 mt-1 text-sm'>
+              Automatically set this status when adding items to your library (bypasses the status selection modal)
+            </p>
+          </div>
+          <div className='flex flex-wrap gap-2'>
+            {LIBRARY_MEDIA_STATUS.filter((status) => status.value !== 'favorites').map((status) => (
+              <Button
+                key={status.value}
+                size='sm'
+                className='selectable-button!'
+                data-is-selected={userPreferences.defaultMediaStatus === status.value}
+                onPress={() => handleDefaultStatusChange(status.value as WatchStatus)}
+              >
+                <status.icon className='size-3.5' />
+                {status.label}
+              </Button>
+            ))}
           </div>
         </div>
       </SettingSection>

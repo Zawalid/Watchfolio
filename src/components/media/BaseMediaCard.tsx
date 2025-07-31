@@ -14,8 +14,9 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { generateMediaLink, getTmdbImage } from '@/utils/media';
+import { generateMediaLink, getTmdbImage, isMedia } from '@/utils/media';
 import { Rating } from '@/components/ui/Rating';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 interface BaseMediaCardProps {
   id: number;
@@ -399,15 +400,26 @@ const QuickActions = ({
   media?: Media;
   isFocused: boolean;
 }) => {
-  const { toggleFavorite, removeItem } = useLibraryStore();
+  const { toggleFavorite, removeItem, addOrUpdateItem } = useLibraryStore();
   const { openModal } = useMediaStatusModal();
   const { confirm } = useConfirmationModal();
+  const defaultMediaStatus = useAuthStore((state) => state.userPreferences.defaultMediaStatus);
+
+  const inLibrary = item && item.status !== 'none';
 
   const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id }, media);
   const handleEditStatus = () => {
     const target = item || media;
     if (!target) return;
-    openModal({ ...target, media_type: mediaType });
+
+    if (defaultMediaStatus !== 'none' && !inLibrary) {
+      addOrUpdateItem(
+        { id: target.id, media_type: target.media_type, status: defaultMediaStatus },
+        isMedia(target) ? target : undefined
+      );
+    } else {
+      openModal({ ...target, media_type: mediaType });
+    }
   };
 
   const handleRemove = async () => {
@@ -426,8 +438,6 @@ const QuickActions = ({
       }
     }
   };
-
-  const inLibrary = !!item;
 
   // Hotkeys
   useHotkeys(getShortcut(inLibrary ? 'editStatus' : 'addToLibrary')?.hotkey || '', handleEditStatus, {

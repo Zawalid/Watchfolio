@@ -69,6 +69,8 @@ export const generateMediaLink = (item?: Media | LibraryMedia) => {
   return `/${mediaType === 'tv' ? 'tv' : 'movies'}/details/${item.id}-${slugify(title || '')}`;
 };
 
+export const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'overview' in obj);
+
 export const getGenres = (genre_ids?: number[]) =>
   genre_ids
     ?.slice(0, 2)

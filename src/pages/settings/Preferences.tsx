@@ -6,13 +6,11 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
 
 export default function Preferences() {
-  const { user, isAuthenticated, updateUserPreferences, isLoading } = useAuthStore();
+  const { user, isAuthenticated, updateUserPreferences, isLoading, userPreferences } = useAuthStore();
 
   usePageTitle('Preferences - Settings');
 
   const handleConfirmationToggle = async (setting: keyof UserPreferences, enabled: boolean) => {
-    if (!user?.profile?.preferences) return;
-
     try {
       await updateUserPreferences({ [setting]: enabled ? 'enabled' : 'disabled' });
       addToast({
@@ -39,7 +37,7 @@ export default function Preferences() {
           isDisabled={isLoading}
         >
           <Switch
-            checked={user?.profile?.preferences?.removeFromLibraryConfirmation === 'enabled'}
+            checked={userPreferences?.removeFromLibraryConfirmation === 'enabled'}
             onChange={(e) => handleConfirmationToggle('removeFromLibraryConfirmation', e.target.checked)}
             disabled={isLoading}
           />
@@ -51,7 +49,7 @@ export default function Preferences() {
           isDisabled={isLoading}
         >
           <Switch
-            checked={user?.profile?.preferences?.clearLibraryConfirmation === 'enabled'}
+            checked={userPreferences?.clearLibraryConfirmation === 'enabled'}
             onChange={(e) => handleConfirmationToggle('clearLibraryConfirmation', e.target.checked)}
             disabled={isLoading}
           />
@@ -64,7 +62,7 @@ export default function Preferences() {
           requiresAuth={true}
         >
           <Switch
-            checked={user?.profile?.preferences?.signOutConfirmation === 'enabled'}
+            checked={userPreferences?.signOutConfirmation === 'enabled'}
             onChange={(e) => handleConfirmationToggle('signOutConfirmation', e.target.checked)}
             disabled={isLoading || !isAuthenticated}
           />
@@ -80,26 +78,12 @@ export default function Preferences() {
           tag='(Recommended)'
         >
           <Switch
-            checked={user?.profile?.preferences?.enableAnimations === 'enabled'}
+            checked={userPreferences?.enableAnimations === 'enabled'}
             onChange={(e) => handleConfirmationToggle('enableAnimations', e.target.checked)}
             disabled={isLoading}
           />
         </SettingItem>
-        <SettingItem title='Theme' description='Choose your preferred theme' isDisabled={true} comingSoon={true}>
-          <div className='flex items-center gap-2'>
-            <span className='text-Grey-300 text-sm'>Dark</span>
-            <span className='text-Grey-500 text-xs'>(System)</span>
-          </div>
-        </SettingItem>
-
-        <SettingItem
-          title='Compact view'
-          description='Use a more dense layout for lists and cards'
-          isDisabled={true}
-          comingSoon={true}
-        >
-          <Switch checked={false} onChange={() => {}} disabled={true} />
-        </SettingItem>
+        <SettingItem title='Theme' description='Choose your preferred theme' isDisabled={true} comingSoon={true} />
       </SettingSection>
 
       {/* Localization */}

@@ -1,6 +1,7 @@
 import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { appwriteService } from './api/appwrite-service';
 import { OAuthProvider } from 'appwrite';
+import { DEFAULT_USER_PREFERENCES } from '@/utils/constants';
 
 export interface CreateUserAccount {
   name: string;
@@ -126,17 +127,7 @@ class AuthService {
    * Create default user preferences
    */ private async createDefaultUserPreferences() {
     try {
-      const defaultPreferences: CreateUserPreferencesInput = {
-        signOutConfirmation: 'enabled',
-        removeFromLibraryConfirmation: 'enabled',
-        clearLibraryConfirmation: 'enabled',
-        theme: 'system' as Theme,
-        language: 'en',
-        enableAnimations: 'enabled',
-      };
-
-      // Let Appwrite generate the document ID automatically
-      return await appwriteService.userPreferences.create(defaultPreferences);
+      return await appwriteService.userPreferences.create(DEFAULT_USER_PREFERENCES);
     } catch (error) {
       console.error('Create default user preferences error:', error);
       throw error;
@@ -295,12 +286,12 @@ class AuthService {
   /**
    * Sign in with Google OAuth
    */
-  async signInWithGoogle() {
+  async signInWithGoogle(prevUrl: string) {
     try {
       // Redirect to Google OAuth
-      const success = `${window.location.origin}/library`;
+      const success = prevUrl || `${window.location.origin}/library`;
       // TODO : Use error screen or something
-      const failure = `${window.location.origin}/signin`;
+      const failure = `${window.location.origin}/home`;
 
       await appwriteService.auth.createOAuth2Session(OAuthProvider.Google, success, failure);
     } catch (error) {

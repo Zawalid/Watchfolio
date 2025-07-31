@@ -11,13 +11,14 @@ import { useListNavigator } from '@/hooks/useListNavigator';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 import { useNavigation } from '@/contexts/NavigationContext';
+import { isMedia } from '@/utils/media';
 
 interface MediaStatusModalProps {
   disclosure: Disclosure;
   media: Media | LibraryMedia;
 }
 
-const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'overview' in obj);
+
 
 export default function MediaStatusModal({ disclosure, media }: MediaStatusModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);

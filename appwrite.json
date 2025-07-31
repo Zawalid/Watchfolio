@@ -90,6 +90,29 @@
                     ],
                     "format": "enum",
                     "default": "enabled"
+                },
+                {
+                    "key": "defaultMediaStatus",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "watching",
+                        "willWatch",
+                        "onHold",
+                        "dropped",
+                        "none",
+                        "completed"
+                    ],
+                    "format": "enum",
+                    "default": "none"
+                },
+                {
+                    "key": "autoSync",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": true
                 }
             ],
             "indexes": []
