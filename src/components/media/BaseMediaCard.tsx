@@ -17,6 +17,9 @@ import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { generateMediaLink, getTmdbImage, isMedia } from '@/utils/media';
 import { Rating } from '@/components/ui/Rating';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useQuery } from '@tanstack/react-query';
+import { getDetails } from '@/lib/api/TMDB';
+import { queryKeys } from '@/lib/react-query';
 
 interface BaseMediaCardProps {
   id: number;
@@ -51,6 +54,13 @@ export default function BaseMediaCard({
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+
+  const { data: mediaDetails } = useQuery({
+    queryKey: queryKeys.details(mediaType, id),
+    queryFn: async () => await getDetails(mediaType, id),
+    enabled: !!isHovered,
+    staleTime: Infinity,
+  });
 
   const libraryItem = useLibraryStore((state) => state.getItem(mediaType, id));
   const finalItem = item || libraryItem;
@@ -99,7 +109,13 @@ export default function BaseMediaCard({
       {/* Quick Actions - Show for ALL items on hover, including person context */}
       <AnimatePresence>
         {isInteractive && (
-          <QuickActions id={id} mediaType={mediaType} media={media} item={finalItem} isFocused={isFocused} />
+          <QuickActions
+            id={id}
+            mediaType={mediaType}
+            media={mediaDetails || media}
+            item={finalItem}
+            isFocused={isFocused}
+          />
         )}
       </AnimatePresence>
 

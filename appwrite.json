@@ -370,6 +370,15 @@
                     "min": 0,
                     "max": 922337203685477600,
                     "default": null
+                },
+                {
+                    "key": "networks",
+                    "type": "integer",
+                    "required": false,
+                    "array": true,
+                    "min": 0,
+                    "max": 2147483647,
+                    "default": null
                 }
             ],
             "indexes": [

@@ -10,18 +10,17 @@ import { useQuery } from '@tanstack/react-query';
 import { getDetails } from '@/lib/api/TMDB';
 import { Status } from '@/components/ui/Status';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { queryKeys } from '@/lib/react-query';
 
 export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
   const { slug } = useParams();
+  const id = parseInt(slug!);
+
   const {
     data: media,
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ['details', type, slug],
-    queryFn: async () => await getDetails(type, slug!),
-  });
-
+  } = useQuery({ queryKey: queryKeys.details(type, id), queryFn: async () => await getDetails(type, id) });
 
   usePageTitle(isLoading ? 'Loading...' : (media as Movie)?.title || (media as TvShow)?.name || '');
 
@@ -43,11 +42,7 @@ export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
       <div>
         {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons || []} show={media as TvShow} />}
         <Cast cast={media.credits?.cast || []} />
-        <Media 
-          videos={media.videos?.results || []} 
-          images={media.images}
-          mediaTitle={mediaTitle}
-        />
+        <Media videos={media.videos?.results || []} images={media.images} mediaTitle={mediaTitle} />
         <Similar type={type} id={media.id} />
         <Recommendations type={type} id={media.id} />
       </div>

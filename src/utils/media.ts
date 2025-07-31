@@ -242,3 +242,24 @@ export const calculateKnownForScore = (credit: Credit): number => {
   // Combine all factors into the final score.
   return (popularityScore + ratingScore) * roleMultiplier * recencyMultiplier;
 };
+
+export const calculateTotalMinutesRuntime = (media: Media) => {
+  let totalMinutesRuntime = 0;
+  if (media.media_type === 'movie') {
+    totalMinutesRuntime = (media as Movie).runtime || 0;
+  } else if (media.media_type === 'tv') {
+    const show = media as TvShow;
+    const totalEpisodes = show.number_of_episodes || 0;
+    let runtime = 0;
+
+    // 1. Prioritize the runtime of the last aired episode
+    if (show.last_episode_to_air?.runtime) runtime = show.last_episode_to_air.runtime;
+    // 2. Fallback to the first value in the general episode_run_time array
+    else if (show.episode_run_time && show.episode_run_time?.length > 0) runtime = show.episode_run_time[0];
+    // 3. Final fallback to a sensible default if no data is available
+    else runtime = 45;
+
+    totalMinutesRuntime = Math.round(runtime * totalEpisodes);
+  }
+  return totalMinutesRuntime;
+};

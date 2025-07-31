@@ -24,7 +24,7 @@ export const queryKeys = {
   category: (type: 'movie' | 'tv', category: Categories,) => [type, category],
   trending: (type: 'all' | 'movie' | 'tv', timeWindow: 'day' | 'week') => ['trending', type, timeWindow],
 
-  details: (type: 'movie' | 'tv', id: string) => ['details', type, id],
+  details: (type: 'movie' | 'tv', id: number) => ['details', type, id],
   recommendations: (type: 'movie' | 'tv', id: string) => ['recommendations', type, id],
   season: (seasonNumber: number) => ['season', seasonNumber],
 

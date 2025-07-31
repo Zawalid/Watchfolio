@@ -1,6 +1,5 @@
 import { type LoaderFunctionArgs } from 'react-router';
 import {
-  getDetails,
   getTvShows,
   getMovies,
   discoverMovies,
@@ -37,20 +36,20 @@ const createListLoader = (type: 'movie' | 'tv') => {
   };
 };
 
-const createDetailsLoader = (type: 'movie' | 'tv') => {
-  return async ({ params }: LoaderFunctionArgs) => {
-    const slug = params.slug as string;
-    const queryKey = queryKeys.details(type, slug);
+// const createDetailsLoader = (type: 'movie' | 'tv') => {
+//   return async ({ params }: LoaderFunctionArgs) => {
+//     const slug = params.slug as string;
+//     const queryKey = queryKeys.details(type, slug);
 
-    const data = await prefetchQuery(() => getDetails(type, slug), queryKey);
-    return data.data;
-  };
-};
+//     const data = await prefetchQuery(() => getDetails(type, slug), queryKey);
+//     return data.data;
+//   };
+// };
 
 export const moviesLoader = createListLoader('movie');
-export const movieDetailsLoader = createDetailsLoader('movie');
+// export const movieDetailsLoader = createDetailsLoader('movie');
 
 export const tvShowsLoader = createListLoader('tv');
-export const tvDetailsLoader = createDetailsLoader('tv');
+// export const tvDetailsLoader = createDetailsLoader('tv');
 
 // TODO: Add loaders for other routes

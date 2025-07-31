@@ -16,11 +16,8 @@ export const searchPerson = async (query: string, page?: number): Promise<TMDBRe
   return await fetchFromTMDB(`/search/person`, { query, page: String(page || 1) });
 };
 
-export const getDetails = async (type: 'movie' | 'tv', slug: string, append: boolean = true): Promise<Media | null> => {
-  if (!type || !slug) throw new Error('Type and Slug are required');
-  const id = parseInt(slug);
-
-  if (!id) return null;
+export const getDetails = async (type: 'movie' | 'tv', id: number, append: boolean = true): Promise<Media | null> => {
+  if (!type || !id) throw new Error('Type and Id are required');
 
   const details = await fetchFromTMDB<Media>(
     type === 'tv'

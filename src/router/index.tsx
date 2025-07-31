@@ -24,7 +24,7 @@ import {
   PrivacyPolicy,
   UserProfile,
 } from '@/pages';
-import { movieDetailsLoader, moviesLoader, tvDetailsLoader, tvShowsLoader } from './loaders';
+import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { slugify } from '@/utils';
 
@@ -75,7 +75,6 @@ export const router = createBrowserRouter([
           {
             path: 'details/:slug',
             element: <MediaDetails type='movie' />,
-            loader: movieDetailsLoader,
           },
         ],
       },
@@ -95,7 +94,6 @@ export const router = createBrowserRouter([
           {
             path: 'details/:slug',
             element: <MediaDetails type='tv' />,
-            loader: tvDetailsLoader,
           },
         ],
       },

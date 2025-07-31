@@ -1,15 +1,22 @@
 import { useMemo } from 'react';
 import { useDiscoverParams } from './useDiscoverParams';
+import { NETWORKS } from '@/utils/constants/TMDB';
 
 export function useFilteredLibrary(allMedia: LibraryMedia[] | undefined, status?: LibraryFilterStatus) {
-  const {query, sortBy, sortDir, selectedGenres: genres, selectedTypes: types } = useDiscoverParams();
+  const {
+    query,
+    sortBy,
+    sortDir,
+    selectedGenres: genres,
+    selectedTypes: types,
+    selectedNetworks: networks,
+  } = useDiscoverParams();
 
   return useMemo(() => {
     if (!allMedia) return [];
 
     let filtered = allMedia;
 
-    // This block handles multiple filter types simultaneously.
     filtered = allMedia.filter((item) => {
       if (status && status !== 'all') {
         if (status === 'favorites' ? !item.isFavorite : item.status !== status) {
@@ -21,13 +28,19 @@ export function useFilteredLibrary(allMedia: LibraryMedia[] | undefined, status?
           return false;
         }
       }
-     if (genres && genres.length > 0) {
-       if (!genres.every((selected) => item.genres?.map((g) => g.toLowerCase()).includes(selected))) {
-         return false;
-       }
-     }
+      if (genres && genres.length > 0) {
+        if (!genres.every((selected) => item.genres?.map((g) => g.toLowerCase()).includes(selected))) {
+          return false;
+        }
+      }
       if (types && types.length > 0) {
         if (!types.includes(item.media_type)) {
+          return false;
+        }
+      }
+      if (networks && networks.length > 0) {
+        const networkIds = NETWORKS.filter((n) => networks.includes(n.slug)).map((n) => n.id);
+        if (!networkIds.some((id) => item.networks?.includes(id))) {
           return false;
         }
       }
@@ -54,5 +67,5 @@ export function useFilteredLibrary(allMedia: LibraryMedia[] | undefined, status?
     });
 
     return sorted;
-  }, [allMedia, genres, query, sortBy, sortDir, status, types]);
+  }, [allMedia, genres, query, sortBy, sortDir, status, types, networks]);
 }

@@ -9,6 +9,7 @@ interface LibraryMedia {
   releaseDate?: string;
   genres?: string[];
   rating?: number;
+  networks?: number[];
 
   status: WatchStatus; // Default to 'none' if just favorited/rated without explicit status
   isFavorite: boolean;

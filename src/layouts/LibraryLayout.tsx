@@ -220,7 +220,7 @@ export default function LibraryLayout() {
             </Dropdown>
           </div>
         </div>
-        <div className='flex-1 flex flex-col gap-6'>
+        <div className='flex flex-1 flex-col gap-6'>
           <AnimatePresence>
             <WelcomeBanner
               title={

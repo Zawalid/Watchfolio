@@ -15,6 +15,8 @@ import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useFiltersParams } from '@/hooks/useFiltersParams';
+import { Slider } from './ui/Slider';
+import NetworkCard from '@/pages/networks/NetworkCard';
 
 export type FilterOption = 'genres' | 'networks' | 'types' | 'language' | 'ratingRange' | 'releaseYear';
 
@@ -182,6 +184,7 @@ function NetworksFilter() {
       setSelectedNetworks([...list, slug]);
     }
   };
+
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
@@ -193,18 +196,18 @@ function NetworksFilter() {
         </h3>
         {selectedNetworks?.length ? <ClearFilter onClear={() => setSelectedNetworks(null)} /> : null}
       </div>
-      <div className='grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-3'>
-        {NETWORKS.slice(0, 12).map(({ id, name, logo, slug }) => (
-          <Button
-            key={id}
-            className='selectable-button! h-28'
-            data-is-selected={selectedNetworks?.includes(slug) || false}
-            onPress={() => toggle(slug)}
-          >
-            {logo ? <img src={logo} alt={name} className='mr-1 inline-block max-h-24' loading='lazy' /> : name}
-          </Button>
+      <Slider>
+        {NETWORKS.map((network) => (
+          <Slider.Slide key={network.id} className='group w-30!'>
+            <NetworkCard
+              network={network}
+              type='button'
+              isSelected={selectedNetworks?.includes(network.slug)}
+              onSelect={() => toggle(network.slug)}
+            />
+          </Slider.Slide>
         ))}
-      </div>
+      </Slider>
     </div>
   );
 }

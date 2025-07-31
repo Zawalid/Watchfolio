@@ -1246,6 +1246,14 @@ export const NETWORKS: Network[] = [
     provider_id: 1770,
   },
   {
+    name: 'AMC+',
+    slug: 'amc-plus',
+    logo: 'https://image.tmdb.org/t/p/w500/hECpNxPnJowi91GQ1uAXevmk2g1.png',
+    id: 4661,
+    invertOnHover: true,
+    provider_id: 526,
+  },
+  {
     name: 'discovery+',
     slug: 'discovery-plus',
     logo: 'https://image.tmdb.org/t/p/w500/1D1bS3Dyw4ScYnFWTlBOvJXC3nb.png',
@@ -1386,14 +1394,6 @@ export const NETWORKS: Network[] = [
     id: 244,
     invertOnHover: false,
     provider_id: 408,
-  },
-  {
-    name: 'AMC+',
-    slug: 'amc-plus',
-    logo: 'https://image.tmdb.org/t/p/w500/hECpNxPnJowi91GQ1uAXevmk2g1.png',
-    id: 4661,
-    invertOnHover: true,
-    provider_id: 526,
   },
 ];
 

@@ -2,16 +2,17 @@ import { useEffect, useState, useRef } from 'react';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { LIBRARY_SYNC_DELAY, LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { LIBRARY_SYNC_DELAY, } from '@/utils/constants';
 
 export function useLibrarySync() {
   const syncStore = useSyncStore();
   const library = useLibraryStore((state) => state.library);
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, userPreferences } = useAuthStore();
   const [isSyncInProgress, setIsSyncInProgress] = useState(false);
   const hasPerformedInitialSync = useRef(false);
 
   // Can only sync when online AND authenticated
+  const autoSyncEnabled = userPreferences.autoSync;
   const canSync = syncStore.status.isOnline && isAuthenticated;
 
   // Initial sync when user becomes authenticated
@@ -41,8 +42,6 @@ export function useLibrarySync() {
 
   // Auto-sync for user changes (handles all operations: adds, updates, removes)
   useEffect(() => {
-    const autoSyncEnabled = localStorage.getItem(`${LOCAL_STORAGE_PREFIX}auto-sync`) !== 'false';
-
     if (!autoSyncEnabled || !canSync || isSyncInProgress || syncStore.status.isSyncing) return;
 
     const timeoutId = setTimeout(async () => {
@@ -63,5 +62,5 @@ export function useLibrarySync() {
     }, LIBRARY_SYNC_DELAY);
 
     return () => clearTimeout(timeoutId);
-  }, [library, canSync, isSyncInProgress, syncStore]);
+  }, [library, canSync, isSyncInProgress, syncStore, autoSyncEnabled]);
 }

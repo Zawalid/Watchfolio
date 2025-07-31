@@ -79,6 +79,7 @@ declare global {
     genres?: string[];
     rating?: number;
     totalMinutesRuntime?: number;
+    networks?: number[];
   }
 
   type CreateProfileInput = {

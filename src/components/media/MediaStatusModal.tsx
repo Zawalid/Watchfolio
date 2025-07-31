@@ -18,8 +18,6 @@ interface MediaStatusModalProps {
   media: Media | LibraryMedia;
 }
 
-
-
 export default function MediaStatusModal({ disclosure, media }: MediaStatusModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);
   const { registerNavigator, unregisterNavigator } = useNavigation();
@@ -36,7 +34,7 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   const { addOrUpdateItem } = useLibraryStore();
 
   const handleStatusChange = (status: WatchStatus) => {
-     addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
+    addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
   };
 
   const handleRatingChange = (rating: number | undefined) =>

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { GENRES } from '@/utils/constants/TMDB';
-import { getRating } from '@/utils/media';
+import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
 import { mergeLibraryItems, generateMediaKey, getLibraryCount, logLibraryActivity } from '@/utils/library';
 import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
@@ -56,6 +56,8 @@ const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
       media.genre_ids?.map((id) => GENRES.find((g) => g.id === id)?.label || '') ||
       [],
     rating: +getRating(media.vote_average),
+    totalMinutesRuntime: calculateTotalMinutesRuntime(media),
+    networks: (media as TvShow).networks?.map((n) => n.id) || [],
   };
 };
 

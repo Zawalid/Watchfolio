@@ -6,6 +6,7 @@ import { FAVORITE_GENRES_LIMIT, FAVORITE_NETWORKS_LIMIT } from '@/utils/constant
 import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import { cn } from '@/utils';
 import { Slider } from '@/components/ui/Slider';
+import NetworkCard from '@/pages/networks/NetworkCard';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -170,26 +171,7 @@ export default function TasteEditor({
         <Slider>
           {NETWORKS.map((network) => (
             <Slider.Slide key={network.id} className='group w-32!'>
-              <Button
-                className='selectable-button! h-28 w-32'
-                data-is-selected={selectedNetworks.includes(network.id)}
-                onPress={() => handleNetworkToggle(network.id)}
-              >
-                {network.logo ? (
-                  <img
-                    src={network.logo}
-                    alt={network.name}
-                    className={cn(
-                      'max-h-20 object-contain transition-all duration-300 group-hover:scale-105',
-                      selectedNetworks.includes(network.id) && 'invert',
-                      network.invertOnHover && 'group-hover:invert'
-                    )}
-                    loading='lazy'
-                  />
-                ) : (
-                  network.name
-                )}
-              </Button>
+              <NetworkCard network={network} type='button' isSelected={selectedNetworks.includes(network.id)} onSelect={() => handleNetworkToggle(network.id)} />
             </Slider.Slide>
           ))}
         </Slider>
