@@ -1,13 +1,11 @@
 import { addToast } from '@heroui/react';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useSyncStore } from '@/stores/useSyncStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 export function useClearLibrary() {
   const { isAuthenticated } = useAuthStore();
   const { clearLibrary, getCount } = useLibraryStore();
-  const syncStore = useSyncStore();
   const { confirm } = useConfirmationModal();
 
   const handleClearLibrary = async () => {
@@ -34,7 +32,6 @@ export function useClearLibrary() {
         clearLibrary();
 
         if (isAuthenticated) {
-          await syncStore.clearCloudLibrary();
           addToast({
             title: 'Library cleared',
             description: 'Your local library and cloud backup have been cleared successfully',

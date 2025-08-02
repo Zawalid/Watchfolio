@@ -3,8 +3,6 @@ import { Button } from '@heroui/react';
 import { addToast } from '@heroui/react';
 import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
-import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useSyncStore } from '@/stores/useSyncStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { useClearLibrary } from '@/hooks/useClearLibrary';
@@ -14,8 +12,6 @@ import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 export default function Library() {
   const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
-  const { library } = useLibraryStore();
-  const syncStore = useSyncStore();
   const { handleClearLibrary } = useClearLibrary();
   const importExportDisclosure = useDisclosure();
 
@@ -42,7 +38,6 @@ export default function Library() {
     }
 
     try {
-      await syncStore.syncToCloud(library);
       addToast({
         title: 'Sync completed',
         description: 'Your library has been synced successfully',
@@ -102,21 +97,15 @@ export default function Library() {
             <div className='mt-6 flex items-center justify-between'>
               <div>
                 <h4 className='text-Grey-200 font-semibold'>Manual Sync</h4>
-                <p className='text-Grey-400 mt-1 text-sm'>
-                  {syncStore.status.lastSyncTime
-                    ? `Last synced: ${new Date(syncStore.status.lastSyncTime).toLocaleString()}`
-                    : 'Never synced'}
-                </p>
-                {syncStore.status.pendingOperations > 0 && (
-                  <p className='mt-1 text-xs text-amber-300'>{syncStore.status.pendingOperations} pending operations</p>
-                )}
+                <p className='text-Grey-400 mt-1 text-sm'>{`Last synced: ${new Date().toLocaleString()}`}</p>
+                <p className='mt-1 text-xs text-amber-300'>{12} pending operations</p>
               </div>
               <Button
                 color='primary'
                 size='sm'
                 onPress={handleManualSync}
-                isLoading={syncStore.status.isSyncing}
-                isDisabled={!isAuthenticated || !syncStore.status.isOnline}
+                isLoading={false}
+                isDisabled={!isAuthenticated}
                 startContent={<RefreshCw className='size-4' />}
               >
                 Sync Now

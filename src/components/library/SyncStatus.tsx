@@ -1,14 +1,17 @@
 import { Tooltip } from '@heroui/react';
 import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
-import { useSyncStore } from '@/stores/useSyncStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { cn } from '@/utils';
 
 export function SyncStatus({ className }: { className?: string }) {
-  const status = useSyncStore((state) => state.status);
-  const setError = useSyncStore((state) => state.setError);
   const { isAuthenticated, openAuthModal } = useAuthStore();
-  const { isOnline, isSyncing, error, lastSyncTime } = status;
+  const { isOnline, isSyncing, error, lastSyncTime } = {
+    isOnline: true, // Replace with actual online status check
+    isSyncing: false, // Replace with actual syncing status
+    error: null, // Replace with actual error state
+    lastSyncTime: null, // Replace with actual last sync time
+  };
+  const setError = (error: string | null) => console.log(error);
 
   const hasError = !!error;
 

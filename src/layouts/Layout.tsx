@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Providers } from '@/providers';
-import { useLibrarySync } from '@/hooks/useLibrarySync';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import AuthModal from '@/components/auth/AuthModal';
@@ -16,7 +15,6 @@ export default function Layout() {
   const [isMobile, setIsMobile] = useState(false);
 
   useInitialAuth();
-  useLibrarySync();
 
   useLayoutEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
