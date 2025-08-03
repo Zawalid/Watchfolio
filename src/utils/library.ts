@@ -1,4 +1,4 @@
-import { profilesService } from '@/lib/api/appwrite-service';
+import { profilesService } from '@/lib/api/appwrite';
 
 /**
  * Generates a consistent key for a media item
@@ -91,7 +91,7 @@ export const mergeLibraryItems = (
               ? existingItem.isFavorite || importedItem.isFavorite
               : importedItem.isFavorite,
             // For dates, keep the more recent one
-            addedToLibraryAt: existingItem.addedToLibraryAt || importedItem.addedToLibraryAt,
+            addedAt: existingItem.addedAt || importedItem.addedAt,
             // Use the more recent lastUpdatedAt
             lastUpdatedAt: new Date(
               Math.max(new Date(existingItem.lastUpdatedAt).getTime(), new Date(importedItem.lastUpdatedAt).getTime())
@@ -273,7 +273,7 @@ export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMe
     isFavorite: libraryItem.isFavorite,
     userRating: libraryItem.userRating || undefined,
     notes: libraryItem.notes || undefined,
-    addedToLibraryAt: libraryItem.addedAt || new Date().toISOString(),
+    addedAt: libraryItem.addedAt || new Date().toISOString(),
     lastUpdatedAt: libraryItem.$updatedAt,
     totalMinutesRuntime: tmdbMedia?.totalMinutesRuntime,
     networks: tmdbMedia?.networks || [],
@@ -305,7 +305,7 @@ export const mapToAppwriteData = async (
       isFavorite: media.isFavorite,
       userRating: media.userRating || undefined,
       notes: media.notes || undefined,
-      addedAt: media.addedToLibraryAt,
+      addedAt: media.addedAt,
     },
   };
 };

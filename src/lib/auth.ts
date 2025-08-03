@@ -1,5 +1,5 @@
 import { getDefaultAvatarUrl } from '@/utils/avatar';
-import { appwriteService } from './api/appwrite-service';
+import { appwriteService } from './api/appwrite';
 import { OAuthProvider } from 'appwrite';
 import { DEFAULT_USER_PREFERENCES } from '@/utils/constants';
 

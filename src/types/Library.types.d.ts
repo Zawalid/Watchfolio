@@ -20,7 +20,7 @@ interface LibraryMedia {
     episodeNumber: number;
     watchedAt?: string;
   };
-  addedToLibraryAt: string; // ISO date string when first interacted with (status set, favorited, rated)
+  addedAt: string; // ISO date string when first interacted with (status set, favorited, rated)
   lastUpdatedAt: string; // ISO date string of last update
   notes?: string;
   totalMinutesRuntime?: number;

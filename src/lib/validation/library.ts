@@ -10,7 +10,7 @@ const libraryMediaBaseSchema = z.object({
   media_type: z.enum(['movie', 'tv']),
   status: z.enum(['completed', 'watching', 'willWatch', 'onHold', 'dropped', 'none']).default('none'),
   isFavorite: z.boolean().default(false),
-  addedToLibraryAt: z
+  addedAt: z
     .string()
     .datetime()
     .or(z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/)),

@@ -32,7 +32,7 @@ export default function LibraryOverview() {
 
   const allItems = getAllItems();
   const recentItems = allItems
-    .sort((a, b) => new Date(b.addedToLibraryAt).getTime() - new Date(a.addedToLibraryAt).getTime())
+    .sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
     .slice(0, 6);
 
   const totalItems = getCount('all');

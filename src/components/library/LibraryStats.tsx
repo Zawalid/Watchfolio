@@ -146,7 +146,7 @@ export default function LibraryStats({ items }: LibraryStatsProps) {
     // Calculate recent activity (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const recentItems = items.filter((item) => new Date(item.addedToLibraryAt) > thirtyDaysAgo);
+    const recentItems = items.filter((item) => new Date(item.addedAt) > thirtyDaysAgo);
 
     return {
       movies: movies.length,

@@ -2,6 +2,7 @@ export { default as Landing } from './Landing';
 export { default as Home } from './Home';
 export { default as Library } from './library/Library';
 export { default as NotFound } from './404';
+export { default as RxDBTest } from './RxDBTest';
 export { default as Movies } from './media/Movies';
 export { default as TV } from './media/TV';
 export { default as MediaDetails } from './media/MediaDetails';
@@ -17,6 +18,6 @@ export { default as Collections } from './collection/Collections';
 export { default as CollectionDetails } from './collection/CollectionDetails';
 export { default as TermsOfService } from './legal/TermsOfService';
 export { default as PrivacyPolicy } from './legal/PrivacyPolicy';
-export { default as Networks } from './networks/Networks'
+export { default as Networks } from './networks/Networks';
 export { default as NetworkDetails } from './networks/NetworkDetails';
 export { default as UserProfile } from './profile/UserProfile';

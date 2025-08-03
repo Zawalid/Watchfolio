@@ -12,7 +12,7 @@ import AvatarManager from './AvatarManager';
 import { profileInfoSchema } from '@/lib/validation/settings';
 import { getAvatarWithFallback } from '@/utils/avatar';
 import { useEffect, useState } from 'react';
-import { profilesService } from '@/lib/api/appwrite-service';
+import { profilesService } from '@/lib/api/appwrite';
 import { useDebounce } from '@/hooks/useDebounce';
 
 type FormData = z.infer<typeof profileInfoSchema>;
