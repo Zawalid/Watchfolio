@@ -4,6 +4,7 @@ import { Switch } from '@/components/ui/Switch';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
+import { UserPreferences } from '@/lib/appwrite/types';
 
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading, userPreferences } = useAuthStore();

@@ -6,6 +6,7 @@ import { Button } from '@heroui/react';
 import { getCollection } from '@/lib/api/TMDB';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { getTmdbImage } from '@/utils/media';
+import { slugify } from '@/utils';
 
 const FEATURED_COLLECTIONS = [
   { id: 230, name: 'The Godfather Collection', category: 'Classic' },
@@ -145,7 +146,7 @@ function CollectionCard({ collection, index, variant }: CollectionCardProps) {
       transition={{ duration: 0.5, delay: index * 0.08 }}
       className={`group relative cursor-pointer ${getCardDimensions(variant)}`}
     >
-      <Link to={`/collection/${collection.id}`} className='block h-full w-full'>
+      <Link to={`/collections/${collection.id}-${slugify(collection.name)}`} className='block h-full w-full'>
         <div className='relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-sm transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:shadow-black/40'>
           <LazyImage
             src={getTmdbImage(collectionData, 'original')}

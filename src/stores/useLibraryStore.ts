@@ -1,27 +1,24 @@
 import { create } from 'zustand';
 import { GENRES } from '@/utils/constants/TMDB';
 import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
-import { mergeLibraryItems, generateMediaKey, getLibraryCount, logLibraryActivity } from '@/utils/library';
+import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/library';
 import { serializeToJSON, serializeToCSV } from '@/utils/export';
-import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
-import { persistAndSync } from '@/utils/persistAndSync';
 import { useAuthStore } from './useAuthStore';
-import { addOrUpdateLibraryItem, createLibraryItem } from '@/lib/rxdb';
+import { getLibraryItems, deleteLibraryItem, addOrUpdateLibraryItem, clearLibrary as clearRxDBLibrary, } from '@/lib/rxdb/collections';
 
 interface LibraryState {
   library: LibraryCollection;
-
+  isLoading: boolean;
+  error: string | null;
+  lastUpdatedAt: string;
   // Actions
-  getItem: (mediaType: MediaType, id: number) => LibraryMedia | undefined;
+  getItem: (id: string) => LibraryMedia | undefined;
   addOrUpdateItem: (
-    media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id' | 'media_type'>,
-    metadata?: Media
-  ) => LibraryMedia | null;
-  removeItem: (mediaType: MediaType, id: number) => void;
-  toggleFavorite: (
-    media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id' | 'media_type'>,
-    metadata?: Media
-  ) => LibraryMedia | null;
+    item: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>,
+    media?: Media
+  ) => Promise<LibraryMedia | null>;
+  removeItem: (id: string) => Promise<void>;
+  toggleFavorite: (id: string, media?: Media) => Promise<LibraryMedia | null>;
   getAllItems: () => LibraryMedia[];
   getItemsByStatus: (status: LibraryFilterStatus, mediaType?: MediaType) => LibraryMedia[];
   getCount: (filter: LibraryFilterStatus, mediaType?: MediaType) => number;
@@ -29,65 +26,32 @@ interface LibraryState {
   importLibrary: (
     parsedItems: LibraryMedia[],
     options: { mergeStrategy: 'smart' | 'overwrite' | 'skip'; keepExistingFavorites: boolean }
-  ) => number;
-  clearLibrary: () => void;
+  ) => Promise<number>;
+  clearLibrary: () => Promise<void>;
+  loadLibrary: () => Promise<void>;
+  refreshLibrary: () => Promise<void>;
 }
 
+// Helper to check if item should be removed
 const shouldRemoveItem = (item: LibraryMedia): boolean => {
   return (
     !item.isFavorite && (item.status === 'none' || !item.status) && !item.userRating
   );
 };
 
-// Helper to get current user's library ID (guest or authenticated)
+// Helper to get current user's library ID
 const getCurrentLibraryId = (): string => {
   const { user } = useAuthStore.getState();
-  return user?.profile?.$id || 'guest-library';
+  return user?.profile?.library.$id || 'guest-library';
 };
 
-// Helper to transform LibraryMedia to RxDB format and vice versa
-const transformToRxDBFormat = (item: LibraryMedia) => ({
-  libraryId: getCurrentLibraryId(),
-  tmdbId: item.id,
-  mediaType: item.media_type,
-  status: item.status || 'none',
-  isFavorite: item.isFavorite || false,
-  userRating: item.userRating,
-  notes: item.notes,
-  addedAt: item.addedToLibraryAt || new Date().toISOString(),
-  title: item.title || `${item.media_type} ${item.id}`,
-  posterPath: item.posterPath,
-  releaseDate: item.releaseDate,
-  genres: item.genres || [],
-  rating: item.rating,
-  totalMinutesRuntime: item.totalMinutesRuntime,
-  networks: item.networks || [],
-});
-
-const transformFromRxDBFormat = (rxdbItem: any): LibraryMedia => ({
-  id: rxdbItem.tmdbId,
-  media_type: rxdbItem.mediaType,
-  status: rxdbItem.status,
-  isFavorite: rxdbItem.isFavorite,
-  userRating: rxdbItem.userRating,
-  notes: rxdbItem.notes,
-  addedToLibraryAt: rxdbItem.addedAt,
-  lastUpdatedAt: rxdbItem.updatedAt || rxdbItem.addedAt,
-  title: rxdbItem.title,
-  posterPath: rxdbItem.posterPath,
-  releaseDate: rxdbItem.releaseDate,
-  genres: rxdbItem.genres,
-  rating: rxdbItem.rating,
-  totalMinutesRuntime: rxdbItem.totalMinutesRuntime,
-  networks: rxdbItem.networks,
-});
-
 // Helper to transform TMDB Media to LibraryMedia fields
-const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
+const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
   const title = (media as Movie).title || (media as TvShow).name;
   const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
 
   return {
+    tmdbId: media.id,
     title,
     posterPath: media.poster_path,
     releaseDate,
@@ -98,95 +62,132 @@ const transformMediaToUserData = (media: Media): Partial<LibraryMedia> => {
     rating: +getRating(media.vote_average),
     totalMinutesRuntime: calculateTotalMinutesRuntime(media),
     networks: (media as TvShow).networks?.map((n) => n.id) || [],
+    media_type: media.media_type,
   };
 };
 
 export const useLibraryStore = create<LibraryState>()(
   (set, get) => ({
     library: {},
+    lastUpdatedAt: new Date().toISOString(),
+    isLoading: false,
+    error: null,
 
-    getItem: (mediaType, id) => {
+    getItem: (id) => {
       const { library } = get();
-      return library[generateMediaKey(mediaType, id)];
+
+      if (!id.includes('-')) return library[id];
+
+      const [mediaType, tmdbId] = id.split('-');
+
+      console.log('Searching for:', { tmdbId, mediaType });
+      console.log('Library items:', Object.values(library).map(item => ({
+        id: item.id,
+        tmdbId: item.tmdbId,
+        media_type: item.media_type,
+        title: item.title
+      })));
+
+      const foundItem = Object.values(library).find(item =>
+        item.tmdbId === parseInt(tmdbId) && item.media_type === mediaType
+      );
+
+      console.log('Found item:', foundItem);
+      console.log('Search criteria:', {
+        searchTmdbId: parseInt(tmdbId),
+        searchMediaType: mediaType
+      });
+
+      return foundItem;
     },
-    addOrUpdateItem: (media, metadata) => {
-      const { library } = get();
-      const key = generateMediaKey(media.media_type, media.id);
-      const now = new Date().toISOString();
-      const existingItem = library[key];
 
-      // Transform any TMDB data that might be passed
-      const transformedData = metadata && metadata ? transformMediaToUserData(metadata) : {};
+    addOrUpdateItem: async (item, media) => {
+      try {
+        set({ isLoading: true, error: null });
 
-      const defaultItemData: LibraryMedia = {
-        id: media.id,
-        media_type: media.media_type,
-        status: 'none',
-        isFavorite: false,
-        addedAt: existingItem?.addedAt || now,
-        lastUpdatedAt: now,
-      };
+        const libraryId = getCurrentLibraryId();
+        const now = new Date().toISOString();
+        const defaultItemData = get().getItem(item.id) || {
+          libraryId,
+          media_type: item.media_type,
+          status: 'none',
+          isFavorite: false,
+          addedAt: now,
+        }
 
-      const newItemData: LibraryMedia = {
-        ...defaultItemData,
-        ...existingItem,
-        ...transformedData,
-        ...media,
-        lastUpdatedAt: now,
-      };
+        const metadata = media ? getMediaMetadata(media) : {};
 
-      const profileId = useAuthStore.getState().user?.profile?.$id;
-      if (profileId) logLibraryActivity(newItemData, existingItem, profileId);
+        const newItemData: LibraryMedia = {
+          ...defaultItemData,
+          ...metadata,
+          ...item,
+          lastUpdatedAt: now,
+        } as LibraryMedia;
 
-      // Only set addedAt for truly new meaningful additions
-      if (!existingItem && (newItemData.isFavorite || newItemData.userRating || newItemData.status !== 'none')) {
-        newItemData.addedAt = now;
-      } // Check if item should be removed after update
-      if (shouldRemoveItem(newItemData)) {
-        get().removeItem(media.media_type, media.id);
-        return null;
-      }
+        if (shouldRemoveItem(newItemData)) {
+          await get().removeItem(newItemData.id);
+          return null;
+        }
 
+        const newOrUpdatedItem = await addOrUpdateLibraryItem(newItemData);
 
-      createLibraryItem(transformToRxDBFormat(newItemData))
-        .then(() => {
+        if (newOrUpdatedItem) {
+
           set((state) => ({
             library: {
               ...state.library,
-              [key]: newItemData,
+              [newOrUpdatedItem.id]: newOrUpdatedItem,
             },
+            lastUpdatedAt: now,
           }));
 
-          return newItemData;
-        },
-          (error) => {
-            console.error('Failed to add or update library item:', error);
-            return null;
-          }
-        );
+          const profileId = useAuthStore.getState().user?.profile?.$id;
+          if (profileId) logLibraryActivity(newOrUpdatedItem, undefined, profileId);
 
-      return newItemData;
+          return newOrUpdatedItem;
+        }
+
+        return null;
+      } catch (error) {
+        console.error('Failed to add or update library item:', error);
+        set({ error: error instanceof Error ? error.message : 'Unknown error' });
+        return null;
+      } finally {
+        set({ isLoading: false });
+      }
     },
 
-    toggleFavorite: (media, metadata) => {
-      const currentItem = get().getItem(media.media_type, media.id);
-      return get().addOrUpdateItem(
-        {
-          media_type: media.media_type,
-          id: media.id,
-          isFavorite: !(currentItem?.isFavorite || false),
-        },
-        metadata
-      );
+    toggleFavorite: async (id, media) => {
+      try {
+        set({ isLoading: true, error: null });
+        const isFavorite = !get().getItem(id)?.isFavorite;
+        return get().addOrUpdateItem({ id, isFavorite }, media);
+      } catch (error) {
+        console.error('Failed to toggle favorite:', error);
+        set({ error: error instanceof Error ? error.message : 'Unknown error' });
+        return null;
+      } finally {
+        set({ isLoading: false });
+      }
     },
-    removeItem: (mediaType, id) => {
-      const key = generateMediaKey(mediaType, id);
 
-      set((state) => {
-        const newLibrary = { ...state.library };
-        delete newLibrary[key];
-        return { library: newLibrary };
-      });
+    removeItem: async (id) => {
+      try {
+        set({ isLoading: true, error: null });
+
+        await deleteLibraryItem(id);
+
+        set((state) => {
+          const newLibrary = { ...state.library };
+          delete newLibrary[id];
+          return { library: newLibrary, lastUpdatedAt: new Date().toISOString() };
+        });
+      } catch (error) {
+        console.error('Failed to remove item:', error);
+        set({ error: error instanceof Error ? error.message : 'Unknown error' });
+      } finally {
+        set({ isLoading: false });
+      }
     },
 
     getAllItems: () => {
@@ -213,7 +214,8 @@ export const useLibraryStore = create<LibraryState>()(
       const libraryItems = items.length > 0 ? items : Object.values(get().library);
       return format === 'csv' ? serializeToCSV(libraryItems) : serializeToJSON(libraryItems);
     },
-    importLibrary: (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
+
+    importLibrary: async (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
       try {
         // Validate options
         if (!options.mergeStrategy || !['smart', 'overwrite', 'skip'].includes(options.mergeStrategy)) {
@@ -229,7 +231,11 @@ export const useLibraryStore = create<LibraryState>()(
 
         // Merge the libraries using already parsed items
         const { mergedLibrary, importCount } = mergeLibraryItems(parsedItems, currentLibrary, options);
-        if (importCount > 0) set({ library: mergedLibrary });
+
+        // addOrUpdateItem for each item in the mergedLibrary
+        for (const item of Object.values(mergedLibrary)) {
+          await get().addOrUpdateItem(item);
+        }
 
         return importCount;
       } catch (error) {
@@ -237,10 +243,38 @@ export const useLibraryStore = create<LibraryState>()(
         throw new Error(`Failed to import library: ${error instanceof Error ? error.message : String(error)}`);
       }
     },
-    clearLibrary: () => {
-      set({ library: {} });
-      console.log('🗑️ Library cleared - will auto-sync via hook');
+
+    clearLibrary: async () => {
+      try {
+        set({ isLoading: true, error: null });
+
+        const libraryId = getCurrentLibraryId();
+        await clearRxDBLibrary(libraryId);
+
+        set({ library: {} });
+        console.log('🗑️ Library cleared from RxDB');
+      } catch (error) {
+        console.error('Failed to clear library:', error);
+        set({ error: error instanceof Error ? error.message : 'Unknown error' });
+      } finally {
+        set({ isLoading: false });
+      }
     },
+
+    loadLibrary: async () => {
+      const libraryId = getCurrentLibraryId();
+      const items = await getLibraryItems(libraryId);
+      set({
+        library: items.reduce((acc, item) => {
+          acc[item.id] = item;
+          return acc;
+        }, {} as LibraryCollection),
+      });
+    },
+
+    refreshLibrary: async () => {
+      await get().loadLibrary();
+    }
   })
 );
 

@@ -2,6 +2,12 @@ import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, 
 import { databases, account, storage, locale, DATABASE_ID, COLLECTIONS, BUCKETS } from '@/lib/appwrite';
 import { getLibraryCount, mapFromAppwriteData } from '@/utils/library';
 
+import type { Profile, CreateProfileInput, UpdateProfileInput, Activity, UserLocation } from './types';
+import type { UserPreferences, CreateUserPreferencesInput, UpdateUserPreferencesInput } from './types';
+import type { Library, CreateLibraryInput, UpdateLibraryInput } from './types';
+import type { LibraryItem, CreateLibraryItemInput, UpdateLibraryItemInput } from './types';
+import type { TmdbMedia, CreateTmdbMediaInput, UpdateTmdbMediaInput } from './types';
+
 function setPermissions(userId: string): string[] {
   return [Permission.read(Role.any()), Permission.update(Role.user(userId)), Permission.delete(Role.user(userId))];
 }
@@ -315,7 +321,7 @@ export class TmdbMediaAPI extends BaseAPI {
     return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, queries);
   }
 
-  async getByTmdbId(tmdbId: number, mediaType: 'movie' | 'tv') {
+  async getByTmdbId(tmdbId: number, mediaType: MediaType) {
     const result = await this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [
       Query.equal('id', tmdbId),
       Query.equal('mediaType', mediaType),

@@ -4,7 +4,7 @@ import { Slider } from '@/components/ui/Slider';
 
 const backgroundImage = { style: { backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' } };
 
-export default function DetailsSkeleton({ type }: { type: 'movie' | 'tv' }) {
+export default function DetailsSkeleton({ type }: { type: MediaType }) {
   return (
     <div className='min-h-screen'>
       {/* Info Skeleton */}

@@ -9,10 +9,12 @@ import { ResponsiveScreen } from '@/components/ui/ResponsiveGuardScreen';
 import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
+import { useLibraryStore } from '@/stores/useLibraryStore';
 
 export default function Layout() {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(false);
+  const loadLibrary = useLibraryStore((state) => state.loadLibrary);
 
   useInitialAuth();
 
@@ -21,6 +23,7 @@ export default function Layout() {
   }, [location.pathname]);
 
   useEffect(() => {
+    loadLibrary();
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
@@ -28,6 +31,7 @@ export default function Layout() {
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -44,7 +48,7 @@ export default function Layout() {
           <OnboardingModal />
           <AuthModal />
           <ScrollToTopButton />
-          <KeyboardShortcuts  />
+          <KeyboardShortcuts />
         </div>
       )}
     </Providers>

@@ -5,7 +5,7 @@ import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
 
-import { schemaCollections } from './schemas';
+import { libraryItemSchema } from './schemas';
 import type { WatchfolioDatabase, DatabaseStatus } from './types';
 
 // ===== PLUGIN SETUP =====
@@ -29,35 +29,37 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
     if (dbPromise) return dbPromise;
 
     dbStatus = 'creating';
-
     dbPromise = (async () => {
         try {
-            console.log('🚀 Initializing Watchfolio RxDB...');
-
-            // Create the database with validation
+            // Create the database with performance optimizations
             const db = await createRxDatabase({
                 name: 'watchfolio',
                 storage: wrappedValidateAjvStorage({
                     storage: getRxStorageDexie()
                 }),
-                multiInstance: true,
-                ignoreDuplicate: true
+                multiInstance: false, // Faster - no multi-instance overhead
+                ignoreDuplicate: true,
+                cleanupPolicy: {
+                    minimumCollectionAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+                    runEach: 1000 * 60 * 60 * 24, // 24 hours - less frequent cleanup
+                },
+                // Add performance options
+                allowSlowCount: false,
             });
 
-            console.log('📁 Adding collections...');
-
-            // Add collections
-            await db.addCollections(schemaCollections);
-
-            
-
-            dbStatus = 'ready';
-            console.log('✅ Watchfolio RxDB initialized successfully');
+            // Add collections with optimized settings
+            await db.addCollections({
+                libraryItems: {
+                    schema: libraryItemSchema,
+                    // Add performance optimizations
+                    migrationStrategies: {},
+                    autoMigrate: false, // Disable auto-migration for speed
+                }
+            });
 
             return db as unknown as WatchfolioDatabase;
         } catch (error) {
             console.error('❌ Database creation error:', error);
-            dbStatus = 'error';
             throw error;
         }
     })();

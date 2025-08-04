@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { Play, Heart, Film, LibraryBig, Check } from 'lucide-react';
+import { Play, Heart, Film, LibraryBig } from 'lucide-react';
 import { Button, useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
+import { generateMediaId } from '@/utils/library';
+import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 interface ActionButtonsProps {
   media: Media;
@@ -13,18 +15,19 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
   const { openModal } = useMediaStatusModal();
   const trailerDisclosure = useDisclosure();
 
-  const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
+  const item = useLibraryStore((state) => state.getItem(generateMediaId(media)));
   const { toggleFavorite } = useLibraryStore();
 
-  const inLibrary = libraryItem && libraryItem.status !== 'none';
+  const inLibrary = item && item.status !== 'none';
 
-  const isFavorite = libraryItem?.isFavorite || false;
-  const currentStatus = libraryItem?.status || 'none';
+  const isFavorite = item?.isFavorite || false;
+  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+  const StatusIcon = status?.icon;
 
   const trailer = media.videos?.results?.find((video: Video) => video.site === 'YouTube' && video.type === 'Trailer');
 
   const handleToggleFavorite = () => {
-    toggleFavorite({ media_type: media.media_type, id: media.id }, media);
+    toggleFavorite(item?.id || '', media ? { ...media, media_type: media.media_type } : undefined);
   };
 
   return (
@@ -41,7 +44,7 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
           startContent={<Play className='size-4' />}
           isDisabled
         >
-          {currentStatus === 'watching' ? 'Continue Watching' : 'Watch Now'}
+          {status?.value === 'watching' ? 'Continue Watching' : 'Watch Now'}
         </Button>
 
         <Button
@@ -70,10 +73,12 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
             className={`button-secondary! transition-colors ${
               inLibrary ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
             }`}
-            onPress={() => openModal(media)}
-            startContent={inLibrary ? <Check className='size-4' /> : <LibraryBig className='size-4' />}
+            onPress={() => openModal(item || media)}
+            startContent={
+              inLibrary && StatusIcon ? <StatusIcon className='size-4' /> : <LibraryBig className='size-4' />
+            }
           >
-            {inLibrary ? 'In Library' : 'Add to Library'}
+            {inLibrary ? status?.label : 'Add to Library'}
           </Button>
         </div>
       </motion.div>

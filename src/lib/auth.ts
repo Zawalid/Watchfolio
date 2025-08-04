@@ -1,7 +1,9 @@
 import { getDefaultAvatarUrl } from '@/utils/avatar';
-import { appwriteService } from './api/appwrite';
+import { appwriteService } from './appwrite/api';
 import { OAuthProvider } from 'appwrite';
 import { DEFAULT_USER_PREFERENCES } from '@/utils/constants';
+import { UpdateProfileInput, UpdateUserPreferencesInput } from './appwrite/types';
+import { UserWithProfile } from './appwrite/types';
 
 export interface CreateUserAccount {
   name: string;
@@ -13,7 +15,7 @@ export interface SignInAccount {
   email: string;
   password: string;
 }
-
+  
 export interface AuthError extends Error {
   code?: string;
   type?: string;

@@ -1,4 +1,5 @@
 import { MonitorPlay, Bookmark, MonitorCheck, MonitorPause, MonitorX, Heart } from 'lucide-react';
+import { CreateUserPreferencesInput } from '@/lib/appwrite/types';
 
 export const RATING_LABELS = {
   1: 'Terrible',
@@ -54,7 +55,7 @@ export const LIBRARY_MEDIA_STATUS = [
       modal: 'Paused but planning to continue.',
       stats: 'Temporarily paused',
     },
-    icon: MonitorPause,
+    icon: MonitorPause, 
     className: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
     shortcut: 'setStatusOnHold',
   },

@@ -10,7 +10,7 @@ import { estimateFileSize, formatDateForFilename } from '@/utils/export';
 
 export default function Export({ onClose }: { onClose: () => void }) {
   const [exportFormat, setExportFormat] = useState<'json' | 'csv'>('json');
-  const [exportFilter, setExportFilter] = useState<{ status: LibraryFilterStatus; type: 'movie' | 'tv' | 'all' }>({
+  const [exportFilter, setExportFilter] = useState<{ status: LibraryFilterStatus; type: MediaType | 'all' }>({
     status: 'all',
     type: 'all',
   });
@@ -88,7 +88,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
               aria-label='Media type'
               classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
               selectedKeys={[exportFilter.type]}
-              onChange={(e) => setExportFilter({ ...exportFilter, type: e.target.value as 'movie' | 'tv' | 'all' })}
+              onChange={(e) => setExportFilter({ ...exportFilter, type: e.target.value as MediaType | 'all' })}
             >
               <SelectItem key='all'>All</SelectItem>
               <SelectItem key='movie'>Movies</SelectItem>

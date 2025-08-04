@@ -9,6 +9,7 @@ import { cn } from '@/utils';
 import { Rating } from '@/components/ui/Rating';
 import { useQuery } from '@tanstack/react-query';
 import { getImages } from '@/lib/api/TMDB';
+import { generateMediaId } from '@/utils/library';
 
 interface HeroItemProps {
   item: Media;
@@ -20,7 +21,7 @@ export default function HeroItem({ item }: HeroItemProps) {
     queryFn: async () => await getImages(item.id, item.media_type),
   });
   const { openModal } = useMediaStatusModal();
-  const libraryItem = useLibraryStore((state) => state.getItem(getMediaType(item), item.id));
+  const libraryItem = useLibraryStore((state) => state.getItem(generateMediaId(item)));
   const { toggleFavorite } = useLibraryStore();
 
   const mediaType = getMediaType(item);
@@ -35,7 +36,7 @@ export default function HeroItem({ item }: HeroItemProps) {
   };
 
   const handleToggleFavorite = () => {
-    toggleFavorite({ media_type: mediaType, id: item.id }, item);
+    toggleFavorite(generateMediaId(item));
   };
 
   const logoPath = images?.logos

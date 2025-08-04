@@ -8,7 +8,7 @@ import { Tab, Tabs } from '@heroui/react';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
 import UserLibrary from '@/components/profile/UserLibrary';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { appwriteService } from '@/lib/api/appwrite';
+import { appwriteService } from '@/lib/appwrite/api';
 import { useQuery } from '@tanstack/react-query';
 import { Status } from '@/components/ui/Status';
 import ProfileSkeleton from '@/components/profile/ProfileSkeleton';

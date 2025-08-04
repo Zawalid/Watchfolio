@@ -83,7 +83,7 @@ export function useImportParser(options?: ImportParserOptions) {
       content,
       format,
     });
-  }, []); 
+  }, []);
 
   return {
     parseContent,

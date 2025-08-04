@@ -4,7 +4,6 @@ import {
   Home,
   Library,
   NotFound,
-  RxDBTest,
   Movies,
   TV,
   MediaDetails,
@@ -41,10 +40,6 @@ export const router = createBrowserRouter([
       {
         path: 'home',
         Component: Home,
-      },
-      {
-        path: 'rxdb-test',
-        Component: RxDBTest,
       },
       {
         path: 'library',

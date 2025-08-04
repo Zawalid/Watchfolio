@@ -55,8 +55,8 @@ export const KEYBOARD_SHORTCUTS = {
     description: 'Mark/unmark as favorite',
     category: 'cardFocus',
   },
-  editStatus: { hotkey: 'e', label: 'E', description: 'Edit status', category: 'cardFocus' },
-  addToLibrary: { hotkey: 'a', label: 'A', description: 'Add to library', category: 'cardFocus' },
+  editStatus: { hotkey: 'e', label: 'E', description: 'Edit status or rating', category: 'cardFocus' },
+  addToLibrary: { hotkey: 'a', label: 'A', description: 'Add to library or rate', category: 'cardFocus' },
 
   removeFromLibrary: {
     hotkey: 'delete',

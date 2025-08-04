@@ -3,6 +3,7 @@ import { Heart, Tv, Globe } from 'lucide-react';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import NetworkCard from '@/pages/networks/NetworkCard';
+import { Profile } from '@/lib/appwrite/types';
 
 interface ViewingTasteProps {
   profile: Profile;

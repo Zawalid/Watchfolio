@@ -19,6 +19,7 @@ import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
 import { getLibraryCount, mapFromAppwriteData } from '@/utils/library';
 import { Status } from '@/components/ui/Status';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { Profile } from '@/lib/appwrite/types';
 
 export default function UserLibrary({ profile }: { profile: Profile }) {
   const { checkIsOwnProfile } = useAuthStore();

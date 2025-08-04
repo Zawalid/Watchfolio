@@ -1,9 +1,15 @@
-import { profilesService } from '@/lib/api/appwrite';
+import { profilesService } from '@/lib/appwrite/api';
+import { Activity, ActivityAction, CreateLibraryItemInput, CreateTmdbMediaInput, LibraryItem, TmdbMedia } from '@/lib/appwrite/types';
+import { isMedia } from './media';
 
 /**
  * Generates a consistent key for a media item
  */
-export const generateMediaKey = (mediaType: 'movie' | 'tv', id: number) => `${mediaType}-${id}`;
+export const generateMediaId = (media?: Media | LibraryMedia) => {
+  if (!media) return '';
+  if (isMedia(media)) return `${media.media_type}-${media.id}`;
+  return media.id.toString();
+};
 
 type ImportOptions = {
   mergeStrategy: 'smart' | 'overwrite' | 'skip';
@@ -49,7 +55,7 @@ export const mergeLibraryItems = (
 
       // Then add all imported items, preserving favorite status if needed
       validItems.forEach((item) => {
-        const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
+        const key = generateMediaId(item);
         if (existingFavorites[key]) {
           mergedLibrary[key] = { ...item, isFavorite: true };
         } else {
@@ -60,7 +66,7 @@ export const mergeLibraryItems = (
     } else {
       // Simple overwrite - just use imported items
       validItems.forEach((item) => {
-        const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
+        const key = generateMediaId(item);
         mergedLibrary[key] = item;
         importCount++;
       });
@@ -68,7 +74,7 @@ export const mergeLibraryItems = (
   } else {
     // For 'smart' or 'skip' strategies, process each imported item
     validItems.forEach((importedItem) => {
-      const key = generateMediaKey(importedItem.media_type as 'movie' | 'tv', importedItem.id);
+      const key = generateMediaId(importedItem);
       const existingItem = currentLibrary[key];
 
       // Handle item based on existence and merge strategy
@@ -160,9 +166,7 @@ export function compareLibraries(localLibrary: LibraryCollection, cloudLibrary: 
         localItem.status !== cloudItem.status ||
         localItem.isFavorite !== cloudItem.isFavorite ||
         localItem.userRating !== cloudItem.userRating ||
-        JSON.stringify(localItem.watchDates) !== JSON.stringify(cloudItem.watchDates) ||
-        localItem.notes !== cloudItem.notes ||
-        localItem.lastWatchedEpisode !== cloudItem.lastWatchedEpisode;
+        localItem.notes !== cloudItem.notes;
 
       if (!isDifferent) {
         diff.identical.push(localItem);
@@ -202,14 +206,14 @@ export function smartMergeLibraries(
 
   // Add cloud-only items
   diff.cloudOnly.forEach((item) => {
-    const key = generateMediaKey(item.media_type, item.id);
+    const key = generateMediaId(item);
     mergedLibrary[key] = item;
     changes.push(`Added from cloud: ${item.title || `${item.media_type}-${item.id}`}`);
   });
 
   // Update items where cloud is newer
   diff.needsLocalUpdate.forEach((cloudItem) => {
-    const key = generateMediaKey(cloudItem.media_type, cloudItem.id);
+    const key = generateMediaId(cloudItem);
     const localItem = localLibrary[key];
 
     // Smart merge preserving certain local preferences
@@ -262,7 +266,8 @@ export function smartMergeLibraries(
 // Map Appwrite data back to LibraryMedia
 export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): LibraryMedia => {
   return {
-    id: tmdbMedia?.id || 0,
+    id: libraryItem.$id,
+    tmdbId: tmdbMedia?.id || 0,
     media_type: tmdbMedia?.mediaType || 'movie',
     title: tmdbMedia?.title,
     posterPath: tmdbMedia?.posterPath || undefined,
@@ -280,7 +285,7 @@ export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMe
   };
 };
 
-// Map LibraryMedia to Appwrite LibraryItem + TmdbMedia
+// Map LibraryMedia to Appwrite LibraryMedia + TmdbMedia
 export const mapToAppwriteData = async (
   media: LibraryMedia
 ): Promise<{
@@ -289,7 +294,7 @@ export const mapToAppwriteData = async (
 }> => {
   return {
     tmdbMedia: {
-      id: media.id,
+      id: media.tmdbId,
       mediaType: media.media_type,
       title: media.title || `${media.media_type} ${media.id}`,
       overview: undefined,
@@ -354,7 +359,7 @@ export const logLibraryActivity = (
       ...props,
       action,
       mediaType: newItemData.media_type,
-      mediaId: newItemData.id,
+      mediaId: newItemData.tmdbId,
       mediaTitle: newItemData.title || 'Unknown Title',
       posterPath: newItemData.posterPath,
     });

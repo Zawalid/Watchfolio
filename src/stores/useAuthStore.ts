@@ -5,6 +5,7 @@ import { persistAndSync } from '@/utils/persistAndSync';
 import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constants';
 import { useLibraryStore } from './useLibraryStore';
 import { deepEqual } from '@/utils';
+import { CreateUserPreferencesInput, Profile, UpdateProfileInput, UpdateUserPreferencesInput, UserPreferences, UserWithProfile } from '@/lib/appwrite/types';
 
 interface AuthState {
   user: UserWithProfile | null;

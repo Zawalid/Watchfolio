@@ -223,4 +223,4 @@ interface Suggestion {
 
 type TmdbImageSize = 'w500' | 'w780' | 'w1920_and_h800_multi_faces' | 'original' | 'w300' | 'w200';
 
-type ContentType = 'movie' | 'tv' | 'person';
+type ContentType = MediaType | 'person';

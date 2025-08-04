@@ -12,12 +12,12 @@ export default function LibraryCard({ item, tabIndex, isOwnProfile }: LibraryCar
 
   return (
     <BaseMediaCard
-      id={item.id}
+      id={item.tmdbId}
       title={title}
       mediaType={item.media_type}
       posterPath={item.posterPath}
       releaseDate={item.releaseDate}
-      rating={item.userRating || item.rating}
+      rating={item.rating}
       genres={item.genres}
       item={item}
       tabIndex={tabIndex}

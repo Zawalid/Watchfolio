@@ -278,15 +278,14 @@ const SuggestionsDropdown = React.memo(
                   <SearchIcon className='h-4 w-4 opacity-60' />
                   <span className='flex-1 truncate'>{item}</span>
                 </div>
-                <button
-                  className='text-Grey-500 hover:text-Error-400 ml-2 rounded p-1 transition-colors'
+                <div
+                  className='text-Grey-500 hover:text-Error-400 ml-2 rounded p-1 transition-colors cursor-pointer'
                   onClick={(e) => handleRemoveClick(e, item)}
-                  type='button'
                   tabIndex={-1}
                   aria-label={`Remove "${item}" from history`}
                 >
                   <XIcon className='h-4 w-4' />
-                </button>
+                </div>
               </motion.button>
             ))}
           </div>

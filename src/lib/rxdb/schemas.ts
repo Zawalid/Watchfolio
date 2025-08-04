@@ -1,9 +1,7 @@
 import type { RxJsonSchema } from 'rxdb';
-import type { WatchfolioLibraryItem, WatchfolioUserPreferences } from './types';
 
-// ===== LIBRARY ITEM SCHEMA =====
 
-export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
+export const libraryItemSchema: RxJsonSchema<LibraryMedia> = {
     version: 0,
     primaryKey: 'id',
     type: 'object',
@@ -15,7 +13,7 @@ export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
         status: {
             type: 'string',
             enum: ['watching', 'willWatch', 'onHold', 'dropped', 'none', 'completed'],
-            maxLength: 20  // Required for indexed string fields
+            maxLength: 20
         },
         isFavorite: {
             type: 'boolean'
@@ -33,11 +31,16 @@ export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
         addedAt: {
             type: 'string',
             format: 'date-time',
-            maxLength: 50  // Required for indexed string fields
+            maxLength: 50
+        },
+        lastUpdatedAt: {
+            type: 'string',
+            format: 'date-time',
+            maxLength: 50
         },
         libraryId: {
             type: 'string',
-            maxLength: 100  // Required for indexed string fields
+            maxLength: 100
         },
         tmdbId: {
             type: 'integer',
@@ -49,10 +52,10 @@ export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
             type: 'string',
             maxLength: 255
         },
-        mediaType: {
+        media_type: {
             type: 'string',
             enum: ['movie', 'tv'],
-            maxLength: 10  // Required for indexed string fields
+            maxLength: 10
         },
         posterPath: {
             type: 'string',
@@ -60,7 +63,6 @@ export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
         },
         releaseDate: {
             type: 'string',
-            format: 'date-time',
             maxLength: 50
         },
         genres: {
@@ -74,7 +76,6 @@ export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
             type: 'number',
             minimum: 0,
             maximum: 10,
-            multipleOf: 0.1  // For decimal ratings like 7.5
         },
         totalMinutesRuntime: {
             type: 'integer',
@@ -92,82 +93,14 @@ export const libraryItemSchema: RxJsonSchema<WatchfolioLibraryItem> = {
             }
         }
     },
-    required: ['id', 'status', 'isFavorite', 'addedAt', 'libraryId', 'tmdbId', 'title', 'mediaType'],
+    required: ['id', 'status', 'isFavorite', 'addedAt', 'libraryId', 'tmdbId', 'title', 'media_type'],
     indexes: [
         ['libraryId'],           // Query by user's library
-        ['tmdbId', 'mediaType'], // Find specific media
+        ['tmdbId', 'media_type'], // Find specific media
         ['status'],              // Filter by watch status
         ['isFavorite'],          // Get favorites
         ['addedAt']              // Sort by date added
     ]
 };
 
-// ===== USER PREFERENCES SCHEMA =====
 
-export const userPreferencesSchema: RxJsonSchema<WatchfolioUserPreferences> = {
-    version: 0,
-    primaryKey: 'id',
-    type: 'object',
-    properties: {
-        id: {
-            type: 'string',
-            maxLength: 100
-        },
-        userId: {
-            type: 'string',
-            maxLength: 100  // Required for indexed string fields
-        },
-        signOutConfirmation: {
-            type: 'string',
-            enum: ['enabled', 'disabled'],
-            maxLength: 20
-        },
-        theme: {
-            type: 'string',
-            enum: ['light', 'dark', 'system'],
-            maxLength: 20
-        },
-        language: {
-            type: 'string',
-            maxLength: 10
-        },
-        clearLibraryConfirmation: {
-            type: 'string',
-            enum: ['enabled', 'disabled'],
-            maxLength: 20
-        },
-        removeFromLibraryConfirmation: {
-            type: 'string',
-            enum: ['enabled', 'disabled'],
-            maxLength: 20
-        },
-        enableAnimations: {
-            type: 'string',
-            enum: ['enabled', 'disabled'],
-            maxLength: 20
-        },
-        defaultMediaStatus: {
-            type: 'string',
-            enum: ['watching', 'willWatch', 'onHold', 'dropped', 'none', 'completed'],
-            maxLength: 20
-        },
-        autoSync: {
-            type: 'boolean'
-        }
-    },
-    required: ['id', 'userId'],
-    indexes: [
-        ['userId'] // Query by user
-    ]
-};
-
-// ===== SCHEMA COLLECTIONS MAP =====
-
-export const schemaCollections = {
-    libraryItems: {
-        schema: libraryItemSchema
-    },
-    userPreferences: {
-        schema: userPreferencesSchema
-    }
-} as const;

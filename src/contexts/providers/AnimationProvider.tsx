@@ -1,6 +1,7 @@
 import { createContext, useMemo } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { MotionConfig } from 'framer-motion';
+import { ConfirmationSetting } from '@/lib/appwrite/types';
 
 interface AnimationContextType {
   animationsEnabled: ConfirmationSetting;

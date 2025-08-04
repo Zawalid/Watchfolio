@@ -16,7 +16,7 @@ export const searchPerson = async (query: string, page?: number): Promise<TMDBRe
   return await fetchFromTMDB(`/search/person`, { query, page: String(page || 1) });
 };
 
-export const getDetails = async (type: 'movie' | 'tv', id: number, append: boolean = true): Promise<Media | null> => {
+export const getDetails = async (type: MediaType, id: number, append: boolean = true): Promise<Media | null> => {
   if (!type || !id) throw new Error('Type and Id are required');
 
   const details = await fetchFromTMDB<Media>(
@@ -28,11 +28,11 @@ export const getDetails = async (type: 'movie' | 'tv', id: number, append: boole
   return details;
 };
 
-export const getRecommendations = async (type: 'movie' | 'tv', id: number): Promise<TMDBResponse> => {
+export const getRecommendations = async (type: MediaType, id: number): Promise<TMDBResponse> => {
   return await fetchFromTMDB(`/${type}/${id}/recommendations`);
 };
 
-export const getSimilar = async (type: 'movie' | 'tv', id: number): Promise<TMDBResponse> => {
+export const getSimilar = async (type: MediaType, id: number): Promise<TMDBResponse> => {
   return await fetchFromTMDB(`/${type}/${id}/similar`);
 };
 
@@ -101,6 +101,6 @@ export const getSuggestions = async (query: string, limit: number) => {
   }
 };
 
-export const getImages = async (id: number, type: 'movie' | 'tv'): Promise<Images> => {
+export const getImages = async (id: number, type: MediaType): Promise<Images> => {
   return await fetchFromTMDB(`/${type}/${id}/images`);
 };

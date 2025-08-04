@@ -8,10 +8,10 @@ import type { SyncStatus } from './types';
 // ===== REPLICATION STATE =====
 
 export let syncStatus: SyncStatus = 'offline';
-const replicationStates = new Map<string, RxAppwriteReplicationState<any>>();
+const replicationStates = new Map<string, RxAppwriteReplicationState<unknown>>();
 
 // Track active states reactively
-let currentActiveStates = new Map<string, boolean>();
+const currentActiveStates = new Map<string, boolean>();
 
 // ===== REPLICATION SETUP =====
 
@@ -43,17 +43,7 @@ export const startReplication = async (userId: string): Promise<void> => {
             push: { batchSize: 25 }
         });
 
-        // Setup replication for user preferences
-        const preferencesReplication = replicateAppwrite({
-            replicationIdentifier: `watchfolio-preferences-${userId}`,
-            client,
-            databaseId: DATABASE_ID,
-            collectionId: COLLECTIONS.USER_PREFERENCES,
-            deletedField: 'deleted',
-            collection: db.userPreferences,
-            pull: { batchSize: 5 },
-            push: { batchSize: 5 }
-        });
+
 
         // Handle replication events for library items
         libraryItemsReplication.error$.subscribe((error) => {
@@ -66,24 +56,15 @@ export const startReplication = async (userId: string): Promise<void> => {
             updateSyncStatus();
         });
 
-        // Handle replication events for preferences
-        preferencesReplication.error$.subscribe((error) => {
-            console.error('🚨 Preferences replication error:', error);
-            syncStatus = 'error';
-        });
 
-        preferencesReplication.active$.subscribe((active) => {
-            console.log(`🔄 Preferences replication ${active ? 'active' : 'inactive'}`);
-            updateSyncStatus();
-        });
 
         // Subscribe to active state
         subscribeToActiveState('libraryItems', libraryItemsReplication);
-        subscribeToActiveState('userPreferences', preferencesReplication);
+
 
         // Store replication states
         replicationStates.set('libraryItems', libraryItemsReplication);
-        replicationStates.set('userPreferences', preferencesReplication);
+
 
         syncStatus = 'online';
         console.log('✅ Watchfolio replication started for all collections');
@@ -146,7 +127,7 @@ const updateSyncStatus = (): void => {
     }
 };
 
-const subscribeToActiveState = (id: string, replication: any) => {
+const subscribeToActiveState = (id: string, replication: RxAppwriteReplicationState<unknown>) => {
     replication.active$.subscribe((isActive: boolean) => {
         currentActiveStates.set(id, isActive);
         updateSyncStatus();

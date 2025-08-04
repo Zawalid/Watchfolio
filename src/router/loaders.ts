@@ -9,7 +9,7 @@ import {
 import { prefetchQuery, queryKeys } from '@/lib/react-query';
 import { TMDB_MOVIE_CATEGORIES, TMDB_TV_CATEGORIES } from '@/utils/constants';
 
-const createListLoader = (type: 'movie' | 'tv') => {
+const createListLoader = (type: MediaType) => {
   return async ({ request }: LoaderFunctionArgs) => {
     const url = new URL(request.url);
     const category = url.searchParams.get('category');
@@ -36,7 +36,7 @@ const createListLoader = (type: 'movie' | 'tv') => {
   };
 };
 
-// const createDetailsLoader = (type: 'movie' | 'tv') => {
+// const createDetailsLoader = (type: MediaType) => {
 //   return async ({ params }: LoaderFunctionArgs) => {
 //     const slug = params.slug as string;
 //     const queryKey = queryKeys.details(type, slug);

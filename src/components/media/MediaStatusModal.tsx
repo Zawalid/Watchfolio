@@ -12,6 +12,7 @@ import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { isMedia } from '@/utils/media';
+import { generateMediaId } from '@/utils/library';
 
 interface MediaStatusModalProps {
   disclosure: Disclosure;
@@ -30,18 +31,21 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
     };
   }, [disclosure.isOpen, registerNavigator, unregisterNavigator]);
 
-  const libraryItem = useLibraryStore((state) => state.getItem(media.media_type, media.id));
+  const libraryItem = useLibraryStore((state) => state.getItem(generateMediaId(media)));
   const { addOrUpdateItem } = useLibraryStore();
 
-  const handleStatusChange = (status: WatchStatus) => {
-    addOrUpdateItem({ id: media.id, media_type: media.media_type, status }, isMedia(media) ? media : undefined);
-  };
-
-  const handleRatingChange = (rating: number | undefined) =>
+  const handleStatusOrRatingChange = (status?: WatchStatus, userRating?: number | undefined) => {
     addOrUpdateItem(
-      { id: media.id, media_type: media.media_type, userRating: rating },
+      {
+        id: !isMedia(media) ? media.id : '',
+        media_type: media.media_type,
+        ...(status && { status }),
+        ...(userRating && { userRating }),
+      },
       isMedia(media) ? media : undefined
     );
+  };
+
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
 
   return (
@@ -49,14 +53,13 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
       <ModalBody className='space-y-8 p-8'>
         <StatusSection
           selectedStatus={libraryItem?.status || 'none'}
-          setSelectedStatus={handleStatusChange}
+          setSelectedStatus={handleStatusOrRatingChange}
           onClose={disclosure.onClose}
-          setCurrentRating={handleRatingChange}
         />
         <RatingSection
           currentRating={libraryItem?.userRating}
           hoverRating={hoverRating}
-          setCurrentRating={handleRatingChange}
+          setCurrentRating={(rating) => handleStatusOrRatingChange(undefined, rating)}
           setHoverRating={setHoverRating}
           getRatingLabel={getRatingLabel}
         />
@@ -69,12 +72,10 @@ function StatusSection({
   selectedStatus,
   setSelectedStatus,
   onClose,
-  setCurrentRating,
 }: {
   selectedStatus: WatchStatus;
   setSelectedStatus: (status: WatchStatus) => void;
   onClose: () => void;
-  setCurrentRating: (rating: number | undefined) => void;
 }) {
   const statusOptions = LIBRARY_MEDIA_STATUS.filter((o) => o.value !== 'favorites');
 
@@ -93,17 +94,6 @@ function StatusSection({
   });
 
   useHotkeys(getShortcut('clearStatus')?.hotkey || '', removeItem);
-
-  useHotkeys(
-    getShortcut('rateMedia')?.hotkey || '',
-    (e) => {
-      const rating = parseInt(e.key);
-      if (!isNaN(rating) && rating > 0) setCurrentRating(rating);
-    },
-    [setSelectedStatus, onClose]
-  );
-  useHotkeys(getShortcut('rateMedia10')?.hotkey || '', () => setCurrentRating(10));
-  useHotkeys(getShortcut('clearRating')?.hotkey || '', () => setCurrentRating(undefined));
 
   return (
     <div className='space-y-8'>
@@ -201,6 +191,17 @@ function RatingSection({
   setHoverRating: (rating: number | undefined) => void;
   getRatingLabel: (rating: number) => string;
 }) {
+  useHotkeys(
+    getShortcut('rateMedia')?.hotkey || '',
+    (e) => {
+      const rating = parseInt(e.key);
+      if (!isNaN(rating) && rating > 0) setCurrentRating(rating);
+    },
+    [setCurrentRating]
+  );
+  useHotkeys(getShortcut('rateMedia10')?.hotkey || '', () => setCurrentRating(10));
+  useHotkeys(getShortcut('clearRating')?.hotkey || '', () => setCurrentRating(undefined));
+
   return (
     <div className='space-y-8'>
       <div className='flex items-center justify-between'>
@@ -223,7 +224,7 @@ function RatingSection({
             const rateValue = i + 1;
             return (
               <Button
-                key={rateValue}
+                key={`rate-${rateValue}`}
                 variant='ghost'
                 size='sm'
                 className='p-1 transition-transform hover:scale-110'
