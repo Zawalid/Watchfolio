@@ -17,7 +17,7 @@ export const RATING_LABELS = {
 export const LIBRARY_MEDIA_STATUS = [
   {
     value: 'watching',
-    label: 'Currently Watching',
+    label: 'Watching',
     descriptions: {
       modal: 'Currently enjoying this one.',
       stats: 'In progress',

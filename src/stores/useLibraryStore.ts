@@ -132,7 +132,6 @@ export const useLibraryStore = create<LibraryState>()(
         const newOrUpdatedItem = await addOrUpdateLibraryItem(newItemData);
 
         if (newOrUpdatedItem) {
-
           set((state) => ({
             library: {
               ...state.library,
@@ -140,6 +139,7 @@ export const useLibraryStore = create<LibraryState>()(
             },
             lastUpdatedAt: now,
           }));
+
 
           const profileId = useAuthStore.getState().user?.profile?.$id;
           if (profileId) logLibraryActivity(newOrUpdatedItem, undefined, profileId);

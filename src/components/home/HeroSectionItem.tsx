@@ -1,15 +1,12 @@
 import { motion } from 'framer-motion';
-import { Heart, Info, TrendingUp, Sparkles, LibraryBig, Check, Film, Tv } from 'lucide-react';
+import { Info, TrendingUp, Sparkles, Film, Tv } from 'lucide-react';
 import { Button } from '@heroui/react';
 import { Link } from 'react-router';
 import { getMediaType, generateMediaLink, getReleaseYear, getTmdbImage } from '@/utils/media';
-import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
-import { useLibraryStore } from '@/stores/useLibraryStore';
-import { cn } from '@/utils';
 import { Rating } from '@/components/ui/Rating';
 import { useQuery } from '@tanstack/react-query';
 import { getImages } from '@/lib/api/TMDB';
-import { generateMediaId } from '@/utils/library';
+import { AddToLibraryButtons } from '../media/details/ActionButtons';
 
 interface HeroItemProps {
   item: Media;
@@ -20,24 +17,10 @@ export default function HeroItem({ item }: HeroItemProps) {
     queryKey: ['logo', item.id],
     queryFn: async () => await getImages(item.id, item.media_type),
   });
-  const { openModal } = useMediaStatusModal();
-  const libraryItem = useLibraryStore((state) => state.getItem(generateMediaId(item)));
-  const { toggleFavorite } = useLibraryStore();
 
   const mediaType = getMediaType(item);
   const title = mediaType === 'movie' ? (item as Movie).title : (item as TvShow).name;
   const fullDate = getReleaseYear(item, 'full');
-
-  const isInLibrary = libraryItem && libraryItem.status !== 'none';
-  const isFavorite = libraryItem?.isFavorite || false;
-
-  const handleAddToLibrary = () => {
-    openModal(item);
-  };
-
-  const handleToggleFavorite = () => {
-    toggleFavorite(generateMediaId(item));
-  };
 
   const logoPath = images?.logos
     ?.sort((a, b) => b.width - a.width)
@@ -135,30 +118,15 @@ export default function HeroItem({ item }: HeroItemProps) {
             transition={{ duration: 0.6, delay: 0.6 }}
             className='flex items-center gap-4'
           >
-            <Button
-              onPress={handleAddToLibrary}
-              className={cn(
-                'button-primary! px-8 shadow-lg',
-                isInLibrary &&
-                  'from-Success-600 to-Success-700 hover:from-Success-700 hover:to-Success-800 shadow-Success-600/20'
-              )}
-              startContent={isInLibrary ? <Check className='h-5 w-5' /> : <LibraryBig className='h-5 w-5' />}
-            >
-              {isInLibrary ? 'In Library' : 'Add to Library'}
-            </Button>
-
-            <Button
-              onPress={handleToggleFavorite}
-              className={cn(
-                'button-secondary! px-8 shadow-lg',
-                'hover:border-white/50 hover:bg-white/20',
-                isFavorite &&
-                  'bg-Error-500/20 border-Error-500/50 text-Error-300 hover:bg-Error-500/30 hover:border-Error-500/70'
-              )}
-              startContent={<Heart className={cn('h-5 w-5', isFavorite && 'text-Error-400 fill-current')} />}
-            >
-              {isFavorite ? 'Favorited' : 'Favorite'}
-            </Button>
+            <AddToLibraryButtons
+              media={item}
+              classNames={{
+                addToLibrary: (is) =>
+                  `button-primary! px-8 shadow-lg ${is ? 'from-Success-600 to-Success-700 hover:from-Success-700 hover:to-Success-800 shadow-Success-600/20' : ''}`,
+                favorite: (is) =>
+                  `button-secondary! px-8 shadow-lg hover:border-white/50 hover:bg-white/20 ${is ? 'bg-Error-500/20 border-Error-500/50 text-Error-300 hover:bg-Error-500/30 hover:border-Error-500/70' : ''}`,
+              }}
+            />
 
             <Button
               as={Link}

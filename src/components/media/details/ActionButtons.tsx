@@ -6,29 +6,15 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
 import { generateMediaId } from '@/utils/library';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { cn } from '@/utils';
 
 interface ActionButtonsProps {
   media: Media;
 }
 
 export default function ActionButtons({ media }: ActionButtonsProps) {
-  const { openModal } = useMediaStatusModal();
   const trailerDisclosure = useDisclosure();
-
-  const item = useLibraryStore((state) => state.getItem(generateMediaId(media)));
-  const { toggleFavorite } = useLibraryStore();
-
-  const inLibrary = item && item.status !== 'none';
-
-  const isFavorite = item?.isFavorite || false;
-  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
-  const StatusIcon = status?.icon;
-
   const trailer = media.videos?.results?.find((video: Video) => video.site === 'YouTube' && video.type === 'Trailer');
-
-  const handleToggleFavorite = () => {
-    toggleFavorite(item?.id || '', media ? { ...media, media_type: media.media_type } : undefined);
-  };
 
   return (
     <>
@@ -44,7 +30,7 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
           startContent={<Play className='size-4' />}
           isDisabled
         >
-          {status?.value === 'watching' ? 'Continue Watching' : 'Watch Now'}
+          Watch Now
         </Button>
 
         <Button
@@ -57,29 +43,14 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
         </Button>
 
         <div className='grid grid-cols-2 gap-2'>
-          <Button
-            color='secondary'
-            className={`button-secondary! transition-colors ${
-              isFavorite ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''
-            }`}
-            onPress={handleToggleFavorite}
-            startContent={<Heart className={`size-4 ${isFavorite ? 'fill-current text-pink-500' : ''}`} />}
-          >
-            Favorite
-          </Button>
-
-          <Button
-            color='secondary'
-            className={`button-secondary! transition-colors ${
-              inLibrary ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''
-            }`}
-            onPress={() => openModal(item || media)}
-            startContent={
-              inLibrary && StatusIcon ? <StatusIcon className='size-4' /> : <LibraryBig className='size-4' />
-            }
-          >
-            {inLibrary ? status?.label : 'Add to Library'}
-          </Button>
+          <AddToLibraryButtons
+            media={media}
+            classNames={{
+              addToLibrary: (is) =>
+                `button-secondary! ${is ? 'bg-blue-500/10 text-blue-400 hover:bg-blue-500/20' : ''}`,
+              favorite: (is) => `button-secondary! ${is ? 'bg-pink-500/10 text-pink-400 hover:bg-pink-500/20' : ''}`,
+            }}
+          />
         </div>
       </motion.div>
 
@@ -100,6 +71,45 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
           </div>
         </Modal>
       )}
+    </>
+  );
+}
+
+export function AddToLibraryButtons({
+  media,
+  classNames,
+}: {
+  media: Media;
+  classNames: { addToLibrary: (is: boolean) => string; favorite: (is: boolean) => string };
+}) {
+  const { openModal } = useMediaStatusModal();
+  const { toggleFavorite } = useLibraryStore();
+  const item = useLibraryStore((state) => state.getItem(generateMediaId(media)));
+  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+
+  const inLibrary = (item && item.status !== 'none') || false;
+  const isFavorite = item?.isFavorite || false;
+  const StatusIcon = status?.icon;
+
+  return (
+    <>
+      <Button
+        onPress={() => openModal(item || media)}
+        className={classNames.addToLibrary(inLibrary)}
+        startContent={inLibrary && StatusIcon ? <StatusIcon className='h-5 w-5' /> : <LibraryBig className='h-5 w-5' />}
+      >
+        {inLibrary ? status?.label : 'Add to Library'}
+      </Button>
+
+      <Button
+        onPress={() => {
+          toggleFavorite(item?.id || '', media ? { ...media, media_type: media.media_type } : undefined);
+        }}
+        className={classNames.favorite(isFavorite)}
+        startContent={<Heart className={cn('h-5 w-5', isFavorite && 'fill-current text-pink-500')} />}
+      >
+        {isFavorite ? 'Favorited' : 'Favorite'}
+      </Button>
     </>
   );
 }
