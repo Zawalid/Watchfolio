@@ -117,6 +117,7 @@ export interface UserLocation {
 export interface UserWithProfile extends Models.User<Models.Preferences> {
     profile: Profile;
     location: UserLocation;
+    libraryId: string | null;
 }
 
 export interface LibraryWithItems extends Library {

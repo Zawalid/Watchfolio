@@ -42,7 +42,7 @@ const shouldRemoveItem = (item: LibraryMedia): boolean => {
 // Helper to get current user's library ID
 const getCurrentLibraryId = (): string => {
   const { user } = useAuthStore.getState();
-  return user?.profile?.library.$id || 'guest-library';
+  return user?.libraryId || 'guest-library';
 };
 
 // Helper to transform TMDB Media to LibraryMedia fields
@@ -80,23 +80,23 @@ export const useLibraryStore = create<LibraryState>()(
 
       const [mediaType, tmdbId] = id.split('-');
 
-      console.log('Searching for:', { tmdbId, mediaType });
-      console.log('Library items:', Object.values(library).map(item => ({
-        id: item.id,
-        tmdbId: item.tmdbId,
-        media_type: item.media_type,
-        title: item.title
-      })));
+      // console.log('Searching for:', { tmdbId, mediaType });
+      // console.log('Library items:', Object.values(library).map(item => ({
+      //   id: item.id,
+      //   tmdbId: item.tmdbId,
+      //   media_type: item.media_type,
+      //   title: item.title
+      // })));
 
       const foundItem = Object.values(library).find(item =>
         item.tmdbId === parseInt(tmdbId) && item.media_type === mediaType
       );
 
-      console.log('Found item:', foundItem);
-      console.log('Search criteria:', {
-        searchTmdbId: parseInt(tmdbId),
-        searchMediaType: mediaType
-      });
+      //   console.log('Found item:', foundItem);
+      //   console.log('Search criteria:', {
+      //     searchTmdbId: parseInt(tmdbId),
+      //     searchMediaType: mediaType
+      // });
 
       return foundItem;
     },

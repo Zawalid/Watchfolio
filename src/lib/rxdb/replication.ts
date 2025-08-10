@@ -1,9 +1,8 @@
-import { replicateAppwrite } from 'rxdb/plugins/replication-appwrite';
-import type { RxAppwriteReplicationState } from 'rxdb/plugins/replication-appwrite';
-
 import client, { DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
+import { replicateAppwrite, RxAppwriteReplicationState } from '@/lib/appwrite/replication';
 import { getWatchfolioDB } from './database';
 import type { SyncStatus } from './types';
+import { localToServer, serverToLocal } from './mappers';
 
 // ===== REPLICATION STATE =====
 
@@ -15,7 +14,7 @@ const currentActiveStates = new Map<string, boolean>();
 
 // ===== REPLICATION SETUP =====
 
-export const startReplication = async (userId: string): Promise<void> => {
+export const startReplication = async (userId: string,libraryId : string): Promise<void> => {
     try {
         if (replicationStates.size > 0) {
             console.log('🔄 Replication already started');
@@ -39,10 +38,16 @@ export const startReplication = async (userId: string): Promise<void> => {
             collectionId: COLLECTIONS.LIBRARY_ITEMS,
             deletedField: 'deleted',
             collection: db.libraryItems,
-            pull: { batchSize: 25 },
-            push: { batchSize: 25 }
+            pull: {
+                batchSize: 25,
+                // doc is the document received from Appwrite
+                modifier: (doc) => serverToLocal(doc,libraryId)
+            },
+            push: {
+                batchSize: 25,
+                modifier: (doc) => localToServer(doc,libraryId).itemDoc
+            },
         });
-
 
 
         // Handle replication events for library items
@@ -77,6 +82,11 @@ export const startReplication = async (userId: string): Promise<void> => {
 
 export const stopReplication = async (): Promise<void> => {
     try {
+        if (syncStatus === 'offline') {
+            console.log('🛑 Watchfolio replication is already stopped');
+            return;
+        }
+
         console.log('🛑 Stopping Watchfolio replication...');
 
         for (const [name, replication] of replicationStates) {

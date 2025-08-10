@@ -6,6 +6,7 @@ import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constant
 import { useLibraryStore } from './useLibraryStore';
 import { deepEqual } from '@/utils';
 import { CreateUserPreferencesInput, Profile, UpdateProfileInput, UpdateUserPreferencesInput, UserPreferences, UserWithProfile } from '@/lib/appwrite/types';
+import { startReplication, stopReplication } from '@/lib/rxdb/replication';
 
 interface AuthState {
   user: UserWithProfile | null;
@@ -289,10 +290,13 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: state.isAuthenticated,
             pendingOnboarding: state.pendingOnboarding,
             userPreferences: state.userPreferences,
+            user: null
           };
+
 
         const userKeysToKeep: (keyof UserWithProfile)[] = ['$id', 'name', 'email', 'emailVerification', 'location'];
         const profileKeysToKeep: (keyof Profile)[] = [
+          '$id',
           'username',
           'avatarUrl',
           'bio',
@@ -302,6 +306,7 @@ export const useAuthStore = create<AuthState>()(
           'favoriteGenres',
           'favoriteNetworks',
           'hiddenProfileSections',
+          'userId'
         ];
         const preferencesKeysToKeep = Object.keys(DEFAULT_USER_PREFERENCES) as (keyof UserPreferences)[];
 
@@ -310,22 +315,36 @@ export const useAuthStore = create<AuthState>()(
         const preferences = pick(state.user.profile.preferences, preferencesKeysToKeep);
         const userPreferences = { ...preferences, ...state.userPreferences };
 
+        // console.log(state.user.profile.preferences, userPreferences, Object.keys(DEFAULT_USER_PREFERENCES));
+
         return {
           isAuthenticated: state.isAuthenticated,
-          user: { ...user, profile },
+          user: { ...user, profile, libraryId: state.user.profile.library?.$id || null },
           userPreferences,
+          pendingOnboarding: state.pendingOnboarding,
         };
       },
     }
   )
 );
 
-function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
-  const result = {} as Pick<T, K>;
+function pick<T extends object, K extends keyof T>(obj: T | undefined | null, keys: K[]): Partial<Pick<T, K>> {
+  if (!obj) return {};
+
+  const result = {} as Partial<Pick<T, K>>;
   keys.forEach((key) => {
-    if (key in obj) {
+    if (obj && key in obj) {
       result[key] = obj[key];
     }
   });
   return result;
 }
+
+
+useAuthStore.subscribe((state) => {
+  if (state.isAuthenticated && state.user?.$id) {
+    startReplication(state.user.$id);
+  } else {
+    stopReplication();
+  }
+});

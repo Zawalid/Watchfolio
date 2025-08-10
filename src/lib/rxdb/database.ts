@@ -57,6 +57,8 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
                 }
             });
 
+            dbStatus = 'ready';
+
             return db as unknown as WatchfolioDatabase;
         } catch (error) {
             console.error('❌ Database creation error:', error);
