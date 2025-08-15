@@ -10,7 +10,6 @@ import type { WatchfolioDatabase, DatabaseStatus } from './types';
 
 // ===== PLUGIN SETUP =====
 
-// Add dev mode plugin for better error messages
 if (import.meta.env.DEV) {
     addRxPlugin(RxDBDevModePlugin);
 }
@@ -20,48 +19,59 @@ addRxPlugin(RxDBUpdatePlugin);
 
 // ===== DATABASE STATE =====
 
+let dbInstance: WatchfolioDatabase | null = null;
 let dbPromise: Promise<WatchfolioDatabase> | null = null;
 export let dbStatus: DatabaseStatus = 'initializing';
 
 // ===== DATABASE INITIALIZATION =====
 
 export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
-    if (dbPromise) return dbPromise;
+    // Return existing instance if available
+    if (dbInstance) {
+        return dbInstance;
+    }
+
+    // Return existing promise if initialization is in progress
+    if (dbPromise) {
+        return dbPromise;
+    }
 
     dbStatus = 'creating';
+    console.log('🔄 Creating Watchfolio database...');
+
     dbPromise = (async () => {
         try {
-            // Create the database with performance optimizations
             const db = await createRxDatabase({
                 name: 'watchfolio',
                 storage: wrappedValidateAjvStorage({
                     storage: getRxStorageDexie()
                 }),
-                multiInstance: false, // Faster - no multi-instance overhead
+                multiInstance: false,
                 ignoreDuplicate: true,
                 cleanupPolicy: {
-                    minimumCollectionAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-                    runEach: 1000 * 60 * 60 * 24, // 24 hours - less frequent cleanup
+                    minimumCollectionAge: 1000 * 60 * 60 * 24 * 7,
+                    runEach: 1000 * 60 * 60 * 24,
                 },
-                // Add performance options
                 allowSlowCount: false,
             });
 
-            // Add collections with optimized settings
             await db.addCollections({
                 libraryItems: {
                     schema: libraryItemSchema,
-                    // Add performance optimizations
                     migrationStrategies: {},
-                    autoMigrate: false, // Disable auto-migration for speed
+                    autoMigrate: false,
                 }
             });
 
+            dbInstance = db as unknown as WatchfolioDatabase;
             dbStatus = 'ready';
+            console.log('✅ Watchfolio database created successfully');
 
-            return db as unknown as WatchfolioDatabase;
+            return dbInstance;
         } catch (error) {
             console.error('❌ Database creation error:', error);
+            dbPromise = null; // Reset promise on error
+            dbStatus = 'error';
             throw error;
         }
     })();
@@ -83,12 +93,11 @@ export const waitForDB = async (timeout = 10000): Promise<void> => {
 
 export const destroyDB = async (): Promise<void> => {
     try {
-        if (dbPromise) {
-            const db = await dbPromise;
-            await db.destroy();
-            dbPromise = null;
+        if (dbInstance) {
+            await dbInstance.destroy();
+            dbInstance = null;
         }
-
+        dbPromise = null;
         dbStatus = 'initializing';
         console.log('🗑️ Watchfolio database destroyed');
     } catch (error) {

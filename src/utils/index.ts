@@ -174,18 +174,6 @@ export const renameObjectProperty = <T extends object, K extends keyof T>(
   return { ...rest, [newKey]: value };
 };
 
-
-export const removeObjectProperties = <T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Omit<T, K> => {
-  const result = { ...obj };
-  for (const key of keys) {
-    delete result[key];
-  }
-  return result;
-};
-
 export const filterObject = <T>(
   obj: T,
   keys: (keyof T)[],

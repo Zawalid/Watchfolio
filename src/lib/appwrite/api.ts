@@ -9,7 +9,12 @@ import type { LibraryItem, CreateLibraryItemInput, UpdateLibraryItemInput } from
 import type { TmdbMedia, CreateTmdbMediaInput, UpdateTmdbMediaInput } from './types';
 
 function setPermissions(userId: string): string[] {
-  return [Permission.read(Role.any()), Permission.update(Role.user(userId)), Permission.delete(Role.user(userId))];
+  return [
+    Permission.read(Role.any()),
+    Permission.read(Role.user(userId)),
+    Permission.update(Role.user(userId)),
+    Permission.delete(Role.user(userId))
+  ];
 }
 
 /**
@@ -537,5 +542,4 @@ export const {
   locale: localeService,
 } = appwriteService;
 
-// Export the setPermissions utility for external use
 export { setPermissions };

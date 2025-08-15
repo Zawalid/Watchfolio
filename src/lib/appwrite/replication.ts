@@ -17,6 +17,7 @@ import { flatClone } from 'rxdb/plugins/utils';
 import { Subject } from 'rxjs';
 import { lastOfArray } from 'rxdb/plugins/utils';
 import { getFromMapOrThrow } from 'rxdb/plugins/utils';
+import { setPermissions } from './api';
 
 // Types for our implementation
 export type AppwriteCheckpointType = {
@@ -30,6 +31,7 @@ export type SyncOptionsAppwrite<RxDocType> = Omit<
 > & {
     databaseId: string;
     collectionId: string;
+    userId: string
     client: Client;
     deletedField: string;
     pull?: {
@@ -245,11 +247,13 @@ export function replicateAppwrite<RxDocType>(
                         );
 
                         try {
+                            const permissions = setPermissions(options.userId)
                             await databases.createDocument(
                                 options.databaseId,
                                 options.collectionId,
                                 docId,
-                                insertDoc
+                                insertDoc,
+                                permissions
                             );
                         } catch (err: any) {
                             if (err.code === 409 && err.name === 'AppwriteException') {

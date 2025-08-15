@@ -5,7 +5,6 @@ import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/
 import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { useAuthStore } from './useAuthStore';
 import { getLibraryItems, deleteLibraryItem, addOrUpdateLibraryItem, clearLibrary as clearRxDBLibrary, } from '@/lib/rxdb/collections';
-import { Library, META_FIELDS } from '@/lib/appwrite/types';
 import { filterObject } from '@/utils';
 import { RxDBLibraryMedia } from '@/lib/rxdb';
 
@@ -121,8 +120,8 @@ export const useLibraryStore = create<LibraryState>()(
 
         const newItemData: LibraryMedia = {
           ...defaultItemData,
-          ...metadata,
           ...item,
+          ...metadata,
           lastUpdatedAt: now,
         } as LibraryMedia;
 
@@ -132,7 +131,6 @@ export const useLibraryStore = create<LibraryState>()(
         console.log("METADA", metadata)
 
 
-        return
         if (shouldRemoveItem(newItemData)) {
           await get().removeItem(newItemData.id);
           return null;
@@ -273,10 +271,7 @@ export const useLibraryStore = create<LibraryState>()(
 
     loadLibrary: async () => {
       const library = getCurrentLibrary();
-      console.log("library", library)
-
       const items = await getLibraryItems(library.$id);
-      console.log(items, library.$id)
       set({
         library: items.reduce((acc, item) => {
           acc[item.id] = item;

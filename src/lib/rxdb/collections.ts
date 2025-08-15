@@ -2,8 +2,7 @@ import { ID } from 'appwrite';
 import { getWatchfolioDB } from './database';
 import type { LibraryStats, RxDBLibraryMedia } from './types';
 import { mapFromAppwriteData, mapToAppwriteData } from '@/utils/library';
-import { Library, LibraryItem, TmdbMedia } from '../appwrite/types';
-import { renameObjectProperty } from '@/utils';
+import { LibraryItem, TmdbMedia } from '../appwrite/types';
 import { RxDocument } from 'rxdb';
 
 
@@ -39,7 +38,7 @@ export const getLibraryItem = async (
 
 export const createLibraryItem = async (
     itemData: Omit<LibraryMedia, 'id'>,
-    library: RxDBLibraryMedia['library'] 
+    library: RxDBLibraryMedia['library']
 ) => {
     const db = await getWatchfolioDB();
     const { libraryItem, tmdbMedia } = mapToAppwriteData(itemData);
@@ -67,6 +66,7 @@ export const updateLibraryItem = async (
 ) => {
     const db = await getWatchfolioDB();
     let doc = await db.libraryItems.findOne({ selector: { id } }).exec();
+
     if (!doc) throw new Error('Library item not found');
 
     // Transform any $id properties to _id for RxDB storage
@@ -74,16 +74,6 @@ export const updateLibraryItem = async (
         ...itemData,
         lastUpdatedAt: new Date().toISOString()
     };
-
-    // Handle library transformation if present
-    if (itemData.library) {
-        updateData.library = renameObjectProperty(itemData.library, '$id', '_id');
-    }
-
-    // Handle media transformation if present  
-    if (itemData.media) {
-        updateData.media = renameObjectProperty(itemData.media, '$id', '_id');
-    }
 
     doc = await doc.update({
         $set: updateData
@@ -104,7 +94,7 @@ export const deleteLibraryItem = async (
 
 export const addOrUpdateLibraryItem = async (
     item: LibraryMedia,
-    library: RxDBLibraryMedia['library'] 
+    library: RxDBLibraryMedia['library']
 ): Promise<LibraryMedia | null> => {
     const existingItem = await getLibraryItem(item.id);
     let newOrUpdatedItem: LibraryMedia | null = null;

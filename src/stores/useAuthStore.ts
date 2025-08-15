@@ -6,7 +6,7 @@ import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constant
 import { useLibraryStore } from './useLibraryStore';
 import { deepEqual } from '@/utils';
 import { CreateUserPreferencesInput, Profile, UpdateProfileInput, UpdateUserPreferencesInput, UserPreferences, UserWithProfile } from '@/lib/appwrite/types';
-import { startReplication, stopReplication } from '@/lib/rxdb/replication';
+import { getCurrentUserId, startReplication, stopReplication } from '@/lib/rxdb/replication';
 
 interface AuthState {
   user: UserWithProfile | null;
@@ -341,22 +341,61 @@ function pick<T extends object, K extends keyof T>(obj: T | undefined | null, ke
 }
 
 
-useAuthStore.subscribe((state) => {
-  if (state.isAuthenticated && state.user?.$id) {
-    startReplication(state.user.$id, state.user?.profile.library?.$id || 'guest-library');
-  } else {
-    stopReplication();
-  }
-});
 
+
+
+// ===== SUBSCRIPTION MANAGEMENT =====
 
 let hasLoaded = false;
-useAuthStore.subscribe((state) => {
-  const loadLibrary = useLibraryStore.getState().loadLibrary;
-  if (state.isLoading) hasLoaded = true;
-  if (!state.isLoading && hasLoaded) {
-    console.log("isLoading", state.isLoading)
-    loadLibrary();
-  }
+let librarySubscription: (() => void) | null = null;
+let replicationSubscription: (() => void) | null = null;
 
-});
+// Library loading subscription (only once)
+if (!librarySubscription) {
+  librarySubscription = useAuthStore.subscribe((state) => {
+    const loadLibrary = useLibraryStore.getState().loadLibrary;
+    
+    if (state.isLoading) {
+      hasLoaded = true;
+    }
+    
+    if (!state.isLoading && hasLoaded) {
+      console.log('📚 Loading library after auth state change');
+      loadLibrary();
+    }
+  });
+}
+
+// Replication subscription (only once)
+if (!replicationSubscription) {
+  replicationSubscription = useAuthStore.subscribe(async (state) => {
+    try {
+      if (state.isAuthenticated && state.user?.$id && hasLoaded) {
+        const currentUserId = getCurrentUserId();
+        
+        // Only start if not already running for this user
+        if (currentUserId !== state.user.$id) {
+          console.log('🔄 Starting replication for user:', state.user.$id);
+          await startReplication(state.user.$id);
+        }
+      } else {
+        console.log('🛑 Stopping replication - user not authenticated');
+        await stopReplication();
+      }
+    } catch (error) {
+      console.error('❌ Replication subscription error:', error);
+    }
+  });
+}
+
+// Cleanup function (export for testing/cleanup)
+export const cleanupAuthSubscriptions = () => {
+  if (librarySubscription) {
+    librarySubscription();
+    librarySubscription = null;
+  }
+  if (replicationSubscription) {
+    replicationSubscription();
+    replicationSubscription = null;
+  }
+};

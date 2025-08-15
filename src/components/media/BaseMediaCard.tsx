@@ -432,6 +432,12 @@ const QuickActions = ({
     toggleFavorite(item?.id || '', media ? { ...media, media_type: mediaType } : undefined);
   };
 
+  /* 
+  I need to fix the id (mayber add the $id)
+  i need to remove the tmdbid
+   */
+
+
   const handleEditStatus = () => {
     const target = item || media;
     if (!target) return;

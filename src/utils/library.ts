@@ -266,7 +266,7 @@ export function smartMergeLibraries(
 // Map Appwrite data back to LibraryMedia
 export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): LibraryMedia => {
   return {
-    $id: libraryItem.$id,
+    $id: libraryItem.$id || libraryItem.id,
     id: tmdbMedia?.id || 0,
     media_type: tmdbMedia?.mediaType || 'movie',
     title: tmdbMedia?.title,
@@ -298,7 +298,7 @@ export const mapToAppwriteData = (
 } => {
   return {
     tmdbMedia: {
-      id: media.tmdbId,
+      id: media.id,
       mediaType: media.media_type,
       title: media.title || `${media.media_type} ${media.id}`,
       overview: undefined,
