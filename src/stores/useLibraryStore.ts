@@ -5,6 +5,9 @@ import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/
 import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { useAuthStore } from './useAuthStore';
 import { getLibraryItems, deleteLibraryItem, addOrUpdateLibraryItem, clearLibrary as clearRxDBLibrary, } from '@/lib/rxdb/collections';
+import { Library, META_FIELDS } from '@/lib/appwrite/types';
+import { filterObject } from '@/utils';
+import { RxDBLibraryMedia } from '@/lib/rxdb';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -39,10 +42,11 @@ const shouldRemoveItem = (item: LibraryMedia): boolean => {
   );
 };
 
-// Helper to get current user's library ID
-const getCurrentLibraryId = (): string => {
-  const { user } = useAuthStore.getState();
-  return user?.libraryId || 'guest-library';
+// Helper to get current user's library
+const getCurrentLibrary = (): RxDBLibraryMedia['library'] => {
+  const user = useAuthStore.getState().user;
+  const library = user?.profile.library ? filterObject(user?.profile.library, ["$id", "averageRating", "$updatedAt"], 'include') : null;
+  return library || { $id: 'guest-library' };
 };
 
 // Helper to transform TMDB Media to LibraryMedia fields
@@ -51,7 +55,7 @@ const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
   const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
 
   return {
-    tmdbId: media.id,
+    id: media.id,
     title,
     posterPath: media.poster_path,
     releaseDate,
@@ -76,7 +80,7 @@ export const useLibraryStore = create<LibraryState>()(
     getItem: (id) => {
       const { library } = get();
 
-      if (!id.includes('-')) return library[id];
+      if (!String(id).includes('-')) return library[id];
 
       const [mediaType, tmdbId] = id.split('-');
 
@@ -105,10 +109,8 @@ export const useLibraryStore = create<LibraryState>()(
       try {
         set({ isLoading: true, error: null });
 
-        const libraryId = getCurrentLibraryId();
         const now = new Date().toISOString();
         const defaultItemData = get().getItem(item.id) || {
-          libraryId,
           media_type: item.media_type,
           status: 'none',
           isFavorite: false,
@@ -124,12 +126,20 @@ export const useLibraryStore = create<LibraryState>()(
           lastUpdatedAt: now,
         } as LibraryMedia;
 
+        console.log("LIBRARY", getCurrentLibrary())
+        console.log("ITEM", item)
+        console.log("NEW ITEM", newItemData)
+        console.log("METADA", metadata)
+
+
+        return
         if (shouldRemoveItem(newItemData)) {
           await get().removeItem(newItemData.id);
           return null;
         }
 
-        const newOrUpdatedItem = await addOrUpdateLibraryItem(newItemData);
+
+        const newOrUpdatedItem = await addOrUpdateLibraryItem(newItemData, getCurrentLibrary());
 
         if (newOrUpdatedItem) {
           set((state) => ({
@@ -248,8 +258,8 @@ export const useLibraryStore = create<LibraryState>()(
       try {
         set({ isLoading: true, error: null });
 
-        const libraryId = getCurrentLibraryId();
-        await clearRxDBLibrary(libraryId);
+        const library = getCurrentLibrary();
+        await clearRxDBLibrary(library.$id);
 
         set({ library: {} });
         console.log('🗑️ Library cleared from RxDB');
@@ -262,8 +272,11 @@ export const useLibraryStore = create<LibraryState>()(
     },
 
     loadLibrary: async () => {
-      const libraryId = getCurrentLibraryId();
-      const items = await getLibraryItems(libraryId);
+      const library = getCurrentLibrary();
+      console.log("library", library)
+
+      const items = await getLibraryItems(library.$id);
+      console.log(items, library.$id)
       set({
         library: items.reduce((acc, item) => {
           acc[item.id] = item;

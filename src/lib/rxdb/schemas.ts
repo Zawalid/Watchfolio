@@ -1,10 +1,13 @@
 import type { RxJsonSchema } from 'rxdb';
+import { RxDBLibraryMedia } from './types';
 
 
-export const libraryItemSchema: RxJsonSchema<LibraryMedia> = {
+
+export const libraryItemSchema: RxJsonSchema<RxDBLibraryMedia> = {
     version: 0,
     primaryKey: 'id',
     type: 'object',
+    additionalProperties: false,
     properties: {
         id: {
             type: 'string',
@@ -19,13 +22,13 @@ export const libraryItemSchema: RxJsonSchema<LibraryMedia> = {
             type: 'boolean'
         },
         userRating: {
-            type: 'integer',
+            type: ['integer', 'null'],
             minimum: 1,
             maximum: 10,
             multipleOf: 1
         },
         notes: {
-            type: 'string',
+            type: ['string', 'null'],
             maxLength: 2000
         },
         addedAt: {
@@ -38,69 +41,85 @@ export const libraryItemSchema: RxJsonSchema<LibraryMedia> = {
             format: 'date-time',
             maxLength: 50
         },
-        libraryId: {
-            type: 'string',
-            maxLength: 100
+        library: {
+            type: 'object',
+            additionalProperties: true,
+            properties: {
+                
+            },
         },
-        tmdbId: {
-            type: 'integer',
-            minimum: 1,
-            maximum: 999999999,
-            multipleOf: 1  // Required for indexed integer fields
-        },
-        title: {
-            type: 'string',
-            maxLength: 255
-        },
-        media_type: {
-            type: 'string',
-            enum: ['movie', 'tv'],
-            maxLength: 10
-        },
-        posterPath: {
-            type: 'string',
-            maxLength: 200  // Increased for full poster URLs
-        },
-        releaseDate: {
-            type: 'string',
-            maxLength: 50
-        },
-        genres: {
-            type: 'array',
-            items: {
-                type: 'string',
-                maxLength: 50
-            }
-        },
-        rating: {
-            type: 'number',
-            minimum: 0,
-            maximum: 10,
-        },
-        totalMinutesRuntime: {
-            type: 'integer',
-            minimum: 0,
-            maximum: 99999, // Reasonable upper limit for runtime in minutes
-            multipleOf: 1  // Add this since it might be indexed later
-        },
-        networks: {
-            type: 'array',
-            items: {
-                type: 'integer',
-                minimum: 0,
-                maximum: 2147483647, // 32-bit signed integer limit
-                multipleOf: 1  // Required for integer array items
-            }
+        media: {
+            type: 'object',
+            additionalProperties: true,
+            properties: {
+                id: {
+                    type: 'integer',
+                    minimum: 1,
+                    maximum: 999999999,
+                    multipleOf: 1
+                },
+                title: {
+                    type: 'string',
+                    maxLength: 255
+                },
+                mediaType: {
+                    type: 'string',
+                    enum: ['movie', 'tv'],
+                    maxLength: 10
+                },
+                posterPath: {
+                    type: 'string',
+                    maxLength: 200
+                },
+                releaseDate: {
+                    type: 'string',
+                    maxLength: 50
+                },
+                genres: {
+                    type: 'array',
+                    items: {
+                        type: 'string',
+                        maxLength: 50
+                    }
+                },
+                rating: {
+                    type: 'number',
+                    minimum: 0,
+                    maximum: 10
+                },
+                totalMinutesRuntime: {
+                    type: 'integer',
+                    minimum: 0,
+                    maximum: 99999,
+                    multipleOf: 1
+                },
+                networks: {
+                    type: 'array',
+                    items: {
+                        type: 'integer',
+                        minimum: 0,
+                        maximum: 2147483647,
+                        multipleOf: 1
+                    }
+                }
+            },
+            required: ['id', 'title', 'mediaType']
         }
     },
-    required: ['id', 'status', 'isFavorite', 'addedAt', 'libraryId', 'tmdbId', 'title', 'media_type'],
+    required: [
+        'id',
+        'status',
+        'isFavorite',
+        'addedAt',
+        'library',
+        'media'
+    ],
     indexes: [
-        ['libraryId'],           // Query by user's library
-        ['tmdbId', 'media_type'], // Find specific media
-        ['status'],              // Filter by watch status
-        ['isFavorite'],          // Get favorites
-        ['addedAt']              // Sort by date added
+        // ['library._id', 'id'],
+        // ['media._id', 'id'],
+        ['media.id', 'media.mediaType', 'id'],
+        ['status', 'id'],
+        ['isFavorite', 'id'],
+        ['addedAt', 'id'],
     ]
 };
-
-

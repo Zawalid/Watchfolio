@@ -116,6 +116,9 @@ export const formatTimeAgo = (dateString: string): string => {
   });
 };
 
+
+// ========== Object Utilities ==========
+
 /**
  * Performs a deep equality check between two values.
  * Supports primitives, arrays, objects, dates, and handles edge cases.
@@ -160,3 +163,38 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   // Fallback for all other cases (including functions)
   return false;
 }
+
+
+export const renameObjectProperty = <T extends object, K extends keyof T>(
+  obj: T,
+  oldKey: K,
+  newKey: string
+): Omit<T, K> & { [key: string]: unknown } => {
+  const { [oldKey]: value, ...rest } = obj;
+  return { ...rest, [newKey]: value };
+};
+
+
+export const removeObjectProperties = <T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> => {
+  const result = { ...obj };
+  for (const key of keys) {
+    delete result[key];
+  }
+  return result;
+};
+
+export const filterObject = <T>(
+  obj: T,
+  keys: (keyof T)[],
+  keysType: "include" | "exclude"
+): T => {
+  const filtered: T = {} as T;
+  for (const key in obj) {
+    if (keysType === "include" && keys.includes(key)) filtered[key] = obj[key];
+    if (keysType === "exclude" && !keys.includes(key)) filtered[key] = obj[key];
+  }
+  return filtered;
+};

@@ -1,8 +1,38 @@
 import type { RxDocument, RxCollection, RxJsonSchema } from 'rxdb';
 
+export interface RxDBLibraryMedia {
+    id: string;
+    status: WatchStatus;
+    isFavorite: boolean;
+    userRating?: number;
+    notes?: string;
 
-export type LibraryItemDocument = RxDocument<LibraryMedia>;
-export type LibraryItemCollection = RxCollection<LibraryMedia>;
+    addedAt?: string;
+    lastUpdatedAt: string;
+
+    library: {
+        $id: string,
+        averageRating?: number;
+        $updatedAt?: string;
+    };
+    media: {
+        $id: string;
+        id: number;
+        mediaType: MediaType;
+        title: string;
+        overview?: string;
+        posterPath?: string;
+        releaseDate?: string;
+        genres?: string[];
+        rating?: number;
+        totalMinutesRuntime?: number;
+        networks?: number[];
+        $updatedAt?: string;
+    };
+}
+
+export type LibraryItemDocument = RxDocument<RxDBLibraryMedia>;
+export type LibraryItemCollection = RxCollection<RxDBLibraryMedia>;
 
 
 export interface WatchfolioDatabase {

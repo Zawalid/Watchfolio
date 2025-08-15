@@ -266,32 +266,36 @@ export function smartMergeLibraries(
 // Map Appwrite data back to LibraryMedia
 export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): LibraryMedia => {
   return {
-    id: libraryItem.$id,
-    tmdbId: tmdbMedia?.id || 0,
+    $id: libraryItem.$id,
+    id: tmdbMedia?.id || 0,
     media_type: tmdbMedia?.mediaType || 'movie',
     title: tmdbMedia?.title,
     posterPath: tmdbMedia?.posterPath || undefined,
     releaseDate: tmdbMedia?.releaseDate || undefined,
-    genres: tmdbMedia?.genres || [],
-    rating: tmdbMedia?.rating || undefined,
-    status: libraryItem.status,
-    isFavorite: libraryItem.isFavorite,
-    userRating: libraryItem.userRating || undefined,
+    genres: Array.isArray(tmdbMedia?.genres) ? tmdbMedia.genres : [],
+    rating: typeof tmdbMedia?.rating === 'number' ? tmdbMedia.rating : undefined,
+    status: libraryItem.status ?? 'none',
+    isFavorite: !!libraryItem.isFavorite,
+    userRating: libraryItem.userRating != null
+      ? Math.max(1, Math.min(10, Math.round(Number(libraryItem.userRating))))
+      : undefined,
     notes: libraryItem.notes || undefined,
+    totalMinutesRuntime: Number.isFinite(tmdbMedia?.totalMinutesRuntime)
+    ? tmdbMedia?.totalMinutesRuntime
+    : undefined,
+    networks: Array.isArray(tmdbMedia?.networks) ? tmdbMedia.networks : [],
     addedAt: libraryItem.addedAt || new Date().toISOString(),
     lastUpdatedAt: libraryItem.$updatedAt,
-    totalMinutesRuntime: tmdbMedia?.totalMinutesRuntime,
-    networks: tmdbMedia?.networks || [],
   };
 };
 
 // Map LibraryMedia to Appwrite LibraryMedia + TmdbMedia
-export const mapToAppwriteData = async (
+export const mapToAppwriteData = (
   media: LibraryMedia
-): Promise<{
+): {
   tmdbMedia: CreateTmdbMediaInput;
   libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
-}> => {
+} => {
   return {
     tmdbMedia: {
       id: media.tmdbId,
@@ -300,17 +304,22 @@ export const mapToAppwriteData = async (
       overview: undefined,
       posterPath: media.posterPath || undefined,
       releaseDate: media.releaseDate || undefined,
-      genres: media.genres || [],
-      rating: media.rating || undefined,
-      totalMinutesRuntime: media.totalMinutesRuntime,
-      networks: media.networks,
+      genres: Array.isArray(media.genres) ? media.genres : [],
+      rating: typeof media.rating === 'number' ? media.rating : undefined,
+      totalMinutesRuntime: Number.isFinite(media.totalMinutesRuntime)
+        ? media.totalMinutesRuntime
+        : undefined,
+      networks: Array.isArray(media.networks) ? media.networks : [],
     },
     libraryItem: {
-      status: media.status,
-      isFavorite: media.isFavorite,
-      userRating: media.userRating || undefined,
+      status: media.status ?? 'none',
+      isFavorite: !!media.isFavorite,
+      userRating: media.userRating != null
+        ? Math.max(1, Math.min(10, Math.round(Number(media.userRating))))
+        : undefined,
       notes: media.notes || undefined,
       addedAt: media.addedAt,
+      deleted: !!media.deleted,
     },
   };
 };

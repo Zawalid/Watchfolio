@@ -13,9 +13,10 @@ interface LibraryMedia {
   lastUpdatedAt: string;
 
 
-  // References (denormalized for RxDB)
+  // For RxDB
   libraryId?: string;    // User's library ID
   tmdbId: number;       // TMDB media ID
+  deleted?: boolean
 
   // Embedded media data for offline browsing
   title?: string;
@@ -37,7 +38,9 @@ interface LibraryMedia {
   notes?: string;
 }
 
-type LibraryCollection = Record<string, LibraryMedia> 
+
+
+type LibraryCollection = Record<string, LibraryMedia>
 
 interface LibraryStats {
   all: number;

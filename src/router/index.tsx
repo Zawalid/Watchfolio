@@ -27,7 +27,6 @@ import {
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { slugify } from '@/utils';
-import Test from '@/pages/Test';
 
 export const router = createBrowserRouter([
   {
@@ -183,10 +182,6 @@ export const router = createBrowserRouter([
       {
         path: 'u/:username',
         Component: UserProfile,
-      },
-      {
-        path: 'test/test',
-        element: <Test />,
       }
     ],
   },

@@ -319,7 +319,7 @@ export const useAuthStore = create<AuthState>()(
 
         return {
           isAuthenticated: state.isAuthenticated,
-          user: { ...user, profile, libraryId: state.user.profile.library?.$id || null },
+          user: { ...user, profile },
           userPreferences,
           pendingOnboarding: state.pendingOnboarding,
         };
@@ -343,8 +343,20 @@ function pick<T extends object, K extends keyof T>(obj: T | undefined | null, ke
 
 useAuthStore.subscribe((state) => {
   if (state.isAuthenticated && state.user?.$id) {
-    startReplication(state.user.$id);
+    startReplication(state.user.$id, state.user?.profile.library?.$id || 'guest-library');
   } else {
     stopReplication();
   }
+});
+
+
+let hasLoaded = false;
+useAuthStore.subscribe((state) => {
+  const loadLibrary = useLibraryStore.getState().loadLibrary;
+  if (state.isLoading) hasLoaded = true;
+  if (!state.isLoading && hasLoaded) {
+    console.log("isLoading", state.isLoading)
+    loadLibrary();
+  }
+
 });

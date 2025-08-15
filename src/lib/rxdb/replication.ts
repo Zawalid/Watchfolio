@@ -1,20 +1,20 @@
 import client, { DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { replicateAppwrite, RxAppwriteReplicationState } from '@/lib/appwrite/replication';
 import { getWatchfolioDB } from './database';
-import type { SyncStatus } from './types';
+import type { RxDBLibraryMedia, SyncStatus } from './types';
 import { localToServer, serverToLocal } from './mappers';
 
 // ===== REPLICATION STATE =====
 
 export let syncStatus: SyncStatus = 'offline';
-const replicationStates = new Map<string, RxAppwriteReplicationState<unknown>>();
+const replicationStates = new Map<string, RxAppwriteReplicationState<RxDBLibraryMedia>>();
 
 // Track active states reactively
 const currentActiveStates = new Map<string, boolean>();
 
 // ===== REPLICATION SETUP =====
 
-export const startReplication = async (userId: string,libraryId : string): Promise<void> => {
+export const startReplication = async (userId: string, libraryId: string): Promise<void> => {
     try {
         if (replicationStates.size > 0) {
             console.log('🔄 Replication already started');
@@ -40,12 +40,15 @@ export const startReplication = async (userId: string,libraryId : string): Promi
             collection: db.libraryItems,
             pull: {
                 batchSize: 25,
-                // doc is the document received from Appwrite
-                modifier: (doc) => serverToLocal(doc,libraryId)
+                modifier: (doc) => serverToLocal(doc)
             },
             push: {
                 batchSize: 25,
-                modifier: (doc) => localToServer(doc,libraryId).itemDoc
+                modifier: async (doc) => {
+                    console.log("PUSHING DOCUMENT:", doc);
+                    const itemDoc = await localToServer(doc as RxDBLibraryMedia);
+                    return itemDoc;
+                }
             },
         });
 
@@ -68,7 +71,7 @@ export const startReplication = async (userId: string,libraryId : string): Promi
 
 
         // Store replication states
-        replicationStates.set('libraryItems', libraryItemsReplication);
+        replicationStates.set('libraryItems', libraryItemsReplication as RxAppwriteReplicationState<RxDBLibraryMedia>);
 
 
         syncStatus = 'online';
@@ -137,7 +140,7 @@ const updateSyncStatus = (): void => {
     }
 };
 
-const subscribeToActiveState = (id: string, replication: RxAppwriteReplicationState<unknown>) => {
+const subscribeToActiveState = <T>(id: string, replication: RxAppwriteReplicationState<T>) => {
     replication.active$.subscribe((isActive: boolean) => {
         currentActiveStates.set(id, isActive);
         updateSyncStatus();

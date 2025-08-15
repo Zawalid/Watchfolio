@@ -19,6 +19,7 @@ export interface Document {
     $databaseId: string;
     $createdAt: string;
     $updatedAt: string;
+    $sequence: number;
     $permissions: string[];
 }
 export interface Profile extends Document {
@@ -51,6 +52,7 @@ export interface UserPreferences extends Document {
 export interface Library extends Document {
     averageRating?: number;
     items?: LibraryItem[];
+    deleted?: boolean;
 }
 
 export interface LibraryItem extends Document {
@@ -61,6 +63,7 @@ export interface LibraryItem extends Document {
     addedAt?: string;
     library?: Library;
     media?: TmdbMedia;
+    deleted?: boolean;
 }
 
 export interface TmdbMedia extends Document {
@@ -117,7 +120,6 @@ export interface UserLocation {
 export interface UserWithProfile extends Models.User<Models.Preferences> {
     profile: Profile;
     location: UserLocation;
-    libraryId: string | null;
 }
 
 export interface LibraryWithItems extends Library {
@@ -138,3 +140,7 @@ export interface DocumentList<T> {
 export type ProfileDocumentList = DocumentList<Profile>;
 export type LibraryItemDocumentList = DocumentList<LibraryItem>;
 export type TmdbMediaDocumentList = DocumentList<TmdbMedia>;
+
+
+
+export const META_FIELDS = ['$createdAt', '$permissions', '$collectionId', '$databaseId', '$sequence'];

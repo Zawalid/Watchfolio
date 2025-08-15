@@ -15,7 +15,7 @@ export interface SignInAccount {
   email: string;
   password: string;
 }
-  
+
 export interface AuthError extends Error {
   code?: string;
   type?: string;

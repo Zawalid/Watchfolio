@@ -18,7 +18,7 @@ import { Subject } from 'rxjs';
 import { lastOfArray } from 'rxdb/plugins/utils';
 import { getFromMapOrThrow } from 'rxdb/plugins/utils';
 
-//  types for our implementation
+// Types for our implementation
 export type AppwriteCheckpointType = {
     updatedAt: string;
     id: string;
@@ -35,24 +35,24 @@ export type SyncOptionsAppwrite<RxDocType> = Omit<
     pull?: {
         batchSize?: number;
         initialCheckpoint?: AppwriteCheckpointType;
-        modifier?: (doc: any) => RxDocType;
+        modifier?: (doc: any) => RxDocType | Promise<RxDocType>;
     };
     push?: {
         batchSize?: number;
-        modifier?: (doc: WithDeleted<RxDocType>) => any;
+        modifier?: (doc: WithDeleted<RxDocType>) => any | Promise<any>;
     };
 };
 
 // Helper functions
-function appwriteDocToRxDB<RxDocType>(
+async function appwriteDocToRxDB<RxDocType>(
     appwriteDoc: any,
     primaryKey: string,
     deletedField: string,
-    modifier?: (doc: any) => RxDocType
-): WithDeleted<RxDocType> {
+    modifier?: (doc: any) => RxDocType | Promise<RxDocType>
+): Promise<WithDeleted<RxDocType>> {
     // Apply modifier first if provided
     if (modifier) {
-        const modifiedDoc = modifier(appwriteDoc);
+        const modifiedDoc = await modifier(appwriteDoc);
         return {
             ...modifiedDoc,
             _deleted: appwriteDoc[deletedField] || false
@@ -74,17 +74,15 @@ function appwriteDocToRxDB<RxDocType>(
     return useDoc;
 }
 
-function rxdbDocToAppwrite<RxDocType>(
+async function rxdbDocToAppwrite<RxDocType>(
     rxdbDoc: WithDeletedAndAttachments<RxDocType>,
     primaryKey: string,
     deletedField: string,
-    modifier?: (doc: WithDeleted<RxDocType>) => any
+    modifier?: (doc: WithDeleted<RxDocType>) => any | Promise<any>
 ) {
     // Apply modifier first if provided
     if (modifier) {
-        console.log('🔄 Applying push modifier to doc:', rxdbDoc);
-        const modifiedDoc = modifier(rxdbDoc as WithDeleted<RxDocType>);
-        console.log('✅ Modified doc result:', modifiedDoc);
+        const modifiedDoc = await modifier(rxdbDoc as WithDeleted<RxDocType>);
         return modifiedDoc;
     }
 
@@ -145,8 +143,6 @@ export function replicateAppwrite<RxDocType>(
             lastPulledCheckpoint: AppwriteCheckpointType | undefined,
             batchSize: number
         ) => {
-            console.log('🔄 Pull handler called with checkpoint:', lastPulledCheckpoint);
-
             const queries: string[] = [];
             if (lastPulledCheckpoint) {
                 queries.push(
@@ -169,25 +165,23 @@ export function replicateAppwrite<RxDocType>(
                 queries
             );
 
-            console.log('📥 Pulled documents from Appwrite:', result.documents.length);
-
             const lastDoc = lastOfArray(result.documents);
             const newCheckpoint: AppwriteCheckpointType | null = lastDoc ? {
                 id: lastDoc.$id,
                 updatedAt: lastDoc.$updatedAt
             } : null;
 
-            const resultDocs: WithDeleted<RxDocType>[] = result.documents.map(doc => {
-                console.log('🔄 Processing pulled doc:', doc.$id);
-                return appwriteDocToRxDB<RxDocType>(
-                    doc,
-                    primaryKey,
-                    options.deletedField,
-                    options.pull?.modifier
-                );
-            });
-
-            console.log('✅ Transformed docs for RxDB:', resultDocs);
+            // Process documents with async modifier support
+            const resultDocs: WithDeleted<RxDocType>[] = await Promise.all(
+                result.documents.map(async (doc) => {
+                    return await appwriteDocToRxDB<RxDocType>(
+                        doc,
+                        primaryKey,
+                        options.deletedField,
+                        options.pull?.modifier
+                    );
+                })
+            );
 
             return {
                 checkpoint: newCheckpoint,
@@ -200,8 +194,6 @@ export function replicateAppwrite<RxDocType>(
     const replicationPrimitivesPush: ReplicationPushOptions<RxDocType> | undefined = options.push ? {
         batchSize: options.push.batchSize || 25,
         async handler(rows: RxReplicationWriteToMasterRow<RxDocType>[]) {
-            console.log('📤 Push handler called with rows:', rows.length);
-
             const nonInsertRows = rows.filter(row => row.assumedMasterState);
             const updateDocsInDbById = new Map<string, RxDocType>();
 
@@ -226,12 +218,15 @@ export function replicateAppwrite<RxDocType>(
                     [query]
                 );
 
-                updateDocsOnServer.documents.forEach(doc => {
-                    const docDataInDb = appwriteDocToRxDB<RxDocType>(doc, primaryKey, options.deletedField);
-                    const docId: string = doc.$id;
-                    (docDataInDb as any)[primaryKey] = docId;
-                    updateDocsInDbById.set(docId, docDataInDb);
-                });
+                // Process server documents with async modifier support
+                await Promise.all(
+                    updateDocsOnServer.documents.map(async (doc) => {
+                        const docDataInDb = await appwriteDocToRxDB<RxDocType>(doc, primaryKey, options.deletedField);
+                        const docId: string = doc.$id;
+                        (docDataInDb as any)[primaryKey] = docId;
+                        updateDocsInDbById.set(docId, docDataInDb);
+                    })
+                );
             }
 
             const conflicts: WithDeleted<RxDocType>[] = [];
@@ -239,18 +234,15 @@ export function replicateAppwrite<RxDocType>(
             await Promise.all(
                 rows.map(async (writeRow) => {
                     const docId = (writeRow.newDocumentState as any)[primaryKey];
-                    console.log(`🔄 Processing ${writeRow.assumedMasterState ? 'UPDATE' : 'INSERT'} for doc:`, docId);
 
                     if (!writeRow.assumedMasterState) {
                         // INSERT
-                        const insertDoc = rxdbDocToAppwrite<RxDocType>(
+                        const insertDoc = await rxdbDocToAppwrite<RxDocType>(
                             writeRow.newDocumentState,
                             primaryKey,
                             options.deletedField,
                             options.push?.modifier
                         );
-
-                        console.log('📤 Inserting doc to Appwrite:', insertDoc);
 
                         try {
                             await databases.createDocument(
@@ -259,16 +251,14 @@ export function replicateAppwrite<RxDocType>(
                                 docId,
                                 insertDoc
                             );
-                            console.log('✅ Insert successful for doc:', docId);
                         } catch (err: any) {
                             if (err.code === 409 && err.name === 'AppwriteException') {
-                                console.log('⚠️ Insert conflict detected for doc:', docId);
                                 const docOnServer = await databases.getDocument(
                                     options.databaseId,
                                     options.collectionId,
                                     docId
                                 );
-                                const docOnServerData = appwriteDocToRxDB<RxDocType>(
+                                const docOnServerData = await appwriteDocToRxDB<RxDocType>(
                                     docOnServer,
                                     primaryKey,
                                     options.deletedField,
@@ -286,17 +276,14 @@ export function replicateAppwrite<RxDocType>(
                             !writeRow.assumedMasterState ||
                             collection.conflictHandler.isEqual(docInDb as any, writeRow.assumedMasterState, '-appwrite-push') === false
                         ) {
-                            console.log('⚠️ Update conflict detected for doc:', docId);
                             conflicts.push(docInDb as any);
                         } else {
-                            const updateDoc = rxdbDocToAppwrite<RxDocType>(
+                            const updateDoc = await rxdbDocToAppwrite<RxDocType>(
                                 writeRow.newDocumentState,
                                 primaryKey,
                                 options.deletedField,
                                 options.push?.modifier
                             );
-
-                            console.log('📤 Updating doc in Appwrite:', updateDoc);
 
                             await databases.updateDocument(
                                 options.databaseId,
@@ -304,13 +291,11 @@ export function replicateAppwrite<RxDocType>(
                                 docId,
                                 updateDoc
                             );
-                            console.log('✅ Update successful for doc:', docId);
                         }
                     }
                 })
             );
 
-            console.log('📤 Push completed. Conflicts:', conflicts.length);
             return conflicts;
         }
     } : undefined;
@@ -332,14 +317,12 @@ export function replicateAppwrite<RxDocType>(
 
         replicationState.start = () => {
             const channel = 'databases.' + options.databaseId + '.collections.' + options.collectionId + '.documents';
-            console.log('🔔 Setting up live subscription for channel:', channel);
 
             const unsubscribe = options.client.subscribe(
                 channel,
-                (response) => {
+                async (response) => {
                     const payload = response.payload as any;
-                    console.log('🔔 Live update received:', payload.$id);
-                    const docData = appwriteDocToRxDB<RxDocType>(
+                    const docData = await appwriteDocToRxDB<RxDocType>(
                         payload,
                         primaryKey,
                         options.deletedField,
@@ -356,7 +339,6 @@ export function replicateAppwrite<RxDocType>(
             );
 
             replicationState.cancel = () => {
-                console.log('🛑 Cancelling live subscription');
                 unsubscribe();
                 return cancelBefore();
             };

@@ -1,6 +1,17 @@
 import { ID } from 'appwrite';
 import { getWatchfolioDB } from './database';
-import type { LibraryStats } from './types';
+import type { LibraryStats, RxDBLibraryMedia } from './types';
+import { mapFromAppwriteData, mapToAppwriteData } from '@/utils/library';
+import { Library, LibraryItem, TmdbMedia } from '../appwrite/types';
+import { renameObjectProperty } from '@/utils';
+import { RxDocument } from 'rxdb';
+
+
+const mapper = (d: RxDocument<RxDBLibraryMedia>) => {
+    const doc = d.toJSON();
+    return mapFromAppwriteData(doc as unknown as LibraryItem, doc.media as unknown as TmdbMedia);
+}
+
 
 // ===== LIBRARY ITEM CRUD OPERATIONS =====
 
@@ -9,9 +20,11 @@ export const getLibraryItems = async (
 ) => {
     const db = await getWatchfolioDB();
     const docs = await db.libraryItems.find({
-        selector: { libraryId }
+        selector: {
+            'library.$id': libraryId
+        }
     }).exec();
-    return docs.map(doc => doc.toJSON() as LibraryMedia);
+    return docs.map(mapper);
 };
 
 export const getLibraryItem = async (
@@ -21,25 +34,31 @@ export const getLibraryItem = async (
     const doc = await db.libraryItems.findOne({
         selector: { id }
     }).exec();
-    return doc ? doc.toJSON() as LibraryMedia : null;
+    return doc ? mapper(doc) : null;
 };
 
 export const createLibraryItem = async (
-    itemData: Omit<LibraryMedia, 'id'>
+    itemData: Omit<LibraryMedia, 'id'>,
+    library: RxDBLibraryMedia['library'] 
 ) => {
     const db = await getWatchfolioDB();
-    const doc = await db.libraryItems.insert({
-        ...itemData,
-        id: ID.unique(),
-    });
+    const { libraryItem, tmdbMedia } = mapToAppwriteData(itemData);
 
-    // create the media item in the tmdb collection
-    try {
-        // await tmdbMediaService.createMediaItem(itemData);
-    } catch (error) {
-        console.error('Error creating media item in tmdb collection:', error);
-    }
-    return doc.toJSON() as LibraryMedia;
+    // Transform the data to RxDB format (with _id instead of $id)
+    const rxdbData: RxDBLibraryMedia = {
+        id: ID.unique(),
+        status: libraryItem.status,
+        isFavorite: libraryItem.isFavorite,
+        userRating: libraryItem.userRating,
+        notes: libraryItem.notes,
+        addedAt: libraryItem.addedAt,
+        lastUpdatedAt: new Date().toISOString(),
+        library,
+        media: { ...tmdbMedia, $id: ID.unique() }
+    };
+
+    const doc = await db.libraryItems.insert(rxdbData);
+    return mapper(doc);
 };
 
 export const updateLibraryItem = async (
@@ -50,14 +69,27 @@ export const updateLibraryItem = async (
     let doc = await db.libraryItems.findOne({ selector: { id } }).exec();
     if (!doc) throw new Error('Library item not found');
 
+    // Transform any $id properties to _id for RxDB storage
+    const updateData: Partial<RxDBLibraryMedia> = {
+        ...itemData,
+        lastUpdatedAt: new Date().toISOString()
+    };
+
+    // Handle library transformation if present
+    if (itemData.library) {
+        updateData.library = renameObjectProperty(itemData.library, '$id', '_id');
+    }
+
+    // Handle media transformation if present  
+    if (itemData.media) {
+        updateData.media = renameObjectProperty(itemData.media, '$id', '_id');
+    }
+
     doc = await doc.update({
-        $set: {
-            ...itemData,
-            lastUpdatedAt: new Date().toISOString()
-        }
+        $set: updateData
     });
 
-    return doc.toJSON() as LibraryMedia;
+    return mapper(doc);
 };
 
 export const deleteLibraryItem = async (
@@ -71,7 +103,8 @@ export const deleteLibraryItem = async (
 };
 
 export const addOrUpdateLibraryItem = async (
-    item: LibraryMedia
+    item: LibraryMedia,
+    library: RxDBLibraryMedia['library'] 
 ): Promise<LibraryMedia | null> => {
     const existingItem = await getLibraryItem(item.id);
     let newOrUpdatedItem: LibraryMedia | null = null;
@@ -82,7 +115,7 @@ export const addOrUpdateLibraryItem = async (
             lastUpdatedAt: new Date().toISOString()
         });
     } else {
-        newOrUpdatedItem = await createLibraryItem(item);
+        newOrUpdatedItem = await createLibraryItem(item, library);
     }
 
     return newOrUpdatedItem;
@@ -105,11 +138,11 @@ export const getLibraryItemsByStatus = async (
     const db = await getWatchfolioDB();
     const docs = await db.libraryItems.find({
         selector: {
-            libraryId,
+            'library.$id': libraryId,
             status
         }
     }).exec();
-    return docs.map(doc => doc.toJSON());
+    return docs.map(mapper);
 };
 
 export const getFavoriteLibraryItems = async (
@@ -118,24 +151,25 @@ export const getFavoriteLibraryItems = async (
     const db = await getWatchfolioDB();
     const docs = await db.libraryItems.find({
         selector: {
-            libraryId, isFavorite: true
+            'library.$id': libraryId,
+            isFavorite: true
         }
     }).sort({ addedAt: 'desc' }).exec();
-    return docs.map(doc => doc.toJSON());
+    return docs.map(mapper);
 };
 
 export const getLibraryItemsByMediaType = async (
     libraryId: string,
-    media_type: MediaType
+    mediaType: 'movie' | 'tv'
 ) => {
     const db = await getWatchfolioDB();
     const docs = await db.libraryItems.find({
         selector: {
-            libraryId,
-            media_type
+            'library.$id': libraryId,
+            'media.mediaType': mediaType
         }
     }).exec();
-    return docs.map(doc => doc.toJSON());
+    return docs.map(mapper);
 };
 
 export const searchLibraryItems = async (
@@ -145,18 +179,14 @@ export const searchLibraryItems = async (
     const db = await getWatchfolioDB();
     const docs = await db.libraryItems.find({
         selector: {
-            libraryId,
-            title: { $regex: query, $options: 'i' }
+            'library.$id': libraryId,
+            'media.title': { $regex: query, $options: 'i' }
         }
     }).exec();
-    return docs.map(doc => doc.toJSON());
+    return docs.map(mapper);
 };
 
 // ===== UTILITY OPERATIONS =====
-
-
-
-
 
 export const getLibraryStats = async (
     libraryId: string
