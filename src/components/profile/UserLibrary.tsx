@@ -16,7 +16,7 @@ import FiltersModal from '@/components/FiltersModal';
 import SortBy from '@/components/SortBy';
 import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
 import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
-import { getLibraryCount, mapFromAppwriteData } from '@/utils/library';
+import { getLibraryCount } from '@/utils/library';
 import { Status } from '@/components/ui/Status';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { Profile } from '@/lib/appwrite/types';
@@ -41,10 +41,8 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
   const pageTitle = isOwnProfile ? 'Your Library' : `${profile.name.split(' ')[0]}'s Library`;
   const searchLabel = isOwnProfile ? 'Search Your Library' : `Search ${profile.name.split(' ')[0]}'s Library`;
 
-  const items = profile.library?.items?.length
-    ? profile.library.items.map((item) => mapFromAppwriteData(item, item.media))
-    : [];
-  const filteredItems = useFilteredLibrary(items, status);
+  const items = profile.library?.items?.length ? profile.library.items : [];
+  const filteredItems = useFilteredLibrary(items as LibraryMedia[], status);
 
   const visibleStatuses = LIBRARY_MEDIA_STATUS.filter(
     (s) => isOwnProfile || !hiddenProfileSections.includes(`library.${s.value}`)
@@ -162,7 +160,7 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
         <div className='flex-1 space-y-8'>
           <LibraryInfiniteCardsList
             items={filteredItems}
-            allItems={items}
+            allItems={items as LibraryMedia[]}
             status={status}
             isOwnProfile={isOwnProfile}
           />

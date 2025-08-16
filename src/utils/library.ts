@@ -1,5 +1,5 @@
 import { profilesService } from '@/lib/appwrite/api';
-import { Activity, ActivityAction, CreateLibraryItemInput, CreateTmdbMediaInput, LibraryItem, TmdbMedia } from '@/lib/appwrite/types';
+import { Activity, ActivityAction } from '@/lib/appwrite/types';
 import { isMedia } from './media';
 
 /**
@@ -263,66 +263,36 @@ export function smartMergeLibraries(
   return { mergedLibrary, changes };
 }
 
-// Map Appwrite data back to LibraryMedia
-export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): LibraryMedia => {
+
+
+export const mapToAppwriteLibraryMedia = (
+  media: LibraryMedia
+): Record<string, unknown> => {
   return {
-    $id: libraryItem.$id || libraryItem.id,
-    id: tmdbMedia?.id || 0,
-    media_type: tmdbMedia?.mediaType || 'movie',
-    title: tmdbMedia?.title,
-    posterPath: tmdbMedia?.posterPath || undefined,
-    releaseDate: tmdbMedia?.releaseDate || undefined,
-    genres: Array.isArray(tmdbMedia?.genres) ? tmdbMedia.genres : [],
-    rating: typeof tmdbMedia?.rating === 'number' ? tmdbMedia.rating : undefined,
-    status: libraryItem.status ?? 'none',
-    isFavorite: !!libraryItem.isFavorite,
-    userRating: libraryItem.userRating != null
-      ? Math.max(1, Math.min(10, Math.round(Number(libraryItem.userRating))))
+    // Library item fields
+    status: media.status ?? 'none',
+    isFavorite: !!media.isFavorite,
+    userRating: media.userRating != null
+      ? Math.max(1, Math.min(10, Math.round(Number(media.userRating))))
       : undefined,
-    notes: libraryItem.notes || undefined,
-    totalMinutesRuntime: Number.isFinite(tmdbMedia?.totalMinutesRuntime)
-    ? tmdbMedia?.totalMinutesRuntime
-    : undefined,
-    networks: Array.isArray(tmdbMedia?.networks) ? tmdbMedia.networks : [],
-    addedAt: libraryItem.addedAt || new Date().toISOString(),
-    lastUpdatedAt: libraryItem.$updatedAt,
+    notes: media.notes || undefined,
+    addedAt: media.addedAt,
+    // TMDB media fields (flattened)
+    tmdbId: media.tmdbId,
+    mediaType: media.media_type,
+    title: media.title || `${media.media_type} ${media.tmdbId}`,
+    overview: undefined, // Not available in current LibraryMedia type
+    posterPath: media.posterPath || undefined,
+    releaseDate: media.releaseDate || undefined,
+    genres: Array.isArray(media.genres) ? media.genres : [],
+    rating: typeof media.rating === 'number' ? media.rating : undefined,
+    totalMinutesRuntime: Number.isFinite(media.totalMinutesRuntime)
+      ? media.totalMinutesRuntime
+      : undefined,
+    networks: Array.isArray(media.networks) ? media.networks : [],
   };
 };
 
-// Map LibraryMedia to Appwrite LibraryMedia + TmdbMedia
-export const mapToAppwriteData = (
-  media: LibraryMedia
-): {
-  tmdbMedia: CreateTmdbMediaInput;
-  libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
-} => {
-  return {
-    tmdbMedia: {
-      id: media.id,
-      mediaType: media.media_type,
-      title: media.title || `${media.media_type} ${media.id}`,
-      overview: undefined,
-      posterPath: media.posterPath || undefined,
-      releaseDate: media.releaseDate || undefined,
-      genres: Array.isArray(media.genres) ? media.genres : [],
-      rating: typeof media.rating === 'number' ? media.rating : undefined,
-      totalMinutesRuntime: Number.isFinite(media.totalMinutesRuntime)
-        ? media.totalMinutesRuntime
-        : undefined,
-      networks: Array.isArray(media.networks) ? media.networks : [],
-    },
-    libraryItem: {
-      status: media.status ?? 'none',
-      isFavorite: !!media.isFavorite,
-      userRating: media.userRating != null
-        ? Math.max(1, Math.min(10, Math.round(Number(media.userRating))))
-        : undefined,
-      notes: media.notes || undefined,
-      addedAt: media.addedAt,
-      deleted: !!media.deleted,
-    },
-  };
-};
 
 export const getLibraryCount = ({
   items,

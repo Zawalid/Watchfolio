@@ -1,21 +1,26 @@
-import { createRxDatabase, addRxPlugin } from 'rxdb/plugins/core';
+import { createRxDatabase, addRxPlugin, RxCollection, RxJsonSchema } from 'rxdb/plugins/core';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
+import { libraryMediaSchema } from './schemas';
 
-import { libraryItemSchema } from './schemas';
-import type { WatchfolioDatabase, DatabaseStatus } from './types';
+interface WatchfolioDatabase {
+    libraryMedia: RxCollection<LibraryMedia>;
+    addCollections: (collections: Record<string, RxJsonSchema<unknown>>) => Promise<void>;
+    destroy: () => Promise<void>;
+}
+
+type DatabaseStatus = 'initializing' | 'creating' | 'ready' | 'error';
+
 
 // ===== PLUGIN SETUP =====
 
-if (import.meta.env.DEV) {
-    addRxPlugin(RxDBDevModePlugin);
-}
-
+if (import.meta.env.DEV) addRxPlugin(RxDBDevModePlugin);
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBUpdatePlugin);
+
 
 // ===== DATABASE STATE =====
 
@@ -56,8 +61,8 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
             });
 
             await db.addCollections({
-                libraryItems: {
-                    schema: libraryItemSchema,
+                libraryMedia: {
+                    schema: libraryMediaSchema,
                     migrationStrategies: {},
                     autoMigrate: false,
                 }

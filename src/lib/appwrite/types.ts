@@ -1,5 +1,7 @@
 import { Models } from 'appwrite';
 
+export const META_FIELDS = ['$createdAt', '$permissions', '$collectionId', '$databaseId', '$sequence'] as const;
+
 export type ConfirmationSetting = 'enabled' | 'disabled';
 export type ActivityAction = 'completed' | 'rated' | 'added';
 
@@ -51,33 +53,36 @@ export interface UserPreferences extends Document {
 }
 export interface Library extends Document {
     averageRating?: number;
-    items?: LibraryItem[];
-    deleted?: boolean;
+    items?: LibraryMedia[];
 }
 
-export interface LibraryItem extends Document {
-    status: WatchStatus;
-    isFavorite: boolean;
-    userRating?: number;
-    notes?: string;
-    addedAt?: string;
-    library?: Library;
-    media?: TmdbMedia;
-    deleted?: boolean;
-}
+export interface AppwriteLibraryMedia extends Document {
+    // Library item fields
+    id?: string;
+    status: WatchStatus
+    isFavorite: boolean
+    userRating?: number
+    notes?: string
+    addedAt: string
+    lastUpdatedAt: string
 
-export interface TmdbMedia extends Document {
-    id: number;
-    mediaType: MediaType;
+    // TMDB media fields (flattened)
+    tmdbId: number;
+    media_type: MediaType;
     title: string;
-    overview?: string;
-    posterPath?: string;
-    releaseDate?: string;
-    genres?: string[];
-    rating?: number;
-    totalMinutesRuntime?: number;
-    networks?: number[];
+    overview?: string | null;
+    posterPath?: string | null;
+    releaseDate?: string | null;
+    genres?: string[] | null;
+    rating?: number | null;
+    totalMinutesRuntime?: number | null;
+    networks?: number[] | null;
+
+    // References
+    library?: Library;
+    deleted?: boolean;
 }
+
 
 export type CreateProfileInput = {
     userId: string;
@@ -88,11 +93,9 @@ export type CreateProfileInput = {
 };
 export type CreateUserPreferencesInput = Omit<UserPreferences, keyof Document>;
 export type CreateLibraryInput = Omit<Library, keyof Document | 'items'>;
-export type CreateLibraryItemInput = Omit<LibraryItem, keyof Document | 'library' | 'media'> & {
+export type CreateAppwriteLibraryMediaInput = Omit<AppwriteLibraryMedia, keyof Document | 'library'> & {
     libraryId: string;
-    mediaId: string;
 };
-export type CreateTmdbMediaInput = Omit<TmdbMedia, keyof Document> & { title: string }; // TO stop the type error in sync-service
 
 export type UpdateProfileInput = Partial<
     CreateProfileInput & {
@@ -106,8 +109,7 @@ export type UpdateProfileInput = Partial<
 >;
 export type UpdateUserPreferencesInput = Partial<CreateUserPreferencesInput>;
 export type UpdateLibraryInput = Partial<CreateLibraryInput>;
-export type UpdateLibraryItemInput = Partial<Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>>;
-export type UpdateTmdbMediaInput = Partial<CreateTmdbMediaInput>;
+export type UpdateAppwriteLibraryMediaInput = Partial<Omit<CreateAppwriteLibraryMediaInput, 'libraryId'>>;
 
 // User location data from Appwrite Locale API
 export interface UserLocation {
@@ -122,25 +124,12 @@ export interface UserWithProfile extends Models.User<Models.Preferences> {
     location: UserLocation;
 }
 
-export interface LibraryWithItems extends Library {
-    items?: LibraryItemWithMedia[];
-    user?: Profile;
-}
-
-export interface LibraryItemWithMedia extends LibraryItem {
-    library?: Library;
-    media?: TmdbMedia;
-}
-
 export interface DocumentList<T> {
     total: number;
     documents: T[];
 }
 
 export type ProfileDocumentList = DocumentList<Profile>;
-export type LibraryItemDocumentList = DocumentList<LibraryItem>;
-export type TmdbMediaDocumentList = DocumentList<TmdbMedia>;
+export type AppwriteLibraryMediaDocumentList = DocumentList<AppwriteLibraryMedia>;
 
 
-
-export const META_FIELDS = ['$createdAt', '$permissions', '$collectionId', '$databaseId', '$sequence'];

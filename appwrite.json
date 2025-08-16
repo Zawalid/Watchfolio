@@ -127,11 +127,11 @@
         {
             "$id": "685083f50035559b8c41",
             "$permissions": [
+                "read(\"any\")",
                 "create(\"users\")",
                 "read(\"users\")",
                 "update(\"users\")",
-                "delete(\"users\")",
-                "read(\"any\")"
+                "delete(\"users\")"
             ],
             "databaseId": "68505e9b003074668c0c",
             "name": "libraries",
@@ -148,6 +148,13 @@
                     "default": null
                 },
                 {
+                    "key": "deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
                     "key": "items",
                     "type": "relationship",
                     "required": false,
@@ -158,293 +165,9 @@
                     "twoWayKey": "library",
                     "onDelete": "cascade",
                     "side": "parent"
-                },
-                {
-                    "key": "deleted",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
                 }
             ],
             "indexes": []
-        },
-        {
-            "$id": "68508402002d5329f64a",
-            "$permissions": [
-                "create(\"any\")",
-                "read(\"any\")",
-                "update(\"any\")",
-                "delete(\"any\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "library_items",
-            "enabled": true,
-            "documentSecurity": false,
-            "attributes": [
-                {
-                    "key": "status",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "elements": [
-                        "watching",
-                        "willWatch",
-                        "onHold",
-                        "dropped",
-                        "none",
-                        "completed"
-                    ],
-                    "format": "enum",
-                    "default": "none"
-                },
-                {
-                    "key": "isFavorite",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
-                },
-                {
-                    "key": "userRating",
-                    "type": "integer",
-                    "required": false,
-                    "array": false,
-                    "min": 1,
-                    "max": 10,
-                    "default": null
-                },
-                {
-                    "key": "notes",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 2000,
-                    "default": null
-                },
-                {
-                    "key": "addedAt",
-                    "type": "datetime",
-                    "required": false,
-                    "array": false,
-                    "format": "",
-                    "default": null
-                },
-                {
-                    "key": "library",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "685083f50035559b8c41",
-                    "relationType": "oneToMany",
-                    "twoWay": true,
-                    "twoWayKey": "items",
-                    "onDelete": "cascade",
-                    "side": "child"
-                },
-                {
-                    "key": "media",
-                    "type": "relationship",
-                    "required": false,
-                    "array": false,
-                    "relatedCollection": "6850840e000c60f5ca13",
-                    "relationType": "manyToOne",
-                    "twoWay": false,
-                    "twoWayKey": "68519efc001d1926b929",
-                    "onDelete": "setNull",
-                    "side": "parent"
-                },
-                {
-                    "key": "deleted",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
-                }
-            ],
-            "indexes": [
-                {
-                    "key": "index_1",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "status"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_2",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "isFavorite"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_3",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "addedAt"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                }
-            ]
-        },
-        {
-            "$id": "6850840e000c60f5ca13",
-            "$permissions": [
-                "create(\"users\")",
-                "read(\"users\")",
-                "update(\"users\")",
-                "delete(\"users\")",
-                "read(\"any\")"
-            ],
-            "databaseId": "68505e9b003074668c0c",
-            "name": "tmdb_media",
-            "enabled": true,
-            "documentSecurity": false,
-            "attributes": [
-                {
-                    "key": "mediaType",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "elements": [
-                        "movie",
-                        "tv"
-                    ],
-                    "format": "enum",
-                    "default": null
-                },
-                {
-                    "key": "id",
-                    "type": "integer",
-                    "required": true,
-                    "array": false,
-                    "min": 1,
-                    "max": 2147483647,
-                    "default": null
-                },
-                {
-                    "key": "title",
-                    "type": "string",
-                    "required": true,
-                    "array": false,
-                    "size": 255,
-                    "default": null
-                },
-                {
-                    "key": "overview",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 1000,
-                    "default": null
-                },
-                {
-                    "key": "releaseDate",
-                    "type": "datetime",
-                    "required": false,
-                    "array": false,
-                    "format": "",
-                    "default": null
-                },
-                {
-                    "key": "genres",
-                    "type": "string",
-                    "required": false,
-                    "array": true,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "rating",
-                    "type": "double",
-                    "required": false,
-                    "array": false,
-                    "min": 0,
-                    "max": 10,
-                    "default": null
-                },
-                {
-                    "key": "posterPath",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 50,
-                    "default": null
-                },
-                {
-                    "key": "totalMinutesRuntime",
-                    "type": "integer",
-                    "required": false,
-                    "array": false,
-                    "min": 0,
-                    "max": 922337203685477600,
-                    "default": null
-                },
-                {
-                    "key": "networks",
-                    "type": "integer",
-                    "required": false,
-                    "array": true,
-                    "min": 0,
-                    "max": 2147483647,
-                    "default": null
-                },
-                {
-                    "key": "deleted",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
-                }
-            ],
-            "indexes": [
-                {
-                    "key": "index_1",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "mediaType",
-                        "id"
-                    ],
-                    "orders": [
-                        "ASC",
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_2",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "mediaType"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                },
-                {
-                    "key": "index_3",
-                    "type": "key",
-                    "status": "available",
-                    "attributes": [
-                        "title"
-                    ],
-                    "orders": [
-                        "ASC"
-                    ]
-                }
-            ]
         },
         {
             "$id": "6858abc3003a098f22d8",
@@ -669,6 +392,201 @@
                 }
             ],
             "indexes": []
+        },
+        {
+            "$id": "688e69e4000349b85ec1",
+            "$permissions": [
+                "create(\"any\")",
+                "read(\"any\")",
+                "update(\"any\")",
+                "delete(\"any\")"
+            ],
+            "databaseId": "68505e9b003074668c0c",
+            "name": "library_media",
+            "enabled": true,
+            "documentSecurity": false,
+            "attributes": [
+                {
+                    "key": "status",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "elements": [
+                        "watching",
+                        "willWatch",
+                        "onHold",
+                        "dropped",
+                        "none",
+                        "completed"
+                    ],
+                    "format": "enum",
+                    "default": "none"
+                },
+                {
+                    "key": "isFavorite",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "userRating",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 1,
+                    "max": 10,
+                    "default": null
+                },
+                {
+                    "key": "notes",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 2000,
+                    "default": null
+                },
+                {
+                    "key": "addedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "mediaType",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "elements": [
+                        "movie",
+                        "tv"
+                    ],
+                    "format": "enum",
+                    "default": null
+                },
+                {
+                    "key": "tmdbId",
+                    "type": "integer",
+                    "required": true,
+                    "array": false,
+                    "min": 1,
+                    "max": 2147483647,
+                    "default": null
+                },
+                {
+                    "key": "title",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null
+                },
+                {
+                    "key": "overview",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 1000,
+                    "default": null
+                },
+                {
+                    "key": "releaseDate",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "genres",
+                    "type": "string",
+                    "required": false,
+                    "array": true,
+                    "size": 50,
+                    "default": null
+                },
+                {
+                    "key": "rating",
+                    "type": "double",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 10,
+                    "default": null
+                },
+                {
+                    "key": "posterPath",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 50,
+                    "default": null
+                },
+                {
+                    "key": "totalMinutesRuntime",
+                    "type": "integer",
+                    "required": false,
+                    "array": false,
+                    "min": 0,
+                    "max": 922337203685477600,
+                    "default": null
+                },
+                {
+                    "key": "networks",
+                    "type": "integer",
+                    "required": false,
+                    "array": true,
+                    "min": 0,
+                    "max": 2147483647,
+                    "default": null
+                },
+                {
+                    "key": "deleted",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "index_1",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "mediaType"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "index_2",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "mediaType",
+                        "tmdbId"
+                    ],
+                    "orders": [
+                        "ASC",
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "index_3",
+                    "type": "key",
+                    "status": "available",
+                    "attributes": [
+                        "status"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                }
+            ]
         }
     ],
     "settings": {

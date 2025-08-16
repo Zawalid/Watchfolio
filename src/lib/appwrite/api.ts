@@ -1,12 +1,11 @@
 import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, type Models } from 'appwrite';
 import { databases, account, storage, locale, DATABASE_ID, COLLECTIONS, BUCKETS } from '@/lib/appwrite';
-import { getLibraryCount, mapFromAppwriteData } from '@/utils/library';
+import { getLibraryCount } from '@/utils/library';
 
 import type { Profile, CreateProfileInput, UpdateProfileInput, Activity, UserLocation } from './types';
 import type { UserPreferences, CreateUserPreferencesInput, UpdateUserPreferencesInput } from './types';
 import type { Library, CreateLibraryInput, UpdateLibraryInput } from './types';
-import type { LibraryItem, CreateLibraryItemInput, UpdateLibraryItemInput } from './types';
-import type { TmdbMedia, CreateTmdbMediaInput, UpdateTmdbMediaInput } from './types';
+import type { AppwriteLibraryMedia, CreateAppwriteLibraryMediaInput, UpdateAppwriteLibraryMediaInput } from './types';
 
 function setPermissions(userId: string): string[] {
   return [
@@ -115,7 +114,7 @@ export class ProfileAPI extends BaseAPI {
     const library = await libraryService.get(profile.library.$id);
     if (!library) return null;
 
-    const items = library.items?.length ? library.items.map((item) => mapFromAppwriteData(item, item.media)) : [];
+    const items = library.items?.length ? library.items as LibraryMedia[] : [];
     const counts = getLibraryCount({ items }) as Record<LibraryFilterStatus, number>;
 
     const ratedItems: number[] = [];
@@ -243,51 +242,51 @@ export class LibraryAPI extends BaseAPI {
 }
 
 /**
- * Library Items API
+ * Library Media API - handles unified library media items
  */
-export class LibraryItemsAPI extends BaseAPI {
-  async create(itemData: CreateLibraryItemInput & { userId?: string }, documentId?: string) {
+export class AppwriteLibraryMediaAPI extends BaseAPI {
+  async create(itemData: CreateAppwriteLibraryMediaInput & { userId?: string }, documentId?: string) {
     const permissions = itemData.userId ? setPermissions(itemData.userId) : undefined;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { userId, libraryId, mediaId, ...cleanItemData } = itemData;
+    const { userId, libraryId, ...cleanItemData } = itemData;
 
     // Map the external field names to Appwrite relationship field names
     const appwriteData = {
       ...cleanItemData,
       library: libraryId, // Map libraryId to library
-      media: mediaId, // Map mediaId to media
     };
 
-    return this.createDocument<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, appwriteData, documentId, permissions);
+    return this.createDocument<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, appwriteData, documentId, permissions);
   }
 
   async get(itemId: string) {
-    return this.getDocument<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, itemId, [
-      Query.select(['*', 'library.*', 'media.*']),
+    return this.getDocument<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, itemId, [
+      Query.select(['*', 'library.*']),
     ]);
   }
 
-  async update(itemId: string, itemData: UpdateLibraryItemInput) {
-    return this.updateDocument<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, itemId, itemData);
+  async update(itemId: string, itemData: UpdateAppwriteLibraryMediaInput) {
+    return this.updateDocument<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, itemId, itemData);
   }
 
   async delete(itemId: string) {
-    return this.deleteDocument(COLLECTIONS.LIBRARY_ITEMS, itemId);
+    return this.deleteDocument(COLLECTIONS.LIBRARY_MEDIA, itemId);
   }
 
   async list(queries?: string[]) {
-    return this.listDocuments<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, queries);
+    return this.listDocuments<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, queries);
   }
 
   async getByLibrary(libraryId: string, queries?: string[]) {
-    const baseQueries = [Query.equal('library', libraryId), Query.select(['*', 'media.*'])];
-    return this.listDocuments<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, [...baseQueries, ...(queries || [])]);
+    const baseQueries = [Query.equal('library', libraryId)];
+    return this.listDocuments<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, [...baseQueries, ...(queries || [])]);
   }
 
-  async getByLibraryAndMedia(libraryId: string, mediaId: string) {
-    const result = await this.listDocuments<LibraryItem>(COLLECTIONS.LIBRARY_ITEMS, [
+  async getByLibraryAndTmdbId(libraryId: string, tmdbId: number, mediaType: MediaType) {
+    const result = await this.listDocuments<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, [
       Query.equal('library', libraryId),
-      Query.equal('media', mediaId),
+      Query.equal('tmdbId', tmdbId),
+      Query.equal('mediaType', mediaType),
       Query.limit(1),
     ]);
     return result.documents[0] || null;
@@ -300,49 +299,12 @@ export class LibraryItemsAPI extends BaseAPI {
   async getFavorites(libraryId: string) {
     return this.getByLibrary(libraryId, [Query.equal('isFavorite', true)]);
   }
-}
 
-/**
- * TMDB Media API
- */
-export class TmdbMediaAPI extends BaseAPI {
-  async create(mediaData: CreateTmdbMediaInput, documentId?: string) {
-    return this.createDocument<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, mediaData, documentId);
-  }
-
-  async get(mediaId: string) {
-    return this.getDocument<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, mediaId);
-  }
-
-  async update(mediaId: string, mediaData: UpdateTmdbMediaInput) {
-    return this.updateDocument<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, mediaId, mediaData);
-  }
-
-  async delete(mediaId: string) {
-    return this.deleteDocument(COLLECTIONS.TMDB_MEDIA, mediaId);
-  }
-
-  async list(queries?: string[]) {
-    return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, queries);
-  }
-
-  async getByTmdbId(tmdbId: number, mediaType: MediaType) {
-    const result = await this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [
-      Query.equal('id', tmdbId),
-      Query.equal('mediaType', mediaType),
-      Query.limit(1),
-    ]);
-    return result.documents[0] || null;
-  }
-
-  async search(title: string, limit: number = 20) {
-    return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [Query.search('title', title), Query.limit(limit)]);
-  }
-
-  async getByGenres(genres: string[], limit: number = 20) {
-    return this.listDocuments<TmdbMedia>(COLLECTIONS.TMDB_MEDIA, [Query.equal('genres', genres), Query.limit(limit)]);
+  async search(libraryId: string, title: string, limit: number = 20) {
+    return this.getByLibrary(libraryId, [Query.search('title', title), Query.limit(limit)]);
   }
 }
+
 
 /**
  * Authentication API
@@ -497,8 +459,7 @@ export class AppwriteService {
   public profiles = new ProfileAPI();
   public userPreferences = new UserPreferencesAPI();
   public libraries = new LibraryAPI();
-  public libraryItems = new LibraryItemsAPI();
-  public tmdbMedia = new TmdbMediaAPI();
+  public appwriteLibraryMedia = new AppwriteLibraryMediaAPI();
   public auth = new AuthAPI();
   public storage = new StorageAPI();
   public locale = new LocaleAPI();
@@ -535,8 +496,8 @@ export const {
   profiles: profilesService,
   userPreferences: userPreferencesService,
   libraries: libraryService,
-  libraryItems: libraryItemsService,
-  tmdbMedia: tmdbMediaService,
+  appwriteLibraryMedia: appwriteLibraryMediaService,
+  // Keep for backward compatibility during migration
   auth: authService,
   storage: storageService,
   locale: localeService,

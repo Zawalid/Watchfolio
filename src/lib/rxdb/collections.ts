@@ -1,212 +1,138 @@
 import { ID } from 'appwrite';
 import { getWatchfolioDB } from './database';
-import type { LibraryStats, RxDBLibraryMedia } from './types';
-import { mapFromAppwriteData, mapToAppwriteData } from '@/utils/library';
-import { LibraryItem, TmdbMedia } from '../appwrite/types';
-import { RxDocument } from 'rxdb';
 
 
-const mapper = (d: RxDocument<RxDBLibraryMedia>) => {
-    const doc = d.toJSON();
-    return mapFromAppwriteData(doc as unknown as LibraryItem, doc.media as unknown as TmdbMedia);
-}
-
-
-// ===== LIBRARY ITEM CRUD OPERATIONS =====
-
-export const getLibraryItems = async (
-    libraryId: string
+export const getLibraryMedias = async (
+    libraryId?: string
 ) => {
     const db = await getWatchfolioDB();
-    const docs = await db.libraryItems.find({
+    const docs = await db.libraryMedia.find({
         selector: {
             'library.$id': libraryId
         }
     }).exec();
-    return docs.map(mapper);
+    return docs.map(d => d.toJSON() as LibraryMedia);
 };
 
-export const getLibraryItem = async (
+export const getLibraryMedia = async (
     id: string
 ) => {
     const db = await getWatchfolioDB();
-    const doc = await db.libraryItems.findOne({
+    const doc = await db.libraryMedia.findOne({
         selector: { id }
     }).exec();
-    return doc ? mapper(doc) : null;
+    return doc ? doc.toJSON() as LibraryMedia : null;
 };
 
-export const createLibraryItem = async (
-    itemData: Omit<LibraryMedia, 'id'>,
-    library: RxDBLibraryMedia['library']
+export const createLibraryMedia = async (
+    mediaData: LibraryMedia,
+    library: LibraryMedia['library'] | null
 ) => {
     const db = await getWatchfolioDB();
-    const { libraryItem, tmdbMedia } = mapToAppwriteData(itemData);
 
-    // Transform the data to RxDB format (with _id instead of $id)
-    const rxdbData: RxDBLibraryMedia = {
-        id: ID.unique(),
-        status: libraryItem.status,
-        isFavorite: libraryItem.isFavorite,
-        userRating: libraryItem.userRating,
-        notes: libraryItem.notes,
-        addedAt: libraryItem.addedAt,
+    // Transform LibraryMedia to RxDB unified structure
+    const rxdbData: LibraryMedia = {
+        id: mediaData.id || ID.unique(),
+        // Library media fields
+        status: mediaData.status || 'none',
+        isFavorite: mediaData.isFavorite || false,
+        userRating: mediaData.userRating,
+        notes: mediaData.notes,
+        addedAt: mediaData.addedAt || new Date().toISOString(),
         lastUpdatedAt: new Date().toISOString(),
+        // TMDB media fields (flattened)
+        tmdbId: mediaData.tmdbId,
+        media_type: mediaData.media_type,
+        title: mediaData.title || `${mediaData.media_type} ${mediaData.tmdbId}`,
+        overview: undefined, // Not available in current LibraryMedia type
+        posterPath: mediaData.posterPath || undefined,
+        releaseDate: mediaData.releaseDate || undefined,
+        genres: mediaData.genres || [],
+        rating: mediaData.rating,
+        totalMinutesRuntime: mediaData.totalMinutesRuntime,
+        networks: mediaData.networks || [],
+        // Library reference
         library,
-        media: { ...tmdbMedia, $id: ID.unique() }
     };
 
-    const doc = await db.libraryItems.insert(rxdbData);
-    return mapper(doc);
+    const doc = await db.libraryMedia.insert(rxdbData);
+    return doc.toJSON() as LibraryMedia;
 };
 
-export const updateLibraryItem = async (
+export const updateLibraryMedia = async (
     id: string,
-    itemData: Partial<LibraryMedia>
+    mediaData: Partial<LibraryMedia>
 ) => {
     const db = await getWatchfolioDB();
-    let doc = await db.libraryItems.findOne({ selector: { id } }).exec();
+    let doc = await db.libraryMedia.findOne({ selector: { id } }).exec();
 
-    if (!doc) throw new Error('Library item not found');
+    if (!doc) throw new Error('Library media not found');
 
-    // Transform any $id properties to _id for RxDB storage
-    const updateData: Partial<RxDBLibraryMedia> = {
-        ...itemData,
+    // Transform LibraryMedia update to RxDB format
+    const updateData: Partial<LibraryMedia> = {
         lastUpdatedAt: new Date().toISOString()
     };
+
+    // Map relevant fields that might be updated
+    if (mediaData.status !== undefined) updateData.status = mediaData.status;
+    if (mediaData.isFavorite !== undefined) updateData.isFavorite = mediaData.isFavorite;
+    if (mediaData.userRating !== undefined) updateData.userRating = mediaData.userRating;
+    if (mediaData.notes !== undefined) updateData.notes = mediaData.notes;
+    if (mediaData.title !== undefined) updateData.title = mediaData.title;
+    if (mediaData.posterPath !== undefined) updateData.posterPath = mediaData.posterPath || undefined;
+    if (mediaData.releaseDate !== undefined) updateData.releaseDate = mediaData.releaseDate || undefined;
+    if (mediaData.genres !== undefined) updateData.genres = mediaData.genres;
+    if (mediaData.rating !== undefined) updateData.rating = mediaData.rating;
+    if (mediaData.totalMinutesRuntime !== undefined) updateData.totalMinutesRuntime = mediaData.totalMinutesRuntime;
+    if (mediaData.networks !== undefined) updateData.networks = mediaData.networks;
 
     doc = await doc.update({
         $set: updateData
     });
 
-    return mapper(doc);
+    return doc.toJSON() as LibraryMedia;
 };
 
-export const deleteLibraryItem = async (
+export const deleteLibraryMedia = async (
     id: string
 ): Promise<void> => {
     const db = await getWatchfolioDB();
-    const doc = await db.libraryItems.findOne({ selector: { id } }).exec();
-    if (!doc) throw new Error('Library item not found');
+    const doc = await db.libraryMedia.findOne({ selector: { id } }).exec();
+    if (!doc) throw new Error('Library media not found');
 
     await doc.remove();
 };
 
-export const addOrUpdateLibraryItem = async (
-    item: LibraryMedia,
-    library: RxDBLibraryMedia['library']
+export const addOrUpdateLibraryMedia = async (
+    media: LibraryMedia,
+    library: LibraryMedia['library'] | null
 ): Promise<LibraryMedia | null> => {
-    const existingItem = await getLibraryItem(item.id);
-    let newOrUpdatedItem: LibraryMedia | null = null;
+    const existingMedia = await getLibraryMedia(media.id);
+    let newOrUpdatedMedia: LibraryMedia | null = null;
 
-    if (existingItem) {
-        newOrUpdatedItem = await updateLibraryItem(existingItem.id, {
-            ...item,
+    if (existingMedia) {
+        newOrUpdatedMedia = await updateLibraryMedia(existingMedia.id, {
+            ...media,
             lastUpdatedAt: new Date().toISOString()
         });
     } else {
-        newOrUpdatedItem = await createLibraryItem(item, library);
+        newOrUpdatedMedia = await createLibraryMedia(media, library);
     }
 
-    return newOrUpdatedItem;
+    return newOrUpdatedMedia;
 };
 
-// ===== QUERY OPERATIONS =====
 
-export const getLibraryItemsByStatus = async (
-    libraryId: string,
-    status: LibraryFilterStatus
-) => {
-    if (status === 'all') {
-        return getLibraryItems(libraryId);
-    }
 
-    if (status === 'favorites') {
-        return getFavoriteLibraryItems(libraryId);
-    }
-
-    const db = await getWatchfolioDB();
-    const docs = await db.libraryItems.find({
-        selector: {
-            'library.$id': libraryId,
-            status
-        }
-    }).exec();
-    return docs.map(mapper);
-};
-
-export const getFavoriteLibraryItems = async (
-    libraryId: string
-) => {
-    const db = await getWatchfolioDB();
-    const docs = await db.libraryItems.find({
-        selector: {
-            'library.$id': libraryId,
-            isFavorite: true
-        }
-    }).sort({ addedAt: 'desc' }).exec();
-    return docs.map(mapper);
-};
-
-export const getLibraryItemsByMediaType = async (
-    libraryId: string,
-    mediaType: 'movie' | 'tv'
-) => {
-    const db = await getWatchfolioDB();
-    const docs = await db.libraryItems.find({
-        selector: {
-            'library.$id': libraryId,
-            'media.mediaType': mediaType
-        }
-    }).exec();
-    return docs.map(mapper);
-};
-
-export const searchLibraryItems = async (
-    libraryId: string,
-    query: string
-) => {
-    const db = await getWatchfolioDB();
-    const docs = await db.libraryItems.find({
-        selector: {
-            'library.$id': libraryId,
-            'media.title': { $regex: query, $options: 'i' }
-        }
-    }).exec();
-    return docs.map(mapper);
-};
-
-// ===== UTILITY OPERATIONS =====
-
-export const getLibraryStats = async (
-    libraryId: string
-): Promise<LibraryStats> => {
-    const items = await getLibraryItems(libraryId);
-
-    const stats: LibraryStats = {
-        totalItems: items.length,
-        movieCount: items.filter(item => item.media_type === 'movie').length,
-        tvCount: items.filter(item => item.media_type === 'tv').length,
-        favoriteCount: items.filter(item => item.isFavorite).length,
-        statusCounts: {} as Record<string, number>
-    };
-
-    // Count by status
-    items.forEach(item => {
-        stats.statusCounts[item.status] = (stats.statusCounts[item.status] || 0) + 1;
-    });
-
-    return stats;
-};
 
 export const clearLibrary = async (
-    libraryId: string
+    libraryId?: string
 ): Promise<void> => {
-    const items = await getLibraryItems(libraryId);
+    const medias = await getLibraryMedias(libraryId);
 
-    // Delete all items
+    // Delete all medias
     await Promise.all(
-        items.map(item => deleteLibraryItem(item.id))
+        medias.map(media => deleteLibraryMedia(media.id))
     );
 
     console.log('🗑️ Library cleared from RxDB');

@@ -1,13 +1,9 @@
 import type { RxJsonSchema } from 'rxdb';
-import { RxDBLibraryMedia } from './types';
 
-
-
-export const libraryItemSchema: RxJsonSchema<RxDBLibraryMedia> = {
+export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
     version: 0,
     primaryKey: 'id',
     type: 'object',
-    additionalProperties: false,
     properties: {
         id: {
             type: 'string',
@@ -41,85 +37,85 @@ export const libraryItemSchema: RxJsonSchema<RxDBLibraryMedia> = {
             format: 'date-time',
             maxLength: 50
         },
+        tmdbId: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 999999999,
+            multipleOf: 1
+        },
+        title: {
+            type: 'string',
+            maxLength: 255
+        },
+        media_type: {
+            type: 'string',
+            enum: ['movie', 'tv'],
+            maxLength: 10
+        },
+        posterPath: {
+            type: 'string',
+            maxLength: 200
+        },
+        releaseDate: {
+            type: 'string',
+            maxLength: 50
+        },
+        genres: {
+            type: 'array',
+            items: {
+                type: 'string',
+                maxLength: 50
+            }
+        },
+        rating: {
+            type: 'number',
+            minimum: 0,
+            maximum: 10
+        },
+        totalMinutesRuntime: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 99999,
+            multipleOf: 1
+        },
+        networks: {
+            type: 'array',
+            items: {
+                type: 'integer',
+                minimum: 0,
+                maximum: 2147483647,
+                multipleOf: 1
+            }
+        },
+        overview: {
+            type: ['string', 'null'],
+            maxLength: 2000
+        },
         library: {
             type: 'object',
             additionalProperties: true,
             properties: {
-                
-            },
-        },
-        media: {
-            type: 'object',
-            additionalProperties: true,
-            properties: {
-                id: {
-                    type: 'integer',
-                    minimum: 1,
-                    maximum: 999999999,
-                    multipleOf: 1
-                },
-                title: {
-                    type: 'string',
-                    maxLength: 255
-                },
-                mediaType: {
-                    type: 'string',
-                    enum: ['movie', 'tv'],
-                    maxLength: 10
-                },
-                posterPath: {
-                    type: 'string',
-                    maxLength: 200
-                },
-                releaseDate: {
-                    type: 'string',
-                    maxLength: 50
-                },
-                genres: {
-                    type: 'array',
-                    items: {
-                        type: 'string',
-                        maxLength: 50
-                    }
-                },
-                rating: {
-                    type: 'number',
+                averageRating: {
+                    type: ['number', 'null'],
                     minimum: 0,
                     maximum: 10
                 },
-                totalMinutesRuntime: {
-                    type: 'integer',
-                    minimum: 0,
-                    maximum: 99999,
-                    multipleOf: 1
-                },
-                networks: {
-                    type: 'array',
-                    items: {
-                        type: 'integer',
-                        minimum: 0,
-                        maximum: 2147483647,
-                        multipleOf: 1
-                    }
-                }
             },
-            required: ['id', 'title', 'mediaType']
         }
     },
     required: [
         'id',
         'status',
         'isFavorite',
-        'addedAt',
-        'library',
-        'media'
+        'lastUpdatedAt',
+        'tmdbId',
+        'title',
+        'media_type',
+        'library'
     ],
     indexes: [
-        // ['library._id', 'id'],
-        // ['media._id', 'id'],
-        ['media.id', 'media.mediaType', 'id'],
-        ['status', 'id'],
-        ['isFavorite', 'id'],
-        ['addedAt', 'id'],
+        ['media_type', 'tmdbId'],
+        ['status',],
+        ['isFavorite',],
     ]
 };

@@ -27,8 +27,8 @@ interface BaseMediaCardProps {
   mediaType: MediaType;
   posterPath?: string | null;
   releaseDate?: string | null;
-  rating?: number;
-  genres?: string[];
+  rating?: number | null;
+  genres?: string[] | null;
   item?: LibraryMedia;
   media?: Media;
   tabIndex?: number;
@@ -267,7 +267,7 @@ export default function BaseMediaCard({
 
           {/* Genres - only show on hover/focus */}
           <AnimatePresence>
-            {isInteractive && genres.length > 0 && (
+            {isInteractive && genres && genres.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}

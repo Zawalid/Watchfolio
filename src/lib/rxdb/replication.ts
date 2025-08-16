@@ -1,13 +1,13 @@
 import client, { DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { replicateAppwrite, RxAppwriteReplicationState } from '@/lib/appwrite/replication';
 import { getWatchfolioDB } from './database';
-import type { RxDBLibraryMedia, SyncStatus } from './types';
-import { localToServer, serverToLocal } from './mappers';
+
+type SyncStatus = 'offline' | 'connecting' | 'online' | 'syncing' | 'error';
 
 // ===== REPLICATION STATE =====
 
 export let syncStatus: SyncStatus = 'offline';
-const replicationStates = new Map<string, RxAppwriteReplicationState<RxDBLibraryMedia>>();
+const replicationStates = new Map<string, RxAppwriteReplicationState<LibraryMedia>>();
 const currentActiveStates = new Map<string, boolean>();
 
 // Prevent concurrent initialization
@@ -17,7 +17,7 @@ let currentUserId: string | null = null;
 
 // ===== REPLICATION SETUP =====
 
-export const startReplication = async (userId: string): Promise<void> => {
+export const startReplication = async (userId: string, library: LibraryMedia['library']): Promise<void> => {
     // Quick return if same user and already active
     if (currentUserId === userId && replicationStates.size > 0 && !isInitializing) {
         console.log('✅ Replication already active for user:', userId);
@@ -43,11 +43,11 @@ export const startReplication = async (userId: string): Promise<void> => {
     // Set initialization state
     isInitializing = true;
     currentUserId = userId;
-    
+
     initializationPromise = (async () => {
         try {
             console.log('🔄 Starting Watchfolio replication for user:', userId);
-            
+
             const db = await getWatchfolioDB();
             syncStatus = 'connecting';
 
@@ -55,26 +55,25 @@ export const startReplication = async (userId: string): Promise<void> => {
                 replicationIdentifier: `watchfolio-library-items-${userId}`,
                 client,
                 databaseId: DATABASE_ID,
-                collectionId: COLLECTIONS.LIBRARY_ITEMS,
+                collectionId: COLLECTIONS.LIBRARY_MEDIA,
                 userId,
                 deletedField: 'deleted',
-                collection: db.libraryItems,
+                collection: db.libraryMedia,
                 waitForLeadership: true,
                 retryTime: 5000,
                 autoStart: true,
                 pull: {
                     batchSize: 25,
-                    modifier: (doc) => {
-                        console.log('📥 Processing pull for:', doc.$id);
-                        return serverToLocal(doc);
-                    }
                 },
                 push: {
-                    batchSize: 1,
-                    modifier: async (doc) => {
-                        console.log('📤 Processing push for:', doc.id);
-                        return await localToServer(doc as RxDBLibraryMedia);
-                    }
+                    batchSize: 25,
+                    modifier: (doc) => {
+                        // Modify the document before pushing it to the server
+                        return {
+                            ...doc,
+                            library
+                        };
+                    },
                 },
             });
 
@@ -85,13 +84,13 @@ export const startReplication = async (userId: string): Promise<void> => {
             });
 
             libraryItemsReplication.active$.subscribe((active) => {
-                console.log(`🔄 Library items replication ${active ? 'active' : 'inactive'}`);
+                // console.log(`🔄 Library items replication ${active ? 'active' : 'inactive'}`);
                 currentActiveStates.set('libraryItems', active);
                 updateSyncStatus();
             });
 
             // Store replication state
-            replicationStates.set('libraryItems', libraryItemsReplication as RxAppwriteReplicationState<RxDBLibraryMedia>);
+            replicationStates.set('libraryItems', libraryItemsReplication as RxAppwriteReplicationState<LibraryMedia>);
 
             syncStatus = 'online';
             console.log('✅ Watchfolio replication started successfully');
@@ -137,7 +136,7 @@ export const stopReplication = async (): Promise<void> => {
         currentActiveStates.clear();
         currentUserId = null;
         syncStatus = 'offline';
-        
+
         console.log('✅ All replications stopped');
     } catch (error) {
         console.error('❌ Stop replication error:', error);

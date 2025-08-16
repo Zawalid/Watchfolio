@@ -6,7 +6,7 @@ import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constant
 import { useLibraryStore } from './useLibraryStore';
 import { deepEqual } from '@/utils';
 import { CreateUserPreferencesInput, Profile, UpdateProfileInput, UpdateUserPreferencesInput, UserPreferences, UserWithProfile } from '@/lib/appwrite/types';
-import { getCurrentUserId, startReplication, stopReplication } from '@/lib/rxdb/replication';
+import { getCurrentUserId, startReplication, stopReplication } from '@/lib/rxdb';
 
 interface AuthState {
   user: UserWithProfile | null;
@@ -287,8 +287,8 @@ export const useAuthStore = create<AuthState>()(
       partialize: (state) => {
         if (!state.user)
           return {
-            isAuthenticated: state.isAuthenticated,
-            pendingOnboarding: state.pendingOnboarding,
+            isAuthenticated: false,
+            pendingOnboarding: false,
             userPreferences: state.userPreferences,
             user: null
           };
@@ -319,7 +319,7 @@ export const useAuthStore = create<AuthState>()(
 
         return {
           isAuthenticated: state.isAuthenticated,
-          user: { ...user, profile },
+          user: { ...user, profile } as UserWithProfile,
           userPreferences,
           pendingOnboarding: state.pendingOnboarding,
         };
@@ -354,11 +354,11 @@ let replicationSubscription: (() => void) | null = null;
 if (!librarySubscription) {
   librarySubscription = useAuthStore.subscribe((state) => {
     const loadLibrary = useLibraryStore.getState().loadLibrary;
-    
+
     if (state.isLoading) {
       hasLoaded = true;
     }
-    
+
     if (!state.isLoading && hasLoaded) {
       console.log('📚 Loading library after auth state change');
       loadLibrary();
@@ -372,11 +372,11 @@ if (!replicationSubscription) {
     try {
       if (state.isAuthenticated && state.user?.$id && hasLoaded) {
         const currentUserId = getCurrentUserId();
-        
+
         // Only start if not already running for this user
         if (currentUserId !== state.user.$id) {
           console.log('🔄 Starting replication for user:', state.user.$id);
-          await startReplication(state.user.$id);
+          await startReplication(state.user.$id, state.user.profile.library);
         }
       } else {
         console.log('🛑 Stopping replication - user not authenticated');

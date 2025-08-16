@@ -4,9 +4,8 @@ import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
 import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/library';
 import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { useAuthStore } from './useAuthStore';
-import { getLibraryItems, deleteLibraryItem, addOrUpdateLibraryItem, clearLibrary as clearRxDBLibrary, } from '@/lib/rxdb/collections';
+import { getLibraryMedias, deleteLibraryMedia, addOrUpdateLibraryMedia, clearLibrary as clearRxDBLibrary, } from '@/lib/rxdb';
 import { filterObject } from '@/utils';
-import { RxDBLibraryMedia } from '@/lib/rxdb';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -42,10 +41,10 @@ const shouldRemoveItem = (item: LibraryMedia): boolean => {
 };
 
 // Helper to get current user's library
-const getCurrentLibrary = (): RxDBLibraryMedia['library'] => {
+const getCurrentLibrary = (): LibraryMedia['library'] => {
   const user = useAuthStore.getState().user;
-  const library = user?.profile.library ? filterObject(user?.profile.library, ["$id", "averageRating", "$updatedAt"], 'include') : null;
-  return library || { $id: 'guest-library' };
+  const library = user?.profile.library ? filterObject(user?.profile.library, ["$id", "averageRating"], 'include') : null;
+  return library
 };
 
 // Helper to transform TMDB Media to LibraryMedia fields
@@ -54,7 +53,7 @@ const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
   const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
 
   return {
-    id: media.id,
+    tmdbId: media.id,
     title,
     posterPath: media.poster_path,
     releaseDate,
@@ -79,29 +78,19 @@ export const useLibraryStore = create<LibraryState>()(
     getItem: (id) => {
       const { library } = get();
 
-      if (!String(id).includes('-')) return library[id];
+      // First try direct ID lookup
+      if (library[id]) return library[id];
 
-      const [mediaType, tmdbId] = id.split('-');
+      // If ID contains a dash, try parsing as mediaType-tmdbId format
+      if (String(id).includes('-')) {
+        const [mediaType, tmdbId] = id.split('-');
+        const foundItem = Object.values(library).find(item =>
+          item.tmdbId === parseInt(tmdbId) && item.media_type === mediaType
+        );
+        return foundItem;
+      }
 
-      // console.log('Searching for:', { tmdbId, mediaType });
-      // console.log('Library items:', Object.values(library).map(item => ({
-      //   id: item.id,
-      //   tmdbId: item.tmdbId,
-      //   media_type: item.media_type,
-      //   title: item.title
-      // })));
-
-      const foundItem = Object.values(library).find(item =>
-        item.tmdbId === parseInt(tmdbId) && item.media_type === mediaType
-      );
-
-      //   console.log('Found item:', foundItem);
-      //   console.log('Search criteria:', {
-      //     searchTmdbId: parseInt(tmdbId),
-      //     searchMediaType: mediaType
-      // });
-
-      return foundItem;
+      return undefined;
     },
 
     addOrUpdateItem: async (item, media) => {
@@ -125,19 +114,14 @@ export const useLibraryStore = create<LibraryState>()(
           lastUpdatedAt: now,
         } as LibraryMedia;
 
-        console.log("LIBRARY", getCurrentLibrary())
-        console.log("ITEM", item)
-        console.log("NEW ITEM", newItemData)
-        console.log("METADA", metadata)
-
-
         if (shouldRemoveItem(newItemData)) {
           await get().removeItem(newItemData.id);
           return null;
         }
 
+        const newOrUpdatedItem = await addOrUpdateLibraryMedia(newItemData, getCurrentLibrary());
 
-        const newOrUpdatedItem = await addOrUpdateLibraryItem(newItemData, getCurrentLibrary());
+        console.log("newOrUpdatedItem", newOrUpdatedItem?.status)
 
         if (newOrUpdatedItem) {
           set((state) => ({
@@ -147,7 +131,6 @@ export const useLibraryStore = create<LibraryState>()(
             },
             lastUpdatedAt: now,
           }));
-
 
           const profileId = useAuthStore.getState().user?.profile?.$id;
           if (profileId) logLibraryActivity(newOrUpdatedItem, undefined, profileId);
@@ -183,7 +166,7 @@ export const useLibraryStore = create<LibraryState>()(
       try {
         set({ isLoading: true, error: null });
 
-        await deleteLibraryItem(id);
+        await deleteLibraryMedia(id);
 
         set((state) => {
           const newLibrary = { ...state.library };
@@ -257,7 +240,7 @@ export const useLibraryStore = create<LibraryState>()(
         set({ isLoading: true, error: null });
 
         const library = getCurrentLibrary();
-        await clearRxDBLibrary(library.$id);
+        await clearRxDBLibrary(library?.$id);
 
         set({ library: {} });
         console.log('🗑️ Library cleared from RxDB');
@@ -271,7 +254,7 @@ export const useLibraryStore = create<LibraryState>()(
 
     loadLibrary: async () => {
       const library = getCurrentLibrary();
-      const items = await getLibraryItems(library.$id);
+      const items = await getLibraryMedias(library?.$id);
       set({
         library: items.reduce((acc, item) => {
           acc[item.id] = item;

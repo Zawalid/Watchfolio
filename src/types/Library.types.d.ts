@@ -4,29 +4,26 @@ type LibraryFilterStatus = Exclude<WatchStatus, 'none'> | 'favorites' | 'all';
 
 interface LibraryMedia {
   id: string;
-  // Core user data
   status: WatchStatus
   isFavorite: boolean;
   userRating?: number;
-
+  notes?: string;
   addedAt: string;
   lastUpdatedAt: string;
 
-
-  // For RxDB
-  libraryId?: string;    // User's library ID
-  tmdbId: number;       // TMDB media ID
-  deleted?: boolean
-
-  // Embedded media data for offline browsing
-  title?: string;
+  // TMDB media fields
+  tmdbId: number;
   media_type: MediaType;
+  title: string;
+  overview?: string | null;
   posterPath?: string | null;
   releaseDate?: string | null;
-  genres?: string[];
-  rating?: number;
-  totalMinutesRuntime?: number;
-  networks?: number[];
+  genres?: string[] | null;
+  rating?: number | null;
+  totalMinutesRuntime?: number | null;
+  networks?: number[] | null;
+
+  library: { $id: string, averageRating?: number; } | null;
 
   // Future fields
   // watchDates?: string[]; // Array of ISO date strings
@@ -35,7 +32,6 @@ interface LibraryMedia {
   //   episodeNumber: number;
   //   watchedAt?: string;
   // };
-  notes?: string;
 }
 
 
