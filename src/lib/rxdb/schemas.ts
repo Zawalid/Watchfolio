@@ -53,11 +53,11 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
             maxLength: 10
         },
         posterPath: {
-            type: 'string',
+            type: ['string','null'],
             maxLength: 200
         },
         releaseDate: {
-            type: 'string',
+            type: ['string','null'],
             maxLength: 50
         },
         genres: {
@@ -68,12 +68,12 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
             }
         },
         rating: {
-            type: 'number',
+            type: ['number','null'],
             minimum: 0,
             maximum: 10
         },
         totalMinutesRuntime: {
-            type: 'integer',
+            type: ['integer','null'],
             minimum: 0,
             maximum: 99999,
             multipleOf: 1
@@ -92,7 +92,7 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
             maxLength: 2000
         },
         library: {
-            type: 'object',
+            type: ['object','null'],
             additionalProperties: true,
             properties: {
                 averageRating: {
