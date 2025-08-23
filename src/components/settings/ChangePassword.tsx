@@ -124,7 +124,7 @@ export default function ChangePassword() {
               Cancel
             </Button>
             <Button color='primary' type='submit' isLoading={isSubmitting || isLoading} isDisabled={!isValid}>
-              Change Password
+              {isSubmitting || isLoading ? 'Changing...' : 'Change Password'}
             </Button>
           </ModalFooter>
         </form>

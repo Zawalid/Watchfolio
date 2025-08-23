@@ -137,7 +137,7 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
               Cancel
             </Button>
             <Button color='primary' type='submit' isLoading={isSubmitting || isLoading} isDisabled={!isValid}>
-              Change Email
+              {isSubmitting || isLoading ? 'Changing...' : 'Change Email'}
             </Button>
           </ModalFooter>
         </form>

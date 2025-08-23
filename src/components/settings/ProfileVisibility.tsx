@@ -17,7 +17,7 @@ import { UpdateProfileInput } from '@/lib/appwrite/types';
 type FormData = z.infer<typeof privacySchema>;
 type SectionKey = z.infer<typeof privacySchema>['hiddenProfileSections'][number];
 
-export default function ProfileVisibility() {
+export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => void }) {
   const { user, updateUserProfile, isLoading } = useAuthStore();
   const {
     handleSubmit,
@@ -56,6 +56,7 @@ export default function ProfileVisibility() {
         description: 'Your profile settings have been saved.',
         color: 'success',
       });
+      onSuccess?.();
     } catch (error) {
       console.log(error);
       addToast({ title: 'Update Failed', description: 'Could not update profile visibility.', color: 'danger' });
@@ -177,7 +178,7 @@ export default function ProfileVisibility() {
                 Cancel
               </Button>
               <Button color='primary' type='submit' isLoading={isSubmitting || isLoading}>
-                Save Changes
+                {isSubmitting || isLoading ? 'Saving...' : 'Save Changes'}
               </Button>
             </>
           )}

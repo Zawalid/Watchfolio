@@ -18,7 +18,7 @@ import { UpdateProfileInput } from '@/lib/appwrite/types';
 
 type FormData = z.infer<typeof profileInfoSchema>;
 
-export default function Details() {
+export default function Details({ onSuccess }: { onSuccess?: (data: UpdateProfileInput) => void }) {
   const { user, updateUserProfile, sendEmailVerification, isLoading } = useAuthStore();
   const [isSendingVerification, setIsSendingVerification] = useState(false);
   const {
@@ -85,6 +85,7 @@ export default function Details() {
         description: 'Your profile has been updated successfully.',
         color: 'success',
       });
+      onSuccess?.(profileData);
     } catch (error) {
       console.error('Failed to update profile:', error);
       addToast({
@@ -170,7 +171,7 @@ export default function Details() {
                   Cancel
                 </Button>
                 <Button color='primary' type='submit' isDisabled={!isValid} isLoading={isSubmitting || isLoading}>
-                  Save Changes
+                  {isSubmitting || isLoading ? 'Saving...' : 'Save Changes'}
                 </Button>
               </>
             )}

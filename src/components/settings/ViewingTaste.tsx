@@ -10,7 +10,7 @@ import { viewingTasteSchema } from '@/lib/validation/settings';
 
 type FormData = z.infer<typeof viewingTasteSchema>;
 
-export default function ViewingTaste() {
+export default function ViewingTaste({ onSuccess }: { onSuccess?: () => void }) {
   const { user, updateUserProfile, isLoading } = useAuthStore();
 
   const {
@@ -45,6 +45,7 @@ export default function ViewingTaste() {
         description: 'Your viewing taste has been updated.',
         color: 'success',
       });
+      onSuccess?.();
     } catch (error) {
       console.log(error);
       addToast({
@@ -106,7 +107,7 @@ export default function ViewingTaste() {
                 Cancel
               </Button>
               <Button color='primary' type='submit' isLoading={isSubmitting || isLoading}>
-                Save Changes
+                {isSubmitting || isLoading ? 'Saving...' : 'Save Changes'}
               </Button>
             </>
           )}
