@@ -27,7 +27,7 @@ export default function LibraryInfiniteCardsList({
   const statusLabel = LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label || 'Library';
 
   useEffect(() => {
-    setVisibleCount(chunkSize); 
+    setVisibleCount(chunkSize);
   }, [items, status, chunkSize]);
 
   useEffect(() => {

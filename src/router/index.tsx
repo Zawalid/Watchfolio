@@ -180,8 +180,8 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path : "u/:username",
-        Component : UserProfile,
+        path: 'u/:username',
+        Component: UserProfile,
       }
     ],
   },

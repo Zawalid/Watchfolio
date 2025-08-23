@@ -1,64 +1,41 @@
+type MediaType = 'movie' | 'tv';
+type WatchStatus = 'watching' | 'willWatch' | 'completed' | 'onHold' | 'dropped' | 'none';
 type LibraryFilterStatus = Exclude<WatchStatus, 'none'> | 'favorites' | 'all';
 
 interface LibraryMedia {
-  id: number; // TMDB ID
-  media_type: MediaType;
-  // Optional: Store minimal TMDB data for offline/list display if needed
-  title?: string;
-  posterPath?: string | null;
-  releaseDate?: string;
-  genres?: string[];
-  rating?: number;
-  networks?: number[];
-
-  status: WatchStatus; // Default to 'none' if just favorited/rated without explicit status
+  id: string;
+  status: WatchStatus;
   isFavorite: boolean;
-  userRating?: number; // User's personal rating (1-10)
-  watchDates?: string[]; // Array of ISO date strings
-  lastWatchedEpisode?: {
-    seasonNumber: number;
-    episodeNumber: number;
-    watchedAt?: string;
-  };
-  addedToLibraryAt: string; // ISO date string when first interacted with (status set, favorited, rated)
-  lastUpdatedAt: string; // ISO date string of last update
+  userRating?: number;
   notes?: string;
-  totalMinutesRuntime?: number;
+  addedAt: string;
+  lastUpdatedAt: string;
+
+  // TMDB media fields
+  tmdbId: number;
+  media_type: MediaType;
+  title: string;
+  overview?: string | null;
+  posterPath?: string | null;
+  releaseDate?: string | null;
+  genres?: string[] | null;
+  rating?: number | null;
+  totalMinutesRuntime?: number | null;
+  networks?: number[] | null;
+
+  library: { $id: string; averageRating?: number } | null;
+  userId?: string;
+
+  // Future fields
+  // watchDates?: string[]; // Array of ISO date strings
+  // lastWatchedEpisode?: {
+  //   seasonNumber: number;
+  //   episodeNumber: number;
+  //   watchedAt?: string;
+  // };
 }
 
 type LibraryCollection = Record<string, LibraryMedia>;
-
-// Export options
-interface ExportOptions {
-  format: 'json' | 'csv';
-  includeMetadata?: boolean;
-}
-
-// Sync Types
-
-interface SyncStatus {
-  isOnline: boolean;
-  isSyncing: boolean;
-  lastSyncTime: string | null;
-  pendingOperations: number;
-  error: string | null;
-}
-
-interface SyncComparison {
-  isInSync: boolean;
-  cloudItemCount: number;
-  localItemCount: number;
-  needsUpload: number;
-  needsDownload: number;
-  conflicts: number;
-}
-
-type SyncOperation = {
-  type: 'create' | 'update' | 'delete';
-  key: string; // media key like "movie-123"
-  data?: LibraryMedia;
-  timestamp: string;
-};
 
 interface LibraryStats {
   all: number;
@@ -73,4 +50,14 @@ interface LibraryStats {
   totalHoursWatched: number;
   averageRating: number;
   topGenres: Array<{ name: string; count: number }>;
+}
+
+// Sync Types
+
+interface SyncStatus {
+  isOnline: boolean;
+  isSyncing: boolean;
+  lastSyncTime: string | null;
+  pendingOperations: number;
+  error: string | null;
 }

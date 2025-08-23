@@ -4,7 +4,8 @@ import BaseMediaCard from '@/components/media/BaseMediaCard';
 import { CELEBRITY_CATEGORIES } from './CelebrityCategories';
 import { getGenres } from '@/utils/media';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import SortBy from '../../SortBy';
+import SortBy from '@/components/SortBy';
+import { generateMediaId } from '@/utils/library';
 
 interface CelebrityCreditsProps {
   currentContent: Credit[];
@@ -63,6 +64,8 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
         {currentContent.length > 0 ? (
           <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'>
             {currentContent.map((item, index) => {
+              console.log(generateMediaId(item));
+              console.log(getItem(generateMediaId(item)));
               return (
                 <BaseMediaCard
                   key={`${item.media_type}-${item.id}-${index}`}
@@ -74,7 +77,7 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
                   rating={item.vote_average}
                   genres={getGenres(item.genre_ids)}
                   media={item as Media}
-                  item={getItem(item.media_type, item.id)}
+                  item={getItem(generateMediaId(item))}
                   celebrityRoles={item.roles}
                   primaryRole={item.primaryRole}
                 />

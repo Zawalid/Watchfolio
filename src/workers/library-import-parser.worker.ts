@@ -172,8 +172,8 @@ function parseCSV(content: string): LibraryMedia[] {
       }
 
       // Ensure date fields
-      if (!item.addedToLibraryAt) {
-        item.addedToLibraryAt = new Date().toISOString();
+      if (!item.addedAt) {
+        item.addedAt = new Date().toISOString();
       }
 
       if (!item.lastUpdatedAt) {
@@ -271,8 +271,8 @@ function validateImportedItems(items: LibraryMedia[]): void {
   let dateWarning = false;
   items.forEach((item) => {
     // Ensure dates are in ISO format
-    if (item.addedToLibraryAt && !isValidISODate(item.addedToLibraryAt)) {
-      item.addedToLibraryAt = new Date().toISOString();
+    if (item.addedAt && !isValidISODate(item.addedAt)) {
+      item.addedAt = new Date().toISOString();
       dateWarning = true;
     }
 
@@ -282,8 +282,8 @@ function validateImportedItems(items: LibraryMedia[]): void {
     }
 
     // Set default dates if missing
-    if (!item.addedToLibraryAt) {
-      item.addedToLibraryAt = new Date().toISOString();
+    if (!item.addedAt) {
+      item.addedAt = new Date().toISOString();
     }
 
     if (!item.lastUpdatedAt) {

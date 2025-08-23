@@ -12,6 +12,7 @@ import { Check } from 'lucide-react';
 import { cn } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { SettingItem } from './SettingSection';
+import { UpdateProfileInput } from '@/lib/appwrite/types';
 
 type FormData = z.infer<typeof privacySchema>;
 type SectionKey = z.infer<typeof privacySchema>['hiddenProfileSections'][number];

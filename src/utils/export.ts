@@ -38,7 +38,7 @@ export const serializeToCSV = (items: LibraryMedia[]): string => {
     'status',
     'isFavorite',
     'userRating',
-    'addedToLibraryAt',
+    'addedAt',
     'lastUpdatedAt',
     'notes',
   ];

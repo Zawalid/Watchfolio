@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { GOOGLE_ICON } from '@/components/ui/Icons';
 import AuthForm from './AuthForm';
 import { addToast } from '@heroui/react';
+import { Link } from 'react-router';
 
 const tabVariants = {
   enter: (direction: number) => ({
@@ -179,7 +180,13 @@ export default function AuthModal() {
 
       <ModalFooter className='pt-2'>
         <p className='text-Grey-400 w-full text-center text-xs'>
-          By continuing, you agree to our Terms of Service and Privacy Policy
+          By continuing, you agree to our 
+          <Link to='/terms' className='text-Primary-400 hover:text-Primary-300'>
+            Terms of Service
+          </Link> and
+          <Link to='/privacy' className='text-Primary-400 hover:text-Primary-300'>
+            Privacy Policy
+          </Link>
         </p>
       </ModalFooter>
     </Modal>

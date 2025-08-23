@@ -7,7 +7,7 @@ import { Tooltip } from '@heroui/react';
 import { FileDropper } from '@/components/ui/FileDropper';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
-import { generateMediaKey } from '@/utils/library';
+import { generateMediaId } from '@/utils/library';
 import { addToast } from '@heroui/react';
 import { useImportParser } from '@/hooks/useImportParser';
 import { LIBRARY_IMPORT_MAX_SIZE } from '@/utils/constants';
@@ -56,8 +56,8 @@ export default function Import({ onClose }: ImportProps) {
       let updatedItemsCount = 0;
 
       for (const item of items) {
-        const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
-        if (currentLibrary[key]) updatedItemsCount++;
+        const id = generateMediaId(item);
+        if (currentLibrary[id]) updatedItemsCount++;
         else newItemsCount++;
       }
 
@@ -155,7 +155,7 @@ export default function Import({ onClose }: ImportProps) {
     [parseContent]
   );
 
-  const handleImport = useCallback(() => {
+  const handleImport = useCallback(async () => {
     if (!parsedItems) {
       addToast({ title: 'No data to import', description: 'Please select a valid file to import.', color: 'warning' });
       return;
@@ -173,7 +173,7 @@ export default function Import({ onClose }: ImportProps) {
       }
 
       // Use already parsed items for import
-      const importedCount = importLibrary(parsedItems, importOptions);
+      const importedCount = await importLibrary(parsedItems, importOptions);
 
       // Validate the result
       if (importedCount === 0) {

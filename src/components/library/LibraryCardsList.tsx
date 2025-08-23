@@ -34,7 +34,7 @@ export default function LibraryCardsList({ items, status, isOwnProfile, allItems
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query, status]);
 
-  const totalCount = (hasFilters || !!query) ? items.length : (allItems?.length ?? items.length);
+  const totalCount = hasFilters || !!query ? items.length : (allItems?.length ?? items.length);
 
   if (!items?.length) return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
 

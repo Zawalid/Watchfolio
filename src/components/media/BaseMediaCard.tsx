@@ -27,8 +27,8 @@ interface BaseMediaCardProps {
   mediaType: MediaType;
   posterPath?: string | null;
   releaseDate?: string | null;
-  rating?: number;
-  genres?: string[];
+  rating?: number | null;
+  genres?: string[] | null;
   item?: LibraryMedia;
   media?: Media;
   tabIndex?: number;
@@ -55,6 +55,7 @@ export default function BaseMediaCard({
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
+
   const { data: mediaDetails } = useQuery({
     queryKey: queryKeys.details(mediaType, id),
     queryFn: async () => await getDetails(mediaType, id),
@@ -62,11 +63,8 @@ export default function BaseMediaCard({
     staleTime: Infinity,
   });
 
-  const libraryItem = useLibraryStore((state) => state.getItem(mediaType, id));
-  const finalItem = item || libraryItem;
-  const inLibrary = !!finalItem;
-
-  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === finalItem?.status);
+  const inLibrary = !!item;
+  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
   const isInteractive = isHovered || isFocused;
   const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;
 
@@ -106,16 +104,25 @@ export default function BaseMediaCard({
         )}
       </AnimatePresence>
 
-      {/* Quick Actions - Show for ALL items on hover, including person context */}
       <AnimatePresence>
+        {/* Quick Actions - Show for ALL items on hover, including person context */}
         {isInteractive && (
-          <QuickActions
-            id={id}
-            mediaType={mediaType}
-            media={mediaDetails || media}
-            item={finalItem}
-            isFocused={isFocused}
-          />
+          <QuickActions mediaType={mediaType} media={mediaDetails || media} item={item} isFocused={isFocused} />
+        )}
+        {/* User Rating Badge */}
+        {isInteractive && item?.userRating && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className='absolute top-3.5 left-3 z-20'
+          >
+            <div className='border-Primary-400/50 bg-Primary-500/20 text-Primary-200 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-lg backdrop-blur-md'>
+              <Heart className='size-3 fill-current' />
+              <span>{item.userRating}/10</span>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -260,7 +267,7 @@ export default function BaseMediaCard({
 
           {/* Genres - only show on hover/focus */}
           <AnimatePresence>
-            {isInteractive && genres.length > 0 && (
+            {isInteractive && genres && genres.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -404,13 +411,11 @@ const OverflowBadge = ({ remainingRoles, delay = 0 }: { remainingRoles: string[]
 };
 
 const QuickActions = ({
-  id,
   mediaType,
   item,
   media,
   isFocused,
 }: {
-  id: number;
   mediaType: MediaType;
   item?: LibraryMedia;
   media?: Media;
@@ -421,16 +426,25 @@ const QuickActions = ({
   const { confirm } = useConfirmationModal();
   const defaultMediaStatus = useAuthStore((state) => state.userPreferences.defaultMediaStatus);
 
-  const inLibrary = item && item.status !== 'none';
+  const inLibrary = item && (item.status !== 'none' || item.userRating);
 
-  const handleToggleFavorite = () => toggleFavorite({ media_type: mediaType, id }, media);
+  const handleToggleFavorite = () => {
+    toggleFavorite(item?.id || '', media ? { ...media, media_type: mediaType } : undefined);
+  };
+
+  /* 
+  I need to fix the id (mayber add the $id)
+  i need to remove the tmdbid
+   */
+
+
   const handleEditStatus = () => {
     const target = item || media;
     if (!target) return;
 
     if (defaultMediaStatus !== 'none' && !inLibrary) {
       addOrUpdateItem(
-        { id: target.id, media_type: target.media_type, status: defaultMediaStatus },
+        { id: item?.id || '', media_type: target.media_type, status: defaultMediaStatus },
         isMedia(target) ? target : undefined
       );
     } else {
@@ -450,7 +464,7 @@ const QuickActions = ({
       });
 
       if (confirmed) {
-        removeItem(item.media_type, item.id);
+        removeItem(item.id);
       }
     }
   };

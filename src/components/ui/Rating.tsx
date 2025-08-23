@@ -3,7 +3,7 @@ import { Star } from 'lucide-react';
 import { cn } from '@/utils';
 import { getRating } from '@/utils/media';
 
-export function Rating({ rating, className }: { rating?: number; className?: string }) {
+export function Rating({ rating, className }: { rating?: number | null; className?: string }) {
   const getBgColor = (rating: number) => {
     if (rating >= 8) return 'bg-Success-500/20 border-Success-500/50 text-Success-400 ring-Success-500/30';
     if (rating >= 7) return 'bg-Success-500/20 border-Success-500/50 text-Success-400 ring-Success-500/30';

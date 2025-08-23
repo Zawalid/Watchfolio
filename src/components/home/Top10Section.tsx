@@ -21,7 +21,7 @@ const tvQuery = {
 };
 
 export default function Top10Section() {
-  const [selectedTab, setSelectedTab] = useState<'movie' | 'tv'>('movie');
+  const [selectedTab, setSelectedTab] = useState<MediaType>('movie');
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
 
   const { data: movies, isLoading: moviesLoading, isError: moviesError } = useQuery(movieQuery);
@@ -41,7 +41,7 @@ export default function Top10Section() {
 
         <Tabs
           selectedKey={selectedTab}
-          onSelectionChange={(key) => setSelectedTab(key as 'movie' | 'tv')}
+          onSelectionChange={(key) => setSelectedTab(key as MediaType)}
           classNames={TABS_CLASSNAMES}
         >
           <Tab key='movie' title='Movies' />
@@ -109,7 +109,7 @@ export default function Top10Section() {
   );
 }
 
-function Title({ type }: { type?: 'movie' | 'tv' }) {
+function Title({ type }: { type?: MediaType }) {
   return (
     <div className='flex items-center gap-5'>
       <h2 className='outline-heading'>

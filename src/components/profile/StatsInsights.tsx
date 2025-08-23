@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Star, Film, Tv, Clock, Target, BarChart3, Activity, Award, Zap } from 'lucide-react';
+import { Star, Film, Tv, Clock, Target, BarChart3, Activity as ActivityIcon, Award, Zap } from 'lucide-react';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import StatCard, { StatCardProps } from './StatCard';
 import { LazyImage } from '@/components/ui/LazyImage';
@@ -7,6 +7,7 @@ import { EmptyProps, Status } from '@/components/ui/Status';
 import { cn, formatTimeAgo } from '@/utils';
 import { Link } from 'react-router';
 import { generateMediaLink, getTmdbImage } from '@/utils/media';
+import { Activity } from '@/lib/appwrite/types';
 
 const getStats = (stats: LibraryStats) => {
   const statusCards: StatCardProps[] = LIBRARY_MEDIA_STATUS.map((status) => ({
@@ -26,7 +27,6 @@ const getStats = (stats: LibraryStats) => {
       className: 'text-blue-400 bg-blue-500/20 border-blue-500/30',
       description: 'Movies tracked',
       percentage: Math.round((stats.movies / stats.all) * 100),
-      
     },
     {
       label: 'TV Shows',
@@ -35,7 +35,6 @@ const getStats = (stats: LibraryStats) => {
       className: 'text-purple-400 bg-purple-500/20 border-purple-500/30',
       description: 'Series followed',
       percentage: Math.round((stats.tvShows / stats.all) * 100),
-      
     },
     ...statusCards,
   ];
@@ -103,7 +102,7 @@ export default function StatsInsights({
 
         {hasNoActivity ? (
           renderEmptyState({
-            Icon: Activity,
+            Icon: ActivityIcon,
             iconColor: 'text-Secondary-400',
             title: isOwnProfile ? 'No recent activity' : 'Nothing recent to show',
             message: isOwnProfile
@@ -367,7 +366,7 @@ function RecentActivity({ recentActivity, isOwnProfile }: { recentActivity: Acti
       <div className='mb-5 flex items-center justify-between'>
         <h3 className='flex items-center gap-2.5 text-lg font-semibold text-white'>
           <div className='bg-Secondary-500/20 flex h-8 w-8 items-center justify-center rounded-lg'>
-            <Activity className='text-Secondary-400 h-4 w-4' />
+            <ActivityIcon className='text-Secondary-400 h-4 w-4' />
           </div>
           {isOwnProfile ? 'Your Recent Activity' : 'Recent Activity'}
         </h3>

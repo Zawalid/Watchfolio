@@ -12,7 +12,7 @@ import { Status } from '@/components/ui/Status';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { queryKeys } from '@/lib/react-query';
 
-export default function MediaDetails({ type }: { type: 'movie' | 'tv' }) {
+export default function MediaDetails({ type }: { type: MediaType }) {
   const { slug } = useParams();
   const id = parseInt(slug!);
 

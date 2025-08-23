@@ -7,6 +7,7 @@ import { AVATAR_CLASSNAMES } from '@/styles/heroui';
 import { formatDate } from '@/utils';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Link } from 'react-router';
+import { Profile } from '@/lib/appwrite/types';
 
 interface ProfileHeaderProps {
   profile: Profile;

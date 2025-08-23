@@ -44,7 +44,7 @@ export default function Layout() {
           <OnboardingModal />
           <AuthModal />
           <ScrollToTopButton />
-          <KeyboardShortcuts  />
+          <KeyboardShortcuts />
         </div>
       )}
     </Providers>

@@ -31,3 +31,9 @@ interface UserProfile {
   profile: Profile;
   stats: LibraryStats;
 }
+
+// ======
+type Theme = 'light' | 'dark' | 'system';
+type FavoriteContentType = 'movies' | 'tv' | 'both';
+type ConfirmationPreferences = 'signOutConfirmation' | 'removeFromLibraryConfirmation' | 'clearLibraryConfirmation';
+type ConfirmationKeys = 'sign-out' | 'remove-from-library' | 'clear-library' | 'delete-account';

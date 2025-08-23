@@ -1,9 +1,15 @@
-import { profilesService } from '@/lib/api/appwrite-service';
+import { profilesService } from '@/lib/appwrite/api';
+import { Activity, ActivityAction } from '@/lib/appwrite/types';
+import { isMedia } from './media';
 
 /**
  * Generates a consistent key for a media item
  */
-export const generateMediaKey = (mediaType: 'movie' | 'tv', id: number) => `${mediaType}-${id}`;
+export const generateMediaId = (media?: Media | LibraryMedia) => {
+  if (!media) return '';
+  if (isMedia(media)) return `${media.media_type}-${media.id}`;
+  return media.id.toString();
+};
 
 type ImportOptions = {
   mergeStrategy: 'smart' | 'overwrite' | 'skip';
@@ -49,7 +55,7 @@ export const mergeLibraryItems = (
 
       // Then add all imported items, preserving favorite status if needed
       validItems.forEach((item) => {
-        const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
+        const key = generateMediaId(item);
         if (existingFavorites[key]) {
           mergedLibrary[key] = { ...item, isFavorite: true };
         } else {
@@ -60,7 +66,7 @@ export const mergeLibraryItems = (
     } else {
       // Simple overwrite - just use imported items
       validItems.forEach((item) => {
-        const key = generateMediaKey(item.media_type as 'movie' | 'tv', item.id);
+        const key = generateMediaId(item);
         mergedLibrary[key] = item;
         importCount++;
       });
@@ -68,7 +74,7 @@ export const mergeLibraryItems = (
   } else {
     // For 'smart' or 'skip' strategies, process each imported item
     validItems.forEach((importedItem) => {
-      const key = generateMediaKey(importedItem.media_type as 'movie' | 'tv', importedItem.id);
+      const key = generateMediaId(importedItem);
       const existingItem = currentLibrary[key];
 
       // Handle item based on existence and merge strategy
@@ -91,7 +97,7 @@ export const mergeLibraryItems = (
               ? existingItem.isFavorite || importedItem.isFavorite
               : importedItem.isFavorite,
             // For dates, keep the more recent one
-            addedToLibraryAt: existingItem.addedToLibraryAt || importedItem.addedToLibraryAt,
+            addedAt: existingItem.addedAt || importedItem.addedAt,
             // Use the more recent lastUpdatedAt
             lastUpdatedAt: new Date(
               Math.max(new Date(existingItem.lastUpdatedAt).getTime(), new Date(importedItem.lastUpdatedAt).getTime())
@@ -160,9 +166,7 @@ export function compareLibraries(localLibrary: LibraryCollection, cloudLibrary: 
         localItem.status !== cloudItem.status ||
         localItem.isFavorite !== cloudItem.isFavorite ||
         localItem.userRating !== cloudItem.userRating ||
-        JSON.stringify(localItem.watchDates) !== JSON.stringify(cloudItem.watchDates) ||
-        localItem.notes !== cloudItem.notes ||
-        localItem.lastWatchedEpisode !== cloudItem.lastWatchedEpisode;
+        localItem.notes !== cloudItem.notes;
 
       if (!isDifferent) {
         diff.identical.push(localItem);
@@ -202,14 +206,14 @@ export function smartMergeLibraries(
 
   // Add cloud-only items
   diff.cloudOnly.forEach((item) => {
-    const key = generateMediaKey(item.media_type, item.id);
+    const key = generateMediaId(item);
     mergedLibrary[key] = item;
     changes.push(`Added from cloud: ${item.title || `${item.media_type}-${item.id}`}`);
   });
 
   // Update items where cloud is newer
   diff.needsLocalUpdate.forEach((cloudItem) => {
-    const key = generateMediaKey(cloudItem.media_type, cloudItem.id);
+    const key = generateMediaId(cloudItem);
     const localItem = localLibrary[key];
 
     // Smart merge preserving certain local preferences
@@ -259,56 +263,36 @@ export function smartMergeLibraries(
   return { mergedLibrary, changes };
 }
 
-// Map Appwrite data back to LibraryMedia
-export const mapFromAppwriteData = (libraryItem: LibraryItem, tmdbMedia?: TmdbMedia): LibraryMedia => {
+
+
+export const mapToAppwriteLibraryMedia = (
+  media: LibraryMedia
+): Record<string, unknown> => {
   return {
-    id: tmdbMedia?.id || 0,
-    media_type: tmdbMedia?.mediaType || 'movie',
-    title: tmdbMedia?.title,
-    posterPath: tmdbMedia?.posterPath || undefined,
-    releaseDate: tmdbMedia?.releaseDate || undefined,
-    genres: tmdbMedia?.genres || [],
-    rating: tmdbMedia?.rating || undefined,
-    status: libraryItem.status,
-    isFavorite: libraryItem.isFavorite,
-    userRating: libraryItem.userRating || undefined,
-    notes: libraryItem.notes || undefined,
-    addedToLibraryAt: libraryItem.addedAt || new Date().toISOString(),
-    lastUpdatedAt: libraryItem.$updatedAt,
-    totalMinutesRuntime: tmdbMedia?.totalMinutesRuntime,
-    networks: tmdbMedia?.networks || [],
+    // Library item fields
+    status: media.status ?? 'none',
+    isFavorite: !!media.isFavorite,
+    userRating: media.userRating != null
+      ? Math.max(1, Math.min(10, Math.round(Number(media.userRating))))
+      : undefined,
+    notes: media.notes || undefined,
+    addedAt: media.addedAt,
+    // TMDB media fields (flattened)
+    tmdbId: media.tmdbId,
+    mediaType: media.media_type,
+    title: media.title || `${media.media_type} ${media.tmdbId}`,
+    overview: undefined, // Not available in current LibraryMedia type
+    posterPath: media.posterPath || undefined,
+    releaseDate: media.releaseDate || undefined,
+    genres: Array.isArray(media.genres) ? media.genres : [],
+    rating: typeof media.rating === 'number' ? media.rating : undefined,
+    totalMinutesRuntime: Number.isFinite(media.totalMinutesRuntime)
+      ? media.totalMinutesRuntime
+      : undefined,
+    networks: Array.isArray(media.networks) ? media.networks : [],
   };
 };
 
-// Map LibraryMedia to Appwrite LibraryItem + TmdbMedia
-export const mapToAppwriteData = async (
-  media: LibraryMedia
-): Promise<{
-  tmdbMedia: CreateTmdbMediaInput;
-  libraryItem: Omit<CreateLibraryItemInput, 'libraryId' | 'mediaId'>;
-}> => {
-  return {
-    tmdbMedia: {
-      id: media.id,
-      mediaType: media.media_type,
-      title: media.title || `${media.media_type} ${media.id}`,
-      overview: undefined,
-      posterPath: media.posterPath || undefined,
-      releaseDate: media.releaseDate || undefined,
-      genres: media.genres || [],
-      rating: media.rating || undefined,
-      totalMinutesRuntime: media.totalMinutesRuntime,
-      networks: media.networks,
-    },
-    libraryItem: {
-      status: media.status,
-      isFavorite: media.isFavorite,
-      userRating: media.userRating || undefined,
-      notes: media.notes || undefined,
-      addedAt: media.addedToLibraryAt,
-    },
-  };
-};
 
 export const getLibraryCount = ({
   items,
@@ -354,7 +338,7 @@ export const logLibraryActivity = (
       ...props,
       action,
       mediaType: newItemData.media_type,
-      mediaId: newItemData.id,
+      mediaId: newItemData.tmdbId,
       mediaTitle: newItemData.title || 'Unknown Title',
       posterPath: newItemData.posterPath,
     });

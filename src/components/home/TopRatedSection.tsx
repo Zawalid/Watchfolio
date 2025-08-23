@@ -12,7 +12,7 @@ const movieQuery = { queryKey: queryKeys.category('movie', 'top-rated'), queryFn
 const tvQuery = { queryKey: queryKeys.category('tv', 'top-rated'), queryFn: () => getTvShows('top-rated') };
 
 export default function TopRatedSection() {
-  const [selectedTab, setSelectedTab] = useState<'movie' | 'tv'>('movie');
+  const [selectedTab, setSelectedTab] = useState<MediaType>('movie');
 
   return (
     <div className='space-y-6'>
@@ -22,7 +22,7 @@ export default function TopRatedSection() {
         <div className='flex flex-col items-end'>
           <Tabs
             selectedKey={selectedTab}
-            onSelectionChange={(key) => setSelectedTab(key as 'movie' | 'tv')}
+            onSelectionChange={(key) => setSelectedTab(key as MediaType)}
             classNames={{ ...TABS_CLASSNAMES, tabList: TABS_CLASSNAMES.tabList + ' self-center' }}
             className='flex-1'
           >
@@ -53,7 +53,7 @@ export default function TopRatedSection() {
   );
 }
 
-function Title({ type }: { type?: 'movie' | 'tv' }) {
+function Title({ type }: { type?: MediaType }) {
   return (
     <div className='flex flex-col gap-3'>
       <h2 className='outline-heading'>

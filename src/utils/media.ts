@@ -15,7 +15,7 @@ export const getReleaseYear = (media: Media, format: 'year' | 'full' = 'year') =
   }
 };
 
-export const getMediaType = (media: Media): 'movie' | 'tv' => {
+export const getMediaType = (media: Media): MediaType => {
   if (media.media_type) return media.media_type;
   if ((media as Movie).release_date !== undefined) {
     return 'movie';
@@ -66,10 +66,10 @@ export const generateMediaLink = (item?: Media | LibraryMedia) => {
   if (!item) return '/';
   const mediaType = 'media_type' in item ? item.media_type : getMediaType(item);
   const title = 'title' in item ? item.title : (item as TvShow).name;
-  return `/${mediaType === 'tv' ? 'tv' : 'movies'}/details/${item.id}-${slugify(title || '')}`;
+  return `/${mediaType === 'tv' ? 'tv' : 'movies'}/details/${(item as LibraryMedia).tmdbId || item.id}-${slugify(title || '')}`;
 };
 
-export const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'overview' in obj);
+export const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'original_language' in obj);
 
 export const getGenres = (genre_ids?: number[]) =>
   genre_ids
