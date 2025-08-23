@@ -1,9 +1,11 @@
+import { HIDDEN_PROFILE_SECTIONS } from '@/utils/constants';
 import { Models } from 'appwrite';
 
 export const META_FIELDS = ['$createdAt', '$permissions', '$collectionId', '$databaseId', '$sequence'] as const;
 
 export type ConfirmationSetting = 'enabled' | 'disabled';
 export type ActivityAction = 'completed' | 'rated' | 'added';
+export type HiddenSection = typeof HIDDEN_PROFILE_SECTIONS[number];
 
 export type Activity = {
     action: ActivityAction;
@@ -39,7 +41,7 @@ export interface Profile extends Document {
     contentPreferences: string[];
     favoriteNetworks: number[];
     recentActivity: Activity[];
-    hiddenProfileSections: string[];
+    hiddenProfileSections: HiddenSection[];
 }
 export interface UserPreferences extends Document {
     signOutConfirmation: ConfirmationSetting;

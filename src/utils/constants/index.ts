@@ -55,7 +55,7 @@ export const LIBRARY_MEDIA_STATUS = [
       modal: 'Paused but planning to continue.',
       stats: 'Temporarily paused',
     },
-    icon: MonitorPause, 
+    icon: MonitorPause,
     className: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30',
     shortcut: 'setStatusOnHold',
   },
@@ -108,3 +108,20 @@ export const DEFAULT_USER_PREFERENCES: CreateUserPreferencesInput = {
   language: 'en',
   autoSync: true,
 };
+
+export const HIDDEN_PROFILE_SECTIONS = [
+  'stats',
+  'stats.statistics',
+  'stats.overview',
+  'stats.topGenres',
+  'stats.recentActivity',
+  'taste',
+  'library',
+  'library.watching',
+  'library.completed',
+  'library.willWatch',
+  'library.onHold',
+  'library.dropped',
+  'library.favorites',
+] as const;
+

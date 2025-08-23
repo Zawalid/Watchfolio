@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState } from 'nuqs';
-import { GalleryVerticalEnd, PanelLeftClose, Heart } from 'lucide-react';
+import { GalleryVerticalEnd, PanelLeftClose } from 'lucide-react';
 import { Button } from '@heroui/react';
 import { Tooltip } from '@heroui/react';
 import { useDisclosure } from '@heroui/react';
@@ -47,7 +47,6 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
   const visibleStatuses = LIBRARY_MEDIA_STATUS.filter(
     (s) => isOwnProfile || !hiddenProfileSections.includes(`library.${s.value}`)
   );
-  const isFavoritesVisible = isOwnProfile || !hiddenProfileSections.includes('library.favorites');
 
   const tabs = [
     {
@@ -63,15 +62,6 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
         value: s.value,
       };
     }),
-    ...(isFavoritesVisible
-      ? [
-          {
-            label: `Favorites (${getLibraryCount({ items, filter: 'favorites' })})`,
-            icon: <Heart className='size-4' />,
-            value: 'favorites',
-          },
-        ]
-      : []),
   ];
 
   if (!items.length) {

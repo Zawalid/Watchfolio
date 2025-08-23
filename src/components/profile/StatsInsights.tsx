@@ -7,7 +7,8 @@ import { EmptyProps, Status } from '@/components/ui/Status';
 import { cn, formatTimeAgo } from '@/utils';
 import { Link } from 'react-router';
 import { generateMediaLink, getTmdbImage } from '@/utils/media';
-import { Activity } from '@/lib/appwrite/types';
+import { Activity, HiddenSection, Profile } from '@/lib/appwrite/types';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const getStats = (stats: LibraryStats) => {
   const statusCards: StatCardProps[] = LIBRARY_MEDIA_STATUS.map((status) => ({
@@ -52,29 +53,30 @@ const renderEmptyState = (props: EmptyProps) => {
   );
 };
 
-export default function StatsInsights({
-  stats,
-  recentActivity,
-  isOwnProfile,
-}: {
-  stats: LibraryStats;
-  recentActivity: Activity[];
-  isOwnProfile: boolean;
-}) {
-  const hasNoData = stats.all === 0;
+export default function StatsInsights({ profile, stats }: { profile: Profile; stats: LibraryStats }) {
+  const { checkIsOwnProfile } = useAuthStore();
+
+  const isOwnProfile = checkIsOwnProfile(profile.username);
+  const recentActivity = profile.recentActivity || [];
+  const hiddenProfileSections = profile?.hiddenProfileSections || [];
+  const visibleSectionsButStatistics = ['stats.overview', 'stats.topGenres', 'stats.recentActivity'].filter(
+    (section) => !hiddenProfileSections.includes(section as HiddenSection)
+  );
+
   const hasNoGenres = !stats.topGenres || stats.topGenres.length === 0;
   const hasNoActivity = !recentActivity || recentActivity.length === 0;
 
   return (
     <div className='space-y-6'>
-      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'>
-        {getStats(stats).map((stat, index) => (
-          <StatCard key={stat.label} {...stat} delay={index} />
-        ))}
-      </div>
-
-      <div className='grid gap-6 lg:grid-cols-3'>
-        {hasNoData ? (
+      {!hiddenProfileSections.includes('stats.statistics') && (
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'>
+          {getStats(stats).map((stat, index) => (
+            <StatCard key={stat.label} {...stat} delay={index} />
+          ))}
+        </div>
+      )}
+      <div className={cn('grid gap-6', `lg:grid-cols-${visibleSectionsButStatistics.length}`)}>
+        {hiddenProfileSections.includes('stats.overview') ? null : stats.all === 0 ? (
           renderEmptyState({
             Icon: BarChart3,
             iconColor: 'text-Primary-400',
@@ -87,7 +89,7 @@ export default function StatsInsights({
           <Overview stats={stats} isOwnProfile={isOwnProfile} />
         )}
 
-        {hasNoGenres ? (
+        {hiddenProfileSections.includes('stats.topGenres') ? null : hasNoGenres ? (
           renderEmptyState({
             Icon: Star,
             iconColor: 'text-Tertiary-400',
@@ -100,7 +102,7 @@ export default function StatsInsights({
           <TopGenres stats={stats} isOwnProfile={isOwnProfile} />
         )}
 
-        {hasNoActivity ? (
+        {hiddenProfileSections.includes('stats.recentActivity') ? null : hasNoActivity ? (
           renderEmptyState({
             Icon: ActivityIcon,
             iconColor: 'text-Secondary-400',

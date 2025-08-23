@@ -64,6 +64,7 @@ export default function ProfileVisibility() {
 
   if (!user) return null;
 
+  const isStatsPublic = !hiddenProfileSections.includes('stats');
   const isLibraryPublic = !hiddenProfileSections.includes('library');
 
   return (
@@ -91,10 +92,7 @@ export default function ProfileVisibility() {
             <div>
               <h4 className='text-Grey-300 mb-2 text-sm font-medium'>Visible Profile Sections</h4>
               <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-                <GranularControl
-                  isChecked={!hiddenProfileSections.includes('stats')}
-                  onToggle={() => handleSectionToggle('stats')}
-                >
+                <GranularControl isChecked={isStatsPublic} onToggle={() => handleSectionToggle('stats')}>
                   Stats & Insights
                 </GranularControl>
                 <GranularControl
@@ -109,6 +107,35 @@ export default function ProfileVisibility() {
               </div>
             </div>
 
+            <AnimatePresence>
+              {isStatsPublic && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className='bg-white/ space-y-3 rounded-lg border border-white/10 p-4'
+                >
+                  <h5 className='text-Grey-300 text-sm font-medium'>Visible Stats & Insights</h5>
+                  <div className='grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3'>
+                    {[
+                      { label: 'Statistics', value: 'statistics' },
+                      { label: 'Overview', value: 'overview' },
+                      { label: 'Top Genres', value: 'topGenres' },
+                      { label: 'Recent Activity', value: 'recentActivity' },
+                    ].map((stat) => (
+                      <GranularControl
+                        key={stat.value}
+                        isChecked={!hiddenProfileSections.includes(`stats.${stat.value}` as SectionKey)}
+                        onToggle={() => handleSectionToggle(`stats.${stat.value}` as SectionKey)}
+                      >
+                        {stat.label}
+                      </GranularControl>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
             <AnimatePresence>
               {isLibraryPublic && (
                 <motion.div

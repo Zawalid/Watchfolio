@@ -217,7 +217,7 @@ export class LibraryAPI extends BaseAPI {
 
   async get(libraryId: string) {
     return this.getDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, [
-      Query.select(['*', 'items.*', 'items.media.*']),
+      Query.select(['*', 'items.*']),
     ]);
   }
 

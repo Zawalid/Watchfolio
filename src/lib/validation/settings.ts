@@ -1,3 +1,4 @@
+import { HIDDEN_PROFILE_SECTIONS } from '@/utils/constants';
 import { z } from 'zod';
 
 export const common = {
@@ -35,19 +36,7 @@ export const profileInfoSchema = z.object({
 
 export const privacySchema = z.object({
   visibility: z.enum(['public', 'private']),
-  hiddenProfileSections: z.array(
-    z.enum([
-      'stats',
-      'taste',
-      'library',
-      'library.watching',
-      'library.completed',
-      'library.willWatch',
-      'library.onHold',
-      'library.dropped',
-      'library.favorites',
-    ])
-  ),
+  hiddenProfileSections: z.array(z.enum(HIDDEN_PROFILE_SECTIONS)),
 });
 
 export const changeEmailSchema = z
