@@ -54,10 +54,4 @@ interface LibraryStats {
 
 // Sync Types
 
-interface SyncStatus {
-  isOnline: boolean;
-  isSyncing: boolean;
-  lastSyncTime: string | null;
-  pendingOperations: number;
-  error: string | null;
-}
+type SyncStatus = 'offline' | 'connecting' | 'online' | 'syncing' | 'error';

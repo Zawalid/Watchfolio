@@ -11,7 +11,7 @@ import {
   UpdateUserPreferencesInput,
   UserWithProfile,
 } from '@/lib/appwrite/types';
-import { startReplication, stopReplication, getSyncStatus, destroyDB, getDBStatus } from '@/lib/rxdb';
+import { startReplication, stopReplication, destroyDB, getDBStatus } from '@/lib/rxdb';
 import { authStorePartializer } from './utils';
 
 export interface AuthState {
@@ -20,47 +20,36 @@ export interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   syncError: string | null;
-
-  // Modal State
   showAuthModal: boolean;
   authModalType: 'signin' | 'signup';
   showOnboardingModal: boolean;
   pendingOnboarding: boolean;
 
-  // Auth Actions
   signIn: (email: string, password: string) => Promise<Models.Session>;
   signUp: (name: string, email: string, password: string) => Promise<Models.User<Models.Preferences>>;
   signOut: () => Promise<void>;
   checkAuth: () => Promise<void>;
   resetPassword: (email: string) => Promise<Models.Token>;
   signInWithGoogle: () => Promise<void>;
-
-  // User Management Actions
   updateUserEmail: (email: string, password: string) => Promise<void>;
   updateUserPassword: (newPassword: string, oldPassword: string) => Promise<void>;
   updateUserProfile: (profileData: UpdateProfileInput) => Promise<void>;
   updateUserPreferences: (preferencesData: UpdateUserPreferencesInput) => Promise<void>;
   deleteUserAccount: () => Promise<void>;
   refreshUser: () => Promise<void>;
-
-  // Email Verification Actions
   sendEmailVerification: () => Promise<Models.Token>;
   confirmEmailVerification: (userId: string, secret: string) => Promise<void>;
-
-  // Modal Actions
   openAuthModal: (type: 'signin' | 'signup') => void;
   closeAuthModal: () => void;
   switchAuthMode: (type: 'signin' | 'signup') => void;
   openOnboardingModal: () => void;
   closeOnboardingModal: () => void;
   setPendingOnboarding: (value: boolean) => void;
-
-  // Utils
   checkIsOwnProfile: (username?: string) => boolean;
-  getSyncStatus: () => string;
   clearSyncError: () => void;
   loadAndSyncLibrary: () => Promise<void>;
   cleanUp: () => Promise<void>;
+  toggleAutoSync: (enabled: boolean) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -76,16 +65,13 @@ export const useAuthStore = create<AuthState>()(
       showOnboardingModal: false,
       pendingOnboarding: false,
 
-      signIn: async (email: string, password: string) => {
+      signIn: async (email, password) => {
         set({ isLoading: true, syncError: null });
         try {
           const session = await authService.signIn({ email, password });
           const user = await authService.getCurrentUser();
-
           set({ user, isAuthenticated: !!user, isLoading: false });
-
           await get().loadAndSyncLibrary();
-
           return session;
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to sign in' });
@@ -93,23 +79,18 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signUp: async (name: string, email: string, password: string) => {
+      signUp: async (name, email, password) => {
         set({ isLoading: true, syncError: null });
         try {
           const newUser = await authService.createAccount({ name, email, password });
           const user = await authService.getCurrentUser();
           const preferences = get().userPreferences;
-
           if (!user) throw new Error('Failed to create user');
-
           if (!deepEqual(preferences, DEFAULT_USER_PREFERENCES)) {
             await authService.updateUserPreferences(user.$id, preferences);
           }
-
           set({ user, isAuthenticated: !!user, isLoading: false });
-
           await get().loadAndSyncLibrary();
-
           return newUser;
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to sign up' });
@@ -122,7 +103,6 @@ export const useAuthStore = create<AuthState>()(
         try {
           await get().cleanUp();
           await authService.signOut();
-
           set({
             user: null,
             userPreferences: DEFAULT_USER_PREFERENCES,
@@ -149,23 +129,18 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, syncError: null });
         try {
           const user = await authService.getCurrentUser();
-
           set({ user, isAuthenticated: !!user, isLoading: false });
-
           await get().loadAndSyncLibrary();
         } catch {
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
       },
 
-      resetPassword: async (email: string) => {
-        return await authService.resetPassword(email);
-      },
+      resetPassword: async (email) => authService.resetPassword(email),
 
-      updateUserEmail: async (email: string, password: string) => {
+      updateUserEmail: async (email, password) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
-
         set({ isLoading: true });
         try {
           const updatedUser = await authService.updateUserEmail(user.$id, email, password);
@@ -176,7 +151,7 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      updateUserPassword: async (newPassword: string, oldPassword: string) => {
+      updateUserPassword: async (newPassword, oldPassword) => {
         set({ isLoading: true });
         try {
           await authService.updateUserPassword(newPassword, oldPassword);
@@ -187,10 +162,9 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      updateUserProfile: async (profileData: UpdateProfileInput) => {
+      updateUserProfile: async (profileData) => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
-
         set({ isLoading: true });
         try {
           const updatedUser = await authService.updateUserProfile(user.$id, profileData);
@@ -201,14 +175,11 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      updateUserPreferences: async (preferencesData: UpdateUserPreferencesInput) => {
+      updateUserPreferences: async (preferencesData) => {
         const { user, userPreferences } = get();
         const updatedPreferences = { ...userPreferences, ...preferencesData };
-
         set({ userPreferences: updatedPreferences });
-
         if (!user) return;
-
         set({ isLoading: true });
         try {
           const updatedUser = await authService.updateUserPreferences(user.$id, updatedPreferences);
@@ -222,12 +193,10 @@ export const useAuthStore = create<AuthState>()(
       deleteUserAccount: async () => {
         const { user } = get();
         if (!user) throw new Error('No user authenticated');
-
         set({ isLoading: true });
         try {
           await get().cleanUp();
           await authService.deleteUserAccount(user.$id);
-
           set({ user: null, isAuthenticated: false, isLoading: false });
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to delete account' });
@@ -238,7 +207,6 @@ export const useAuthStore = create<AuthState>()(
       refreshUser: async () => {
         const { user } = get();
         if (!user) return;
-
         try {
           const updatedUser = await authService.getCurrentUser();
           set({ user: updatedUser });
@@ -248,37 +216,19 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      sendEmailVerification: async () => {
-        return await authService.sendEmailVerification();
-      },
+      sendEmailVerification: async () => authService.sendEmailVerification(),
 
-      confirmEmailVerification: async (userId: string, secret: string) => {
+      confirmEmailVerification: async (userId, secret) => {
         await authService.confirmEmailVerification(userId, secret);
         await get().refreshUser();
       },
 
-      // Modal Actions
-      openAuthModal: (type: 'signin' | 'signup') => {
-        set({ showAuthModal: true, authModalType: type });
-      },
-
-      closeAuthModal: () => {
-        set({ showAuthModal: false });
-      },
-
-      switchAuthMode: (type: 'signin' | 'signup') => {
-        set({ authModalType: type });
-      },
-
-      openOnboardingModal: () => {
-        set({ showOnboardingModal: true });
-      },
-
-      closeOnboardingModal: () => {
-        set({ showOnboardingModal: false });
-      },
-
-      setPendingOnboarding: (value: boolean) => {
+      openAuthModal: (type) => set({ showAuthModal: true, authModalType: type }),
+      closeAuthModal: () => set({ showAuthModal: false }),
+      switchAuthMode: (type) => set({ authModalType: type }),
+      openOnboardingModal: () => set({ showOnboardingModal: true }),
+      closeOnboardingModal: () => set({ showOnboardingModal: false }),
+      setPendingOnboarding: (value) => {
         set({ pendingOnboarding: value });
         if (value === false) authService.updateAccountPreferences({ hasSeenOnboarding: 'TRUE' });
       },
@@ -288,26 +238,31 @@ export const useAuthStore = create<AuthState>()(
         return get().isAuthenticated && get().user?.profile.username === username;
       },
 
-      getSyncStatus: () => {
-        return getSyncStatus();
-      },
-
-      clearSyncError: () => {
-        set({ syncError: null });
-      },
+      clearSyncError: () => set({ syncError: null }),
 
       loadAndSyncLibrary: async () => {
-        const user = get().user;
-
         await useLibraryStore.getState().loadLibrary();
-
-        if (user) {
+        const user = get().user;
+        if (user && user.profile.preferences.autoSync) {
           try {
             await startReplication(user.$id, user.profile.library);
           } catch (error) {
             console.error('Failed to start sync:', error);
             set({ syncError: 'Failed to start sync' });
           }
+        }
+      },
+
+      toggleAutoSync: async (enabled: boolean) => {
+        const { user, updateUserPreferences } = get();
+        if (!user) throw new Error("User not authenticated");
+
+        await updateUserPreferences({ autoSync: enabled });
+
+        if (enabled) {
+          await startReplication(user.$id, user.profile.library);
+        } else {
+          await stopReplication();
         }
       },
 

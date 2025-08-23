@@ -107,11 +107,12 @@ export default function BaseMediaCard({
       <AnimatePresence>
         {/* Quick Actions - Show for ALL items on hover, including person context */}
         {isInteractive && (
-          <QuickActions mediaType={mediaType} media={mediaDetails || media} item={item} isFocused={isFocused} />
+          <QuickActions key="quick-actions" mediaType={mediaType} media={mediaDetails || media} item={item} isFocused={isFocused} />
         )}
         {/* User Rating Badge */}
         {isInteractive && item?.userRating && (
           <motion.div
+            key="user-rating"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -317,7 +318,7 @@ const PersonRoleBadges = ({
       className='absolute top-3 left-3 z-20 flex flex-col items-start gap-1.5'
     >
       {displayRoles.map((role, index) => (
-        <RoleBadge key={index} role={role} primaryRole={primaryRole} delay={index * 0.1} />
+        <RoleBadge key={role} role={role} primaryRole={primaryRole} delay={index * 0.1} />
       ))}
 
       {hasMore && <OverflowBadge remainingRoles={remainingRoles} delay={displayRoles.length * 0.1} />}
@@ -389,8 +390,8 @@ const OverflowBadge = ({ remainingRoles, delay = 0 }: { remainingRoles: string[]
       content={
         <div className='space-y-1'>
           <p className='text-xs font-medium text-white'>Additional roles:</p>
-          {remainingRoles.map((role, index) => (
-            <p key={index} className='text-Grey-300 text-xs'>
+          {remainingRoles.map((role) => (
+            <p key={role} className='text-Grey-300 text-xs'>
               {role}
             </p>
           ))}

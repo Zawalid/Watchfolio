@@ -9,26 +9,34 @@ import { useClearLibrary } from '@/hooks/useClearLibrary';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { useLibraryStore } from '@/stores/useLibraryStore';
 
 export default function Library() {
-  const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
+  const { isAuthenticated, userPreferences, updateUserPreferences, toggleAutoSync } = useAuthStore();
+  const { syncStatus, lastSyncTime, manualSync } = useLibraryStore();
+
   const { handleClearLibrary } = useClearLibrary();
   const importExportDisclosure = useDisclosure();
 
+  const isSyncing = syncStatus === 'syncing' || syncStatus === 'connecting';
+
   usePageTitle('Library - Settings');
 
-  const handleAutoSyncToggle = (enabled: boolean) => {
+  const handleAutoSyncToggle = async (enabled: boolean) => {
     if (!isAuthenticated) {
       addToast({ title: 'Sign in required', description: 'Please sign in to sync your library', color: 'warning' });
       return;
     }
-
-    updateUserPreferences({ autoSync: enabled });
-    addToast({
-      title: enabled ? 'Auto-sync enabled' : 'Auto-sync disabled',
-      description: enabled ? 'Your library will sync automatically' : 'Manual sync only',
-      color: 'success',
-    });
+    try {
+      await toggleAutoSync(enabled);
+      addToast({
+        title: enabled ? 'Auto-sync enabled' : 'Auto-sync disabled',
+        description: enabled ? 'Your library will sync automatically' : 'Manual sync only',
+        color: 'success',
+      });
+    } catch {
+      addToast({ title: 'Error', description: 'Failed to update auto-sync preference.', color: 'danger' });
+    }
   };
 
   const handleManualSync = async () => {
@@ -36,19 +44,16 @@ export default function Library() {
       addToast({ title: 'Sign in required', description: 'Please sign in to sync your library', color: 'warning' });
       return;
     }
-
     try {
+      addToast({ title: 'Syncing...', description: 'Your library is being synced.', color: 'secondary' });
+      await manualSync();
       addToast({
         title: 'Sync completed',
         description: 'Your library has been synced successfully',
         color: 'success',
       });
     } catch {
-      addToast({
-        title: 'Sync failed',
-        description: 'Failed to sync your library',
-        color: 'danger',
-      });
+      addToast({ title: 'Sync failed', description: 'Failed to sync your library', color: 'danger' });
     }
   };
 
@@ -97,21 +102,21 @@ export default function Library() {
             <div className='mt-6 flex items-center justify-between'>
               <div>
                 <h4 className='text-Grey-200 font-semibold'>Manual Sync</h4>
-                <p className='text-Grey-400 mt-1 text-sm'>{`Last synced: ${new Date().toLocaleString()}`}</p>
-                <p className='mt-1 text-xs text-amber-300'>{12} pending operations</p>
+                <p className='text-Grey-400 mt-1 text-sm'>
+                  {lastSyncTime ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}` : 'Not synced yet'}
+                </p>
               </div>
               <Button
                 color='primary'
                 size='sm'
                 onPress={handleManualSync}
-                isLoading={false}
-                isDisabled={!isAuthenticated}
+                isLoading={isSyncing}
+                isDisabled={!isAuthenticated || isSyncing}
                 startContent={<RefreshCw className='size-4' />}
               >
-                Sync Now
+                {isSyncing ? 'Syncing...' : 'Sync Now'}
               </Button>
-            </div>
-          </div>
+            </div></div>
         </div>
       </SettingSection>
 

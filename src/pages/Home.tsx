@@ -11,14 +11,18 @@ import FranchisesSection from '@/components/home/FranchisesSection';
 import PopularCelebritiesSection from '@/components/home/PopularCelebritiesSection';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
-// No changes needed for variants
-const sectionVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+const animation = {
+  variants: {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+    },
   },
+  initial: 'hidden',
+  whileInView: 'visible',
+  viewport: { once: true, margin: '-200px' },
 };
 
 export default function Home() {
@@ -37,82 +41,36 @@ export default function Home() {
   }, [location]);
 
   return (
-    // We remove the animation variants from the parent container.
-    // Each section will now handle its own animation trigger.
     <div className='w-full space-y-8 md:space-y-12'>
-      {/* The HeroSection is not animated on scroll, it appears instantly */}
       <section id='hero' className='h-[90vh]'>
         <HeroSection />
       </section>
 
-      {/* Each subsequent section will animate when it enters the viewport */}
-      <motion.section
-        id='trending'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true }}
-      >
+      <motion.section id='trending' {...animation}>
         <TrendingSection />
       </motion.section>
 
-      <motion.section
-        id='top-10'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-200px' }}
-      >
+      <motion.section id='top-10' {...animation}>
         <Top10Section />
       </motion.section>
 
-      <motion.section
-        id='networks'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-200px' }}
-      >
+      <motion.section id='networks' {...animation}>
         <NetworksSection />
       </motion.section>
 
-      <motion.section
-        id='coming-soon'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-200px' }}
-      >
+      <motion.section id='coming-soon' {...animation}>
         <ComingSoonSection />
       </motion.section>
 
-      <motion.section
-        id='top-rated'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-200px' }}
-      >
+      <motion.section id='top-rated' {...animation}>
         <TopRatedSection />
       </motion.section>
 
-      <motion.section
-        id='popular-people'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-200px' }}
-      >
+      <motion.section id='popular-people' {...animation}>
         <PopularCelebritiesSection />
       </motion.section>
 
-      <motion.section
-        id='franchises'
-        variants={sectionVariants}
-        initial='hidden'
-        whileInView='visible'
-        viewport={{ once: true, margin: '-200px' }}
-      >
+      <motion.section id='franchises' {...animation}>
         <FranchisesSection />
       </motion.section>
     </div>

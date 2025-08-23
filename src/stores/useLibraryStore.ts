@@ -11,17 +11,21 @@ import {
   searchLibraryMedia,
   bulkAddOrUpdateLibraryMedia,
   LibraryError,
+  triggerSync,
+  isReplicationActive,
+  startReplication,
+  stopReplication,
 } from '@/lib/rxdb';
 import { filterObject } from '@/utils';
-import { getSyncStatus } from '@/lib/rxdb';
 
 interface LibraryState {
   library: LibraryCollection;
   isLoading: boolean;
   error: string | null;
   lastUpdatedAt: string;
+  syncStatus: SyncStatus;
+  lastSyncTime: string | null;
 
-  // Actions
   getItem: (id: string) => LibraryMedia | undefined;
   addOrUpdateItem: (
     item: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>,
@@ -33,8 +37,6 @@ interface LibraryState {
   getAllItems: () => LibraryMedia[];
   getItemsByStatus: (status: LibraryFilterStatus, mediaType?: MediaType) => LibraryMedia[];
   getCount: (filter: LibraryFilterStatus, mediaType?: MediaType) => number;
-
-  // Search and filtering
   searchItems: (
     query: string,
     options?: {
@@ -43,18 +45,18 @@ interface LibraryState {
       limit?: number;
     }
   ) => Promise<LibraryMedia[]>;
-
   importLibrary: (
     parsedItems: LibraryMedia[],
     options: { mergeStrategy: 'smart' | 'overwrite' | 'skip'; keepExistingFavorites: boolean }
   ) => Promise<number>;
-
-  // Library management
   clearLibrary: () => Promise<void>;
   clearLibraryLocally: () => void;
   loadLibrary: () => Promise<void>;
   clearError: () => void;
-  getSyncStatus: () => string;
+
+  // Sync Actions
+  setSyncStatus: (status: SyncStatus) => void;
+  manualSync: () => Promise<void>;
 }
 
 const shouldRemoveItem = (item: LibraryMedia): boolean => {
@@ -92,27 +94,25 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
   lastUpdatedAt: new Date().toISOString(),
   isLoading: false,
   error: null,
+  syncStatus: 'offline',
+  lastSyncTime: null,
 
   getItem: (id) => {
     const { library } = get();
     if (library[id]) return library[id];
-
-    // Handle mediaType-tmdbId format
     if (String(id).includes('-')) {
       const [mediaType, tmdbId] = id.split('-');
       return Object.values(library).find((item) => item.tmdbId === parseInt(tmdbId) && item.media_type === mediaType);
     }
-
     return undefined;
   },
 
   addOrUpdateItem: async (item, media) => {
     set({ isLoading: true, error: null });
-
     try {
-      const currentItem = get().getItem(item.id) || {};
+      const currentItem = get().getItem(item.id);
       const metadata = media ? getMediaMetadata(media) : {};
-      const newItemData = { ...currentItem, ...item, ...metadata } as LibraryMedia;
+      const newItemData = { ...(currentItem || {}), ...item, ...metadata } as LibraryMedia;
 
       if (shouldRemoveItem(newItemData)) {
         await get().removeItem(newItemData.id);
@@ -120,24 +120,20 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
       }
 
       const result = await addOrUpdateLibraryMedia(newItemData, getCurrentLibrary());
-
       if (result) {
         set((state) => ({
           library: { ...state.library, [result.id]: result },
           lastUpdatedAt: new Date().toISOString(),
         }));
-
-        // Log activity
         const profileId = useAuthStore.getState().user?.profile?.$id;
         if (profileId) {
           try {
-            logLibraryActivity(result, undefined, profileId);
+            logLibraryActivity(result, currentItem, profileId);
           } catch (error) {
             console.warn('Failed to log library activity:', error);
           }
         }
       }
-
       return result;
     } catch (error) {
       const errorMessage = error instanceof LibraryError ? error.message : 'Failed to save item';
@@ -164,10 +160,8 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
 
   removeItem: async (id) => {
     set({ isLoading: true, error: null });
-
     try {
       await deleteLibraryMedia(id);
-
       set((state) => {
         const newLibrary = { ...state.library };
         delete newLibrary[id];
@@ -204,7 +198,6 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
 
   searchItems: async (query, options = {}) => {
     if (!query?.trim()) return [];
-
     try {
       const library = getCurrentLibrary();
       return await searchLibraryMedia(query, { libraryId: library?.$id, ...options });
@@ -217,21 +210,16 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
 
   importLibrary: async (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
     set({ isLoading: true, error: null });
-
     try {
       if (!Array.isArray(parsedItems) || parsedItems.length === 0) return 0;
-
       const currentLibrary = get().library || {};
       const { mergedLibrary, importCount } = mergeLibraryItems(parsedItems, currentLibrary, options);
-
       await bulkAddOrUpdateLibraryMedia(Object.values(mergedLibrary));
-
       set(() => ({
         library: mergedLibrary,
         lastUpdatedAt: new Date().toISOString(),
       }));
-
-      return importCount; 
+      return importCount;
     } catch (error) {
       console.error('Import error:', error);
       const errorMessage = `Failed to import library: ${error instanceof Error ? error.message : String(error)}`;
@@ -244,12 +232,10 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
 
   clearLibrary: async () => {
     set({ isLoading: true, error: null });
-
     try {
       const library = getCurrentLibrary();
       await clearRxDBLibrary(library?.$id);
       set({ library: {}, lastUpdatedAt: new Date().toISOString() });
-      console.log('Library cleared successfully');
     } catch (error) {
       console.error('Failed to clear library:', error);
       set({ error: 'Failed to clear library' });
@@ -261,28 +247,22 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
 
   clearLibraryLocally: () => {
     set({ library: {}, lastUpdatedAt: new Date().toISOString() });
-    console.log('Library cleared locally');
   },
 
   loadLibrary: async () => {
     set({ isLoading: true, error: null });
-
     try {
       const library = getCurrentLibrary();
       const items = await getAllLibraryMedias(library?.$id);
-
       const libraryMap = items.reduce((acc, item) => {
         acc[item.id] = item;
         return acc;
       }, {} as LibraryCollection);
-
       set({
         library: libraryMap,
         lastUpdatedAt: new Date().toISOString(),
         error: null,
       });
-
-      console.log(`Library loaded: ${items.length} items`);
     } catch (error) {
       console.error('Failed to load library:', error);
       set({ error: 'Failed to load library' });
@@ -295,7 +275,37 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
     set({ error: null });
   },
 
-  getSyncStatus: () => {
-    return getSyncStatus();
+  setSyncStatus: (status) => {
+    const oldStatus = get().syncStatus;
+    if (oldStatus === 'syncing' && (status === 'online' || status === 'offline')) {
+      set({ lastSyncTime: new Date().toISOString() });
+    }
+    set({ syncStatus: status });
+  },
+
+  manualSync: async () => {
+    const { user } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+
+    if (isReplicationActive()) {
+      await triggerSync();
+      return;
+    }
+
+    console.log('Starting one-time sync...');
+    try {
+      const tempReplication = await startReplication(user.$id, user.profile.library);
+      if (tempReplication) {
+        await tempReplication.awaitInitialReplication();
+        console.log('One-time sync finished, stopping replication.');
+        await stopReplication();
+      }
+    } catch (error) {
+      console.error('Manual sync failed:', error);
+      if (isReplicationActive()) {
+        await stopReplication();
+      }
+      throw error;
+    }
   },
 }));

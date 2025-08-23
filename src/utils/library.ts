@@ -68,7 +68,7 @@ export const logLibraryActivity = (
   if (newItemData.status === 'completed' && existingItem?.status !== 'completed') log('completed');
 
   // Condition 3: Log when a rating is added or changed
-  if (newItemData.userRating && newItemData.userRating !== existingItem?.userRating) {
+  if (newItemData.userRating && (newItemData.userRating !== existingItem?.userRating)) {
     log('rated', { rating: newItemData.userRating });
   }
 };

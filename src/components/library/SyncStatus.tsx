@@ -1,31 +1,15 @@
 import { Tooltip } from '@heroui/react';
 import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
 
 export function SyncStatus({ className }: { className?: string }) {
   const { isAuthenticated, openAuthModal } = useAuthStore();
-  const { isOnline, isSyncing, error, lastSyncTime } = {
-    isOnline: true, // Replace with actual online status check
-    isSyncing: false, // Replace with actual syncing status
-    error: null, // Replace with actual error state
-    lastSyncTime: null, // Replace with actual last sync time
-  };
-  const setError = (error: string | null) => console.log(error);
-
-  const hasError = !!error;
+  const { syncStatus, lastSyncTime, manualSync } = useLibraryStore();
+  const isOnline = navigator.onLine;
 
   const getStatusInfo = () => {
-    if (hasError) {
-      return {
-        color: 'text-red-400',
-        icon: <AlertCircle className='size-4' />,
-        text: 'Sync Error',
-        tooltip: `Sync error: ${error}. Click to retry.`,
-        onClick: () => setError(null),
-      };
-    }
-
     if (!isAuthenticated) {
       return {
         color: 'text-gray-400',
@@ -46,25 +30,44 @@ export function SyncStatus({ className }: { className?: string }) {
       };
     }
 
-    if (isSyncing) {
-      return {
-        color: 'text-blue-400',
-        icon: <RefreshCw className='size-4 animate-spin' />,
-        text: 'Syncing...',
-        tooltip: 'Sync in progress...',
-        onClick: null,
-      };
+    switch (syncStatus) {
+      case 'error':
+        return {
+          color: 'text-red-400',
+          icon: <AlertCircle className='size-4' />,
+          text: 'Sync Error',
+          tooltip: 'Sync error occurred. Click to retry.',
+          onClick: () => manualSync(),
+        };
+      case 'syncing':
+      case 'connecting':
+        return {
+          color: 'text-blue-400',
+          icon: <RefreshCw className='size-4 animate-spin' />,
+          text: 'Syncing...',
+          tooltip: 'Sync in progress...',
+          onClick: null,
+        };
+      case 'online':
+        return {
+          color: 'text-green-400',
+          icon: <Check className='size-4' />,
+          text: 'Synced',
+          tooltip: lastSyncTime
+            ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}`
+            : 'Your library is up to date.',
+          onClick: () => manualSync(),
+        };
+      case 'offline':
+      default:
+        return {
+          color: 'text-gray-400',
+          icon: <CloudOff className='size-4' />,
+          text: 'Sync Offline',
+          tooltip: 'Sync is currently offline. Click to sync.',
+          onClick: () => manualSync(),
+        };
     }
-
-    return {
-      color: 'text-green-400',
-      icon: <Check className='size-4' />,
-      text: 'Synced',
-      tooltip: lastSyncTime
-        ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}`
-        : 'Your library is automatically synced across devices',
-      onClick: null,
-    };
   };
 
   const statusInfo = getStatusInfo();

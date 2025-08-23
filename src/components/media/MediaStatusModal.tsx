@@ -201,7 +201,8 @@ function RatingSection({
   );
   useHotkeys(getShortcut('rateMedia10')?.hotkey || '', () => setCurrentRating(10));
   useHotkeys(getShortcut('clearRating')?.hotkey || '', () => setCurrentRating(undefined));
-console.log(hoverRating ,currentRating)
+  
+  
   return (
     <div className='space-y-8'>
       <div className='flex items-center justify-between'>
