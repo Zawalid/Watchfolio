@@ -1,31 +1,35 @@
-/**
- * Estimates file size for export preview
- */
-export const estimateFileSize = (count: number, format: 'json' | 'csv'): string => {
-  const averageSize = format === 'json' ? 400 : 160;
-  const bytes = count * averageSize;
+import { filterObject } from '@/utils';
 
-  if (bytes < 1024) return `${bytes} bytes`;
-  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1048576).toFixed(1)} MB`;
+interface WorkerMessage {
+  type: 'serialize';
+  format: 'json' | 'csv';
+  items: LibraryMedia[];
+}
+
+self.onmessage = (event: MessageEvent<WorkerMessage>) => {
+  const { type, format, items } = event.data;
+
+  if (type !== 'serialize') return;
+
+  const updatedItems = items.map((item) => filterObject(item, ['library', 'userId'], 'exclude'));
+
+  try {
+    const serializedData = format === 'json' ? serializeToJSON(updatedItems) : serializeToCSV(updatedItems);
+    // Send the serialized string back
+    self.postMessage({ type: 'success', data: serializedData });
+  } catch (error) {
+    self.postMessage({
+      type: 'error',
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 };
 
-/**
- * Formats date for filenames
- */
-export const formatDateForFilename = (date: Date): string => date.toISOString().slice(0, 10).replace(/-/g, '');
-
-/**
- * Serializes library items to JSON format
- */
-export const serializeToJSON = (items: LibraryMedia[]): string => {
+function serializeToJSON(items: LibraryMedia[]): string {
   return JSON.stringify(items, null, 2);
-};
+}
 
-/**
- * Serializes library items to CSV format
- */
-export const serializeToCSV = (items: LibraryMedia[]): string => {
+function serializeToCSV(items: LibraryMedia[]): string {
   if (items.length === 0) return '';
 
   // Define headers based on LibraryMedia interface
@@ -72,4 +76,4 @@ export const serializeToCSV = (items: LibraryMedia[]): string => {
   });
 
   return csvContent;
-};
+}

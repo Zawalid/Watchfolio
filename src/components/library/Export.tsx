@@ -1,12 +1,26 @@
 import { useCallback, useState } from 'react';
 import { Download } from 'lucide-react';
-import { Button } from '@heroui/react';
-import { addToast } from '@heroui/react';
+import { Button, addToast, Select, SelectItem, closeToast } from '@heroui/react';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { Select, SelectItem } from '@heroui/react';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { estimateFileSize, formatDateForFilename } from '@/utils/export';
+import { useWorker } from '@/hooks/useWorker';
+
+const formatFilename = (type: string, status: string, format: string): string => {
+  const date = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '');
+  return `watchfolio_library_${type !== 'all' ? type + '_' : ''}${status !== 'all' ? status + '_' : ''}${date}.${format}`;
+};
+
+const estimateFileSize = (count: number, format: 'json' | 'csv'): string => {
+  const averageSize = format === 'json' ? 400 : 160;
+  const bytes = count * averageSize;
+  if (bytes < 1024) return `${bytes} bytes`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1048576).toFixed(1)} MB`;
+};
+
+const WORKER_URL = new URL('../../workers/export.worker.ts', import.meta.url);
+const LARGE_EXPORT_THRESHOLD = 1000;
 
 export default function Export({ onClose }: { onClose: () => void }) {
   const [exportFormat, setExportFormat] = useState<'json' | 'csv'>('json');
@@ -14,56 +28,70 @@ export default function Export({ onClose }: { onClose: () => void }) {
     status: 'all',
     type: 'all',
   });
-  const { getItemsByStatus, getCount, exportLibrary } = useLibraryStore();
 
+  const { getItemsByStatus, getCount } = useLibraryStore();
   const exportedType = exportFilter.type === 'all' ? undefined : exportFilter.type;
+  const exportCount = getCount(exportFilter.status, exportedType);
+
+  const { postMessage, isProcessing } = useWorker<string>(WORKER_URL, {
+    onSuccess: (data) => {
+      const blob = new Blob([data], { type: exportFormat === 'json' ? 'application/json' : 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const fileName = formatFilename(exportFilter.type, exportFilter.status, exportFormat);
+      const key = addToast({
+        title: 'Download Ready',
+        description: 'Your library file is ready to be downloaded.',
+        color: 'success',
+        timeout: Infinity,
+        endContent: (
+          <Button
+            color='success'
+            onPress={() => {
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = fileName;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+              if (key) closeToast(key);
+            }}
+          >
+            Download
+          </Button>
+        ),
+      });
+
+      onClose();
+    },
+    onError: (errorMsg) => {
+      console.error('Export error:', errorMsg);
+      addToast({ title: 'Export error', description: 'Failed to prepare the export file.', color: 'danger' });
+    },
+  });
 
   const handleExport = useCallback(() => {
-    try {
-      const items = getItemsByStatus(exportFilter.status, exportedType);
-      if (items.length === 0) {
-        addToast({
-          title: 'No items to export',
-          description: 'No items to export with the current filter.',
-          color: 'warning',
-        });
-        return;
-      }
-      const data = exportLibrary(items, exportFormat);
-
-      // Create download
-      const blob = new Blob([data], {
-        type: exportFormat === 'json' ? 'application/json' : 'text/csv',
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `watchfolio_library_${formatDateForFilename(new Date())}.${exportFormat}`;
-      a.setAttribute('aria-label', 'Download library export file');
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      addToast({
-        title: 'Export successful',
-        description: `${items.length} items exported successfully!`,
-        color: 'success',
-      });
-      onClose();
-    } catch (error) {
-      console.error('Export error:', error);
-      addToast({ title: 'Export error', description: 'Failed to export library. Please try again.', color: 'danger' });
+    const items = getItemsByStatus(exportFilter.status, exportedType);
+    if (items.length === 0) {
+      addToast({ title: 'No items to export', color: 'warning' });
+      return;
     }
-  }, [getItemsByStatus, exportFilter.status, exportedType, exportLibrary, exportFormat, onClose]);
 
-  const exportCount = getCount(exportFilter.status, exportedType);
+    if (items.length > LARGE_EXPORT_THRESHOLD) {
+      addToast({
+        title: 'Preparing your export...',
+        description: 'This may take a moment. You can continue using the app.',
+        color: 'secondary',
+      });
+    }
+
+    postMessage({ type: 'serialize', format: exportFormat, items });
+  }, [getItemsByStatus, exportFilter.status, exportedType, postMessage, exportFormat]);
 
   return (
     <div className='space-y-5'>
       <div className='space-y-4'>
         <h3 className='text-Primary-50 font-medium'>Export Options</h3>
-
         <div className='space-y-4'>
           <div className='grid grid-cols-2 items-center gap-3'>
             <label htmlFor='export-format' className='text-Grey-300 text-sm'>
@@ -71,7 +99,6 @@ export default function Export({ onClose }: { onClose: () => void }) {
             </label>
             <Select
               id='export-format'
-              aria-label='Export format'
               classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
               selectedKeys={[exportFormat]}
               onChange={(e) => setExportFormat(e.target.value as 'json' | 'csv')}
@@ -85,7 +112,6 @@ export default function Export({ onClose }: { onClose: () => void }) {
             </label>
             <Select
               id='export-type'
-              aria-label='Media type'
               classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
               selectedKeys={[exportFilter.type]}
               onChange={(e) => setExportFilter({ ...exportFilter, type: e.target.value as MediaType | 'all' })}
@@ -100,10 +126,9 @@ export default function Export({ onClose }: { onClose: () => void }) {
             </label>
             <Select
               id='export-filter'
-              aria-label='Content to export'
               classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
               items={[
-                { key: 'all', label: `All Items(${getCount('all', exportedType)})` },
+                { key: 'all', label: `All Items (${getCount('all', exportedType)})` },
                 ...LIBRARY_MEDIA_STATUS.map(({ value, label }) => ({
                   key: value,
                   label: `${label} (${getCount(value, exportedType)})`,
@@ -128,9 +153,9 @@ export default function Export({ onClose }: { onClose: () => void }) {
           className='w-full'
           color='primary'
           onPress={handleExport}
-          startContent={<Download className='size-4' aria-hidden='true' />}
-          aria-label={`Export ${exportCount} items from your library`}
-          isDisabled={exportCount === 0}
+          startContent={<Download className='size-4' />}
+          isDisabled={exportCount === 0 || isProcessing}
+          isLoading={isProcessing}
         >
           Export {exportCount} Items
         </Button>

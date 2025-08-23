@@ -75,7 +75,7 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
     totalMinutesRuntime: {
       type: ['integer', 'null'],
       minimum: 0,
-      maximum: 99999,
+      maximum: 9999999999999,
       multipleOf: 1,
     },
     networks: {

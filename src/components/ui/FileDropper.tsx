@@ -20,6 +20,7 @@ interface FileDropperProps {
   maxSize?: number;
   className?: string;
   maxFiles?: number;
+  disabled?: boolean;
 }
 
 export function FileDropper({
@@ -30,6 +31,7 @@ export function FileDropper({
   maxSize = 5242880, // 5MB
   maxFiles = 10,
   className,
+  disabled
 }: FileDropperProps) {
   const [, setError] = useState<string>('');
   const [fileStatuses, setFileStatuses] = useState<Map<string, FileUploadStatus>>(new Map());
@@ -100,6 +102,7 @@ export function FileDropper({
         color: 'danger',
       });
     },
+    disabled,
   });
 
   const [parent] = useAutoAnimate();
@@ -160,7 +163,8 @@ export function FileDropper({
           isDragActive
             ? 'border-Primary-400 bg-Primary-500/10'
             : 'hover:border-Primary-400/70 hover:bg-Primary-500/5 border-white/20',
-          files.length > 0 && 'border-Primary-400/70'
+          files.length > 0 && 'border-Primary-400/70',
+          disabled && 'pointer-events-none opacity-50'
         )}
       >
         <input {...getInputProps()} />

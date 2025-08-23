@@ -1,27 +1,39 @@
 import { useCallback, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Upload, HelpCircle } from 'lucide-react';
-import { Button } from '@heroui/react';
-import { Select, SelectItem, SelectSection } from '@heroui/react';
-import { Switch } from '@heroui/react';
-import { Tooltip } from '@heroui/react';
+import { CheckCircle2, Upload, DatabaseZap, Film, Tv } from 'lucide-react';
+import { Button, addToast, Select, SelectItem, SelectSection, Switch } from '@heroui/react';
 import { FileDropper } from '@/components/ui/FileDropper';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { generateMediaId } from '@/utils/library';
-import { addToast } from '@heroui/react';
-import { useImportParser } from '@/hooks/useImportParser';
+import { useWorker } from '@/hooks/useWorker';
 import { LIBRARY_IMPORT_MAX_SIZE } from '@/utils/constants';
 
 interface ImportProps {
   onClose: () => void;
 }
 
-// Strategy descriptions for better user understanding
+type ImportStage = 'select' | 'processing' | 'preview' | 'options' | 'complete';
+
 const STRATEGY_DESCRIPTIONS = {
   smart: 'Updates existing items with new data while preserving your ratings and custom fields. Adds new items.',
   overwrite: 'Replaces all existing items with imported data. Your current settings for these items will be lost.',
   skip: 'Only adds new items. Existing items in your library will remain unchanged.',
 };
+
+const WORKER_URL = new URL('../../workers/import.worker.ts', import.meta.url);
+
+const ProcessingView = ({ message, icon }: { message: string; icon: React.ReactNode }) => (
+  <div className='flex flex-col items-center justify-center py-8 text-center' aria-live='polite'>
+    <div className='relative flex size-16 items-center justify-center'>
+      <div className='bg-Primary-500/10 absolute size-full animate-pulse rounded-full delay-500'></div>
+      <div className='border-Primary-500/20 absolute size-12 rounded-full border-2'></div>
+      <div className='border-Primary-500/40 border-t-Primary-400 absolute size-16 animate-spin rounded-full border-2'></div>
+      {icon}
+    </div>
+    <h3 className='text-Primary-100 mt-4 text-lg font-medium'>{message}</h3>
+    <p className='text-Grey-300 mt-1 text-sm'>Please wait, this won't take long...</p>
+  </div>
+);
 
 export default function Import({ onClose }: ImportProps) {
   const [importPreview, setImportPreview] = useState<{
@@ -31,26 +43,23 @@ export default function Import({ onClose }: ImportProps) {
     newItems: number;
     updatedItems: number;
   } | null>(null);
-  const [importStage, setImportStage] = useState<'select' | 'preview' | 'options' | 'complete'>('select');
+  const [importStage, setImportStage] = useState<ImportStage>('select');
   const [importOptions, setImportOptions] = useState({
     mergeStrategy: 'smart' as 'smart' | 'overwrite' | 'skip',
     keepExistingFavorites: true,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [parsedItems, setParsedItems] = useState<LibraryMedia[] | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
 
   const library = useLibraryStore((state) => state.library);
   const { importLibrary } = useLibraryStore();
 
-  // Use the import parser hook for WebWorker processing
-  const { parseContent, isProcessing } = useImportParser({
+  const { postMessage: parseContent, isProcessing: isParsing } = useWorker<LibraryMedia[]>(WORKER_URL, {
     onSuccess: (items) => {
-      setParsedItems(items as LibraryMedia[]);
-
-      // Calculate preview information
+      setParsedItems(items);
       const movieCount = items.filter((item) => item.media_type === 'movie').length;
       const tvCount = items.filter((item) => item.media_type === 'tv').length;
-
       const currentLibrary = library || {};
       let newItemsCount = 0;
       let updatedItemsCount = 0;
@@ -61,13 +70,14 @@ export default function Import({ onClose }: ImportProps) {
         else newItemsCount++;
       }
 
-      // Validate that we're actually importing something useful
       if (newItemsCount === 0 && updatedItemsCount === 0) {
         addToast({
-          title: 'No new items found.',
-          description: 'The import file contains no new items for your library.',
+          title: 'No items to process',
+          description: 'The import file does not contain any valid items for your library.',
           color: 'warning',
         });
+        handleReset();
+        return;
       }
 
       setImportPreview({
@@ -77,7 +87,6 @@ export default function Import({ onClose }: ImportProps) {
         newItems: newItemsCount,
         updatedItems: updatedItemsCount,
       });
-
       setImportStage('preview');
     },
     onError: (errorMsg) => {
@@ -86,120 +95,70 @@ export default function Import({ onClose }: ImportProps) {
         description: errorMsg || 'The selected file is invalid.',
         color: 'danger',
       });
+      handleReset();
     },
   });
 
-  // Add better file validation before processing
   const handleFileSelect = (files: File[]) => {
     if (files.length === 0) return;
-
     const file = files[0];
-
-    // Double Check
     const fileExtension = file.name.split('.').pop()?.toLowerCase();
+
     if (!fileExtension || !['json', 'csv'].includes(fileExtension)) {
       addToast({ title: 'Invalid file format.', description: 'Please select a JSON or CSV file.', color: 'danger' });
       return;
     }
-
     if (file.size > LIBRARY_IMPORT_MAX_SIZE) {
       addToast({ title: 'File is too large.', description: 'Maximum size is 10MB.', color: 'danger' });
       return;
     }
-
-    if (file.size === 0) {
-      addToast({ title: 'The file is empty.', description: 'Please select a non-empty file.', color: 'danger' });
-      return;
-    }
-
     processFile(file);
   };
 
   const processFile = useCallback(
     (file: File) => {
       setSelectedFile(file);
-
+      setImportStage('processing');
       const reader = new FileReader();
       reader.onload = (e) => {
-        try {
-          const content = e.target?.result as string;
-
-          if (!content || content.trim() === '') throw new Error('The file appears to be empty');
-
-          // Determine format from file extension
-          const fileExtension = file.name.split('.').pop()?.toLowerCase();
-          const format = fileExtension === 'json' ? 'json' : 'csv';
-
-          // Use WebWorker to parse the content
-          parseContent(content, format);
-        } catch (error) {
-          console.error('File reading error:', error);
-          addToast({
-            title: 'File reading error',
-            description: error instanceof Error ? error.message : 'Error reading file',
-            color: 'danger',
-          });
-        }
+        const content = e.target?.result as string;
+        const format = file.name.split('.').pop()?.toLowerCase() as 'json' | 'csv';
+        parseContent({ type: 'parse', content, format });
       };
-
-      reader.onerror = () => {
-        addToast({
-          title: 'File reading error',
-          description: 'Failed to read the file. It may be corrupted or inaccessible.',
-          color: 'danger',
-        });
-      };
-
+      reader.onerror = () =>
+        addToast({ title: 'File reading error', description: 'Failed to read the file.', color: 'danger' });
       reader.readAsText(file);
     },
     [parseContent]
   );
 
   const handleImport = useCallback(async () => {
-    if (!parsedItems) {
-      addToast({ title: 'No data to import', description: 'Please select a valid file to import.', color: 'warning' });
-      return;
-    }
+    if (!parsedItems) return;
+    setIsImporting(true);
+    setImportStage('processing');
 
     try {
-      // Validate import options
-      if (!importOptions.mergeStrategy || !['smart', 'overwrite', 'skip'].includes(importOptions.mergeStrategy)) {
-        throw new Error('Invalid merge strategy selected');
-      }
-
-      // Confirmation for overwrite strategy
-      if (importOptions.mergeStrategy === 'overwrite' && Object.keys(library || {}).length > 0) {
-        console.info('Overwriting existing library...');
-      }
-
-      // Use already parsed items for import
       const importedCount = await importLibrary(parsedItems, importOptions);
-
-      // Validate the result
-      if (importedCount === 0) {
-        addToast({ title: 'No items imported', description: 'No items were imported or updated', color: 'warning' });
-        return;
-      }
-
       setImportStage('complete');
-
       setTimeout(() => {
         addToast({
           title: 'Import successful',
-          description: `${importedCount} items imported/updated successfully!`,
+          description: `${importedCount} items were processed.`,
           color: 'success',
         });
         onClose();
       }, 1500);
     } catch (error) {
-      console.error('Import error:', error);
       addToast({
         title: 'Import error',
         description: `Failed to import library: ${error instanceof Error ? error.message : 'Unknown error'}`,
         color: 'danger',
       });
+      setImportStage('options');
+    } finally {
+      setIsImporting(false);
     }
-  }, [parsedItems, importOptions, library, importLibrary, onClose]);
+  }, [parsedItems, importOptions, importLibrary, onClose]);
 
   const handleReset = () => {
     setSelectedFile(null);
@@ -207,98 +166,107 @@ export default function Import({ onClose }: ImportProps) {
     setImportPreview(null);
   };
 
+  const isBusy = isParsing || isImporting;
+
   function renderStage() {
     switch (importStage) {
       case 'select':
         return (
           <>
-            <p className='text-Grey-300 text-sm'>
-              Import a previously exported library file. This will merge the data with your existing library.
-            </p>
-
-            <div className='rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3 text-left'>
+            <div className='border-Secondary-500/20 bg-Secondary-500/10 rounded-lg border p-3 text-left'>
               <div className='flex items-start gap-3'>
-                <AlertTriangle className='size-5 flex-shrink-0 text-yellow-400' aria-hidden='true' />
+                <Upload className='text-Secondary-300 size-5 flex-shrink-0' />
                 <div>
-                  <h4 className='font-semibold text-yellow-300'>Important</h4>
-                  <p className='mt-1 text-xs text-yellow-400/80'>
-                    Importing will merge with your existing library. You'll have options to control how conflicts are
-                    handled.
+                  <h4 className='text-Secondary-200 font-semibold'>Import Your Library</h4>
+                  <p className='text-Secondary-300/80 mt-1 text-xs'>
+                    Import a previously exported library file. This will merge with your existing library.
                   </p>
                 </div>
               </div>
             </div>
-
-            <FileDropper
-              accept={{
-                'application/json': ['.json'],
-                'text/csv': ['.csv'],
-              }}
-              maxSize={LIBRARY_IMPORT_MAX_SIZE}
-              maxFiles={1}
-              multiple={false}
-              onFileSelect={handleFileSelect}
-              className='mt-4'
-            />
+            <div>
+              <FileDropper
+                accept={{ 'application/json': ['.json'], 'text/csv': ['.csv'] }}
+                maxSize={LIBRARY_IMPORT_MAX_SIZE}
+                maxFiles={1}
+                multiple={false}
+                onFileSelect={handleFileSelect}
+                className='mt-4'
+                disabled={isBusy}
+              />
+              <p className='text-Grey-400 mt-2 text-xs font-medium'>Supported formats: JSON, CSV</p>
+            </div>
           </>
+        );
+      case 'processing':
+        return (
+          <ProcessingView
+            message={isParsing ? 'Parsing your file...' : 'Importing to library...'}
+            icon={
+              isParsing ? (
+                <Upload className='text-Primary-400 size-6' />
+              ) : (
+                <DatabaseZap className='text-Primary-400 size-6' />
+              )
+            }
+          />
         );
       case 'preview':
         if (!importPreview || !selectedFile) return null;
         return (
           <>
             <div className='space-y-4'>
-              <div className='text-Primary-300 flex items-center gap-2 text-sm font-medium'>
-                <CheckCircle2 className='size-4 text-green-400' aria-hidden='true' />
-                <span>File loaded successfully: {selectedFile.name}</span>
+              <div className='bg-blur border-Secondary-500/20 flex items-center gap-3 rounded-lg border px-4 py-3'>
+                <div className='flex size-8 items-center justify-center rounded-full border border-green-500/20 bg-green-500/10'>
+                  <CheckCircle2 className='size-5 text-green-400' aria-hidden='true' />
+                </div>
+                <div className='flex flex-col'>
+                  <span className='text-Primary-100 text-sm font-semibold'>File Ready</span>
+                  <span className='text-Grey-300 max-w-[240px] truncate text-xs sm:max-w-xs'>{selectedFile.name}</span>
+                </div>
               </div>
-              <h3 className='text-Primary-50 font-medium'>Import Preview</h3>
 
-              <div className='bg-blur space-y-3 rounded-lg border border-white/10 p-4'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-Grey-300 text-sm'>Total Items</span>
-                  <span className='text-Primary-50 font-medium'>{importPreview.totalItems}</span>
+              <div className='space-y-3'>
+                <h3 className='text-Primary-50 font-medium'>File Summary</h3>
+                <div className='grid grid-cols-1 gap-3 text-sm sm:grid-cols-3'>
+                  <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
+                    <span className='text-Grey-300'>Total Items</span>
+                    <span className='text-Primary-50 text-xl font-semibold'>{importPreview.totalItems}</span>
+                  </div>
+                  <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
+                    <span className='text-Grey-300 flex items-center gap-1.5'>
+                      <Film className='size-4' /> Movies
+                    </span>
+                    <span className='text-Primary-50 text-xl font-semibold'>{importPreview.movies}</span>
+                  </div>
+                  <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
+                    <span className='text-Grey-300 flex items-center gap-1.5'>
+                      <Tv className='size-4' /> TV Shows
+                    </span>
+                    <span className='text-Primary-50 text-xl font-semibold'>{importPreview.tvShows}</span>
+                  </div>
                 </div>
+              </div>
 
-                <div className='flex items-center justify-between'>
-                  <span className='text-Grey-300 text-sm'>Movies</span>
-                  <span className='text-Primary-50'>{importPreview.movies}</span>
-                </div>
-
-                <div className='flex items-center justify-between'>
-                  <span className='text-Grey-300 text-sm'>TV Shows</span>
-                  <span className='text-Primary-50'>{importPreview.tvShows}</span>
-                </div>
-
-                <div className='my-2 border-t border-white/10'></div>
-
-                <div className='flex items-center justify-between'>
-                  <span className='text-Grey-300 text-sm'>New Items</span>
-                  <span className='text-green-400'>{importPreview.newItems}</span>
-                </div>
-
-                <div className='flex items-center justify-between'>
-                  <span className='text-Grey-300 text-sm'>Updated Items</span>
-                  <span className='text-blue-400'>{importPreview.updatedItems}</span>
+              <div className='space-y-3'>
+                <h3 className='text-Primary-50 font-medium'>Changes to Your Library</h3>
+                <div className='bg-blur space-y-3 rounded-lg border border-white/10 p-4'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-Grey-300 text-sm'>New Items to Add</span>
+                    <span className='font-medium text-green-400'>{importPreview.newItems}</span>
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-Grey-300 text-sm'>Existing Items to Update</span>
+                    <span className='font-medium text-blue-400'>{importPreview.updatedItems}</span>
+                  </div>
                 </div>
               </div>
             </div>
-
-            <div className='flex justify-between'>
-              <Button
-                className='button-secondary!'
-                onPress={handleReset}
-                aria-label='Choose another file'
-                isDisabled={isProcessing}
-              >
+            <div className='mt-8 flex justify-between'>
+              <Button className='button-secondary!' onPress={handleReset}>
                 Choose Another File
               </Button>
-
-              <Button
-                color='primary'
-                onPress={() => setImportStage('options')}
-                aria-label='Continue to import options'
-                isDisabled={isProcessing}
-              >
+              <Button color='primary' onPress={() => setImportStage('options')}>
                 Continue to Options
               </Button>
             </div>
@@ -309,34 +277,21 @@ export default function Import({ onClose }: ImportProps) {
           <>
             <div className='space-y-4'>
               <h3 className='text-Primary-50 font-medium'>Import Options</h3>
-
               <div className='space-y-2'>
                 <div className='grid grid-cols-2 items-center gap-3'>
-                  <div className='flex items-center gap-1'>
-                    <label htmlFor='merge-strategy' className='text-Grey-300 text-sm'>
-                      Merge Strategy
-                    </label>
-                    <Tooltip
-                      content='How to handle conflicts between your library and imported data'
-                      className='tooltip-secondary!'
-                    >
-                      <HelpCircle className='text-Grey-400 size-3.5' />
-                    </Tooltip>
-                  </div>
+                  <label htmlFor='merge-strategy' className='text-Grey-300 text-sm'>
+                    Merge Strategy
+                  </label>
                   <Select
                     id='merge-strategy'
-                    aria-label='Merge strategy'
                     classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
                     selectedKeys={[importOptions.mergeStrategy]}
-                    onChange={(e) => {
-                      if (e) {
-                        setImportOptions({
-                          ...importOptions,
-                          mergeStrategy: e.target.value as 'smart' | 'overwrite' | 'skip',
-                        });
-                      }
-                    }}
-                    isDisabled={isProcessing}
+                    onChange={(e) =>
+                      setImportOptions({
+                        ...importOptions,
+                        mergeStrategy: e.target.value as 'smart' | 'overwrite' | 'skip',
+                      })
+                    }
                   >
                     <SelectSection title='Conflict Resolution'>
                       <SelectItem key='smart'>Smart Merge</SelectItem>
@@ -345,51 +300,32 @@ export default function Import({ onClose }: ImportProps) {
                     </SelectSection>
                   </Select>
                 </div>
-
-                {/* Strategy description */}
                 <div className='bg-Secondary-500/10 border-Secondary-500/20 rounded-md border px-3 py-2'>
                   <p className='text-Secondary-300 text-xs'>{STRATEGY_DESCRIPTIONS[importOptions.mergeStrategy]}</p>
                 </div>
               </div>
-
               <div className='flex items-center justify-between'>
-                <div className='flex items-center gap-1'>
-                  <label htmlFor='keep-favorites' className='text-Grey-300 text-sm'>
-                    Keep Existing Favorites
-                  </label>
-                  <Tooltip
-                    content='Preserve your favorite status even when overwriting items'
-                    className='tooltip-secondary!'
-                  >
-                    <HelpCircle className='text-Grey-400 size-3.5' />
-                  </Tooltip>
-                </div>
+                <label htmlFor='keep-favorites' className='text-Grey-300 text-sm'>
+                  Keep Existing Favorites
+                </label>
                 <Switch
                   id='keep-favorites'
-                  aria-label='Keep existing favorites'
                   isSelected={importOptions.keepExistingFavorites}
-                  onValueChange={(val) => setImportOptions({ ...importOptions, keepExistingFavorites: val })}
-                  isDisabled={isProcessing}
+                  onValueChange={(isSelected: boolean) =>
+                    setImportOptions({ ...importOptions, keepExistingFavorites: isSelected })
+                  }
                 />
               </div>
             </div>
             <div className='flex justify-between'>
-              <Button
-                className='button-secondary!'
-                onPress={() => setImportStage('preview')}
-                aria-label='Back to preview'
-                isDisabled={isProcessing}
-              >
+              <Button className='button-secondary!' onPress={() => setImportStage('preview')}>
                 Back to Preview
               </Button>
-
               <Button
                 color='primary'
-                startContent={<Upload className='size-4' aria-hidden='true' />}
+                startContent={<Upload className='size-4' />}
                 onPress={handleImport}
-                aria-label='Import library'
-                isDisabled={isProcessing}
-                isLoading={isProcessing}
+                isLoading={isBusy}
               >
                 Import Library
               </Button>
@@ -398,12 +334,12 @@ export default function Import({ onClose }: ImportProps) {
         );
       case 'complete':
         return (
-          <div className='flex flex-col items-center justify-center py-8' role='status' aria-live='polite'>
+          <div className='flex flex-col items-center justify-center py-8'>
             <div className='mb-4 flex size-16 items-center justify-center rounded-full bg-green-500/20'>
-              <CheckCircle2 className='size-8 text-green-500' aria-hidden='true' />
+              <CheckCircle2 className='size-8 text-green-500' />
             </div>
             <h3 className='text-Primary-50 mb-2 text-lg font-medium'>Import Successful!</h3>
-            <p className='text-Grey-300 max-w-xs text-center'>Your library has been updated with the imported data.</p>
+            <p className='text-Grey-300 max-w-xs text-center'>Your library has been updated.</p>
           </div>
         );
       default:

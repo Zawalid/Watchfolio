@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { GENRES } from '@/utils/constants/TMDB';
 import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
 import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/library';
-import { serializeToJSON, serializeToCSV } from '@/utils/export';
 import { useAuthStore } from './useAuthStore';
 import {
   getAllLibraryMedias,
@@ -10,7 +9,7 @@ import {
   addOrUpdateLibraryMedia,
   clearLibrary as clearRxDBLibrary,
   searchLibraryMedia,
-  bulkUpdateLibraryMedia,
+  bulkAddOrUpdateLibraryMedia,
   LibraryError,
 } from '@/lib/rxdb';
 import { filterObject } from '@/utils';
@@ -45,15 +44,6 @@ interface LibraryState {
     }
   ) => Promise<LibraryMedia[]>;
 
-  // Bulk operations
-  bulkUpdate: (updates: Array<{ id: string; data: Partial<LibraryMedia> }>) => Promise<{
-    successful: number;
-    failed: number;
-    errors: Array<{ id: string; error: string }>;
-  }>;
-
-  // Export/Import
-  exportLibrary: (items: LibraryMedia[], format: 'json' | 'csv') => string;
   importLibrary: (
     parsedItems: LibraryMedia[],
     options: { mergeStrategy: 'smart' | 'overwrite' | 'skip'; keepExistingFavorites: boolean }
@@ -63,7 +53,6 @@ interface LibraryState {
   clearLibrary: () => Promise<void>;
   clearLibraryLocally: () => void;
   loadLibrary: () => Promise<void>;
-  refreshLibrary: () => Promise<void>;
   clearError: () => void;
   getSyncStatus: () => string;
 }
@@ -226,69 +215,28 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
     }
   },
 
-  bulkUpdate: async (updates) => {
-    set({ isLoading: true, error: null });
-
-    try {
-      const result = await bulkUpdateLibraryMedia(updates, {
-        batchSize: 25,
-        onProgress: (processed, total) => {
-          console.log(`Bulk update progress: ${processed}/${total}`);
-        },
-      });
-
-      await get().loadLibrary();
-      return result;
-    } catch (error) {
-      console.error('Bulk update failed:', error);
-      set({ error: 'Bulk update failed' });
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
-  exportLibrary: (items, format = 'json') => {
-    const libraryItems = items.length > 0 ? items : Object.values(get().library);
-    return format === 'csv' ? serializeToCSV(libraryItems) : serializeToJSON(libraryItems);
-  },
-
   importLibrary: async (parsedItems, options = { mergeStrategy: 'smart', keepExistingFavorites: true }) => {
     set({ isLoading: true, error: null });
 
     try {
-      if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
-        return 0;
-      }
+      if (!Array.isArray(parsedItems) || parsedItems.length === 0) return 0;
 
       const currentLibrary = get().library || {};
       const { mergedLibrary, importCount } = mergeLibraryItems(parsedItems, currentLibrary, options);
 
-      // Process in batches
-      const batchSize = 25;
-      let processed = 0;
+      await bulkAddOrUpdateLibraryMedia(Object.values(mergedLibrary));
 
-      for (let i = 0; i < Object.values(mergedLibrary).length; i += batchSize) {
-        const batch = Object.values(mergedLibrary).slice(i, i + batchSize);
+      set(() => ({
+        library: mergedLibrary,
+        lastUpdatedAt: new Date().toISOString(),
+      }));
 
-        await Promise.allSettled(
-          batch.map(async (item) => {
-            try {
-              await get().addOrUpdateItem(item);
-              processed++;
-            } catch (error) {
-              console.error(`Failed to import item ${item.id}:`, error);
-            }
-          })
-        );
-      }
-
-      console.log(`Import completed: ${processed} items processed`);
-      return importCount;
+      return importCount; 
     } catch (error) {
       console.error('Import error:', error);
-      set({ error: 'Import failed' });
-      throw new LibraryError(`Failed to import library: ${error instanceof Error ? error.message : String(error)}`);
+      const errorMessage = `Failed to import library: ${error instanceof Error ? error.message : String(error)}`;
+      set({ error: errorMessage });
+      throw new LibraryError(errorMessage);
     } finally {
       set({ isLoading: false });
     }
@@ -341,10 +289,6 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
-  },
-
-  refreshLibrary: async () => {
-    await get().loadLibrary();
   },
 
   clearError: () => {

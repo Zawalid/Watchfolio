@@ -30,7 +30,7 @@ export function useImportParser(options?: ImportParserOptions) {
 
     try {
       // Create a new worker instance
-      const importWorker = new Worker(new URL('../workers/library-import-parser.worker.ts', import.meta.url), {
+      const importWorker = new Worker(new URL('../workers/import.worker.ts', import.meta.url), {
         type: 'module',
       });
 
