@@ -9,14 +9,14 @@ export default function HeroSection() {
   const { data: featuredData, isLoading } = useQuery({
     queryKey: ['featured-content'],
     queryFn: async () => await getTrendingAll('week', 1),
-    staleTime: 1000 * 60 * 15, // 15 minutes
+    staleTime: 1000 * 60 * 15, 
   });
 
   const featuredItems = (featuredData?.results as Media[])?.slice(0, 10) || [];
 
   if (isLoading) {
     return (
-      <div className='from-Grey-800 to-Grey-700 absolute inset-0 flex h-screen w-screen items-center bg-gradient-to-r px-6 lg:px-12'>
+      <div className='from-Grey-800 to-Grey-700 absolute left-0 top-0 flex h-screen w-screen items-center bg-gradient-to-r px-6 lg:px-12'>
         <div
             className='absolute inset-0 h-full w-full object-cover object-center'
             style={{ backgroundImage: `url(${placeholder})`, backgroundSize: 'cover' }}
