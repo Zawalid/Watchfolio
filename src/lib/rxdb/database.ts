@@ -19,6 +19,14 @@ interface WatchfolioDatabase {
 let dbInstance: WatchfolioDatabase | null = null;
 let dbPromise: Promise<WatchfolioDatabase> | null = null;
 
+type DBStatus = 'not-initialized' | 'initializing' | 'ready';
+
+export const getDBStatus = (): DBStatus => {
+  if (dbInstance) return 'ready';
+  if (dbPromise) return 'initializing';
+  return 'not-initialized';
+};
+
 export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
   if (dbInstance) return dbInstance;
   if (dbPromise) return dbPromise;
@@ -40,7 +48,6 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
         autoMigrate: false,
       },
     });
-    
 
     dbInstance = db as unknown as WatchfolioDatabase;
     console.log('Watchfolio database created successfully');

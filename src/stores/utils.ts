@@ -18,7 +18,7 @@ export const authStorePartializer = (state: AuthState) => {
   if (!state.user) {
     return {
       isAuthenticated: false,
-      pendingOnboarding: false,
+      pendingOnboarding: state.pendingOnboarding,
       userPreferences: state.userPreferences,
       user: null,
     };

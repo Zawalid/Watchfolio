@@ -58,7 +58,7 @@ export default function AuthModal() {
   const handleGoogleSignIn = async () => {
     setIsSigningInWithGoogle(true);
     try {
-      if (authModalType === 'signup') setPendingOnboarding(true);
+      setPendingOnboarding(true);
       await signInWithGoogle();
     } catch (error) {
       console.error('Google sign in failed:', error);
@@ -180,10 +180,11 @@ export default function AuthModal() {
 
       <ModalFooter className='pt-2'>
         <p className='text-Grey-400 w-full text-center text-xs'>
-          By continuing, you agree to our 
+          By continuing, you agree to our
           <Link to='/terms' className='text-Primary-400 hover:text-Primary-300'>
             Terms of Service
-          </Link> and
+          </Link>{' '}
+          and
           <Link to='/privacy' className='text-Primary-400 hover:text-Primary-300'>
             Privacy Policy
           </Link>

@@ -108,7 +108,12 @@ export function replicateAppwrite<RxDocType>(
         batchSize: options.pull.batchSize || 25,
         stream$: pullStream$.asObservable(),
         async handler(lastPulledCheckpoint, batchSize) {
-          const queries: string[] = [Query.orderAsc('$updatedAt'), Query.orderAsc('$id'), Query.limit(batchSize)];
+          const queries: string[] = [
+            Query.equal('userId', options.userId),
+            Query.orderAsc('$updatedAt'),
+            Query.orderAsc('$id'),
+            Query.limit(batchSize),
+          ];
 
           if (lastPulledCheckpoint) {
             queries.unshift(

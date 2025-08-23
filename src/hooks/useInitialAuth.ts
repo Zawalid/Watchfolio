@@ -13,7 +13,7 @@ export function useInitialAuth() {
   }, [user, checkAuth]);
 
   useEffect(() => {
-    if (user && pendingOnboarding) {
+    if (user && pendingOnboarding && user.prefs.hasSeenOnboarding !== 'TRUE') {
       setPendingOnboarding(false);
 
       const hasExistingPreferences =

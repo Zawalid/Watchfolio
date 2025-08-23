@@ -198,7 +198,6 @@ class AuthService {
       throw this.formatError(error);
     }
   }
-
   /**
    * Update user preferences
    */
@@ -218,6 +217,19 @@ class AuthService {
       throw this.formatError(error);
     }
   }
+
+  /**
+   * Update account preferences
+   */
+  async updateAccountPreferences(preferences: Record<string, string>) {
+    try {
+      return await appwriteService.auth.updatePreferences(preferences);
+    } catch (error) {
+      console.error('Update user name error:', error);
+      throw this.formatError(error);
+    }
+  }
+
   /**
    * Delete user account - removes auth account, profile, preferences, and library
    */

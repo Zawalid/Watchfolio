@@ -11,7 +11,7 @@ import {
   UpdateUserPreferencesInput,
   UserWithProfile,
 } from '@/lib/appwrite/types';
-import { startReplication, stopReplication, getSyncStatus, destroyDB } from '@/lib/rxdb';
+import { startReplication, stopReplication, getSyncStatus, destroyDB, getDBStatus } from '@/lib/rxdb';
 import { authStorePartializer } from './utils';
 
 export interface AuthState {
@@ -59,6 +59,7 @@ export interface AuthState {
   checkIsOwnProfile: (username?: string) => boolean;
   getSyncStatus: () => string;
   clearSyncError: () => void;
+  loadAndSyncLibrary: () => Promise<void>;
   cleanUp: () => Promise<void>;
 }
 
@@ -83,16 +84,7 @@ export const useAuthStore = create<AuthState>()(
 
           set({ user, isAuthenticated: !!user, isLoading: false });
 
-          // Load library and start sync
-          if (user) {
-            await useLibraryStore.getState().loadLibrary();
-            try {
-              await startReplication(user.$id, user.profile.library);
-            } catch (error) {
-              console.error('Failed to start sync:', error);
-              set({ syncError: 'Failed to start sync' });
-            }
-          }
+          await get().loadAndSyncLibrary();
 
           return session;
         } catch (error) {
@@ -116,13 +108,7 @@ export const useAuthStore = create<AuthState>()(
 
           set({ user, isAuthenticated: !!user, isLoading: false });
 
-          // Start sync after signup
-          try {
-            await startReplication(user.$id, user.profile.library);
-          } catch (error) {
-            console.error('Failed to start sync:', error);
-            set({ syncError: 'Failed to start sync' });
-          }
+          await get().loadAndSyncLibrary();
 
           return newUser;
         } catch (error) {
@@ -166,16 +152,7 @@ export const useAuthStore = create<AuthState>()(
 
           set({ user, isAuthenticated: !!user, isLoading: false });
 
-          await useLibraryStore.getState().loadLibrary();
-
-          if (user) {
-            try {
-              await startReplication(user.$id, user.profile.library);
-            } catch (error) {
-              console.error('Failed to start sync:', error);
-              set({ syncError: 'Failed to start sync' });
-            }
-          }
+          await get().loadAndSyncLibrary();
         } catch {
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
@@ -303,6 +280,7 @@ export const useAuthStore = create<AuthState>()(
 
       setPendingOnboarding: (value: boolean) => {
         set({ pendingOnboarding: value });
+        if (value === false) authService.updateAccountPreferences({ hasSeenOnboarding: 'TRUE' });
       },
 
       checkIsOwnProfile: (username) => {
@@ -318,9 +296,26 @@ export const useAuthStore = create<AuthState>()(
         set({ syncError: null });
       },
 
+      loadAndSyncLibrary: async () => {
+        const user = get().user;
+
+        await useLibraryStore.getState().loadLibrary();
+
+        if (user) {
+          try {
+            await startReplication(user.$id, user.profile.library);
+          } catch (error) {
+            console.error('Failed to start sync:', error);
+            set({ syncError: 'Failed to start sync' });
+          }
+        }
+      },
+
       cleanUp: async () => {
-        await stopReplication();
-        await destroyDB();
+        if (getDBStatus() === 'ready') {
+          await stopReplication();
+          await destroyDB();
+        }
         useLibraryStore.getState().clearLibraryLocally();
       },
     }),

@@ -12,7 +12,7 @@ function setPermissions(userId: string): string[] {
     Permission.read(Role.any()),
     Permission.read(Role.user(userId)),
     Permission.update(Role.user(userId)),
-    Permission.delete(Role.user(userId))
+    Permission.delete(Role.user(userId)),
   ];
 }
 
@@ -114,7 +114,7 @@ export class ProfileAPI extends BaseAPI {
     const library = await libraryService.get(profile.library.$id);
     if (!library) return null;
 
-    const items = library.items?.length ? library.items as LibraryMedia[] : [];
+    const items = library.items?.length ? (library.items as LibraryMedia[]) : [];
     const counts = getLibraryCount({ items }) as Record<LibraryFilterStatus, number>;
 
     const ratedItems: number[] = [];
@@ -216,9 +216,7 @@ export class LibraryAPI extends BaseAPI {
   }
 
   async get(libraryId: string) {
-    return this.getDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, [
-      Query.select(['*', 'items.*']),
-    ]);
+    return this.getDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, [Query.select(['*', 'items.*'])]);
   }
 
   async update(libraryId: string, libraryData: UpdateLibraryInput) {
@@ -305,7 +303,6 @@ export class AppwriteLibraryMediaAPI extends BaseAPI {
   }
 }
 
-
 /**
  * Authentication API
  */
@@ -366,6 +363,10 @@ export class AuthAPI {
 
   async updateVerification(userId: string, secret: string) {
     return await account.updateVerification(userId, secret);
+  }
+
+  async updatePreferences(preferences: Record<string, string>) {
+    return await account.updatePrefs(preferences);
   }
 }
 

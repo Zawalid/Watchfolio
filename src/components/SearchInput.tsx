@@ -10,6 +10,8 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useQueryState } from 'nuqs';
 import { getTmdbImage } from '@/utils/media';
+import { slugify } from '@/utils';
+import { useNavigate } from 'react-router';
 
 const HISTORY_KEY = 'search-history';
 const HISTORY_LIMIT = 12;
@@ -232,6 +234,8 @@ const SuggestionsDropdown = React.memo(
     onClearHistory: () => void;
     onRemoveHistoryItem: (item: string) => void;
   }) => {
+    const navigate = useNavigate();
+
     const handleRemoveClick = useCallback(
       (e: React.MouseEvent, item: string) => {
         e.stopPropagation();
@@ -279,7 +283,7 @@ const SuggestionsDropdown = React.memo(
                   <span className='flex-1 truncate'>{item}</span>
                 </div>
                 <div
-                  className='text-Grey-500 hover:text-Error-400 ml-2 rounded p-1 transition-colors cursor-pointer'
+                  className='text-Grey-500 hover:text-Error-400 ml-2 cursor-pointer rounded p-1 transition-colors'
                   onClick={(e) => handleRemoveClick(e, item)}
                   tabIndex={-1}
                   aria-label={`Remove "${item}" from history`}
@@ -295,46 +299,49 @@ const SuggestionsDropdown = React.memo(
         {!showingHistory && suggestions.length > 0 && (
           <div>
             {suggestions.map((suggestion, index) => {
+              const { id, mediaType, name, popularity, rating, year } = suggestion;
               return (
                 <motion.button
-                  key={`suggestion-${suggestion.id}-${suggestion.name}-${suggestion.year}-${index}`}
+                  key={`suggestion-${id}-${name}-${year}-${index}`}
                   type='button'
                   className={`w-full px-4 py-3 text-left text-base transition-all duration-200 first:rounded-t-xl last:rounded-b-xl ${
                     index === selectedIndex
                       ? 'bg-Primary-500/20 text-Primary-300 border-Primary-500 border-l-2'
                       : 'text-Grey-200 hover:bg-white/5 hover:text-white'
                   }`}
-                  onClick={() => onSuggestionClick(suggestion.name)}
+                  onClick={() => {
+                    const base =
+                      mediaType === 'person' ? '/celebrities' : `/${mediaType === 'movie' ? 'movies' : 'tv'}/details`;
+                    navigate(`${base}/${id}-${slugify(name)}`);
+                  }}
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <div className='flex items-center gap-3'>
                     <img
                       src={getTmdbImage(suggestion, 'w200')}
-                      alt={suggestion.name}
+                      alt={name}
                       className='h-14 w-10 rounded-md object-cover'
                     />
 
                     <div className='min-w-0 flex-1'>
                       <div className='flex items-center gap-2'>
-                        <span className='truncate font-medium'>{suggestion.name}</span>
-                        {suggestion.year && (
-                          <span className='text-Grey-400 flex-shrink-0 text-sm'>({suggestion.year})</span>
-                        )}
+                        <span className='truncate font-medium'>{name}</span>
+                        {year && <span className='text-Grey-400 flex-shrink-0 text-sm'>({year})</span>}
                       </div>
                       <div className='mt-1 flex items-center gap-2'>
-                        {suggestion.mediaType !== 'person' && (
+                        {mediaType !== 'person' && (
                           <div className='flex items-center gap-2'>
                             <span className='text-Grey-500 text-xs tracking-wide capitalize'>
-                              {suggestion.mediaType === 'movie' ? 'Movie' : 'TV Show'}
+                              {mediaType === 'movie' ? 'Movie' : 'TV Show'}
                             </span>
-                            {suggestion.popularity > 50 && <span className='text-Primary-400 text-xs'>🔥 Popular</span>}
+                            {popularity > 50 && <span className='text-Primary-400 text-xs'>🔥 Popular</span>}
                           </div>
                         )}
-                        {!!suggestion.rating && (
+                        {!!rating && (
                           <div className='flex items-center gap-1'>
                             <Star className='text-Warning-400 h-3 w-3 fill-current' />
-                            <span className='text-Grey-400 text-xs'>{suggestion.rating.toFixed(1)}</span>
+                            <span className='text-Grey-400 text-xs'>{rating.toFixed(1)}</span>
                           </div>
                         )}
                       </div>
