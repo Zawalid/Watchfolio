@@ -77,7 +77,7 @@ class AuthService {
       const currentAccount = await appwriteService.auth.getCurrentUser();
       if (!currentAccount) return null;
       try {
-        const userProfile = await appwriteService.profiles.getByUserId(currentAccount.$id);
+        const userProfile = await appwriteService.profile.getByUserId(currentAccount.$id);
         if (!userProfile) throw new Error('Profile not found');
 
         const userLocation = await appwriteService.locale.getUserLocation();
@@ -156,9 +156,9 @@ class AuthService {
       await appwriteService.auth.updateEmail(email, password);
 
       // Update email in profile
-      const profile = await appwriteService.profiles.getByUserId(userId);
+      const profile = await appwriteService.profile.getByUserId(userId);
       if (profile) {
-        await appwriteService.profiles.update(profile.$id, { email });
+        await appwriteService.profile.update(profile.$id, { email });
       }
 
       // Return updated user
@@ -187,9 +187,9 @@ class AuthService {
     try {
       if (profileData.name) await this.updateUserName(profileData.name);
 
-      const profile = await appwriteService.profiles.getByUserId(userId);
+      const profile = await appwriteService.profile.getByUserId(userId);
       if (profile) {
-        await appwriteService.profiles.update(profile.$id, profileData);
+        await appwriteService.profile.update(profile.$id, profileData);
       }
 
       return await this.getCurrentUser();
@@ -206,7 +206,7 @@ class AuthService {
     preferencesData: UpdateUserPreferencesInput
   ): Promise<UserWithProfile | null> {
     try {
-      const profile = await appwriteService.profiles.getByUserId(userId);
+      const profile = await appwriteService.profile.getByUserId(userId);
       if (profile?.preferences) {
         await appwriteService.userPreferences.update(profile.preferences.$id, preferencesData);
       }
@@ -236,10 +236,10 @@ class AuthService {
   async deleteUserAccount(userId: string) {
     try {
       // Get the profile first to access related data
-      const profile = await appwriteService.profiles.getByUserId(userId);
+      const profile = await appwriteService.profile.getByUserId(userId);
       if (profile) {
         // Delete profile (this will cascade delete preferences and library due to relationships)
-        await appwriteService.profiles.delete(profile.$id);
+        await appwriteService.profile.delete(profile.$id);
       }
       await appwriteService.auth.deleteAllSessions();
     } catch (error) {
@@ -273,7 +273,7 @@ class AuthService {
       const profileDataWithRelationships = { ...userData, preferences: preferences.$id, library: library.$id };
 
       // Create the profile with the relationship IDs
-      const profile = await appwriteService.profiles.create(profileDataWithRelationships);
+      const profile = await appwriteService.profile.create(profileDataWithRelationships);
 
       return profile;
     } catch (error) {
@@ -290,7 +290,7 @@ class AuthService {
         averageRating: 0,
       };
 
-      return await appwriteService.libraries.create(libraryData);
+      return await appwriteService.library.create(libraryData);
     } catch (error) {
       console.error('Create user library error:', error);
       throw error;

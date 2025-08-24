@@ -5,7 +5,7 @@ import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import ImportExportModal from '@/components/library/ImportExportModal';
-import { useClearLibrary } from '@/hooks/useClearLibrary';
+import { useClearLibrary } from '@/hooks/library/useClearLibrary';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -116,7 +116,8 @@ export default function Library() {
               >
                 {isSyncing ? 'Syncing...' : 'Sync Now'}
               </Button>
-            </div></div>
+            </div>
+          </div>
         </div>
       </SettingSection>
 

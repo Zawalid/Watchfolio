@@ -12,7 +12,7 @@ import AvatarManager from './AvatarManager';
 import { profileInfoSchema } from '@/lib/validation/settings';
 import { getAvatarWithFallback } from '@/utils/avatar';
 import { useEffect, useState } from 'react';
-import { profilesService } from '@/lib/appwrite/api';
+import { appwriteService } from '@/lib/appwrite/api';
 import { useDebounce } from '@/hooks/useDebounce';
 import { UpdateProfileInput } from '@/lib/appwrite/types';
 
@@ -206,7 +206,7 @@ function Username({ username, currentUsername, error, register, setError, clearE
     let isMounted = true;
     setChecking(true);
 
-    profilesService
+    appwriteService.profile
       .isUsernameAvailable(debouncedUsername)
       .then((available) => {
         if (!isMounted) return;

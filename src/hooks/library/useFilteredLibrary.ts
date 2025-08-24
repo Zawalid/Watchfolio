@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useDiscoverParams } from './useDiscoverParams';
+import { useDiscoverParams } from '../useDiscoverParams';
 import { NETWORKS } from '@/utils/constants/TMDB';
 
 export function useFilteredLibrary(allMedia: LibraryMedia[] | undefined, status?: LibraryFilterStatus) {

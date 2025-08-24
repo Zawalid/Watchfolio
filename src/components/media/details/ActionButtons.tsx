@@ -3,7 +3,7 @@ import { Play, Heart, Film, LibraryBig } from 'lucide-react';
 import { Button, useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
+import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';
 import { generateMediaId } from '@/utils/library';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { cn } from '@/utils';

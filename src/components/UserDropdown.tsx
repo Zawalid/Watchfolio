@@ -4,7 +4,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection 
 import { ChevronDownIcon, UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle, UserPlus } from 'lucide-react';
 import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { ShortcutKey } from './ui/ShortcutKey';

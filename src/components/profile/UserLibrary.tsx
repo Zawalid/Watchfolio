@@ -15,7 +15,7 @@ import { getShortcut } from '@/utils/keyboardShortcuts';
 import FiltersModal from '@/components/FiltersModal';
 import SortBy from '@/components/SortBy';
 import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
-import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
+import { useFilteredLibrary } from '@/hooks/library/useFilteredLibrary';
 import { getLibraryCount } from '@/utils/library';
 import { Status } from '@/components/ui/Status';
 import { useAuthStore } from '@/stores/useAuthStore';

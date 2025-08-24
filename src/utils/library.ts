@@ -1,4 +1,4 @@
-import { profilesService } from '@/lib/appwrite/api';
+import { appwriteService } from '@/lib/appwrite/api';
 import { Activity, ActivityAction } from '@/lib/appwrite/types';
 import { isMedia } from './media';
 
@@ -51,7 +51,7 @@ export const logLibraryActivity = (
   profileId: string
 ) => {
   const log = (action: ActivityAction, props?: Partial<Activity>) => {
-    profilesService.logActivity(profileId, {
+    appwriteService.profile.logActivity(profileId, {
       ...props,
       action,
       mediaType: newItemData.media_type,

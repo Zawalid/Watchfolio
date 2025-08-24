@@ -20,7 +20,7 @@ export default function ProfilePage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['user', username],
-    queryFn: async () => await appwriteService.profiles.getUserProfile(username!),
+    queryFn: async () => await appwriteService.profile.getUserProfile(username!),
     enabled: !!username,
   });
 

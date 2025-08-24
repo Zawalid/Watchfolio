@@ -2,7 +2,7 @@ import { useLibraryStore } from '@/stores/useLibraryStore';
 import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { useFilteredLibrary } from '@/hooks/useFilteredLibrary';
+import { useFilteredLibrary } from '@/hooks/library/useFilteredLibrary';
 
 export default function Library({ status }: { status: LibraryFilterStatus }) {
   const { getAllItems, getItemsByStatus } = useLibraryStore();

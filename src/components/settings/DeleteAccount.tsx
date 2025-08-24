@@ -1,4 +1,4 @@
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { addToast } from '@heroui/react';
 import { Button } from '@heroui/react';

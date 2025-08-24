@@ -111,7 +111,7 @@ export class ProfileAPI extends BaseAPI {
 
     if (!profile || !profile.library?.$id) return null;
     //? Im fetching the library because Appwrite only support a max depth of three levels, which means i can't get the media relationship on the library items
-    const library = await libraryService.get(profile.library.$id);
+    const library = await appwriteService.library.get(profile.library.$id);
     if (!library) return null;
 
     const items = library.items?.length ? (library.items as LibraryMedia[]) : [];
@@ -237,12 +237,17 @@ export class LibraryAPI extends BaseAPI {
     if (!profile?.library) return null;
     return profile.library;
   }
+
+  async clearLibrary(libraryId: string) {
+    await this.delete(libraryId);
+    await this.create({averageRating:0}, libraryId);
+  }
 }
 
 /**
  * Library Media API - handles unified library media items
  */
-export class AppwriteLibraryMediaAPI extends BaseAPI {
+export class LibraryMediaAPI extends BaseAPI {
   async create(itemData: CreateAppwriteLibraryMediaInput & { userId?: string }, documentId?: string) {
     const permissions = itemData.userId ? setPermissions(itemData.userId) : undefined;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -379,7 +384,7 @@ export class AuthAPI {
   async deleteSession(sessionId: string) {
     await account.deleteSession(sessionId);
   }
-  
+
   async deleteSessions() {
     await account.deleteSessions();
   }
@@ -472,10 +477,10 @@ export class LocaleAPI {
  * Main API service that combines all sub-services
  */
 export class AppwriteService {
-  public profiles = new ProfileAPI();
+  public profile = new ProfileAPI();
   public userPreferences = new UserPreferencesAPI();
-  public libraries = new LibraryAPI();
-  public appwriteLibraryMedia = new AppwriteLibraryMediaAPI();
+  public library = new LibraryAPI();
+  public libraryMedia = new LibraryMediaAPI();
   public auth = new AuthAPI();
   public storage = new StorageAPI();
   public locale = new LocaleAPI();
@@ -504,19 +509,6 @@ export class AppwriteService {
   }
 }
 
-// Export singleton instance
 export const appwriteService = new AppwriteService();
-
-// Export individual services for direct access if needed
-export const {
-  profiles: profilesService,
-  userPreferences: userPreferencesService,
-  libraries: libraryService,
-  appwriteLibraryMedia: appwriteLibraryMediaService,
-  // Keep for backward compatibility during migration
-  auth: authService,
-  storage: storageService,
-  locale: localeService,
-} = appwriteService;
 
 export { setPermissions };

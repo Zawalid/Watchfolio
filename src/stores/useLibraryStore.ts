@@ -1,13 +1,8 @@
 import { create } from 'zustand';
-import { GENRES } from '@/utils/constants/TMDB';
-import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
-import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/library';
-import { useAuthStore } from './useAuthStore';
 import {
   getAllLibraryMedias,
   deleteLibraryMedia,
   addOrUpdateLibraryMedia,
-  clearLibrary as clearRxDBLibrary,
   searchLibraryMedia,
   bulkAddOrUpdateLibraryMedia,
   LibraryError,
@@ -15,8 +10,14 @@ import {
   isReplicationActive,
   startReplication,
   stopReplication,
+  recreateDB,
 } from '@/lib/rxdb';
+import { GENRES } from '@/utils/constants/TMDB';
+import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
+import { mergeLibraryItems, getLibraryCount, logLibraryActivity } from '@/utils/library';
+import { useAuthStore } from './useAuthStore';
 import { filterObject } from '@/utils';
+import { appwriteService } from '@/lib/appwrite/api';
 
 interface LibraryState {
   library: LibraryCollection;
@@ -233,9 +234,13 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
   clearLibrary: async () => {
     set({ isLoading: true, error: null });
     try {
-      const library = getCurrentLibrary();
-      await clearRxDBLibrary(library?.$id);
       set({ library: {}, lastUpdatedAt: new Date().toISOString() });
+      await recreateDB();
+
+      if (useAuthStore.getState().isAuthenticated) {
+        const libraryId = getCurrentLibrary()?.$id;
+        if (libraryId) await appwriteService.library.clearLibrary(libraryId);
+      }
     } catch (error) {
       console.error('Failed to clear library:', error);
       set({ error: 'Failed to clear library' });

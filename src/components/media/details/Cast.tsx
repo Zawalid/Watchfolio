@@ -24,7 +24,7 @@ export default function Cast({ cast }: { cast: Person[] }) {
                 </div>
                 <div className='mt-2 text-center'>
                   <p className='text font-medium text-white'>{member.name}</p>
-                  <p className='text-sm text-gray-400'>{member.character}</p>
+                  <p className='text-sm text-gray-400 line-clamp-4'>{member.character}</p>
                 </div>
               </Link>
             </Slider.Slide>

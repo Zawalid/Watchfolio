@@ -29,7 +29,7 @@ import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { cn, slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
-import { useClearLibrary } from '@/hooks/useClearLibrary';
+import { useClearLibrary } from '@/hooks/library/useClearLibrary';
 import { AnimatePresence } from 'framer-motion';
 import SortBy from '@/components/SortBy';
 

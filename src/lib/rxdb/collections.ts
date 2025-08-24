@@ -190,11 +190,6 @@ export const addOrUpdateLibraryMedia = async (
   }
 };
 
-export const clearLibrary = async (libraryId?: string): Promise<void> => {
-  const db = await getWatchfolioDB();
-  const items = await getAllLibraryMedias(libraryId);
-  await db.libraryMedia.bulkRemove(items.map((item) => item.id));
-};
 
 export const searchLibraryMedia = async (
   query: string,

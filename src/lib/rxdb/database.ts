@@ -65,3 +65,8 @@ export const destroyDB = async (): Promise<void> => {
   dbPromise = null;
   console.log('Watchfolio database destroyed');
 };
+
+export const recreateDB = async (): Promise<void> => {
+  await destroyDB();
+  await getWatchfolioDB();
+};

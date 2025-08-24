@@ -11,8 +11,8 @@ import { Tooltip } from '@heroui/react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import { useLibraryStore } from '@/stores/useLibraryStore';
-import { useMediaStatusModal } from '@/hooks/useMediaStatusModal';
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';
+import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { generateMediaLink, getTmdbImage, isMedia } from '@/utils/media';
 import { Rating } from '@/components/ui/Rating';
@@ -54,7 +54,6 @@ export default function BaseMediaCard({
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-
 
   const { data: mediaDetails } = useQuery({
     queryKey: queryKeys.details(mediaType, id),
@@ -107,12 +106,18 @@ export default function BaseMediaCard({
       <AnimatePresence>
         {/* Quick Actions - Show for ALL items on hover, including person context */}
         {isInteractive && (
-          <QuickActions key="quick-actions" mediaType={mediaType} media={mediaDetails || media} item={item} isFocused={isFocused} />
+          <QuickActions
+            key='quick-actions'
+            mediaType={mediaType}
+            media={mediaDetails || media}
+            item={item}
+            isFocused={isFocused}
+          />
         )}
         {/* User Rating Badge */}
         {isInteractive && item?.userRating && (
           <motion.div
-            key="user-rating"
+            key='user-rating'
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -437,7 +442,6 @@ const QuickActions = ({
   I need to fix the id (mayber add the $id)
   i need to remove the tmdbid
    */
-
 
   const handleEditStatus = () => {
     const target = item || media;

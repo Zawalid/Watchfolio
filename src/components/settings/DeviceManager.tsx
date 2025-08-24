@@ -5,7 +5,7 @@ import { Button, addToast } from '@heroui/react';
 import { Smartphone, Laptop, Tablet, HelpCircle, LogOut, CheckCircle, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { formatDistanceToNow } from '@/utils';
 import { authService } from '@/lib/auth';
-import { useConfirmationModal } from '@/hooks/useConfirmationModal';
+import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 
 const BROWSERS_IMAGES = [
   { name: 'Chrome', image: 'https://cdnjs.cloudflare.com/ajax/libs/browser-logos/74.0.0/chrome/chrome.png' },
