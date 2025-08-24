@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react';
 import { Download } from 'lucide-react';
 import { Button, addToast, Select, SelectItem, closeToast } from '@heroui/react';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useWorker } from '@/hooks/useWorker';
+import { useLibraryTotalCount } from '@/hooks/library/useLibraryQueries';
+import { getAllLibraryItems } from '@/lib/rxdb';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const formatFilename = (type: string, status: string, format: string): string => {
   const date = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '');
@@ -20,7 +22,6 @@ const estimateFileSize = (count: number, format: 'json' | 'csv'): string => {
 };
 
 const WORKER_URL = new URL('../../workers/export.worker.ts', import.meta.url);
-const LARGE_EXPORT_THRESHOLD = 1000;
 
 export default function Export({ onClose }: { onClose: () => void }) {
   const [exportFormat, setExportFormat] = useState<'json' | 'csv'>('json');
@@ -28,20 +29,19 @@ export default function Export({ onClose }: { onClose: () => void }) {
     status: 'all',
     type: 'all',
   });
+  const library = useAuthStore((state) => state.user?.profile.library);
 
-  const { getItemsByStatus, getCount } = useLibraryStore();
   const exportedType = exportFilter.type === 'all' ? undefined : exportFilter.type;
-  const exportCount = getCount(exportFilter.status, exportedType);
+  const libraryCount = useLibraryTotalCount();
 
   const { postMessage, isProcessing } = useWorker<string>(WORKER_URL, {
     onSuccess: (data) => {
       const blob = new Blob([data], { type: exportFormat === 'json' ? 'application/json' : 'text/csv' });
       const url = URL.createObjectURL(blob);
-
       const fileName = formatFilename(exportFilter.type, exportFilter.status, exportFormat);
       const key = addToast({
         title: 'Download Ready',
-        description: 'Your library file is ready to be downloaded.',
+        description: 'Your library file is ready.',
         color: 'success',
         timeout: Infinity,
         endContent: (
@@ -51,9 +51,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
               const a = document.createElement('a');
               a.href = url;
               a.download = fileName;
-              document.body.appendChild(a);
               a.click();
-              document.body.removeChild(a);
               if (key) closeToast(key);
             }}
           >
@@ -61,103 +59,97 @@ export default function Export({ onClose }: { onClose: () => void }) {
           </Button>
         ),
       });
-
       onClose();
     },
     onError: (errorMsg) => {
-      console.error('Export error:', errorMsg);
-      addToast({ title: 'Export error', description: 'Failed to prepare the export file.', color: 'danger' });
+      addToast({
+        title: 'Export error',
+        description: errorMsg || 'Failed to prepare the export file.',
+        color: 'danger',
+      });
     },
   });
 
-  const handleExport = useCallback(() => {
-    const items = getItemsByStatus(exportFilter.status, exportedType);
+  const handleExport = useCallback(async () => {
+    const items = await getAllLibraryItems(library?.$id, {
+      status: exportFilter.status,
+      mediaType: exportedType,
+      limit: 10000,
+    });
     if (items.length === 0) {
       addToast({ title: 'No items to export', color: 'warning' });
       return;
     }
-
-    if (items.length > LARGE_EXPORT_THRESHOLD) {
-      addToast({
-        title: 'Preparing your export...',
-        description: 'This may take a moment. You can continue using the app.',
-        color: 'secondary',
-      });
-    }
-
+    addToast({ title: 'Preparing your export...', description: 'This may take a moment.', color: 'secondary' });
     postMessage({ type: 'serialize', format: exportFormat, items });
-  }, [getItemsByStatus, exportFilter.status, exportedType, postMessage, exportFormat]);
+  }, [library, exportFilter, exportedType, postMessage, exportFormat]);
 
   return (
     <div className='space-y-5'>
       <div className='space-y-4'>
         <h3 className='text-Primary-50 font-medium'>Export Options</h3>
-        <div className='space-y-4'>
-          <div className='grid grid-cols-2 items-center gap-3'>
-            <label htmlFor='export-format' className='text-Grey-300 text-sm'>
-              Format
-            </label>
-            <Select
-              id='export-format'
-              classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
-              selectedKeys={[exportFormat]}
-              onChange={(e) => setExportFormat(e.target.value as 'json' | 'csv')}
-            >
-              <SelectItem key='json'>JSON</SelectItem>
-              <SelectItem key='csv'>CSV</SelectItem>
-            </Select>
-
-            <label htmlFor='export-type' className='text-Grey-300 text-sm'>
-              Media Type
-            </label>
-            <Select
-              id='export-type'
-              classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
-              selectedKeys={[exportFilter.type]}
-              onChange={(e) => setExportFilter({ ...exportFilter, type: e.target.value as MediaType | 'all' })}
-            >
-              <SelectItem key='all'>All</SelectItem>
-              <SelectItem key='movie'>Movies</SelectItem>
-              <SelectItem key='tv'>TV Shows</SelectItem>
-            </Select>
-
-            <label htmlFor='export-filter' className='text-Grey-300 text-sm'>
-              Content to Export
-            </label>
-            <Select
-              id='export-filter'
-              classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
-              items={[
-                { key: 'all', label: `All Items (${getCount('all', exportedType)})` },
-                ...LIBRARY_MEDIA_STATUS.map(({ value, label }) => ({
-                  key: value,
-                  label: `${label} (${getCount(value, exportedType)})`,
-                })),
-              ]}
-              selectedKeys={[exportFilter.status]}
-              onChange={(e) => setExportFilter({ ...exportFilter, status: e.target.value as LibraryFilterStatus })}
-            >
-              {(item) => <SelectItem>{item.label}</SelectItem>}
-            </Select>
-          </div>
+        <div className='grid grid-cols-2 items-center gap-3'>
+          <label htmlFor='export-format' className='text-Grey-300 text-sm'>
+            Format
+          </label>
+          <Select
+            id='export-format'
+            classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
+            selectedKeys={[exportFormat]}
+            onChange={(e) => setExportFormat(e.target.value as 'json' | 'csv')}
+          >
+            <SelectItem key='json'>JSON</SelectItem>
+            <SelectItem key='csv'>CSV</SelectItem>
+          </Select>
+          <label htmlFor='export-type' className='text-Grey-300 text-sm'>
+            Media Type
+          </label>
+          <Select
+            id='export-type'
+            classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
+            selectedKeys={[exportFilter.type]}
+            onChange={(e) => setExportFilter({ ...exportFilter, type: e.target.value as MediaType | 'all' })}
+          >
+            <SelectItem key='all'>All</SelectItem>
+            <SelectItem key='movie'>Movies</SelectItem>
+            <SelectItem key='tv'>TV Shows</SelectItem>
+          </Select>
+          <label htmlFor='export-filter' className='text-Grey-300 text-sm'>
+            Content to Export
+          </label>
+          <Select
+            id='export-filter'
+            classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
+            items={[
+              { key: 'all', label: `All Items (${libraryCount['all'] || 0})` },
+              ...LIBRARY_MEDIA_STATUS.map(({ value, label }) => ({
+                key: value,
+                label: `${label} (${libraryCount[value] || 0})`,
+              })),
+            ]}
+            selectedKeys={[exportFilter.status]}
+            onChange={(e) => setExportFilter({ ...exportFilter, status: e.target.value as LibraryFilterStatus })}
+          >
+            {(item) => <SelectItem>{item.label}</SelectItem>}
+          </Select>
         </div>
       </div>
-
       <div className='space-y-5'>
         <div className='flex items-center justify-between text-sm'>
           <span className='text-Grey-400'>Estimated File Size:</span>
-          <span className='text-Primary-300 font-medium'>{estimateFileSize(exportCount, exportFormat)}</span>
+          <span className='text-Primary-300 font-medium'>
+            {estimateFileSize(libraryCount[exportFilter.status], exportFormat)}
+          </span>
         </div>
-
         <Button
           className='w-full'
           color='primary'
           onPress={handleExport}
           startContent={<Download className='size-4' />}
-          isDisabled={exportCount === 0 || isProcessing}
+          isDisabled={libraryCount[exportFilter.status] === 0 || isProcessing}
           isLoading={isProcessing}
         >
-          Export {exportCount} Items
+          Export {libraryCount[exportFilter.status]} Items
         </Button>
       </div>
     </div>

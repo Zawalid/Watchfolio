@@ -5,17 +5,18 @@ import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import ImportExportModal from '@/components/library/ImportExportModal';
-import { useClearLibrary } from '@/hooks/library/useClearLibrary';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useLibraryStore } from '@/stores/useLibraryStore';
+import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 
 export default function Library() {
   const { isAuthenticated, userPreferences, updateUserPreferences, toggleAutoSync } = useAuthStore();
   const { syncStatus, lastSyncTime, manualSync } = useLibraryStore();
 
-  const { handleClearLibrary } = useClearLibrary();
+  const { clearLibrary } = useClearLibrary();
+
   const importExportDisclosure = useDisclosure();
 
   const isSyncing = syncStatus === 'syncing' || syncStatus === 'connecting';
@@ -191,7 +192,7 @@ export default function Library() {
               Permanently delete all items from your library. This action cannot be undone.
             </p>
           </div>
-          <Button color='danger' size='sm' onPress={handleClearLibrary} startContent={<Trash2 className='size-4' />}>
+          <Button color='danger' size='sm' onPress={clearLibrary} startContent={<Trash2 className='size-4' />}>
             Clear Library
           </Button>
         </div>

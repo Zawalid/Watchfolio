@@ -1,6 +1,6 @@
 import { ID } from 'appwrite';
 import { getWatchfolioDB } from './database';
-import { MangoQuerySelector } from 'rxdb';
+import { MangoQuery, MangoQuerySelector } from 'rxdb';
 
 class LibraryError extends Error {
   constructor(
@@ -13,231 +13,145 @@ class LibraryError extends Error {
   }
 }
 
-const buildSelector = (conditions: Record<string, unknown>): MangoQuerySelector<LibraryMedia> => {
+const buildQuery = (conditions: Record<string, unknown>): MangoQuery<LibraryMedia> => {
   const selector: MangoQuerySelector<LibraryMedia> = {};
+  const andConditions: MangoQuerySelector<LibraryMedia>[] = [];
+
   Object.entries(conditions).forEach(([key, value]) => {
-    if (value !== undefined && value !== null) {
-      selector[key as keyof LibraryMedia] = value;
+    if (value !== undefined && value !== null && value !== '' && value !== 'all') {
+      if (key === 'query' && value) {
+        selector.title = { $regex: String(value), $options: 'i' };
+      } else if (key === 'status' && value === 'favorites') {
+        selector.isFavorite = true;
+      } else if (key === 'genres' && Array.isArray(value) && value.length > 0) {
+        // For an AND condition on genres, we build an $and query
+        const genreConditions = value.map((genre) => ({ genres: { $elemMatch: { $eq: genre } } }));
+        andConditions.push(...genreConditions);
+      } else if (key === 'networks' && Array.isArray(value) && value.length > 0) {
+        selector.networks = { $in: value };
+      } else if (key !== 'genres' && key !== 'networks') {
+        selector[key as keyof LibraryMedia] = value;
+      }
     }
   });
-  return selector;
+
+  if (andConditions.length > 0) {
+    selector.$and = andConditions;
+  }
+
+  return { selector };
 };
 
-export const getAllLibraryMedias = async (
+export const getAllLibraryItems = async (
   libraryId?: string,
   options: {
     limit?: number;
     offset?: number;
-    sortBy?: 'addedAt' | 'lastUpdatedAt' | 'title' | 'rating';
-    sortOrder?: 'asc' | 'desc';
-  } = {}
-): Promise<LibraryMedia[]> => {
-  const db = await getWatchfolioDB();
-
-  const selector = buildSelector({ 'library.$id': libraryId });
-  let query = db.libraryMedia.find({ selector });
-
-  if (options.sortBy) {
-    const direction = options.sortOrder === 'desc' ? 'desc' : 'asc';
-    query = query.sort({ [options.sortBy]: direction });
-  }
-
-  if (options.offset) query = query.skip(options.offset);
-  if (options.limit) query = query.limit(options.limit);
-
-  const docs = await query.exec();
-  return docs.map((d) => d.toJSON() as LibraryMedia);
-};
-
-export const getLibraryMedia = async (id: string): Promise<LibraryMedia | null> => {
-  if (!id?.trim()) return null;
-
-  const db = await getWatchfolioDB();
-  const doc = await db.libraryMedia
-    .findOne({
-      selector: { id: id.trim() },
-    })
-    .exec();
-
-  return doc ? (doc.toJSON() as LibraryMedia) : null;
-};
-
-export const createLibraryMedia = async (
-  mediaData: LibraryMedia,
-  library: LibraryMedia['library'] | null
-): Promise<LibraryMedia> => {
-  if (!mediaData) {
-    throw new LibraryError('Media data is required', 'INVALID_INPUT');
-  }
-
-  const db = await getWatchfolioDB();
-  const now = new Date().toISOString();
-
-  const rxdbData: LibraryMedia = {
-    id: ID.unique(),
-    status: mediaData.status || 'none',
-    isFavorite: Boolean(mediaData.isFavorite),
-    userRating: mediaData.userRating || undefined,
-    notes: mediaData.notes?.trim() || undefined,
-    addedAt: mediaData.addedAt || now,
-    lastUpdatedAt: now,
-    tmdbId: mediaData.tmdbId,
-    media_type: mediaData.media_type,
-    title: mediaData.title?.trim() || `${mediaData.media_type} ${mediaData.tmdbId}`,
-    overview: mediaData.overview?.trim() || undefined,
-    posterPath: mediaData.posterPath?.trim() || undefined,
-    releaseDate: mediaData.releaseDate?.trim() || undefined,
-    genres: Array.isArray(mediaData.genres) ? mediaData.genres.filter((g) => g?.trim()) : [],
-    rating: typeof mediaData.rating === 'number' ? mediaData.rating : undefined,
-    totalMinutesRuntime: typeof mediaData.totalMinutesRuntime === 'number' ? mediaData.totalMinutesRuntime : undefined,
-    networks: Array.isArray(mediaData.networks) ? mediaData.networks : [],
-    library: library && library.$id ? library : null,
-  };
-
-  if (!rxdbData.tmdbId || !rxdbData.media_type || !rxdbData.title) {
-    throw new LibraryError('Missing required fields: tmdbId, media_type, and title are required', 'VALIDATION_ERROR');
-  }
-
-  const doc = await db.libraryMedia.insert(rxdbData);
-  return doc.toJSON() as LibraryMedia;
-};
-
-export const updateLibraryMedia = async (id: string, mediaData: Partial<LibraryMedia>): Promise<LibraryMedia> => {
-  if (!id?.trim()) {
-    throw new LibraryError('Media ID is required', 'INVALID_INPUT');
-  }
-
-  if (!mediaData || Object.keys(mediaData).length === 0) {
-    throw new LibraryError('Update data is required', 'INVALID_INPUT');
-  }
-
-  const db = await getWatchfolioDB();
-
-  let doc = await db.libraryMedia
-    .findOne({
-      selector: { id: id.trim() },
-    })
-    .exec();
-
-  if (!doc) {
-    throw new LibraryError(`Library media item not found: ${id}`, 'NOT_FOUND');
-  }
-
-  const updateData: Partial<LibraryMedia> = {
-    lastUpdatedAt: new Date().toISOString(),
-    ...mediaData,
-  };
-
-  // Basic validation
-  if (
-    mediaData.status &&
-    !['watching', 'willWatch', 'onHold', 'dropped', 'none', 'completed'].includes(mediaData.status)
-  ) {
-    throw new LibraryError(`Invalid status: ${mediaData.status}`, 'VALIDATION_ERROR');
-  }
-
-  if (mediaData.userRating !== undefined && mediaData.userRating !== null) {
-    if (typeof mediaData.userRating !== 'number' || mediaData.userRating < 1 || mediaData.userRating > 10) {
-      throw new LibraryError('User rating must be between 1 and 10 or null', 'VALIDATION_ERROR');
-    }
-  }
-
-  if (mediaData.title !== undefined) {
-    const trimmedTitle = mediaData.title?.trim();
-    if (!trimmedTitle) {
-      throw new LibraryError('Title cannot be empty', 'VALIDATION_ERROR');
-    }
-    updateData.title = trimmedTitle;
-  }
-
-  doc = await doc.update({ $set: updateData });
-  return doc.toJSON() as LibraryMedia;
-};
-
-export const deleteLibraryMedia = async (id: string): Promise<void> => {
-  if (!id?.trim()) {
-    throw new LibraryError('Media ID is required', 'INVALID_INPUT');
-  }
-
-  const db = await getWatchfolioDB();
-
-  const doc = await db.libraryMedia
-    .findOne({
-      selector: { id: id.trim() },
-    })
-    .exec();
-
-  if (!doc) {
-    throw new LibraryError(`Library media item not found: ${id}`, 'NOT_FOUND');
-  }
-
-  await doc.remove();
-};
-
-export const addOrUpdateLibraryMedia = async (
-  media: LibraryMedia,
-  library: LibraryMedia['library'] | null
-): Promise<LibraryMedia | null> => {
-  const existingMedia = await getLibraryMedia(media.id);
-
-  if (existingMedia) {
-    return await updateLibraryMedia(existingMedia.id, {
-      ...media,
-      lastUpdatedAt: new Date().toISOString(),
-    });
-  } else {
-    return await createLibraryMedia(media, library);
-  }
-};
-
-
-export const searchLibraryMedia = async (
-  query: string,
-  options: {
-    libraryId?: string;
-    mediaType?: 'movie' | 'tv';
+    sortBy?: string;
+    sortDir?: 'asc' | 'desc';
     status?: LibraryFilterStatus;
-    limit?: number;
+    query?: string;
+    mediaType?: MediaType | 'all';
+    genres?: string[];
+    networks?: number[];
   } = {}
 ): Promise<LibraryMedia[]> => {
-  if (!query?.trim()) return [];
-
   const db = await getWatchfolioDB();
-  const searchTerm = query.trim().toLowerCase();
-
-  const selector = buildSelector({
-    'library.$id': options.libraryId,
-    media_type: options.mediaType,
+  const { selector } = buildQuery({
+    'library.$id': libraryId,
     status: options.status,
+    query: options.query,
+    media_type: options.mediaType,
+    genres: options.genres,
+    networks: options.networks,
   });
 
   let queryBuilder = db.libraryMedia.find({ selector });
+
+  if (options.sortBy) {
+    queryBuilder = queryBuilder.sort({ [options.sortBy]: options.sortDir || 'asc' });
+  }
+  if (options.offset) queryBuilder = queryBuilder.skip(options.offset);
   if (options.limit) queryBuilder = queryBuilder.limit(options.limit);
 
   const docs = await queryBuilder.exec();
-  const results = docs.map((d) => d.toJSON() as LibraryMedia);
-
-  return results.filter(
-    (item) =>
-      item.title?.toLowerCase().includes(searchTerm) ||
-      item.overview?.toLowerCase().includes(searchTerm) ||
-      item.genres?.some((genre) => genre.toLowerCase().includes(searchTerm))
-  );
+  return docs.map((d) => d.toJSON() as LibraryMedia);
 };
 
-export const bulkAddOrUpdateLibraryMedia = async (
+export const getLibraryItemsByIds = async (ids: string[]): Promise<LibraryMedia[]> => {
+  if (!ids || ids.length === 0) return [];
+  const db = await getWatchfolioDB();
+  const docs = await db.libraryMedia.find({ selector: { id: { $in: ids } } }).exec();
+  return docs.map((doc) => doc.toJSON() as LibraryMedia);
+};
+
+export const countLibraryItems = async (libraryId?: string, status?: LibraryFilterStatus): Promise<number> => {
+  const db = await getWatchfolioDB();
+  const { selector } = buildQuery({ 'library.$id': libraryId, status });
+  return await db.libraryMedia.count({ selector }).exec();
+};
+
+export const getLibraryItem = async (id: string): Promise<LibraryMedia | null> => {
+  if (!id?.trim()) return null;
+  const db = await getWatchfolioDB();
+  const doc = await db.libraryMedia.findOne({ selector: { id: id.trim() } }).exec();
+  return doc ? (doc.toJSON() as LibraryMedia) : null;
+};
+
+export const addOrUpdateLibraryItem = async (
+  media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>,
+  library: LibraryMedia['library'] | null
+): Promise<LibraryMedia> => {
+  const db = await getWatchfolioDB();
+  const now = new Date().toISOString();
+
+  const doc = await db.libraryMedia.findOne(media.id).exec();
+
+  if (doc) {
+    const updatedDoc = await doc.update({ $set: { ...media, lastUpdatedAt: now } });
+    return updatedDoc.toJSON() as LibraryMedia;
+  } else {
+    const data: LibraryMedia = {
+      id: ID.unique(),
+      status: media.status || 'none',
+      isFavorite: Boolean(media.isFavorite),
+      userRating: media.userRating || undefined,
+      notes: media.notes?.trim() || undefined,
+      addedAt: media.addedAt || now,
+      lastUpdatedAt: now,
+      tmdbId: media.tmdbId!,
+      media_type: media.media_type!,
+      title: media.title?.trim() || `${media.media_type} ${media.tmdbId}`,
+      overview: media.overview?.trim() || undefined,
+      posterPath: media.posterPath?.trim() || undefined,
+      releaseDate: media.releaseDate?.trim() || undefined,
+      genres: Array.isArray(media.genres) ? media.genres.filter((g) => g?.trim()) : [],
+      rating: typeof media.rating === 'number' ? media.rating : undefined,
+      totalMinutesRuntime: typeof media.totalMinutesRuntime === 'number' ? media.totalMinutesRuntime : undefined,
+      networks: Array.isArray(media.networks) ? media.networks : [],
+      library: library && library.$id ? library : null,
+    };
+
+    const newDoc = await db.libraryMedia.insert(data);
+    return newDoc.toJSON() as LibraryMedia;
+  }
+};
+
+export const deleteLibraryItem = async (id: string): Promise<void> => {
+  if (!id?.trim()) throw new LibraryError('Media ID is required', 'INVALID_INPUT');
+  const db = await getWatchfolioDB();
+  const doc = await db.libraryMedia.findOne({ selector: { id: id.trim() } }).exec();
+  if (!doc) throw new LibraryError(`Library media item not found: ${id}`, 'NOT_FOUND');
+  await doc.remove();
+};
+
+export const bulkaddOrUpdateLibraryItem = async (
   items: LibraryMedia[]
 ): Promise<{ successful: number; failed: number }> => {
-  if (!Array.isArray(items) || items.length === 0) {
-    return { successful: 0, failed: 0 };
-  }
+  if (!Array.isArray(items) || items.length === 0) return { successful: 0, failed: 0 };
   const db = await getWatchfolioDB();
   const result = await db.libraryMedia.bulkUpsert(items);
-
-  return {
-    successful: result.success.length,
-    failed: result.error.length,
-  };
+  return { successful: result.success.length, failed: result.error.length };
 };
 
 export { LibraryError };

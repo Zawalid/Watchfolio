@@ -1,6 +1,6 @@
 import type { RxJsonSchema } from 'rxdb';
 
-export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
+export const LibraryItemschema: RxJsonSchema<LibraryMedia> = {
   version: 0,
   primaryKey: 'id',
   type: 'object',

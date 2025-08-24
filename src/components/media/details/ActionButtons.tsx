@@ -2,11 +2,12 @@ import { motion } from 'framer-motion';
 import { Play, Heart, Film, LibraryBig } from 'lucide-react';
 import { Button, useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';
 import { generateMediaId } from '@/utils/library';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { cn } from '@/utils';
+import { useLibraryItem } from '@/hooks/library/useLibraryQueries';
+import { useToggleLibraryFavorite } from '@/hooks/library/useLibraryMutations';
 
 interface ActionButtonsProps {
   media: Media;
@@ -24,15 +25,9 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
       >
-        <Button
-          color='primary'
-          className='w-full transition-all duration-200 hover:scale-[1.03]'
-          startContent={<Play className='size-4' />}
-          isDisabled
-        >
+        <Button color='primary' className='w-full' startContent={<Play className='size-4' />} isDisabled>
           Watch Now
         </Button>
-
         <Button
           className='button-secondary! w-full'
           onPress={trailerDisclosure.onOpen}
@@ -41,7 +36,6 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
         >
           Watch Trailer
         </Button>
-
         <div className='grid grid-cols-2 gap-2'>
           <AddToLibraryButtons
             media={media}
@@ -53,7 +47,6 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
           />
         </div>
       </motion.div>
-
       {trailer && (
         <Modal
           disclosure={trailerDisclosure}
@@ -83,11 +76,11 @@ export function AddToLibraryButtons({
   classNames: { addToLibrary: (is: boolean) => string; favorite: (is: boolean) => string };
 }) {
   const { openModal } = useMediaStatusModal();
-  const { toggleFavorite } = useLibraryStore();
-  const item = useLibraryStore((state) => state.getItem(generateMediaId(media)));
+  const { data: item } = useLibraryItem(generateMediaId(media));
+  const { mutate: toggleFavorite } = useToggleLibraryFavorite();
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
 
-  const inLibrary = (item && item.status !== 'none') || false;
+  const inLibrary = !!(item && item.status !== 'none');
   const isFavorite = item?.isFavorite || false;
   const StatusIcon = status?.icon;
 
@@ -100,11 +93,8 @@ export function AddToLibraryButtons({
       >
         {inLibrary ? status?.label : 'Add to Library'}
       </Button>
-
       <Button
-        onPress={() => {
-          toggleFavorite(item?.id || '', media ? { ...media, media_type: media.media_type } : undefined);
-        }}
+        onPress={() => item && toggleFavorite({ item, isFavorite: !isFavorite })}
         className={classNames.favorite(isFavorite)}
         startContent={<Heart className={cn('h-5 w-5', isFavorite && 'fill-current text-pink-500')} />}
       >

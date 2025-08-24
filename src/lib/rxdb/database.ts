@@ -4,7 +4,7 @@ import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
-import { libraryMediaSchema } from './schemas';
+import { LibraryItemschema } from './schemas';
 
 // Add plugins
 if (import.meta.env.DEV) addRxPlugin(RxDBDevModePlugin);
@@ -43,7 +43,7 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
   }).then(async (db) => {
     await db.addCollections({
       libraryMedia: {
-        schema: libraryMediaSchema,
+        schema: LibraryItemschema,
         migrationStrategies: {},
         autoMigrate: false,
       },

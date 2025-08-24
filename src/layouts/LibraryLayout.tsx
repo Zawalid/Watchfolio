@@ -24,12 +24,12 @@ import FiltersModal from '@/components/FiltersModal';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { SyncStatus } from '@/components/library/SyncStatus';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { cn, slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
-import { useClearLibrary } from '@/hooks/library/useClearLibrary';
+import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
+import { useLibraryTotalCount } from '@/hooks/library/useLibraryQueries';
 import { AnimatePresence } from 'framer-motion';
 import SortBy from '@/components/SortBy';
 
@@ -42,8 +42,8 @@ export default function LibraryLayout() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filtersDisclosure = useDisclosure();
   const importExportDisclosure = useDisclosure();
-  const { getCount } = useLibraryStore();
-  const { handleClearLibrary } = useClearLibrary();
+  const { clearLibrary } = useClearLibrary();
+  const libraryCount = useLibraryTotalCount();
 
   const location = useLocation();
   const [onboardingMessage, setOnboardingMessage] = useState({ show: false, action: null });
@@ -68,7 +68,7 @@ export default function LibraryLayout() {
     { useKey: true }
   );
   useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null), { useKey: true });
-  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', handleClearLibrary, { useKey: true });
+  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', clearLibrary, { useKey: true });
 
   return (
     <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>
@@ -96,9 +96,10 @@ export default function LibraryLayout() {
           <Tabs
             className='mb-5 bg-transparent'
             tabClassName='px-3 lg:px-4 text-sm lg:text-base'
+            preserveSearchParams
             tabs={[
               {
-                label: `All (${getCount('all')})`,
+                label: `All (${libraryCount.all})`,
                 icon: <GalleryVerticalEnd className='size-4' />,
                 includes: true,
                 value: 'all',
@@ -107,7 +108,7 @@ export default function LibraryLayout() {
               ...LIBRARY_MEDIA_STATUS.map((status) => {
                 const IconComponent = status.icon;
                 return {
-                  label: `${status.label} (${getCount(status.value)})`,
+                  label: `${status.label} (${libraryCount[status.value]})`,
                   icon: <IconComponent className='size-4' />,
                   value: status.value,
                   link: `/library/${slugify(status.value)}`,
@@ -164,8 +165,9 @@ export default function LibraryLayout() {
               options={[
                 { key: 'recent', label: 'Recently Added' },
                 { key: 'title', label: 'Title' },
-                { key: 'rating', label: 'Your Rating' },
-                { key: 'date', label: 'Release Date' },
+                { key: 'user_rating', label: 'Your Rating' },
+                { key: 'rating', label: 'Rating' },
+                { key: 'release_date', label: 'Release Date' },
               ]}
               defaultSort='recent'
             />
@@ -193,7 +195,7 @@ export default function LibraryLayout() {
                   <DropdownItem
                     key='clear-library'
                     startContent={<Trash2 className='size-4 shrink-0' />}
-                    onPress={handleClearLibrary}
+                    onPress={clearLibrary}
                     className='text-danger'
                     color='danger'
                     description='Permanently delete all items'

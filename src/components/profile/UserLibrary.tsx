@@ -14,7 +14,7 @@ import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import FiltersModal from '@/components/FiltersModal';
 import SortBy from '@/components/SortBy';
-import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
+import LibraryInfiniteCardsList from '@/components/library/LibraryCardsList';
 import { useFilteredLibrary } from '@/hooks/library/useFilteredLibrary';
 import { getLibraryCount } from '@/utils/library';
 import { Status } from '@/components/ui/Status';

@@ -21,7 +21,7 @@ export const queryKeys = {
     type,
     ...Object.entries(params).map(([key, value]) => `${key}=${value}`),
   ],
-  category: (type: MediaType, category: Categories,) => [type, category],
+  category: (type: MediaType, category: Categories) => [type, category],
   trending: (type: 'all' | MediaType, timeWindow: 'day' | 'week') => ['trending', type, timeWindow],
 
   details: (type: MediaType, id: number) => ['details', type, id],
@@ -38,4 +38,8 @@ export const queryKeys = {
   collection: (id: number) => ['collection', id] as const,
 
   network: (id: number, params: DiscoverParams) => ['network', id, params] as const,
+
+  library: (filters: object) => ['library', filters],
+  libraryItem: (id: string) => ['libraryItem', id],
+  libraryCount: (libraryId?: string) => ['library', 'count', libraryId],
 };
