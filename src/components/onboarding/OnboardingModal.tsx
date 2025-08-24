@@ -49,17 +49,17 @@ export default function OnboardingModal() {
   const isLastStep = currentStep === totalSteps - 1;
 
   useHotkeys('left', () => {
-    if (!isFirstStep) prevStep();
+    if (!isFirstStep && showOnboardingModal) prevStep();
   });
   useHotkeys('right', () => {
-    if (!isLastStep) nextStep();
+    if (!isLastStep && showOnboardingModal) nextStep();
   });
   useHotkeys('enter', () => {
-    if (isLastStep) handleComplete();
+    if (isLastStep && showOnboardingModal) handleComplete();
     else nextStep();
   });
   useHotkeys('esc', () => {
-    closeOnboardingModal();
+    if(showOnboardingModal) closeOnboardingModal();
   });
 
   const nextStep = () => {
@@ -73,6 +73,7 @@ export default function OnboardingModal() {
   };
 
   const handleComplete = async () => {
+    if(!showOnboardingModal) return
     try {
       addToast({
         title: 'Welcome to Watchfolio!',

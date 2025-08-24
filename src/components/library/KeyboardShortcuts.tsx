@@ -23,7 +23,7 @@ export default function KeyboardShortcuts(  ) {
   useHotkeys(getShortcut('toggleShortcutsHelp')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen], {
     useKey: true,
   });
-  useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
+  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
 
   return (
     <Modal disclosure={disclosure}>

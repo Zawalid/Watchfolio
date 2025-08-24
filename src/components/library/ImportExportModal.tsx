@@ -17,7 +17,7 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
   const { isOpen, onClose, onOpen } = disclosure;
 
   // Keyboard shortcuts for modal
-  useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
+  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
   useHotkeys(getShortcut('toggleImportExport')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
 
   return (

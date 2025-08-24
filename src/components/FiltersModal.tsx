@@ -57,7 +57,7 @@ export default function FiltersModal({
   const { selectedTypes, setSelectedTypes, numberOfFilters, hasFilters, clearAllFilters } = useFiltersParams();
 
   useHotkeys(getShortcut('toggleFilters')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
-  useHotkeys(getShortcut('escape')?.hotkey || '', onClose, { enabled: isOpen });
+  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
   useHotkeys(getShortcut('filterMovies')?.hotkey || '', () => toggleMediaType('movie'), [selectedTypes]);
   useHotkeys(getShortcut('filterTvShows')?.hotkey || '', () => toggleMediaType('tv'), [selectedTypes]);
   useHotkeys(
