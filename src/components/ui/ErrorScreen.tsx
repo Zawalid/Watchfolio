@@ -55,6 +55,7 @@ export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
     setIsRetrying(false);
     resetErrorBoundary();
   };
+
   return (
     <div className='blur-bg relative flex min-h-dvh items-center justify-center overflow-auto py-12'>
       <div className='relative z-10 container'>

@@ -23,6 +23,7 @@ import {
   TermsOfService,
   PrivacyPolicy,
   UserProfile,
+  Devices,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -151,6 +152,10 @@ export const router = createBrowserRouter([
             path: 'library',
             Component: LibrarySettings,
           },
+          {
+            path: 'devices',
+            Component: Devices,
+          },
         ],
       },
       {
@@ -182,7 +187,7 @@ export const router = createBrowserRouter([
       {
         path: 'u/:username',
         Component: UserProfile,
-      }
+      },
     ],
   },
   {

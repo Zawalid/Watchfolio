@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
-import { Heart, Layers } from 'lucide-react';
+import { Heart, Layers, LibraryBig } from 'lucide-react';
 import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, COLLECTIONS_ICON, SETTINGS_ICON } from '@/components/ui/Icons';
+import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, SETTINGS_ICON } from '@/components/ui/Icons';
 import { MobileNavTrigger } from './MobileNav';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
@@ -57,14 +57,14 @@ function QuickActions() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library')}
-          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isLibraryActive && !isFavoritesActive
               ? 'text-Primary-400 bg-Primary-500/20'
               : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Library'
         >
-          <span className='[&>svg]:h-5 [&>svg]:w-5'>{COLLECTIONS_ICON}</span>
+          <LibraryBig className='size-5' />
         </motion.button>
       </Tooltip>
       <Tooltip content='Favorites' className='tooltip-secondary!'>
@@ -72,12 +72,12 @@ function QuickActions() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library/favorites')}
-          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isFavoritesActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Favorites'
         >
-          <Heart className='h-5 w-5' />
+          <Heart className='size-5' />
         </motion.button>
       </Tooltip>
       <Tooltip content='Settings' className='tooltip-secondary!'>
@@ -85,12 +85,12 @@ function QuickActions() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/settings')}
-          className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isSettingsActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Settings'
         >
-          <span className='[&>svg]:h-5 [&>svg]:w-5'>{SETTINGS_ICON}</span>
+          <span className='[&>svg]:size-5'>{SETTINGS_ICON}</span>
         </motion.button>
       </Tooltip>
     </div>

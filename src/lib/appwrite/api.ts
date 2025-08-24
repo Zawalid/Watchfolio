@@ -350,9 +350,11 @@ export class AuthAPI {
   async updateRecovery(userId: string, secret: string, password: string) {
     return await account.updateRecovery(userId, secret, password);
   }
+
   async createAnonymousSession() {
     return await account.createAnonymousSession();
   }
+
   async createOAuth2Session(provider: OAuthProvider, successUrl?: string, failureUrl?: string) {
     return account.createOAuth2Session(provider, successUrl, failureUrl);
   }
@@ -367,6 +369,19 @@ export class AuthAPI {
 
   async updatePreferences(preferences: Record<string, string>) {
     return await account.updatePrefs(preferences);
+  }
+
+  async listSessions() {
+    const sessionList = await account.listSessions();
+    return sessionList.sessions;
+  }
+
+  async deleteSession(sessionId: string) {
+    await account.deleteSession(sessionId);
+  }
+  
+  async deleteSessions() {
+    await account.deleteSessions();
   }
 }
 

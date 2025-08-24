@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router';
 import { Avatar, Button } from '@heroui/react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
-import { ChevronDownIcon, UserIcon, Settings, Bookmark, Heart, LogOut, HelpCircle, UserPlus } from 'lucide-react';
+import { ChevronDownIcon, UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle, UserPlus } from 'lucide-react';
 import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useConfirmationModal } from '@/hooks/useConfirmationModal';
@@ -139,7 +139,7 @@ export default function UserDropdown() {
           <DropdownItem
             key='library'
             className={isActive('/library') ? 'active' : ''}
-            startContent={<Bookmark className='size-4' />}
+            startContent={<LibraryBig className='size-4' />}
             href='/library'
           >
             My Library

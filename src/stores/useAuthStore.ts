@@ -15,41 +15,55 @@ import { startReplication, stopReplication, destroyDB, getDBStatus } from '@/lib
 import { authStorePartializer } from './utils';
 
 export interface AuthState {
+  // Core user/auth state
   user: UserWithProfile | null;
   userPreferences: CreateUserPreferencesInput;
   isLoading: boolean;
   isAuthenticated: boolean;
   syncError: string | null;
+
+  // Modal/UI state
   showAuthModal: boolean;
   authModalType: 'signin' | 'signup';
   showOnboardingModal: boolean;
   pendingOnboarding: boolean;
 
+
+  // Authentication actions
   signIn: (email: string, password: string) => Promise<Models.Session>;
   signUp: (name: string, email: string, password: string) => Promise<Models.User<Models.Preferences>>;
   signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   checkAuth: () => Promise<void>;
   resetPassword: (email: string) => Promise<Models.Token>;
-  signInWithGoogle: () => Promise<void>;
+
+  // User profile & preferences
   updateUserEmail: (email: string, password: string) => Promise<void>;
   updateUserPassword: (newPassword: string, oldPassword: string) => Promise<void>;
   updateUserProfile: (profileData: UpdateProfileInput) => Promise<void>;
   updateUserPreferences: (preferencesData: UpdateUserPreferencesInput) => Promise<void>;
   deleteUserAccount: () => Promise<void>;
   refreshUser: () => Promise<void>;
+
+  // Email verification
   sendEmailVerification: () => Promise<Models.Token>;
   confirmEmailVerification: (userId: string, secret: string) => Promise<void>;
+
+  // Modal/UI actions
   openAuthModal: (type: 'signin' | 'signup') => void;
   closeAuthModal: () => void;
   switchAuthMode: (type: 'signin' | 'signup') => void;
   openOnboardingModal: () => void;
   closeOnboardingModal: () => void;
   setPendingOnboarding: (value: boolean) => void;
+
+  // Utility & helpers
   checkIsOwnProfile: (username?: string) => boolean;
   clearSyncError: () => void;
   loadAndSyncLibrary: () => Promise<void>;
   cleanUp: () => Promise<void>;
   toggleAutoSync: (enabled: boolean) => Promise<void>;
+
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -255,7 +269,7 @@ export const useAuthStore = create<AuthState>()(
 
       toggleAutoSync: async (enabled: boolean) => {
         const { user, updateUserPreferences } = get();
-        if (!user) throw new Error("User not authenticated");
+        if (!user) throw new Error('User not authenticated');
 
         await updateUserPreferences({ autoSync: enabled });
 
@@ -265,6 +279,7 @@ export const useAuthStore = create<AuthState>()(
           await stopReplication();
         }
       },
+     
 
       cleanUp: async () => {
         if (getDBStatus() === 'ready') {

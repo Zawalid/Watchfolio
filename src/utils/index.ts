@@ -53,69 +53,7 @@ export function getUrl() {
   return `${protocol}://${host}`;
 }
 
-export function formatDate(dateString: string | null): string {
-  if (!dateString) return 'Unknown date';
-
-  try {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    }).format(date);
-  } catch {
-    return 'Invalid date';
-  }
-}
-
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
-export const formatTimeAgo = (dateString: string): string => {
-  if (!dateString) return '';
-
-  const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.round((now.getTime() - date.getTime()) / 1000);
-
-  const minute = 60;
-  const hour = minute * 60;
-  const day = hour * 24;
-  const week = day * 7;
-
-  const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-
-  if (seconds < 10) {
-    return 'just now';
-  }
-  if (seconds < minute) {
-    return rtf.format(-seconds, 'second');
-  }
-  if (seconds < hour) {
-    return rtf.format(-Math.floor(seconds / minute), 'minute');
-  }
-  if (seconds < day) {
-    return rtf.format(-Math.floor(seconds / hour), 'hour');
-  }
-  if (seconds < week) {
-    return rtf.format(-Math.floor(seconds / day), 'day');
-  }
-  // If older than a week, show the actual date
-  if (now.getFullYear() === date.getFullYear()) {
-    // If it's the same year, omit the year for clarity
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-  }
-
-  // If it's a different year, include the year
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-};
-
 
 // ========== Object Utilities ==========
 
@@ -164,7 +102,6 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   return false;
 }
 
-
 export const renameObjectProperty = <T extends object, K extends keyof T>(
   obj: T,
   oldKey: K,
@@ -174,15 +111,15 @@ export const renameObjectProperty = <T extends object, K extends keyof T>(
   return { ...rest, [newKey]: value };
 };
 
-export const filterObject = <T>(
-  obj: T,
-  keys: (keyof T)[],
-  keysType: "include" | "exclude"
-): T => {
+export const filterObject = <T>(obj: T, keys: (keyof T)[], keysType: 'include' | 'exclude'): T => {
   const filtered: T = {} as T;
   for (const key in obj) {
-    if (keysType === "include" && keys.includes(key)) filtered[key] = obj[key];
-    if (keysType === "exclude" && !keys.includes(key)) filtered[key] = obj[key];
+    if (keysType === 'include' && keys.includes(key)) filtered[key] = obj[key];
+    if (keysType === 'exclude' && !keys.includes(key)) filtered[key] = obj[key];
   }
   return filtered;
 };
+
+//
+
+export * from './date';

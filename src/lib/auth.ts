@@ -351,6 +351,45 @@ class AuthService {
   }
 
   /**
+   * Fetches the list of all active sessions for the currently authenticated user.
+   */
+  async getActiveSessions() {
+    try {
+      return await appwriteService.auth.listSessions();
+    } catch (error) {
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Deletes a specific session by its ID, effectively signing out that device.
+   * @param sessionId The ID of the session to delete.
+   */
+  async deleteSession(sessionId: string) {
+    if (sessionId === 'current') {
+      throw new Error('Cannot delete the current session using this method. Use signOut instead.');
+    }
+    try {
+      await appwriteService.auth.deleteSession(sessionId);
+    } catch (error) {
+      console.error(`Failed to delete session ${sessionId}:`, error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
+   * Deletes all other sessions for the current user.
+   */
+  async deleteOtherSessions() {
+    try {
+      await appwriteService.auth.deleteSessions();
+    } catch (error) {
+      console.error('Failed to delete other sessions:', error);
+      throw this.formatError(error);
+    }
+  }
+
+  /**
    * Format Appwrite errors to user-friendly messages
    */
   private formatError(error: unknown): AuthError {
