@@ -43,7 +43,7 @@ const buildQuery = (conditions: Record<string, unknown>): MangoQuery<LibraryMedi
 };
 
 export const getAllLibraryItems = async (
-  libraryId?: string,
+  userId?: string,
   options: {
     limit?: number;
     offset?: number;
@@ -58,7 +58,7 @@ export const getAllLibraryItems = async (
 ): Promise<LibraryMedia[]> => {
   const db = await getWatchfolioDB();
   const { selector } = buildQuery({
-    'library.$id': libraryId,
+    userId,
     status: options.status,
     query: options.query,
     media_type: options.mediaType,
@@ -85,9 +85,9 @@ export const getLibraryItemsByIds = async (ids: string[]): Promise<LibraryMedia[
   return docs.map((doc) => doc.toJSON() as LibraryMedia);
 };
 
-export const countLibraryItems = async (libraryId?: string, status?: LibraryFilterStatus): Promise<number> => {
+export const countLibraryItems = async (userId?: string, status?: LibraryFilterStatus): Promise<number> => {
   const db = await getWatchfolioDB();
-  const { selector } = buildQuery({ 'library.$id': libraryId, status });
+  const { selector } = buildQuery({ userId, status });
   return await db.libraryMedia.count({ selector }).exec();
 };
 
@@ -98,6 +98,13 @@ export const getLibraryItem = async (id: string): Promise<LibraryMedia | null> =
   return doc ? (doc.toJSON() as LibraryMedia) : null;
 };
 
+export const getLibraryItemByTmdbId = async (tmdbId: number, media_type: MediaType): Promise<LibraryMedia | null> => {
+  if (!tmdbId || !media_type) return null;
+  const db = await getWatchfolioDB();
+  const doc = await db.libraryMedia.findOne({ selector: { tmdbId, media_type } }).exec();
+  return doc ? (doc.toJSON() as LibraryMedia) : null;
+};
+
 export const addOrUpdateLibraryItem = async (
   media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>,
   library: LibraryMedia['library'] | null
@@ -105,7 +112,10 @@ export const addOrUpdateLibraryItem = async (
   const db = await getWatchfolioDB();
   const now = new Date().toISOString();
 
-  const doc = await db.libraryMedia.findOne(media.id).exec();
+  let doc = await db.libraryMedia.findOne(media.id).exec();
+  if(!doc && media.media_type && media.tmdbId) {
+    doc = await db.libraryMedia.findOne({ selector: { tmdbId: media.tmdbId, media_type: media.media_type } }).exec();
+  }
 
   if (doc) {
     const updatedDoc = await doc.update({ $set: { ...media, lastUpdatedAt: now } });

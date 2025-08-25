@@ -5,23 +5,62 @@ import { addOrUpdateLibraryItem, deleteLibraryItem, bulkaddOrUpdateLibraryItem, 
 import { appwriteService } from '@/lib/appwrite/api';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { queryKeys } from '@/lib/react-query';
+import { GENRES } from '@/utils/constants/TMDB';
+import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
 
 // Helper to invalidate library queries
 const useInvalidateLibraryQueries = () => {
   const queryClient = useQueryClient();
-  return () => {
+  return (item?: LibraryMedia) => {
     queryClient.invalidateQueries({ queryKey: queryKeys.library({}) });
-    queryClient.invalidateQueries({ queryKey: queryKeys.libraryCount({}) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.libraryCount() });
+    if (item) queryClient.invalidateQueries({ queryKey: queryKeys.libraryItem(`${item.media_type}-${item.tmdbId}`) });
   };
 };
 
-export const useAddLibraryItem = () => {
+const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
+  const title = (media as Movie).title || (media as TvShow).name;
+  const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
+
+  return {
+    tmdbId: media.id,
+    title: title?.trim() || `${media.media_type} ${media.id}`,
+    posterPath: media.poster_path?.trim() || undefined,
+    releaseDate: releaseDate?.trim() || undefined,
+    genres:
+      (media.genres?.map((g: { id: number; name: string }) => g.name?.trim()).filter(Boolean) as string[]) ||
+      (media.genre_ids?.map((id) => GENRES.find((g) => g.id === id)?.label?.trim()).filter(Boolean) as string[]) ||
+      [],
+    rating: media.vote_average ? +getRating(media.vote_average) : undefined,
+    totalMinutesRuntime: calculateTotalMinutesRuntime(media) || undefined,
+    networks: (media as TvShow).networks?.map((n) => n.id).filter((id) => typeof id === 'number') || [],
+    media_type: media.media_type,
+    overview: media.overview?.trim() || undefined,
+  };
+};
+
+export const useAddOrUpdateLibraryItem = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
   const library = useAuthStore((state) => state.user?.profile.library);
 
   return useMutation({
-    mutationFn: (item: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>) => addOrUpdateLibraryItem(item, library),
-    onSuccess: invalidateQueries,
+    mutationFn: ({
+      item,
+      media,
+    }: {
+      item: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>;
+      media?: Media;
+      toggleFavorite?: boolean;
+    }) => {
+      const metadata = media ? getMediaMetadata(media) : {};
+      const updatedItem = { ...item, ...metadata };
+
+      return addOrUpdateLibraryItem(updatedItem, library || null);
+    },
+    onSuccess: (item) => {
+      console.log(item)
+      invalidateQueries(item);
+    },
   });
 };
 
@@ -29,34 +68,16 @@ export const useRemoveLibraryItem = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
 
   return useMutation({
-    mutationFn: (id: string) => deleteLibraryItem(id),
-    onSuccess: invalidateQueries,
+    mutationFn: (item: LibraryMedia) => deleteLibraryItem(item.id),
+    onSuccess: (_, item) => invalidateQueries(item),
   });
 };
-
-export const useToggleLibraryFavorite = () => {
-  const invalidateQueries = useInvalidateLibraryQueries();
-  const queryClient = useQueryClient();
-  const library = useAuthStore((state) => state.user?.profile.library);
-
-  return useMutation({
-    mutationFn: ({ item, isFavorite }: { item: LibraryMedia; isFavorite: boolean }) =>
-      addOrUpdateLibraryItem({ ...item, isFavorite }, library),
-    onSuccess: (_, variables) => {
-      invalidateQueries();
-      queryClient.setQueryData(queryKeys.libraryItem(variables.item.id), (oldData: LibraryMedia) =>
-        oldData ? { ...oldData, isFavorite: variables.isFavorite } : undefined
-      );
-    },
-  });
-};
-
 export const useImportLibrary = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
 
   return useMutation({
     mutationFn: (items: LibraryMedia[]) => bulkaddOrUpdateLibraryItem(items),
-    onSuccess: invalidateQueries,
+    onSuccess: () => invalidateQueries(),
   });
 };
 

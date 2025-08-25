@@ -132,7 +132,7 @@ export default function Import({ onClose }: ImportProps) {
         });
         onClose();
       }, 1500);
-    } catch (error) {
+    } catch {
       addToast({ title: 'Import error', description: `Failed to import library.`, color: 'danger' });
       setImportStage('options');
     }

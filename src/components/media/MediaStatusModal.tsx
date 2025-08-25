@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { Library, Star } from 'lucide-react';
-import { Button } from '@heroui/react';
-import { ModalBody } from '@heroui/react';
+import { Button, ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
@@ -13,6 +11,8 @@ import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { isMedia } from '@/utils/media';
 import { generateMediaId } from '@/utils/library';
+import { useLibraryItem } from '@/hooks/library/useLibraryQueries';
+import { useAddOrUpdateLibraryItem } from '@/hooks/library/useLibraryMutations';
 
 interface MediaStatusModalProps {
   disclosure: Disclosure;
@@ -26,24 +26,22 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   useEffect(() => {
     if (disclosure.isOpen) registerNavigator('media-status-modal');
     else unregisterNavigator('media-status-modal');
-    return () => {
-      unregisterNavigator('media-status-modal');
-    };
+    return () => unregisterNavigator('media-status-modal');
   }, [disclosure.isOpen, registerNavigator, unregisterNavigator]);
 
-  const libraryItem = useLibraryStore((state) => state.getItem(generateMediaId(media)));
-  const { addOrUpdateItem } = useLibraryStore();
+  const id = generateMediaId(media);
+  const { data: libraryItem } = useLibraryItem(id);
+  const { mutate: addOrUpdateItem } = useAddOrUpdateLibraryItem();
 
   const handleStatusOrRatingChange = (status?: WatchStatus, userRating?: number | undefined) => {
-    addOrUpdateItem(
-      {
-        id: !isMedia(media) ? media.id : '',
-        media_type: media.media_type,
+    addOrUpdateItem({
+      item: {
+        id : libraryItem?.id || id,
         ...(status && { status }),
         ...(userRating && { userRating }),
       },
-      isMedia(media) ? media : undefined
-    );
+      media: isMedia(media) ? media : undefined,
+    });
   };
 
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
@@ -78,12 +76,10 @@ function StatusSection({
   onClose: () => void;
 }) {
   const statusOptions = LIBRARY_MEDIA_STATUS.filter((o) => o.value !== 'favorites');
-
   const removeItem = () => {
     setSelectedStatus('none');
     onClose();
   };
-
   const { containerRef } = useListNavigator({
     itemCount: statusOptions.length,
     onSelect: (index) => {
@@ -92,7 +88,6 @@ function StatusSection({
     orientation: 'vertical',
     initialIndex: statusOptions.findIndex((o) => o.value === selectedStatus),
   });
-
   useHotkeys(getShortcut('clearStatus')?.hotkey || '', removeItem);
 
   return (
@@ -138,34 +133,24 @@ function StatusButton({
   onClick: () => void;
 }) {
   useHotkeys(getShortcut(status.shortcut as ShortcutName)?.hotkey || '', onClick);
-
   const IconComponent = status.icon;
-  const textColorClass = status.className.split(' ')[0];
-
   return (
     <Button
       className={cn(
-        'group relative h-auto w-full justify-start gap-4 px-6 py-3 text-left transition-all duration-300',
-        'focus:ring-2 focus:ring-blue-400/50 focus:ring-offset-2 focus:ring-offset-gray-900 focus:outline-none',
+        'group relative h-auto w-full justify-start gap-4 px-6 py-3 text-left transition-all',
         isSelected
           ? 'border border-gray-600 bg-gray-700 text-white'
-          : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white hover:shadow-lg hover:shadow-gray-700/20'
+          : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white'
       )}
       onPress={onClick}
       role='button'
     >
-      <div
-        className={`rounded-full p-2 transition-all duration-300 ${
-          isSelected ? 'bg-gray-600' : 'bg-gray-700/50 group-hover:bg-gray-600/60'
-        }`}
-      >
-        <IconComponent className={`size-5 ${textColorClass}`} />
+      <div className={`rounded-full p-2 ${isSelected ? 'bg-gray-600' : 'bg-gray-700/50 group-hover:bg-gray-600/60'}`}>
+        <IconComponent className={`size-5 ${status.className.split(' ')[0]}`} />
       </div>
       <div className='flex-1'>
-        <div className={`font-semibold transition-all duration-300 ${isSelected ? 'text-white' : 'text-gray-200'}`}>
-          {status.label}
-        </div>
-        <div className={`mt-1 text-sm transition-all duration-300 ${isSelected ? 'text-gray-300' : 'text-gray-400'}`}>
+        <div className={`font-semibold ${isSelected ? 'text-white' : 'text-gray-200'}`}>{status.label}</div>
+        <div className={`mt-1 text-sm ${isSelected ? 'text-gray-300' : 'text-gray-400'}`}>
           {status.descriptions.modal}
         </div>
       </div>
@@ -201,8 +186,7 @@ function RatingSection({
   );
   useHotkeys(getShortcut('rateMedia10')?.hotkey || '', () => setCurrentRating(10));
   useHotkeys(getShortcut('clearRating')?.hotkey || '', () => setCurrentRating(undefined));
-  
-  
+
   return (
     <div className='space-y-8'>
       <div className='flex items-center justify-between'>
@@ -212,12 +196,12 @@ function RatingSection({
           </div>
           <h2 className='text-Primary-50 text-xl font-semibold'>Your Rating</h2>
         </div>
-        {currentRating ?? null ? (
+        {currentRating && (
           <Button size='sm' className='button-secondary!' onPress={() => setCurrentRating(undefined)}>
             {getShortcut('clearRating')?.description}
             <ShortcutKey shortcutName='clearRating' className='kbd-sm!' />
           </Button>
-        ) : null}
+        )}
       </div>
       <div className='flex flex-col items-center gap-4'>
         <div className='flex flex-wrap justify-center gap-1'>
@@ -235,25 +219,20 @@ function RatingSection({
                 isIconOnly
               >
                 <Star
-                  className={`size-5 transition-colors ${
-                    (hoverRating !== undefined ? rateValue <= hoverRating : currentRating && rateValue <= currentRating)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-gray-600'
-                  }`}
+                  className={`size-5 transition-colors ${(hoverRating !== undefined ? rateValue <= hoverRating : currentRating && rateValue <= currentRating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-600'}`}
                 />
               </Button>
             );
           })}
         </div>
-
         <div className='text-center'>
-            {(hoverRating ?? currentRating) != null ? (
+          {(hoverRating ?? currentRating) != null ? (
             <div className='text-sm font-medium text-yellow-400'>
-              {(hoverRating ?? currentRating)}/10 - {getRatingLabel(hoverRating ?? currentRating ?? 0)}
+              {hoverRating ?? currentRating}/10 - {getRatingLabel(hoverRating ?? currentRating ?? 0)}
             </div>
-            ) : (
+          ) : (
             <div className='text-sm text-gray-500'>Click stars to rate, or press a number key </div>
-            )}
+          )}
         </div>
       </div>
     </div>

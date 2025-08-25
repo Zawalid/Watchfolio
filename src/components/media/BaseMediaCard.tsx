@@ -11,13 +11,14 @@ import { getShortcut } from '@/utils/keyboardShortcuts';
 import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { generateMediaLink, getTmdbImage, isMedia } from '@/utils/media';
+import { generateMediaLink, getTmdbImage } from '@/utils/media';
 import { Rating } from '@/components/ui/Rating';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useQuery } from '@tanstack/react-query';
 import { getDetails } from '@/lib/api/TMDB';
 import { queryKeys } from '@/lib/react-query';
-import { useAddLibraryItem, useRemoveLibraryItem, useToggleLibraryFavorite } from '@/hooks/library/useLibraryMutations';
+import { useAddOrUpdateLibraryItem, useRemoveLibraryItem } from '@/hooks/library/useLibraryMutations';
+import { generateMediaId } from '@/utils/library';
 
 interface BaseMediaCardProps {
   id: number;
@@ -51,15 +52,16 @@ export default function BaseMediaCard({
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  // const { data: mediaDetails } = useQuery({
-  //   queryKey: queryKeys.details(mediaType, id),
-  //   queryFn: () => getDetails(mediaType, id),
-  //   enabled: isHovered,
-  //   staleTime: Infinity,
-  // });
+  const { data: mediaDetails } = useQuery({
+    queryKey: queryKeys.details(mediaType, id),
+    queryFn: () => getDetails(mediaType, id),
+    enabled: isHovered,
+    staleTime: Infinity,
+  });
 
-  const inLibrary = !!item;
-  const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
+  const status = LIBRARY_MEDIA_STATUS.find(
+    (s) => s.value === item?.status || (item?.isFavorite && s.value === 'favorites')
+  );
   const isInteractive = isHovered || isFocused;
   const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;
 
@@ -86,7 +88,7 @@ export default function BaseMediaCard({
           <QuickActions
             key='quick-actions'
             mediaType={mediaType}
-            media={media}
+            media={mediaDetails || media}
             item={item}
             isFocused={isFocused}
           />
@@ -120,7 +122,7 @@ export default function BaseMediaCard({
               {mediaType === 'movie' ? <Film className='size-3' /> : <Tv className='size-3' />}
               <span className='capitalize'>{mediaType}</span>
             </div>
-            {inLibrary && status && (
+            {item && status && (
               <div
                 className={cn(
                   'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-md',
@@ -326,37 +328,33 @@ const QuickActions = ({
   const { openModal } = useMediaStatusModal();
   const { confirm } = useConfirmationModal();
   const defaultMediaStatus = useAuthStore((state) => state.userPreferences.defaultMediaStatus);
-  const { mutate: addItem } = useAddLibraryItem();
+
+  const id = generateMediaId(item || (media && { ...media, media_type: mediaType }));
+  const { mutate: addOrUpdateItem } = useAddOrUpdateLibraryItem();
   const { mutate: removeItem } = useRemoveLibraryItem();
-  const { mutate: toggleFavorite } = useToggleLibraryFavorite();
 
   const inLibrary = item && (item.status !== 'none' || item.userRating);
 
-  const handleToggleFavorite = () => item && toggleFavorite({ item, isFavorite: !item.isFavorite });
   const handleEditStatus = () => {
-    const target = item || media;
+    const target = media || item;
     if (!target) return;
+
     if (defaultMediaStatus !== 'none' && !inLibrary) {
-      addItem({ id: item?.id || '', media_type: target.media_type, status: defaultMediaStatus });
+      addOrUpdateItem({
+        item: { id, status: defaultMediaStatus },
+        media: media ? { ...media, media_type: mediaType } : undefined,
+      });
     } else {
       openModal({ ...target, media_type: mediaType });
     }
-    
   };
 
-  //   const handleEditStatus = () => {
-  //   const target = item || media;
-  //   if (!target) return;
-
-  //   if (defaultMediaStatus !== 'none' && !inLibrary) {
-  //     addOrUpdateItem(
-  //       { id: item?.id || '', media_type: target.media_type, status: defaultMediaStatus },
-  //       isMedia(target) ? target : undefined
-  //     );
-  //   } else {
-  //     openModal({ ...target, media_type: mediaType });
-  //   }
-  // };
+  const handleToggleFavorite = () => {
+    addOrUpdateItem({
+      item: { id, isFavorite: !item?.isFavorite, media_type: mediaType },
+      media: media ? { ...media, media_type: mediaType } : undefined,
+    });
+  };
 
   const handleRemove = async () => {
     if (item) {
@@ -366,7 +364,7 @@ const QuickActions = ({
         confirmText: 'Remove',
         confirmVariant: 'danger',
       });
-      if (confirmed) removeItem(item.id);
+      if (confirmed) removeItem(item);
     }
   };
 

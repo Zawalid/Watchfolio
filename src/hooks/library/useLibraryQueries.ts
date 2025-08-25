@@ -1,8 +1,13 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { getAllLibraryItems, countLibraryItems, getLibraryItem } from '@/lib/rxdb';
+import {
+  getAllLibraryItems,
+  countLibraryItems,
+  getLibraryItem,
+  getLibraryItemsByIds,
+  getLibraryItemByTmdbId,
+} from '@/lib/rxdb';
 import { queryKeys } from '@/lib/react-query';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
 const PAGE_SIZE = 20;
 
@@ -14,6 +19,8 @@ const mapSortBy = (sortBy: string) => {
       return 'userRating';
     case 'release_date':
       return 'releaseDate';
+    case 'runtime':
+      return 'totalMinutesRuntime'
     default:
       return sortBy;
   }
@@ -28,12 +35,12 @@ export const useInfiniteLibraryItems = (filters: {
   genres?: string[];
   networks?: number[];
 }) => {
-  const library = useAuthStore((state) => state.user?.profile.library);
+  const userId = useAuthStore((state) => state.user?.$id);
 
   return useInfiniteQuery({
-    queryKey: queryKeys.library({ libraryId: library?.$id, ...filters }),
+    queryKey: queryKeys.library({ userId  , ...filters }),
     queryFn: ({ pageParam = 0 }) =>
-      getAllLibraryItems(library?.$id, {
+      getAllLibraryItems(userId, {
         ...filters,
         limit: PAGE_SIZE,
         offset: pageParam * PAGE_SIZE,
@@ -49,38 +56,52 @@ export const useInfiniteLibraryItems = (filters: {
 export const useLibraryItem = (id: string) => {
   return useQuery({
     queryKey: queryKeys.libraryItem(id),
-    queryFn: () => getLibraryItem(id),
+    queryFn: () => {
+      if (String(id).includes('-')) {
+        const [mediaType, tmdbId] = id.split('-');
+        return getLibraryItemByTmdbId(Number(tmdbId), mediaType as MediaType);
+      }
+      return getLibraryItem(id);
+    },
     enabled: !!id,
   });
 };
 
+export const useLibraryItemsByIds = (ids: string[]) => {
+  return useQuery({
+    queryKey: ['libraryItemsByIds', ids],
+    queryFn: () => getLibraryItemsByIds(ids),
+    enabled: ids && ids.length > 0,
+  });
+};
+
+const status: LibraryFilterStatus[] = ['all', 'watching', 'willWatch', 'onHold', 'dropped', 'completed', 'favorites'];
+
 export const useLibraryTotalCount = () => {
-  const library = useAuthStore((state) => state.user?.profile.library);
+  const userId = useAuthStore((state) => state.user?.$id);
 
   const { data } = useQuery({
-    queryKey: queryKeys.libraryCount(library?.$id),
+    queryKey: queryKeys.libraryCount(userId),
     queryFn: async () => {
-      const counts = await Promise.all(
-        LIBRARY_MEDIA_STATUS.map((status) => countLibraryItems(library?.$id, status.value))
-      );
-      const all = counts.reduce((acc, count) => acc + count, 0);
+      const counts = await Promise.all(status.map((s) => countLibraryItems(userId, s)));
       return counts.reduce(
         (acc, count, index) => {
-          acc[LIBRARY_MEDIA_STATUS[index].value] = count;
+          acc[status[index]] = count;
           return acc;
         },
-        { all } as Record<string, number>
+        {} as Record<string, number>
       );
     },
   });
+
   return (
     data ||
-    LIBRARY_MEDIA_STATUS.reduce(
+    status.reduce(
       (acc, status) => {
-        acc[status.value] = 0;
+        acc[status] = 0;
         return acc;
       },
-      { all: 0 } as Record<string, number>
+      {} as Record<string, number>
     )
   );
 };

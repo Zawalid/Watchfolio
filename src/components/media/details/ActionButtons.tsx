@@ -7,7 +7,7 @@ import { generateMediaId } from '@/utils/library';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { cn } from '@/utils';
 import { useLibraryItem } from '@/hooks/library/useLibraryQueries';
-import { useToggleLibraryFavorite } from '@/hooks/library/useLibraryMutations';
+import { useAddOrUpdateLibraryItem } from '@/hooks/library/useLibraryMutations';
 
 interface ActionButtonsProps {
   media: Media;
@@ -77,7 +77,8 @@ export function AddToLibraryButtons({
 }) {
   const { openModal } = useMediaStatusModal();
   const { data: item } = useLibraryItem(generateMediaId(media));
-  const { mutate: toggleFavorite } = useToggleLibraryFavorite();
+  const { mutate: toggleFavorite } = useAddOrUpdateLibraryItem();
+
   const status = LIBRARY_MEDIA_STATUS.find((s) => s.value === item?.status);
 
   const inLibrary = !!(item && item.status !== 'none');
@@ -94,7 +95,12 @@ export function AddToLibraryButtons({
         {inLibrary ? status?.label : 'Add to Library'}
       </Button>
       <Button
-        onPress={() => item && toggleFavorite({ item, isFavorite: !isFavorite })}
+        onPress={() =>
+          toggleFavorite({
+            item: { id: generateMediaId(item || media), isFavorite: !item?.isFavorite },
+            media: media ? { ...media, media_type: media.media_type } : undefined,
+          })
+        }
         className={classNames.favorite(isFavorite)}
         startContent={<Heart className={cn('h-5 w-5', isFavorite && 'fill-current text-pink-500')} />}
       >

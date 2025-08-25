@@ -40,6 +40,6 @@ export const queryKeys = {
   network: (id: number, params: DiscoverParams) => ['network', id, params] as const,
 
   library: (filters: object) => ['library', filters],
-  libraryItem: (id: string) => ['libraryItem', id],
-  libraryCount: (libraryId?: string) => ['library', 'count', libraryId],
+  libraryItem: (id: string) => ['library','item', id],
+  libraryCount: (userId?: string) => ['library', 'count', userId],
 };

@@ -168,6 +168,7 @@ export default function LibraryLayout() {
                 { key: 'user_rating', label: 'Your Rating' },
                 { key: 'rating', label: 'Rating' },
                 { key: 'release_date', label: 'Release Date' },
+                {key: 'runtime', label: 'Runtime'}
               ]}
               defaultSort='recent'
             />

@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { authService } from '@/lib/auth';
 import { persistAndSync } from '@/utils/persistAndSync';
 import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constants';
-import { useLibraryStore } from './useLibraryStore';
 import { deepEqual } from '@/utils';
 import {
   CreateUserPreferencesInput,
@@ -255,7 +254,6 @@ export const useAuthStore = create<AuthState>()(
       clearSyncError: () => set({ syncError: null }),
 
       loadAndSyncLibrary: async () => {
-        await useLibraryStore.getState().loadLibrary();
         const user = get().user;
         if (user && user.profile.preferences.autoSync) {
           try {
@@ -286,7 +284,6 @@ export const useAuthStore = create<AuthState>()(
           await stopReplication();
           await destroyDB();
         }
-        useLibraryStore.getState().clearLibraryLocally();
       },
     }),
     {

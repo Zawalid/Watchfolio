@@ -1,7 +1,7 @@
 import { getGenres, getMediaType, getRating } from '@/utils/media';
 import BaseMediaCard from './BaseMediaCard';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import { generateMediaId } from '@/utils/library';
+import { useLibraryItem } from '@/hooks/library/useLibraryQueries';
 
 interface MediaCardProps {
   media: Media;
@@ -13,7 +13,9 @@ export default function MediaCard({ media, tabIndex }: MediaCardProps) {
   const media_type = getMediaType(media);
   const title = (media_type === 'movie' ? (media as Movie).title : (media as TvShow).name) || 'Untitled';
   const rating = getRating(vote_average || 0);
-  const item = useLibraryStore((state) => state.getItem(generateMediaId({ ...media, media_type })));
+  const { data: item } = useLibraryItem(generateMediaId({ ...media, media_type }));
+
+  console.log('ITEM',item, generateMediaId({ ...media, media_type }));
 
   return (
     <BaseMediaCard
@@ -24,7 +26,7 @@ export default function MediaCard({ media, tabIndex }: MediaCardProps) {
       releaseDate={(media as Movie).release_date || (media as TvShow).first_air_date}
       rating={rating ? Number(rating) : undefined}
       genres={getGenres(genre_ids) || []}
-      item={item}
+      item={item || undefined}
       media={media}
       tabIndex={tabIndex}
     />
