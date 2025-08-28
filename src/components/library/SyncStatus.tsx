@@ -41,8 +41,13 @@ export function SyncStatus({ className }: { className?: string }) {
           tooltip: 'Sync error occurred. Click to retry.',
           onClick: () => manualSync(),
         };
-      case 'syncing':
-      case 'connecting':
+        case 'connecting':
+          return {
+            color: 'text-yellow-400',
+            icon: <RefreshCw className='size-4 animate-spin' />,
+            text: 'Connecting...',
+          };
+        case 'syncing':
         return {
           color: 'text-blue-400',
           icon: <RefreshCw className='size-4 animate-spin' />,
@@ -73,6 +78,7 @@ export function SyncStatus({ className }: { className?: string }) {
   };
 
   const statusInfo = getStatusInfo();
+
 
   return (
     <Tooltip content={statusInfo.tooltip} className='tooltip-secondary!'>

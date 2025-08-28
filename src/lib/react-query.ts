@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { DiscoverParams } from './api/TMDB';
 
 export const queryClient = new QueryClient({
-  defaultOptions: { queries: { staleTime: 1000 * 60 * 5, refetchOnWindowFocus: false } },
+  defaultOptions: { queries: {  refetchOnWindowFocus: true } },
 });
 
 export async function prefetchQuery<TData>(queryFn: () => Promise<TData>, queryKey: unknown[]) {

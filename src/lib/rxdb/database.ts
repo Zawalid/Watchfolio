@@ -2,7 +2,7 @@ import { createRxDatabase, addRxPlugin, RxCollection } from 'rxdb/plugins/core';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
+import { RxDBDevModePlugin, } from 'rxdb/plugins/dev-mode';
 import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
 import { LibraryItemschema } from './schemas';
@@ -33,7 +33,7 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
   if (dbInstance) return dbInstance;
   if (dbPromise) return dbPromise;
 
-  console.log('Creating Watchfolio database...');
+  log('Creating Watchfolio database...');
 
   dbPromise = createRxDatabase({
     name: 'watchfolio',
@@ -42,28 +42,34 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
     }),
     multiInstance: false,
   }).then(async (db) => {
-    await db.addCollections({
-      libraryMedia: {
-        schema: LibraryItemschema,
-        migrationStrategies: {
-          1: (oldDoc) => {
-            return oldDoc;
+    await db
+      .addCollections({
+        libraryMedia: {
+          schema: LibraryItemschema,
+          migrationStrategies: {
+            1: (oldDoc) => {
+              return oldDoc;
+            },
+            2: (oldDoc) => {
+              const newDoc = { ...oldDoc };
+              newDoc.library = oldDoc.library?.$id || null;
+              return newDoc;
+            },
           },
-          2: (oldDoc) => {
-            const newDoc = { ...oldDoc };
-            newDoc.library = oldDoc.library?.$id || null;
-            return newDoc;
-          },
+          autoMigrate: true,
         },
-        autoMigrate: true,
-      },
-    });
+      })
+      .catch((err) => {
+        console.error('🔴 DATABASE CREATION FAILED:', err);
+        dbPromise = null;
+        throw err;
+      });
 
     dbInstance = db as unknown as WatchfolioDatabase;
     return dbInstance;
   });
-  
-  console.log('Watchfolio database created successfully');
+
+  log('Watchfolio database created successfully');
   return dbPromise;
 };
 
@@ -73,7 +79,7 @@ export const destroyDB = async (): Promise<void> => {
     dbInstance = null;
   }
   dbPromise = null;
-  console.log('Watchfolio database destroyed');
+  log('Watchfolio database destroyed');
 };
 
 export const recreateDB = async (): Promise<void> => {

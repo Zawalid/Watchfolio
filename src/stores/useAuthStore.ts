@@ -10,8 +10,9 @@ import {
   UpdateUserPreferencesInput,
   UserWithProfile,
 } from '@/lib/appwrite/types';
-import { startReplication, stopReplication, destroyDB, getDBStatus } from '@/lib/rxdb';
+import {  destroyDB, getDBStatus } from '@/lib/rxdb';
 import { authStorePartializer } from './utils';
+import { useSyncStore } from './useSyncStore';
 
 export interface AuthState {
   // Core user/auth state
@@ -26,7 +27,6 @@ export interface AuthState {
   authModalType: 'signin' | 'signup';
   showOnboardingModal: boolean;
   pendingOnboarding: boolean;
-
 
   // Authentication actions
   signIn: (email: string, password: string) => Promise<Models.Session>;
@@ -59,9 +59,7 @@ export interface AuthState {
   // Utility & helpers
   checkIsOwnProfile: (username?: string) => boolean;
   clearSyncError: () => void;
-  loadAndSyncLibrary: () => Promise<void>;
   cleanUp: () => Promise<void>;
-
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -83,7 +81,7 @@ export const useAuthStore = create<AuthState>()(
           const session = await authService.signIn({ email, password });
           const user = await authService.getCurrentUser();
           set({ user, isAuthenticated: !!user, isLoading: false });
-          await get().loadAndSyncLibrary();
+          await useSyncStore.getState().startSync();
           return session;
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to sign in' });
@@ -102,7 +100,7 @@ export const useAuthStore = create<AuthState>()(
             await authService.updateUserPreferences(user.$id, preferences);
           }
           set({ user, isAuthenticated: !!user, isLoading: false });
-          await get().loadAndSyncLibrary();
+          await useSyncStore.getState().startSync();
           return newUser;
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to sign up' });
@@ -142,7 +140,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const user = await authService.getCurrentUser();
           set({ user, isAuthenticated: !!user, isLoading: false });
-          await get().loadAndSyncLibrary();
+          await useSyncStore.getState().startSync();
         } catch {
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
@@ -252,21 +250,9 @@ export const useAuthStore = create<AuthState>()(
 
       clearSyncError: () => set({ syncError: null }),
 
-      loadAndSyncLibrary: async () => {
-        const user = get().user;
-        if (user && user.profile.preferences.autoSync) {
-          try {
-            await startReplication(user.$id, user.profile.library?.$id || null);
-          } catch (error) {
-            console.error('Failed to start sync:', error);
-            set({ syncError: 'Failed to start sync' });
-          }
-        }
-      },
-
       cleanUp: async () => {
         if (getDBStatus() === 'ready') {
-          await stopReplication();
+          await useSyncStore.getState().stopSync();
           await destroyDB();
         }
       },

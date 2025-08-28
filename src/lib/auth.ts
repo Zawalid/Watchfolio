@@ -263,7 +263,7 @@ class AuthService {
         username,
         avatarUrl: getDefaultAvatarUrl(name, 'fun-emoji'),
       };
-      console.log('Creating user profile with data:', name, userId);
+      log('Creating user profile with data:', name, userId);
 
       // First create preferences and library without relationships
       const preferences = await this.createDefaultUserPreferences();

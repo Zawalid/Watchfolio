@@ -58,7 +58,7 @@ export const useAddOrUpdateLibraryItem = () => {
       return addOrUpdateLibraryItem(updatedItem, library?.$id || null);
     },
     onSuccess: (item) => {
-      console.log(item);
+      log(item);
       invalidateQueries(item);
     },
   });

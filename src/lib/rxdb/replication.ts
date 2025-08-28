@@ -1,11 +1,16 @@
 import { RxReplicationState } from 'rxdb/plugins/replication';
+import { Subscription } from 'rxjs';
+import { queryClient } from '@/lib/react-query';
 import client, { DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { AppwriteCheckpointType, replicateAppwrite } from '@/lib/appwrite/appwrite-replication';
 import { getWatchfolioDB } from './database';
-import { useSyncStore } from '@/stores/useSyncStore';
+import { useSyncStore, SyncStatus } from '@/stores/useSyncStore';
 
 let replicationState: RxReplicationState<LibraryMedia, AppwriteCheckpointType> | null = null;
+let receivedSubscription: Subscription | null = null; // To hold the subscription
 let currentUserId: string | null = null;
+
+
 
 const setSyncStatus = (status: SyncStatus) => useSyncStore.getState().setSyncStatus(status);
 
@@ -19,11 +24,11 @@ export const startReplication = async (userId: string, library: string | null) =
   }
 
   if (currentUserId === userId && replicationState) {
-    console.log('Replication already active for user:', userId);
+    log('Replication already active for user:', userId);
     return;
   }
 
-  console.log('Starting replication for user:', userId);
+  log('Starting replication for user:', userId);
   setSyncStatus('connecting');
   currentUserId = userId;
 
@@ -61,6 +66,7 @@ export const startReplication = async (userId: string, library: string | null) =
             userId,
             lastUpdatedAt: new Date().toISOString(),
           };
+          // Appwrite doesn't accept undefined values, so we remove them
           Object.keys(cleanDoc).forEach((key) => {
             if (cleanDoc[key] === undefined) {
               delete cleanDoc[key];
@@ -71,6 +77,18 @@ export const startReplication = async (userId: string, library: string | null) =
       },
     });
 
+    // --- Automatic Query Invalidation Logic ---
+    if (receivedSubscription) {
+      receivedSubscription.unsubscribe();
+    }
+    receivedSubscription = replicationState.received$.pipe().subscribe((data) => {
+      log('Data received from sync, invalidating queries...', data);
+      // Invalidate queries to trigger UI updates
+      queryClient.invalidateQueries({ queryKey: ['library'] });
+      queryClient.invalidateQueries({ queryKey: ['libraryCount'] });
+    });
+    // -----------------------------------------
+
     replicationState.error$.subscribe((error) => {
       console.error('Replication error:', error);
       setSyncStatus('error');
@@ -78,19 +96,19 @@ export const startReplication = async (userId: string, library: string | null) =
 
     replicationState.active$.subscribe((active) => {
       setSyncStatus(active ? 'syncing' : 'online');
-      console.log('Replication', active ? 'active' : 'inactive');
+      log('Replication', active ? 'active' : 'inactive');
     });
 
     replicationState.received$.subscribe((received) => {
-      console.log('Received from server:', received);
+      log('Received from server:', received);
     });
 
     replicationState.sent$.subscribe((sent) => {
-      console.log('Sent to server:', sent);
+      log('Sent to server:', sent);
     });
 
     setSyncStatus('online');
-    console.log('Replication started successfully');
+    log('Replication started successfully');
 
     return replicationState;
   } catch (error) {
@@ -103,12 +121,17 @@ export const startReplication = async (userId: string, library: string | null) =
 };
 
 export const stopReplication = async (): Promise<void> => {
+  if (receivedSubscription) {
+    receivedSubscription.unsubscribe();
+    receivedSubscription = null;
+  }
+
   if (!replicationState) {
-    console.log('No replication to stop');
+    log('No replication to stop');
     return;
   }
 
-  console.log('Stopping replication');
+  log('Stopping replication');
   try {
     await replicationState.cancel();
   } catch (error) {
@@ -117,13 +140,13 @@ export const stopReplication = async (): Promise<void> => {
     replicationState = null;
     currentUserId = null;
     setSyncStatus('offline');
-    console.log('Replication stopped');
+    log('Replication stopped');
   }
 };
 
 export const triggerSync = async (): Promise<void> => {
   if (!replicationState) throw new Error('Replication not initialized');
-  console.log('Triggering re-sync on active replication');
+  log('Triggering re-sync on active replication');
   await replicationState.reSync();
 };
 

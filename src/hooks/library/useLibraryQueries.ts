@@ -53,7 +53,7 @@ export const useInfiniteLibraryItems = (filters: {
     initialPageParam: 0,
   });
 
-  if (query.isError) console.log(query.error);
+  if (query.isError) log(query.error);
 
   return query;
 };
@@ -71,7 +71,7 @@ export const useLibraryItem = (id: string) => {
     enabled: !!id,
   });
 
-  if (query.isError) console.log(query.error);
+  if (query.isError) log(query.error);
 
   return query;
 };

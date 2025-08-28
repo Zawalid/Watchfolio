@@ -15,7 +15,7 @@ export default function MediaCard({ media, tabIndex }: MediaCardProps) {
   const rating = getRating(vote_average || 0);
   const { data: item } = useLibraryItem(generateMediaId({ ...media, media_type }));
 
-  console.log('ITEM',item, generateMediaId({ ...media, media_type }));
+  log('ITEM', item, generateMediaId({ ...media, media_type }));
 
   return (
     <BaseMediaCard

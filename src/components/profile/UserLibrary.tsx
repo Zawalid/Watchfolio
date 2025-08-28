@@ -44,7 +44,7 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
   const items = profile.library?.items?.length ? profile.library.items : [];
   const filteredItems = useFilteredLibrary(items as LibraryMedia[], status);
 
-  console.log(filteredItems)
+  log(filteredItems);
 
   const visibleStatuses = LIBRARY_MEDIA_STATUS.filter(
     (s) => isOwnProfile || !hiddenProfileSections.includes(`library.${s.value}`)

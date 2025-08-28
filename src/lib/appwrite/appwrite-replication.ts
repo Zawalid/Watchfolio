@@ -221,7 +221,7 @@ export function replicateAppwrite<RxDocType>(
     const unsubscribe = options.client.subscribe(channel, async (response) => {
       const payload = response.payload as any;
 
-      console.log('✅ Appwrite real-time event received:', payload);
+      log('✅ Appwrite real-time event received:', payload);
       const doc = await appwriteDocToRxDB(payload, primaryKey, options.deletedField, options.pull?.modifier);
 
       pullStream$.next({
@@ -231,7 +231,7 @@ export function replicateAppwrite<RxDocType>(
     });
 
     replicationState.canceled$.subscribe(() => {
-      console.log('Replication canceled, unsubscribing from Appwrite.');
+      log('Replication canceled, unsubscribing from Appwrite.');
       unsubscribe();
     });
   }

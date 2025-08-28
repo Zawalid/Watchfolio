@@ -36,3 +36,11 @@ if (import.meta.env.DEV && typeof window !== 'undefined') {
     devtoolsMounted = true;
   }
 }
+
+// Debug Log
+const log = (...args: unknown[]): void => {
+  if (import.meta.env.DEV) console.log('🐛 [DEBUG]', ...args);
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+if (typeof window !== 'undefined') (window as any).log = log;
