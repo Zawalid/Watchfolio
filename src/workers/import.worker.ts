@@ -5,15 +5,15 @@ import { z } from 'zod';
 // This schema handles the raw, unpredictable input from a file.
 const RawMediaSchema = z.object({
   id: z.string().optional(),
-  tmdbId: z.coerce.number({ error: 'must be a number' }).positive('must be a positive number'),
-  media_type: z.enum(['movie', 'tv'], { error: 'must be either "movie" or "tv"' }),
+  tmdbId: z.coerce.number({ invalid_type_error: 'must be a number' }).positive('must be a positive number'),
+  media_type: z.enum(['movie', 'tv'], { invalid_type_error: 'must be either "movie" or "tv"' }),
   title: z.string().trim().min(1, 'cannot be empty').optional(),
   status: z.enum(['watching', 'willWatch', 'onHold', 'dropped', 'none', 'completed']).optional().default('none'),
   isFavorite: z.coerce.boolean().optional().default(false),
   userRating: z.coerce.number().min(1).max(10).nullable().optional(),
   notes: z.string().nullable().optional(),
-  addedAt: z.coerce.date({ error: 'is not a valid date' }).optional(),
-  lastUpdatedAt: z.coerce.date({ error: 'is not a valid date' }).optional(),
+  addedAt: z.coerce.date({ invalid_type_error: 'is not a valid date' }).optional(),
+  lastUpdatedAt: z.coerce.date({ invalid_type_error: 'is not a valid date' }).optional(),
   releaseDate: z.coerce.date().nullable().optional(),
   posterPath: z.string().nullable().optional(),
   genres: z.preprocess((val) => (typeof val === 'string' ? JSON.parse(val) : val), z.array(z.string()).optional().default([])),
@@ -89,7 +89,7 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
 // --- HELPER FUNCTIONS ---
 
 function formatZodError(error: z.ZodError): string {
-  const firstError = error.issues[0];
+  const firstError = error.errors[0];
   const itemIndex = (firstError.path[0] as number) + 1;
   const fieldName = firstError.path[1] as string;
   const message = firstError.message;

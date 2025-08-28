@@ -23,7 +23,7 @@ interface LibraryMedia {
   totalMinutesRuntime?: number | null;
   networks?: number[] | null;
 
-  library: { $id: string; averageRating?: number } | null;
+  library: string| null;
   userId?: string;
 
   // Future fields

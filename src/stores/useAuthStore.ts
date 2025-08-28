@@ -257,7 +257,7 @@ export const useAuthStore = create<AuthState>()(
         const user = get().user;
         if (user && user.profile.preferences.autoSync) {
           try {
-            await startReplication(user.$id, user.profile.library);
+            await startReplication(user.$id, user.profile.library?.$id || null);
           } catch (error) {
             console.error('Failed to start sync:', error);
             set({ syncError: 'Failed to start sync' });
@@ -272,7 +272,7 @@ export const useAuthStore = create<AuthState>()(
         await updateUserPreferences({ autoSync: enabled });
 
         if (enabled) {
-          await startReplication(user.$id, user.profile.library);
+          await startReplication(user.$id, user.profile.library?.$id || null);
         } else {
           await stopReplication();
         }

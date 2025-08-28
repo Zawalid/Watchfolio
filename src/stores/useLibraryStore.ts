@@ -43,7 +43,7 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
     }
 
     try {
-      const tempReplication = await startReplication(user.$id, user.profile.library);
+      const tempReplication = await startReplication(user.$id, user.profile.library?.$id || null);
       if (tempReplication) {
         await tempReplication.awaitInitialReplication();
         await stopReplication();

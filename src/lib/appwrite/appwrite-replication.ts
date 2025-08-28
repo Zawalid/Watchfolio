@@ -96,7 +96,7 @@ export function replicateAppwrite<RxDocType>(
   addRxPlugin(RxDBLeaderElectionPlugin);
 
   const pullStream$ = new Subject<RxReplicationPullStreamItem<RxDocType, AppwriteCheckpointType>>();
-  const collection: RxCollection<RxDocType, unknown, unknown, unknown> = options.collection;
+  const collection: RxCollection<RxDocType> = options.collection;
   const primaryKey = collection.schema.primaryPath;
   const tablesDB = new TablesDB(options.client);
 

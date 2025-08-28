@@ -9,7 +9,7 @@ let currentUserId: string | null = null;
 
 const setSyncStatus = (status: SyncStatus) => useLibraryStore.getState().setSyncStatus(status);
 
-export const startReplication = async (userId: string, library: LibraryMedia['library']) => {
+export const startReplication = async (userId: string, library: string|null) => {
   if (!userId?.trim()) {
     throw new Error('User ID is required');
   }
@@ -57,7 +57,7 @@ export const startReplication = async (userId: string, library: LibraryMedia['li
         modifier: (doc) => {
           const cleanDoc = {
             ...doc,
-            library: library?.$id || null,
+            library,
             userId,
             lastUpdatedAt: new Date().toISOString(),
           };

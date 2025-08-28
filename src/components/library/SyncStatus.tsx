@@ -3,10 +3,12 @@ import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLibraryStore } from '@/stores/useLibraryStore';
 import { cn } from '@/utils';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function SyncStatus({ className }: { className?: string }) {
   const { isAuthenticated, openAuthModal } = useAuthStore();
   const { syncStatus, lastSyncTime, manualSync } = useLibraryStore();
+  const queryClient = useQueryClient();
   const isOnline = navigator.onLine;
 
   const getStatusInfo = () => {
@@ -81,7 +83,10 @@ export function SyncStatus({ className }: { className?: string }) {
           statusInfo.onClick ? 'cursor-pointer hover:bg-white/10' : 'cursor-default',
           className
         )}
-        onClick={statusInfo.onClick || undefined}
+        onClick={() => {
+          if (statusInfo.onClick) statusInfo.onClick();
+          queryClient.invalidateQueries({ queryKey: ['library'] });
+        }}
       >
         {statusInfo.icon}
         <span>{statusInfo.text}</span>

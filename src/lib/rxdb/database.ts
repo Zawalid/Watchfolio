@@ -3,6 +3,7 @@ import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
+import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
 import { LibraryItemschema } from './schemas';
 
@@ -10,6 +11,7 @@ import { LibraryItemschema } from './schemas';
 if (import.meta.env.DEV) addRxPlugin(RxDBDevModePlugin);
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBUpdatePlugin);
+addRxPlugin(RxDBMigrationSchemaPlugin);
 
 interface WatchfolioDatabase {
   libraryMedia: RxCollection<LibraryMedia>;
@@ -44,8 +46,17 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
     await db.addCollections({
       libraryMedia: {
         schema: LibraryItemschema,
-        migrationStrategies: {},
-        autoMigrate: false,
+        migrationStrategies: {
+          1: (oldDoc) => {
+            return oldDoc;
+          },
+          2: (oldDoc) => {
+            const newDoc = { ...oldDoc };
+            newDoc.library = oldDoc.library?.$id || null;
+            return newDoc;
+          },
+        },
+        autoMigrate: true,
       },
     });
 

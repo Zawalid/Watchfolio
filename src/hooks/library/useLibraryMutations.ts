@@ -55,10 +55,10 @@ export const useAddOrUpdateLibraryItem = () => {
       const metadata = media ? getMediaMetadata(media) : {};
       const updatedItem = { ...item, ...metadata };
 
-      return addOrUpdateLibraryItem(updatedItem, library || null);
+      return addOrUpdateLibraryItem(updatedItem, library?.$id || null);
     },
     onSuccess: (item) => {
-      console.log(item)
+      console.log(item);
       invalidateQueries(item);
     },
   });
