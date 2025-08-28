@@ -2,14 +2,14 @@ import { RxReplicationState } from 'rxdb/plugins/replication';
 import client, { DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { AppwriteCheckpointType, replicateAppwrite } from '@/lib/appwrite/appwrite-replication';
 import { getWatchfolioDB } from './database';
-import { useLibraryStore } from '@/stores/useLibraryStore';
+import { useSyncStore } from '@/stores/useSyncStore';
 
 let replicationState: RxReplicationState<LibraryMedia, AppwriteCheckpointType> | null = null;
 let currentUserId: string | null = null;
 
-const setSyncStatus = (status: SyncStatus) => useLibraryStore.getState().setSyncStatus(status);
+const setSyncStatus = (status: SyncStatus) => useSyncStore.getState().setSyncStatus(status);
 
-export const startReplication = async (userId: string, library: string|null) => {
+export const startReplication = async (userId: string, library: string | null) => {
   if (!userId?.trim()) {
     throw new Error('User ID is required');
   }
@@ -83,7 +83,6 @@ export const startReplication = async (userId: string, library: string|null) => 
 
     replicationState.received$.subscribe((received) => {
       console.log('Received from server:', received);
-      // TODO : if (received) useLibraryStore.getState().addOrUpdateItemLocally(received);
     });
 
     replicationState.sent$.subscribe((sent) => {

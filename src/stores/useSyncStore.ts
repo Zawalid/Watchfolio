@@ -4,26 +4,19 @@ import { useAuthStore } from './useAuthStore';
 
 export type SyncStatus = 'offline' | 'connecting' | 'online' | 'syncing' | 'error';
 
-interface LibraryState {
-  isLoading: boolean;
-  error: string | null;
+interface SyncState {
   syncStatus: SyncStatus;
   lastSyncTime: string | null;
-
-  clearError: () => void;
   setSyncStatus: (status: SyncStatus) => void;
+  startSync: () => Promise<void>;
+  stopSync: () => Promise<void>;
   manualSync: () => Promise<void>;
+  toggleAutoSync: (enabled: boolean) => Promise<void>;
 }
 
-export const useLibraryStore = create<LibraryState>()((set, get) => ({
-  isLoading: false,
-  error: null,
+export const useSyncStore = create<SyncState>()((set, get) => ({
   syncStatus: 'offline',
   lastSyncTime: null,
-
-  clearError: () => {
-    set({ error: null });
-  },
 
   setSyncStatus: (status) => {
     const oldStatus = get().syncStatus;
@@ -31,6 +24,22 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
       set({ lastSyncTime: new Date().toISOString() });
     }
     set({ syncStatus: status });
+  },
+
+  startSync: async () => {
+    const { user } = useAuthStore.getState();
+    if (user && user.profile.preferences.autoSync) {
+      try {
+        await startReplication(user.$id, user.profile.library?.$id || null);
+      } catch (error) {
+        console.error('Failed to start sync:', error);
+        get().setSyncStatus('error');
+      }
+    }
+  },
+
+  stopSync: async () => {
+    await stopReplication();
   },
 
   manualSync: async () => {
@@ -54,6 +63,19 @@ export const useLibraryStore = create<LibraryState>()((set, get) => ({
         await stopReplication();
       }
       throw error;
+    }
+  },
+
+  toggleAutoSync: async (enabled: boolean) => {
+    const { user, updateUserPreferences } = useAuthStore.getState();
+    if (!user) throw new Error('User not authenticated');
+
+    await updateUserPreferences({ autoSync: enabled });
+
+    if (enabled) {
+      await startReplication(user.$id, user.profile.library?.$id || null);
+    } else {
+      await stopReplication();
     }
   },
 }));

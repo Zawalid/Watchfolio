@@ -1,13 +1,13 @@
 import { Tooltip } from '@heroui/react';
 import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { useLibraryStore } from '@/stores/useLibraryStore';
+import { useSyncStore } from '@/stores/useSyncStore';
 import { cn } from '@/utils';
 import { useQueryClient } from '@tanstack/react-query';
 
 export function SyncStatus({ className }: { className?: string }) {
   const { isAuthenticated, openAuthModal } = useAuthStore();
-  const { syncStatus, lastSyncTime, manualSync } = useLibraryStore();
+  const { syncStatus, lastSyncTime, manualSync } = useSyncStore();
   const queryClient = useQueryClient();
   const isOnline = navigator.onLine;
 

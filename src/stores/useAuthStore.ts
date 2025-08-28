@@ -61,7 +61,6 @@ export interface AuthState {
   clearSyncError: () => void;
   loadAndSyncLibrary: () => Promise<void>;
   cleanUp: () => Promise<void>;
-  toggleAutoSync: (enabled: boolean) => Promise<void>;
 
 }
 
@@ -264,20 +263,6 @@ export const useAuthStore = create<AuthState>()(
           }
         }
       },
-
-      toggleAutoSync: async (enabled: boolean) => {
-        const { user, updateUserPreferences } = get();
-        if (!user) throw new Error('User not authenticated');
-
-        await updateUserPreferences({ autoSync: enabled });
-
-        if (enabled) {
-          await startReplication(user.$id, user.profile.library?.$id || null);
-        } else {
-          await stopReplication();
-        }
-      },
-     
 
       cleanUp: async () => {
         if (getDBStatus() === 'ready') {

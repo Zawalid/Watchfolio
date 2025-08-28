@@ -8,12 +8,12 @@ import ImportExportModal from '@/components/library/ImportExportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { useLibraryStore } from '@/stores/useLibraryStore';
+import { useSyncStore } from '@/stores/useSyncStore';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 
 export default function Library() {
-  const { isAuthenticated, userPreferences, updateUserPreferences, toggleAutoSync } = useAuthStore();
-  const { syncStatus, lastSyncTime, manualSync } = useLibraryStore();
+  const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
+  const { syncStatus, lastSyncTime, manualSync, toggleAutoSync } = useSyncStore();
 
   const { clearLibrary } = useClearLibrary();
 

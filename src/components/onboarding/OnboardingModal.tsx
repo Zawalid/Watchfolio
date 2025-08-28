@@ -104,7 +104,7 @@ export default function OnboardingModal() {
 
   return (
     <Modal disclosure={disclosure} size='5xl' classNames={{closeButton : "hidden"}}>
-      <ModalBody className=''>
+      <ModalBody>
         <div className='bg-Grey-800 absolute top-0 right-0 left-0 h-1'>
           <motion.div
             className='from-Primary-500 to-Secondary-500 h-full bg-gradient-to-r'
