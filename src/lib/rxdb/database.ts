@@ -8,8 +8,7 @@ import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
 import { LibraryItemschema } from './schemas';
 
 // Add plugins
-// if (import.meta.env.DEV)
-   addRxPlugin(RxDBDevModePlugin);
+if (import.meta.env.DEV) addRxPlugin(RxDBDevModePlugin);
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBUpdatePlugin);
 addRxPlugin(RxDBMigrationSchemaPlugin);
