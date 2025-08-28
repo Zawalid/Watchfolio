@@ -1,7 +1,7 @@
 import type { RxJsonSchema } from 'rxdb';
 
 export const LibraryItemschema: RxJsonSchema<LibraryMedia> = {
-  version: 0,
+  version: 1.0,
   primaryKey: 'id',
   type: 'object',
   properties: {
@@ -68,12 +68,12 @@ export const LibraryItemschema: RxJsonSchema<LibraryMedia> = {
       },
     },
     rating: {
-      type: ['number','null'],
+      type: ['number', 'null'],
       minimum: 0,
       maximum: 10,
     },
     totalMinutesRuntime: {
-      type: ['integer','null'],
+      type: ['integer', 'null'],
       minimum: 0,
       maximum: 9999999999999,
     },

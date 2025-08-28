@@ -1,5 +1,5 @@
 import { RxReplicationState } from 'rxdb/plugins/replication';
-import client, { DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
+import client, { DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { AppwriteCheckpointType, replicateAppwrite } from '@/lib/appwrite/appwrite-replication';
 import { getWatchfolioDB } from './database';
 import { useLibraryStore } from '@/stores/useLibraryStore';
@@ -34,7 +34,7 @@ export const startReplication = async (userId: string, library: LibraryMedia['li
       replicationIdentifier: `watchfolio-library-${userId}`,
       client,
       databaseId: DATABASE_ID,
-      collectionId: COLLECTIONS.LIBRARY_MEDIA,
+      tableId: TABLES.LIBRARY_MEDIA,
       userId,
       deletedField: 'deleted',
       collection: db.libraryMedia,

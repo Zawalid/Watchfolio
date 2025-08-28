@@ -10,7 +10,7 @@ import type {
 import { RxReplicationState, startReplicationOnLeaderShip } from 'rxdb/plugins/replication';
 import { addRxPlugin } from 'rxdb';
 import { RxDBLeaderElectionPlugin } from 'rxdb/plugins/leader-election';
-import { Databases, Query, type Client } from 'appwrite';
+import { TablesDB, Query, type Client } from 'appwrite';
 import { flatClone, lastOfArray } from 'rxdb/plugins/utils';
 import { Subject } from 'rxjs';
 import { setPermissions } from './api';
@@ -25,7 +25,7 @@ export type SyncOptionsAppwrite<RxDocType> = Omit<
   'pull' | 'push' | 'deletedField'
 > & {
   databaseId: string;
-  collectionId: string;
+  tableId: string;
   userId: string;
   client: Client;
   deletedField: string;
@@ -77,9 +77,6 @@ async function rxdbDocToAppwrite<RxDocType>(
   delete writeDoc._attachments;
   delete writeDoc._meta;
   delete writeDoc._rev;
-
-  // The docId is implicitly used by Appwrite in the URL, not in the body.
-  // We can remove it from the body to avoid confusion.
   delete writeDoc[primaryKey];
 
   writeDoc[deletedField] = writeDoc._deleted;
@@ -99,98 +96,118 @@ export function replicateAppwrite<RxDocType>(
   addRxPlugin(RxDBLeaderElectionPlugin);
 
   const pullStream$ = new Subject<RxReplicationPullStreamItem<RxDocType, AppwriteCheckpointType>>();
-  const collection: RxCollection<RxDocType> = options.collection;
+  const collection: RxCollection<RxDocType, unknown, unknown, unknown> = options.collection;
   const primaryKey = collection.schema.primaryPath;
-  const databases = new Databases(options.client);
+  const tablesDB = new TablesDB(options.client);
 
   const pullOptions: ReplicationPullOptions<RxDocType, AppwriteCheckpointType> | undefined = options.pull
     ? {
-        batchSize: options.pull.batchSize || 25,
-        stream$: pullStream$.asObservable(),
-        async handler(lastPulledCheckpoint, batchSize) {
-          const queries: string[] = [
-            Query.equal('userId', options.userId),
-            Query.orderAsc('$updatedAt'),
-            Query.orderAsc('$id'),
-            Query.limit(batchSize),
-          ];
+      batchSize: options.pull.batchSize || 25,
+      stream$: pullStream$.asObservable(),
+      async handler(lastPulledCheckpoint, batchSize) {
+        const queries: string[] = [
+          Query.equal('userId', options.userId),
+          Query.orderAsc('$updatedAt'),
+          Query.orderAsc('$id'),
+          Query.limit(batchSize),
+        ];
 
-          if (lastPulledCheckpoint) {
-            queries.unshift(
-              Query.or([
-                Query.greaterThan('$updatedAt', lastPulledCheckpoint.updatedAt),
-                Query.and([
-                  Query.equal('$updatedAt', lastPulledCheckpoint.updatedAt),
-                  Query.greaterThan('$id', lastPulledCheckpoint.id),
-                ]),
-              ])
-            );
-          }
-
-          const result = await databases.listDocuments(options.databaseId, options.collectionId, queries);
-          const lastDoc = lastOfArray(result.documents);
-          const newCheckpoint = lastDoc ? { id: lastDoc.$id, updatedAt: lastDoc.$updatedAt } : null;
-
-          const documents = await Promise.all(
-            result.documents.map((doc) =>
-              appwriteDocToRxDB(doc, primaryKey, options.deletedField, options.pull?.modifier)
-            )
+        if (lastPulledCheckpoint) {
+          queries.unshift(
+            Query.or([
+              Query.greaterThan('$updatedAt', lastPulledCheckpoint.updatedAt),
+              Query.and([
+                Query.equal('$updatedAt', lastPulledCheckpoint.updatedAt),
+                Query.greaterThan('$id', lastPulledCheckpoint.id),
+              ]),
+            ])
           );
+        }
 
-          return { checkpoint: newCheckpoint, documents };
-        },
-      }
+        const result = await tablesDB.listRows({
+          databaseId: options.databaseId,
+          tableId: options.tableId,
+          queries,
+        });
+
+        const lastDoc = lastOfArray(result.rows);
+        const newCheckpoint = lastDoc ? { id: lastDoc.$id, updatedAt: lastDoc.$updatedAt } : null;
+
+        const documents = await Promise.all(
+          result.rows.map((doc) =>
+            appwriteDocToRxDB(doc, primaryKey, options.deletedField, options.pull?.modifier)
+          )
+        );
+
+        return { checkpoint: newCheckpoint, documents };
+      },
+    }
     : undefined;
 
   const pushOptions: ReplicationPushOptions<RxDocType> | undefined = options.push
     ? {
-        batchSize: options.push.batchSize || 25,
-        async handler(rows) {
-          const conflicts: WithDeleted<RxDocType>[] = [];
-          for (const row of rows) {
-            const docId = (row.newDocumentState as any)[primaryKey];
-            const docToPush = await rxdbDocToAppwrite(
-              row.newDocumentState,
-              primaryKey,
-              options.deletedField,
-              options.push?.modifier
-            );
+      batchSize: options.push.batchSize || 25,
+      async handler(rows) {
+        const conflicts: WithDeleted<RxDocType>[] = [];
+        for (const row of rows) {
+          const docId = (row.newDocumentState as any)[primaryKey];
+          const docToPush = await rxdbDocToAppwrite(
+            row.newDocumentState,
+            primaryKey,
+            options.deletedField,
+            options.push?.modifier
+          );
 
-            try {
-              if (row.assumedMasterState) {
-                // UPDATE
-                await databases.updateDocument(options.databaseId, options.collectionId, docId, docToPush);
-              } else {
-                // INSERT
-                const permissions = setPermissions(options.userId);
-                await databases.createDocument(options.databaseId, options.collectionId, docId, docToPush, permissions);
-              }
-            } catch (error: any) {
-              if (error.code === 409) {
-                // Conflict
-                const serverDoc = await databases.getDocument(options.databaseId, options.collectionId, docId);
-                const conflictDoc = await appwriteDocToRxDB(
-                  serverDoc,
-                  primaryKey,
-                  options.deletedField,
-                  options.pull?.modifier
-                );
-                conflicts.push(conflictDoc);
-              } else {
-                console.error('Push failed for doc:', docId, error);
-                conflicts.push(row.newDocumentState); // Treat as conflict to retry
-              }
+          try {
+            if (row.assumedMasterState) {
+              // UPDATE
+              await tablesDB.updateRow({
+                databaseId: options.databaseId,
+                tableId: options.tableId,
+                rowId: docId,
+                data: docToPush,
+              });
+            } else {
+              // INSERT
+              const permissions = setPermissions(options.userId);
+              await tablesDB.createRow({
+                databaseId: options.databaseId,
+                tableId: options.tableId,
+                rowId: docId,
+                data: docToPush,
+                permissions,
+              });
+            }
+          } catch (error: any) {
+            if (error.code === 409) {
+              // Conflict
+              const serverDoc = await tablesDB.getRow({
+                databaseId: options.databaseId,
+                tableId: options.tableId,
+                rowId: docId,
+              });
+              const conflictDoc = await appwriteDocToRxDB(
+                serverDoc,
+                primaryKey,
+                options.deletedField,
+                options.pull?.modifier
+              );
+              conflicts.push(conflictDoc);
+            } else {
+              console.error('Push failed for doc:', docId, error);
+              conflicts.push(row.newDocumentState); // Treat as conflict to retry
             }
           }
-          return conflicts;
-        },
-      }
+        }
+        return conflicts;
+      },
+    }
     : undefined;
 
   const replicationState = new RxReplicationState<RxDocType, AppwriteCheckpointType>(
     options.replicationIdentifier,
     collection,
-    options.deletedField, // Reverted to use your specified deleted field
+    options.deletedField,
     pullOptions,
     pushOptions,
     options.live,
@@ -199,7 +216,7 @@ export function replicateAppwrite<RxDocType>(
   );
 
   if (options.live && pullOptions) {
-    const channel = `databases.${options.databaseId}.collections.${options.collectionId}.documents`;
+    const channel = `databases.${options.databaseId}.tables.${options.tableId}.rows`;
 
     const unsubscribe = options.client.subscribe(channel, async (response) => {
       const payload = response.payload as any;
@@ -213,7 +230,6 @@ export function replicateAppwrite<RxDocType>(
       });
     });
 
-    // FIX: Changed .canceled to .canceled$
     replicationState.canceled$.subscribe(() => {
       console.log('Replication canceled, unsubscribing from Appwrite.');
       unsubscribe();

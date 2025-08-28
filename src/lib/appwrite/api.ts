@@ -1,5 +1,5 @@
 import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, type Models } from 'appwrite';
-import { databases, account, storage, locale, DATABASE_ID, COLLECTIONS, BUCKETS } from '@/lib/appwrite';
+import { tablesDB, account, storage, locale, DATABASE_ID, TABLES, BUCKETS } from '@/lib/appwrite';
 import { getLibraryCount } from '@/utils/library';
 
 import type { Profile, CreateProfileInput, UpdateProfileInput, Activity, UserLocation } from './types';
@@ -22,41 +22,59 @@ function setPermissions(userId: string): string[] {
 class BaseAPI {
   protected async createDocument<T extends Models.Document>(
     collectionId: string,
-    data: Omit<T, keyof Models.Document>,
+    data: Omit<Partial<T>, keyof Models.Document>,
     documentId?: string,
     permissions?: string[]
   ) {
-    return (await databases.createDocument(
-      DATABASE_ID,
-      collectionId,
-      documentId || ID.unique(),
+    return (await tablesDB.createRow({
+      databaseId: DATABASE_ID,
+      tableId: collectionId,
+      rowId: documentId || ID.unique(),
       data,
       permissions
-    )) as T;
+    })) as unknown as T;
   }
 
   protected async getDocument<T extends Models.Document>(collectionId: string, documentId: string, queries?: string[]) {
-    return (await databases.getDocument(DATABASE_ID, collectionId, documentId, queries)) as T;
+    return (await tablesDB.getRow({
+      databaseId: DATABASE_ID,
+      tableId: collectionId,
+      rowId: documentId,
+      queries
+    })) as unknown as T;
   }
 
   protected async updateDocument<T extends Models.Document>(
     collectionId: string,
     documentId: string,
-    data: Partial<Omit<T, keyof Models.Document>>
+    data: Omit<Partial<T>, keyof Models.Document>
   ) {
-    return (await databases.updateDocument(DATABASE_ID, collectionId, documentId, data)) as T;
+    return (await tablesDB.updateRow({
+      databaseId: DATABASE_ID,
+      tableId: collectionId,
+      rowId: documentId,
+      data
+    })) as unknown as T;
   }
 
   protected async deleteDocument(collectionId: string, documentId: string) {
-    await databases.deleteDocument(DATABASE_ID, collectionId, documentId);
+    await tablesDB.deleteRow({
+      databaseId: DATABASE_ID,
+      tableId: collectionId,
+      rowId: documentId
+    });
   }
 
   protected async listDocuments<T extends Models.Document>(collectionId: string, queries?: string[]) {
-    const response = await databases.listDocuments(DATABASE_ID, collectionId, queries);
+    const response = await tablesDB.listRows({
+      databaseId: DATABASE_ID,
+      tableId: collectionId,
+      queries
+    });
 
     return {
       total: response.total,
-      documents: response.documents as T[],
+      documents: response.rows as unknown as T[],
     };
   }
 }
@@ -67,15 +85,15 @@ class BaseAPI {
 export class ProfileAPI extends BaseAPI {
   async create(profileData: CreateProfileInput) {
     const permissions = setPermissions(profileData.userId);
-    return this.createDocument<Profile>(COLLECTIONS.PROFILES, profileData, undefined, permissions);
+    return this.createDocument<Profile>(TABLES.PROFILES, profileData, undefined, permissions);
   }
   async get(profileId: string) {
-    return this.getDocument<Profile>(COLLECTIONS.PROFILES, profileId, [
+    return this.getDocument<Profile>(TABLES.PROFILES, profileId, [
       Query.select(['*', 'preferences.*', 'library.*']),
     ]);
   }
   async getByUserId(userId: string) {
-    const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
+    const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
       Query.equal('userId', userId),
       Query.limit(1),
       Query.select(['*', 'preferences.*', 'library.*']),
@@ -83,19 +101,19 @@ export class ProfileAPI extends BaseAPI {
     return result.documents[0] || null;
   }
   async update(profileId: string, profileData: UpdateProfileInput) {
-    return this.updateDocument<Profile>(COLLECTIONS.PROFILES, profileId, profileData);
+    return this.updateDocument<Profile>(TABLES.PROFILES, profileId, profileData);
   }
 
   async delete(profileId: string) {
-    return this.deleteDocument(COLLECTIONS.PROFILES, profileId);
+    return this.deleteDocument(TABLES.PROFILES, profileId);
   }
 
   async list(queries?: string[]) {
-    return this.listDocuments<Profile>(COLLECTIONS.PROFILES, queries);
+    return this.listDocuments<Profile>(TABLES.PROFILES, queries);
   }
 
   async getByEmail(email: string) {
-    const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
+    const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
       Query.equal('email', email),
       Query.limit(1),
     ]);
@@ -103,7 +121,7 @@ export class ProfileAPI extends BaseAPI {
   }
 
   async getUserProfile(username: string): Promise<UserProfile | null> {
-    const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
+    const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
       Query.equal('username', username),
       Query.limit(1),
     ]);
@@ -159,7 +177,7 @@ export class ProfileAPI extends BaseAPI {
 
     const entryToLog: Activity = { ...newActivity, timestamp: new Date().toISOString() };
 
-    const recentActivity = [entryToLog, ...existingActivities].slice(0, 5).map((entry) => JSON.stringify(entry));
+    const recentActivity = [entryToLog, ...existingActivities].slice(0, 5).map((entry) => JSON.stringify(entry)) as unknown as Activity[];
 
     await this.update(profileId, { recentActivity });
   }
@@ -168,7 +186,7 @@ export class ProfileAPI extends BaseAPI {
     if (!username.trim()) return false;
 
     try {
-      const result = await this.listDocuments<Profile>(COLLECTIONS.PROFILES, [
+      const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
         Query.equal('username', username),
         Query.limit(1),
         Query.select(['username']),
@@ -188,18 +206,18 @@ export class UserPreferencesAPI extends BaseAPI {
   async create(preferencesData: CreateUserPreferencesInput, documentId?: string) {
     const currentUser = await account.get();
     const permissions = setPermissions(currentUser.$id);
-    return this.createDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesData, documentId, permissions);
+    return this.createDocument<UserPreferences>(TABLES.USER_PREFERENCES, preferencesData, documentId, permissions);
   }
   async get(preferencesId: string) {
-    return this.getDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesId);
+    return this.getDocument<UserPreferences>(TABLES.USER_PREFERENCES, preferencesId);
   }
 
   async update(preferencesId: string, preferencesData: UpdateUserPreferencesInput) {
-    return this.updateDocument<UserPreferences>(COLLECTIONS.USER_PREFERENCES, preferencesId, preferencesData);
+    return this.updateDocument<UserPreferences>(TABLES.USER_PREFERENCES, preferencesId, preferencesData);
   }
 
   async delete(preferencesId: string) {
-    return this.deleteDocument(COLLECTIONS.USER_PREFERENCES, preferencesId);
+    return this.deleteDocument(TABLES.USER_PREFERENCES, preferencesId);
   }
 }
 
@@ -212,23 +230,23 @@ export class LibraryAPI extends BaseAPI {
     const currentUser = await account.get();
     const permissions = setPermissions(currentUser.$id);
 
-    return this.createDocument<Library>(COLLECTIONS.LIBRARIES, libraryData, documentId, permissions);
+    return this.createDocument<Library>(TABLES.LIBRARIES, libraryData, documentId, permissions);
   }
 
   async get(libraryId: string) {
-    return this.getDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, [Query.select(['*', 'items.*'])]);
+    return this.getDocument<Library>(TABLES.LIBRARIES, libraryId, [Query.select(['*', 'items.*'])]);
   }
 
   async update(libraryId: string, libraryData: UpdateLibraryInput) {
-    return this.updateDocument<Library>(COLLECTIONS.LIBRARIES, libraryId, libraryData);
+    return this.updateDocument<Library>(TABLES.LIBRARIES, libraryId, libraryData);
   }
 
   async delete(libraryId: string) {
-    return this.deleteDocument(COLLECTIONS.LIBRARIES, libraryId);
+    return this.deleteDocument(TABLES.LIBRARIES, libraryId);
   }
 
   async list(queries?: string[]) {
-    return this.listDocuments<Library>(COLLECTIONS.LIBRARIES, queries);
+    return this.listDocuments<Library>(TABLES.LIBRARIES, queries);
   }
 
   async getByUserId(userId: string) {
@@ -253,40 +271,36 @@ export class LibraryMediaAPI extends BaseAPI {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId, libraryId, ...cleanItemData } = itemData;
 
-    // Map the external field names to Appwrite relationship field names
-    const appwriteData = {
-      ...cleanItemData,
-      library: libraryId, // Map libraryId to library
-    };
+    const data = {...cleanItemData,library: libraryId as unknown as Library};
 
-    return this.createDocument<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, appwriteData, documentId, permissions);
+    return this.createDocument<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, data, documentId, permissions);
   }
 
   async get(itemId: string) {
-    return this.getDocument<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, itemId, [
+    return this.getDocument<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, itemId, [
       Query.select(['*', 'library.*']),
     ]);
   }
 
   async update(itemId: string, itemData: UpdateAppwriteLibraryMediaInput) {
-    return this.updateDocument<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, itemId, itemData);
+    return this.updateDocument<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, itemId, itemData);
   }
 
   async delete(itemId: string) {
-    return this.deleteDocument(COLLECTIONS.LIBRARY_MEDIA, itemId);
+    return this.deleteDocument(TABLES.LIBRARY_MEDIA, itemId);
   }
 
   async list(queries?: string[]) {
-    return this.listDocuments<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, queries);
+    return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, queries);
   }
 
   async getByLibrary(libraryId: string, queries?: string[]) {
     const baseQueries = [Query.equal('library', libraryId)];
-    return this.listDocuments<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, [...baseQueries, ...(queries || [])]);
+    return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, [...baseQueries, ...(queries || [])]);
   }
 
   async getByLibraryAndTmdbId(libraryId: string, tmdbId: number, mediaType: MediaType) {
-    const result = await this.listDocuments<AppwriteLibraryMedia>(COLLECTIONS.LIBRARY_MEDIA, [
+    const result = await this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, [
       Query.equal('library', libraryId),
       Query.equal('tmdbId', tmdbId),
       Query.equal('mediaType', mediaType),
@@ -490,7 +504,11 @@ export class AppwriteService {
    */
   async healthCheck() {
     try {
-      await databases.listDocuments(DATABASE_ID, COLLECTIONS.PROFILES, [Query.limit(1)]);
+      await tablesDB.listRows({
+        databaseId: DATABASE_ID,
+        tableId: TABLES.PROFILES,
+        queries: [Query.limit(1)]
+      });
       return true;
     } catch {
       return false;
@@ -503,7 +521,7 @@ export class AppwriteService {
   async getDatabaseInfo() {
     return {
       databaseId: DATABASE_ID,
-      collections: COLLECTIONS,
+      collections: TABLES,
       buckets: BUCKETS,
     };
   }
