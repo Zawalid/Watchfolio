@@ -61,10 +61,10 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
     });
 
     dbInstance = db as unknown as WatchfolioDatabase;
-    console.log('Watchfolio database created successfully');
     return dbInstance;
   });
-
+  
+  console.log('Watchfolio database created successfully');
   return dbPromise;
 };
 
