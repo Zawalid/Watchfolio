@@ -41,7 +41,6 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
       storage: getRxStorageDexie(),
     }),
     multiInstance: false,
-    ignoreDuplicate: true,
   }).then(async (db) => {
     await db.addCollections({
       libraryMedia: {
