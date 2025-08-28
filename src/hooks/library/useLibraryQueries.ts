@@ -20,7 +20,7 @@ const mapSortBy = (sortBy: string) => {
     case 'release_date':
       return 'releaseDate';
     case 'runtime':
-      return 'totalMinutesRuntime'
+      return 'totalMinutesRuntime';
     default:
       return sortBy;
   }
@@ -37,8 +37,8 @@ export const useInfiniteLibraryItems = (filters: {
 }) => {
   const userId = useAuthStore((state) => state.user?.$id);
 
-  return useInfiniteQuery({
-    queryKey: queryKeys.library({ userId  , ...filters }),
+  const query = useInfiniteQuery({
+    queryKey: queryKeys.library({ userId, ...filters }),
     queryFn: ({ pageParam = 0 }) =>
       getAllLibraryItems(userId, {
         ...filters,
@@ -51,10 +51,14 @@ export const useInfiniteLibraryItems = (filters: {
     },
     initialPageParam: 0,
   });
+
+  if (query.isError) console.log(query.error);
+
+  return query;
 };
 
 export const useLibraryItem = (id: string) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: queryKeys.libraryItem(id),
     queryFn: () => {
       if (String(id).includes('-')) {
@@ -65,6 +69,10 @@ export const useLibraryItem = (id: string) => {
     },
     enabled: !!id,
   });
+
+  if (query.isError) console.log(query.error);
+
+  return query;
 };
 
 export const useLibraryItemsByIds = (ids: string[]) => {
