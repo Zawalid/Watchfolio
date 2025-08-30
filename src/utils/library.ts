@@ -136,7 +136,7 @@ export const libraryMediaToMedia = (item: LibraryMedia): Partial<Media> => {
     vote_average: item.rating || 0,
     genre_ids: item.genres
       ? item.genres
-          .map((genre) => GENRES.find((g) => g.slug === genre)?.id)
+          .map((genre) => GENRES.find((g) => g.label === genre)?.id)
           .filter((id): id is number => typeof id === 'number')
       : [],
   };

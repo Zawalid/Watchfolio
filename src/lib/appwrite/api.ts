@@ -291,24 +291,34 @@ export class LibraryMediaAPI extends BaseAPI {
     return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, queries);
   }
 
-  async getPublicLibraryItems(
-    libraryId: string,
-    limit: number,
-    offset: number,
-    filters: { status?: LibraryFilterStatus; query?: string }
-  ) {
-    const queries = [
-      Query.equal('library', libraryId),
-      Query.limit(limit),
-      Query.offset(offset),
-      Query.orderDesc('$createdAt'), // or any default sort you prefer
-    ];
+  async getPublicLibraryItems(libraryId: string, limit: number, offset: number, filters: LibraryFilters) {
+    const queries: string[] = [Query.equal('library', libraryId), Query.limit(limit), Query.offset(offset)];
 
     if (filters.status && filters.status !== 'all') {
-      queries.push(Query.equal('status', filters.status));
+      if (filters.status === 'favorites') {
+        queries.push(Query.equal('isFavorite', true));
+      } else {
+        queries.push(Query.equal('status', filters.status));
+      }
     }
     if (filters.query) {
       queries.push(Query.search('title', filters.query));
+    }
+    if (filters.mediaType) {
+      queries.push(Query.equal('media_type', filters.mediaType));
+    }
+    if (filters.genres && filters.genres.length > 0) {
+      queries.push(Query.contains('genres', filters.genres));
+    }
+    if (filters.networks && filters.networks.length > 0) {
+      queries.push(Query.contains('networks', filters.networks as unknown as string[]));
+    }
+
+    const sortOrder = filters.sortDir === 'asc' ? Query.orderAsc : Query.orderDesc;
+    if (filters.sortBy) {
+      queries.push(sortOrder(filters.sortBy));
+    } else {
+      queries.push(Query.orderDesc('addedAt'));
     }
 
     return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, queries);

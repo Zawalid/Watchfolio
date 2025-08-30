@@ -42,8 +42,8 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
   const { ref: inViewRef, inView } = useInView({ rootMargin: '400px' });
   const localLibraryCount = useLibraryTotalCount();
 
-  const localQuery = useInfiniteLibraryItems(
-    {
+  const filters = useMemo(() => {
+    return {
       status,
       query: debouncedQuery,
       sortBy,
@@ -51,15 +51,11 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
       mediaType: selectedTypes && selectedTypes.length === 1 ? (selectedTypes[0] as MediaType) : undefined,
       genres: selectedGenres || undefined,
       networks: NETWORKS.filter((n) => selectedNetworks?.includes(n.slug)).map((n) => n.id) || undefined,
-    },
-    { enabled: isOwnProfile }
-  );
+    };
+  }, [status, debouncedQuery, sortBy, sortDir, selectedTypes, selectedGenres, selectedNetworks]);
 
-  const publicQuery = useInfinitePublicLibraryItems(
-    libraryId!,
-    { status, query: debouncedQuery },
-    { enabled: !isOwnProfile && !!libraryId }
-  );
+  const localQuery = useInfiniteLibraryItems(filters, { enabled: isOwnProfile });
+  const publicQuery = useInfinitePublicLibraryItems(libraryId!, filters, { enabled: !isOwnProfile && !!libraryId });
 
   const { data, fetchNextPage, hasNextPage, isLoading, isError } = isOwnProfile ? localQuery : publicQuery;
 
@@ -71,8 +67,6 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
 
   const items = useMemo(() => data?.pages.flatMap((page) => page as LibraryMedia[]) ?? [], [data]);
   const totalCount = isOwnProfile ? localLibraryCount[status] : stats?.[status];
-
-  log(profile);
 
   const navigate = useNavigate();
 
@@ -134,7 +128,7 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
             );
           return (
             <MediaCard
-              key={`${item.id}-${item.media_type}`}
+              key={`${item.tmdbId}-${item.media_type}`}
               media={libraryMediaToMedia(item) as Media}
               tabIndex={currentIndex === index ? 0 : -1}
             />

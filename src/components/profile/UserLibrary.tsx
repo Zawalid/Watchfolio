@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { GalleryVerticalEnd } from 'lucide-react';
-import SortBy from '@/components/SortBy';
 import LibraryViewLayout from '@/components/library/LibraryViewLayout';
 import LibraryView from '@/components/library/LibraryView';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -17,32 +16,28 @@ export default function UserLibrary({ profile, stats }: { profile: Profile; stat
     (s) => isOwnProfile || !hiddenProfileSections.includes(`library.${s.value}`)
   );
 
-  const tabs = [
-    {
-      label: `All (${stats.all})`,
-      icon: <GalleryVerticalEnd className='size-4' />,
-      value: 'all',
-    },
-    ...visibleStatuses.map((s) => {
-      const IconComponent = s.icon;
-      return {
-        label: `${s.label} (${stats[s.value]})`,
-        icon: <IconComponent className='size-4' />,
-        value: s.value,
-      };
-    }),
-  ];
-
-  const renderActions = () => <SortBy options={[{ key: 'recent', label: 'Recently Added' }]} defaultSort='recent' />;
-
   return (
     <LibraryViewLayout
       sidebarTitle={`${profile.name.split(' ')[0]}'s Library`}
-      tabs={tabs}
+      tabs={[
+        {
+          label: `All (${stats.all})`,
+          icon: <GalleryVerticalEnd className='size-4' />,
+          value: 'all',
+        },
+        ...visibleStatuses.map((s) => {
+          const IconComponent = s.icon;
+          return {
+            label: `${s.label} (${stats[s.value]})`,
+            icon: <IconComponent className='size-4' />,
+            value: s.value,
+          };
+        }),
+      ]}
       activeTab={status}
       onTabChange={(val) => setStatus(val as LibraryFilterStatus)}
       searchLabel={`Search ${profile.name.split(' ')[0]}'s Library`}
-      renderActions={renderActions}
+      isOwnProfile={isOwnProfile}
     >
       <LibraryView profile={profile} status={status} />
     </LibraryViewLayout>

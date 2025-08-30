@@ -14,13 +14,14 @@ import { AnimatePresence } from 'framer-motion';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import LibraryViewLayout from '@/components/library/LibraryViewLayout';
-import SortBy from '@/components/SortBy';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 import { useLibraryTotalCount } from '@/hooks/library/useLibraryQueries';
 import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { getShortcut } from '@/utils/keyboardShortcuts';
 
 export default function LibraryLayout() {
   const { status } = useParams<{ status: LibraryFilterStatus }>();
@@ -43,37 +44,10 @@ export default function LibraryLayout() {
     }
   }, [location.state]);
 
-  const tabs = [
-    {
-      label: `All (${libraryCount.all})`,
-      icon: <GalleryVerticalEnd className='size-4' />,
-      value: 'all',
-      link: '/library/all',
-    },
-    ...LIBRARY_MEDIA_STATUS.map((status) => {
-      const IconComponent = status.icon;
-      return {
-        label: `${status.label} (${libraryCount[status.value]})`,
-        icon: <IconComponent className='size-4' />,
-        value: status.value,
-        link: `/library/${slugify(status.value)}`,
-      };
-    }),
-  ];
+  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', clearLibrary, { useKey: true });
 
   const renderActions = () => (
     <>
-      <SortBy
-        options={[
-          { key: 'recent', label: 'Recently Added' },
-          { key: 'title', label: 'Title' },
-          { key: 'user_rating', label: 'Your Rating' },
-          { key: 'rating', label: 'Rating' },
-          { key: 'release_date', label: 'Release Date' },
-          { key: 'runtime', label: 'Runtime' },
-        ]}
-        defaultSort='recent'
-      />
       <Dropdown placement='bottom-end' backdrop='opaque' classNames={DROPDOWN_CLASSNAMES}>
         <DropdownTrigger>
           <Button isIconOnly className='button-secondary! relative' aria-label='More options'>
@@ -121,11 +95,27 @@ export default function LibraryLayout() {
   return (
     <LibraryViewLayout
       sidebarTitle='Your Library'
-      tabs={tabs}
+      tabs={[
+        {
+          label: `All (${libraryCount.all})`,
+          icon: <GalleryVerticalEnd className='size-4' />,
+          value: 'all',
+          link: '/library/all',
+        },
+        ...LIBRARY_MEDIA_STATUS.map((status) => {
+          const IconComponent = status.icon;
+          return {
+            label: `${status.label} (${libraryCount[status.value]})`,
+            icon: <IconComponent className='size-4' />,
+            value: status.value,
+            link: `/library/${slugify(status.value)}`,
+          };
+        }),
+      ]}
       activeTab={activeTab}
       searchLabel='Search Your Library'
       renderActions={renderActions}
-      showSyncStatus={true}
+      isOwnProfile={true}
     >
       <AnimatePresence>
         <WelcomeBanner

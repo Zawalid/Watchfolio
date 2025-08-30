@@ -11,6 +11,7 @@ import { cn } from '@/utils';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import { SyncStatus } from './SyncStatus';
 import FiltersModal from '../FiltersModal';
+import SortBy from '../SortBy';
 
 interface TabItem {
   label: string;
@@ -25,9 +26,9 @@ interface LibraryViewLayoutProps {
   activeTab: string;
   onTabChange?: (value: string) => void;
   searchLabel: string;
-  renderActions: () => ReactNode;
+  renderActions?: () => ReactNode;
   children: ReactNode;
-  showSyncStatus?: boolean;
+  isOwnProfile: boolean;
 }
 
 export default function LibraryViewLayout({
@@ -38,7 +39,7 @@ export default function LibraryViewLayout({
   searchLabel,
   renderActions,
   children,
-  showSyncStatus,
+  isOwnProfile,
 }: LibraryViewLayoutProps) {
   const [query, setQuery] = useQueryState('query', { defaultValue: '', shallow: false });
   const [showSidebar, setShowSidebar] = useLocalStorageState(`show-sidebar-${sidebarTitle}`, true);
@@ -84,7 +85,7 @@ export default function LibraryViewLayout({
             onChange={onTabChange}
             tabs={tabs}
           />
-          {showSyncStatus && <SyncStatus className='mt-auto mb-3' />}
+          {isOwnProfile && <SyncStatus className='mt-auto mb-3' />}
         </aside>
       </div>
 
@@ -131,7 +132,18 @@ export default function LibraryViewLayout({
               title='Library Filters'
               filterOptions={['genres', 'networks', 'types']}
             />
-            {renderActions()}
+            <SortBy
+              options={[
+                { key: 'recent', label: 'Recently Added' },
+                { key: 'title', label: 'Title' },
+                ...(isOwnProfile ? [{ key: 'user_rating', label: 'Your Rating' }] : []),
+                { key: 'rating', label: 'Rating' },
+                { key: 'release_date', label: 'Release Date' },
+                { key: 'runtime', label: 'Runtime' },
+              ]}
+              defaultSort='recent'
+            />
+            {renderActions?.()}
           </div>
         </div>
 

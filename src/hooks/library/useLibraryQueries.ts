@@ -27,18 +27,7 @@ const mapSortBy = (sortBy: string) => {
   }
 };
 
-export const useInfiniteLibraryItems = (
-  filters: {
-    status: LibraryFilterStatus;
-    sortBy: string;
-    sortDir: 'asc' | 'desc';
-    query?: string;
-    mediaType?: MediaType | 'all';
-    genres?: string[];
-    networks?: number[];
-  },
-  options: { enabled?: boolean }
-) => {
+export const useInfiniteLibraryItems = (filters: LibraryFilters, options: { enabled?: boolean }) => {
   const userId = useAuthStore((state) => state.user?.$id);
 
   const query = useInfiniteQuery({
@@ -48,7 +37,7 @@ export const useInfiniteLibraryItems = (
         ...filters,
         limit: PAGE_SIZE,
         offset: pageParam * PAGE_SIZE,
-        sortBy: mapSortBy(filters.sortBy),
+        sortBy: mapSortBy(filters.sortBy || 'recent'),
       }),
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
@@ -121,17 +110,23 @@ export const useLibraryTotalCount = () => {
 
 export const useInfinitePublicLibraryItems = (
   libraryId: string,
-  filters: { status: LibraryFilterStatus; query?: string },
+  filters: LibraryFilters,
   options: { enabled?: boolean }
 ) => {
   return useInfiniteQuery({
     queryKey: ['public-library', libraryId, filters],
     queryFn: async ({ pageParam = 0 }) => {
+      // Map the sortBy from UI key to the database field key
+      const mappedFilters = {
+        ...filters,
+        sortBy: filters.sortBy ? mapSortBy(filters.sortBy) : undefined,
+      };
+
       const items = await appwriteService.libraryMedia.getPublicLibraryItems(
         libraryId,
         PAGE_SIZE,
         pageParam * PAGE_SIZE,
-        filters
+        mappedFilters // Pass the new filters to the API call
       );
       return items.documents;
     },

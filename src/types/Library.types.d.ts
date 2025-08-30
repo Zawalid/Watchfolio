@@ -52,6 +52,12 @@ interface LibraryStats {
   topGenres: Array<{ name: string; count: number }>;
 }
 
-// Sync Types
-
-type SyncStatus = 'offline' | 'connecting' | 'online' | 'syncing' | 'error';
+type LibraryFilters = {
+  status: LibraryFilterStatus;
+  query?: string;
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
+  mediaType?: MediaType;
+  genres?: string[];
+  networks?: number[];
+};
