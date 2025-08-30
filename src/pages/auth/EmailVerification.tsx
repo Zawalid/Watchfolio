@@ -39,7 +39,7 @@ export default function EmailVerification() {
           color: 'success',
         });
       } catch (error) {
-        console.error('Failed to verify email:', error);
+        log('ERR', 'Failed to verify email:', error);
         setVerificationResult('error');
         addToast({
           title: 'Verification failed',

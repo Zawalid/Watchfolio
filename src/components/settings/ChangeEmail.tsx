@@ -70,7 +70,7 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
         color: 'success',
       });
     } catch (error) {
-      console.error('Failed to send verification email:', error);
+      log('ERR', 'Failed to send verification email:', error);
       addToast({
         title: 'Error',
         description: 'Failed to send verification email. Please try again.',

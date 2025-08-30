@@ -5,9 +5,9 @@ import { GENRES } from '@/utils/constants/TMDB';
 import { useDebounce } from './useDebounce';
 import { useFiltersParams } from './useFiltersParams';
 
-export function useDiscoverParams(type?: MediaType) {
+export function useDiscoverParams(type?: MediaType, defaultSortBy: string = 'popularity') {
   const [page] = useQueryState('page', parseAsInteger.withDefault(1));
-  const [sortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
+  const [sortBy] = useQueryState('sort_by', parseAsString.withDefault(defaultSortBy));
   const [sortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
 
   const { language, minRating, maxRating, minYear, maxYear, selectedGenres, selectedNetworks, selectedTypes, query } =

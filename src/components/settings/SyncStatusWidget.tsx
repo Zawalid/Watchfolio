@@ -1,12 +1,12 @@
 import { motion } from 'framer-motion';
 import { Cloud, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useSessions } from './DeviceManager';
-import { useLibraryStore } from '@/stores/useLibraryStore';
+import { useSyncStore } from '@/stores/useSyncStore';
 import { cn, formatDistanceToNow } from '@/utils';
 import { Button } from '@heroui/react';
 
 export default function SyncStatusWidget() {
-  const { syncStatus, lastSyncTime } = useLibraryStore();
+  const { syncStatus, lastSyncTime } = useSyncStore();
   const { data: activeSessions = [], isLoading, isError, refetch } = useSessions();
 
   const isSynced = syncStatus === 'online' || syncStatus === 'syncing';
@@ -78,7 +78,9 @@ export default function SyncStatusWidget() {
         </div>
       </div>
 
-      <div className={cn('grid gap-3', `grid-cols-${Math.min(4, isLoading ? 3 : activeSessions.length)}`)}>{renderDeviceList()}</div>
+      <div className={cn('grid gap-3', `grid-cols-${Math.min(4, isLoading ? 3 : activeSessions.length)}`)}>
+        {renderDeviceList()}
+      </div>
     </div>
   );
 }

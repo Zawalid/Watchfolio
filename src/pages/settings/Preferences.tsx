@@ -20,7 +20,7 @@ export default function Preferences() {
         color: 'success',
       });
     } catch (error) {
-      console.error('Failed to update preferences:', error);
+      log('ERR', 'Failed to update preferences:', error);
       addToast({
         title: 'Error',
         description: 'Failed to update preferences. Please try again.',

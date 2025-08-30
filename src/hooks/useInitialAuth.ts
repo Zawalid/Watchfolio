@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { AccountPrefs } from '@/lib/appwrite/types';
 
 export function useInitialAuth() {
   const { user, checkAuth, pendingOnboarding, setPendingOnboarding, openOnboardingModal } = useAuthStore();
@@ -13,7 +14,7 @@ export function useInitialAuth() {
   }, [user, checkAuth]);
 
   useEffect(() => {
-    if (user && pendingOnboarding && user.prefs.hasSeenOnboarding !== 'TRUE') {
+    if (user && pendingOnboarding && (user.prefs as AccountPrefs).hasSeenOnboarding !== 'TRUE') {
       setPendingOnboarding(false);
 
       const hasExistingPreferences =

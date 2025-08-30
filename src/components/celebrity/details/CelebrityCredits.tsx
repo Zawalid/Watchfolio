@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Film } from 'lucide-react';
 import BaseMediaCard from '@/components/media/BaseMediaCard';
 import { CELEBRITY_CATEGORIES } from './CelebrityCategories';
 import { getGenres } from '@/utils/media';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import SortBy from '@/components/SortBy';
 import { generateMediaId } from '@/utils/library';
+import { useLibraryItemsByIds } from '@/hooks/library/useLibraryQueries';
 
 interface CelebrityCreditsProps {
   currentContent: Credit[];
@@ -14,7 +15,20 @@ interface CelebrityCreditsProps {
 }
 
 export default function CelebrityCredits({ currentContent, category, isDeceased }: CelebrityCreditsProps) {
-  const getItem = useLibraryStore((state) => state.getItem);
+  const creditIds = useMemo(() => currentContent.map(generateMediaId), [currentContent]);
+  const { data: libraryItems = [] } = useLibraryItemsByIds(creditIds);
+
+  const libraryItemsMap = useMemo(
+    () =>
+      libraryItems.reduce(
+        (acc, item) => {
+          acc[item.id] = item;
+          return acc;
+        },
+        {} as Record<string, LibraryMedia>
+      ),
+    [libraryItems]
+  );
 
   const getDisplayTitle = () => {
     const categoryData = CELEBRITY_CATEGORIES.find((c) => c.id === category);
@@ -23,7 +37,6 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
 
   return (
     <>
-      {/* Results Header */}
       <motion.div
         className='border-Grey-800/50 flex items-center justify-between border-b pb-4'
         initial={{ opacity: 0, y: 20 }}
@@ -54,8 +67,6 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
           />
         </div>
       </motion.div>
-
-      {/* Content Grid */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -63,26 +74,22 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
       >
         {currentContent.length > 0 ? (
           <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'>
-            {currentContent.map((item, index) => {
-              console.log(generateMediaId(item));
-              console.log(getItem(generateMediaId(item)));
-              return (
-                <BaseMediaCard
-                  key={`${item.media_type}-${item.id}-${index}`}
-                  id={item.id}
-                  title={item.title || item.name || ''}
-                  mediaType={item.media_type}
-                  posterPath={item.poster_path}
-                  releaseDate={item.release_date || item.first_air_date}
-                  rating={item.vote_average}
-                  genres={getGenres(item.genre_ids)}
-                  media={item as Media}
-                  item={getItem(generateMediaId(item))}
-                  celebrityRoles={item.roles}
-                  primaryRole={item.primaryRole}
-                />
-              );
-            })}
+            {currentContent.map((item, index) => (
+              <BaseMediaCard
+                key={`${item.media_type}-${item.id}-${index}`}
+                id={item.id}
+                title={item.title || item.name || ''}
+                mediaType={item.media_type}
+                posterPath={item.poster_path}
+                releaseDate={item.release_date || item.first_air_date}
+                rating={item.vote_average}
+                genres={getGenres(item.genre_ids)}
+                media={item as Media}
+                item={libraryItemsMap[generateMediaId(item)]}
+                celebrityRoles={item.roles}
+                primaryRole={item.primaryRole}
+              />
+            ))}
           </div>
         ) : (
           <div className='bg-blur rounded-xl border border-white/10 p-12 text-center backdrop-blur-xl'>

@@ -52,7 +52,7 @@ export default function Details({ onSuccess }: { onSuccess?: (data: UpdateProfil
         color: 'success',
       });
     } catch (error) {
-      console.error('Failed to send verification email:', error);
+      log('ERR', 'Failed to send verification email:', error);
       addToast({
         title: 'Error',
         description: 'Failed to send verification email. Please try again.',
@@ -87,7 +87,7 @@ export default function Details({ onSuccess }: { onSuccess?: (data: UpdateProfil
       });
       onSuccess?.(profileData);
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      log('ERR', 'Failed to update profile:', error);
       addToast({
         title: 'Error',
         description: 'Failed to update profile. Please try again.',
@@ -220,7 +220,7 @@ function Username({ username, currentUsername, error, register, setError, clearE
         }
       })
       .catch((err) => {
-        console.error('Username check failed:', err);
+        log('ERR', 'Username check failed:', err);
       })
       .finally(() => {
         if (isMounted) setChecking(false);

@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { authService } from '@/lib/auth';
 import { persistAndSync } from '@/utils/persistAndSync';
 import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constants';
-import { useLibraryStore } from './useLibraryStore';
 import { deepEqual } from '@/utils';
 import {
   CreateUserPreferencesInput,
@@ -11,8 +10,9 @@ import {
   UpdateUserPreferencesInput,
   UserWithProfile,
 } from '@/lib/appwrite/types';
-import { startReplication, stopReplication, destroyDB, getDBStatus } from '@/lib/rxdb';
+import { destroyDB, getDBStatus } from '@/lib/rxdb';
 import { authStorePartializer } from './utils';
+import { useSyncStore } from './useSyncStore';
 
 export interface AuthState {
   // Core user/auth state
@@ -27,7 +27,6 @@ export interface AuthState {
   authModalType: 'signin' | 'signup';
   showOnboardingModal: boolean;
   pendingOnboarding: boolean;
-
 
   // Authentication actions
   signIn: (email: string, password: string) => Promise<Models.Session>;
@@ -60,10 +59,7 @@ export interface AuthState {
   // Utility & helpers
   checkIsOwnProfile: (username?: string) => boolean;
   clearSyncError: () => void;
-  loadAndSyncLibrary: () => Promise<void>;
   cleanUp: () => Promise<void>;
-  toggleAutoSync: (enabled: boolean) => Promise<void>;
-
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -85,7 +81,7 @@ export const useAuthStore = create<AuthState>()(
           const session = await authService.signIn({ email, password });
           const user = await authService.getCurrentUser();
           set({ user, isAuthenticated: !!user, isLoading: false });
-          await get().loadAndSyncLibrary();
+          await useSyncStore.getState().startSync();
           return session;
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to sign in' });
@@ -104,7 +100,7 @@ export const useAuthStore = create<AuthState>()(
             await authService.updateUserPreferences(user.$id, preferences);
           }
           set({ user, isAuthenticated: !!user, isLoading: false });
-          await get().loadAndSyncLibrary();
+          await useSyncStore.getState().startSync();
           return newUser;
         } catch (error) {
           set({ isLoading: false, syncError: 'Failed to sign up' });
@@ -144,7 +140,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const user = await authService.getCurrentUser();
           set({ user, isAuthenticated: !!user, isLoading: false });
-          await get().loadAndSyncLibrary();
+          await useSyncStore.getState().startSync();
         } catch {
           set({ user: null, isAuthenticated: false, isLoading: false });
         }
@@ -225,7 +221,7 @@ export const useAuthStore = create<AuthState>()(
           const updatedUser = await authService.getCurrentUser();
           set({ user: updatedUser });
         } catch (error) {
-          console.error('Failed to refresh user:', error);
+          log("ERR", 'Failed to refresh user:', error);
           set({ syncError: 'Failed to refresh user data' });
         }
       },
@@ -254,39 +250,11 @@ export const useAuthStore = create<AuthState>()(
 
       clearSyncError: () => set({ syncError: null }),
 
-      loadAndSyncLibrary: async () => {
-        await useLibraryStore.getState().loadLibrary();
-        const user = get().user;
-        if (user && user.profile.preferences.autoSync) {
-          try {
-            await startReplication(user.$id, user.profile.library);
-          } catch (error) {
-            console.error('Failed to start sync:', error);
-            set({ syncError: 'Failed to start sync' });
-          }
-        }
-      },
-
-      toggleAutoSync: async (enabled: boolean) => {
-        const { user, updateUserPreferences } = get();
-        if (!user) throw new Error('User not authenticated');
-
-        await updateUserPreferences({ autoSync: enabled });
-
-        if (enabled) {
-          await startReplication(user.$id, user.profile.library);
-        } else {
-          await stopReplication();
-        }
-      },
-     
-
       cleanUp: async () => {
         if (getDBStatus() === 'ready') {
-          await stopReplication();
+          await useSyncStore.getState().stopSync();
           await destroyDB();
         }
-        useLibraryStore.getState().clearLibraryLocally();
       },
     }),
     {

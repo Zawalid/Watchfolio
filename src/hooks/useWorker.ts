@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 
-interface UseWorkerOptions<T> {
-  onSuccess?: (data: T) => void;
+interface UseWorkerOptions {
+  onSuccess?: (message: MessageEvent['data']) => void;
   onError?: (error: string) => void;
 }
 
-export function useWorker<T>(workerUrl: URL, options?: UseWorkerOptions<T>) {
+export function useWorker(workerUrl: URL, options?: UseWorkerOptions) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<T | null>(null);
+  const [data, setData] = useState<MessageEvent['data'] | null>(null);
 
   const workerRef = useRef<Worker | null>(null);
   const onSuccessRef = useRef(options?.onSuccess);
@@ -29,11 +29,11 @@ export function useWorker<T>(workerUrl: URL, options?: UseWorkerOptions<T>) {
 
       worker.onmessage = (event: MessageEvent) => {
         const { type, data, error } = event.data;
-        if (type === 'success') {
+        if (type.includes('success')) {
           setData(data);
           setError(null);
-          onSuccessRef.current?.(data);
-        } else if (type === 'error') {
+          onSuccessRef.current?.(event.data);
+        } else if (type.includes('error')) {
           setData(null);
           setError(error);
           onErrorRef.current?.(error);
@@ -48,7 +48,7 @@ export function useWorker<T>(workerUrl: URL, options?: UseWorkerOptions<T>) {
         workerRef.current = null;
       };
     } catch (err) {
-      console.error('Error creating WebWorker:', err);
+      log("ERR", 'Error creating WebWorker:', err);
       setError('WebWorkers are not supported in this environment.');
     }
   }, [workerUrl]);

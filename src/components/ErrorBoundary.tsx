@@ -13,8 +13,8 @@ export function ErrorBoundary({ children }: ErrorBoundaryProps) {
         // Log error to console in development
         if (import.meta.env.DEV) {
           console.group('🚨 Error Boundary Caught An Error');
-          console.error('Error:', error);
-          console.error('Error Info:', errorInfo);
+          log('ERR', 'Error:', error);
+          log('ERR', 'Error Info:', errorInfo);
           console.groupEnd();
         }
 

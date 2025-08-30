@@ -5,7 +5,6 @@
 @import 'swiper/css/pagination';
 @import 'swiper/css/effect-creative';
 
-
 @config "../../tailwind.config.ts";
 
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
@@ -99,7 +98,6 @@ body[data-animations='false'] *::after {
   animation: none !important;
 }
 
-
 @utility container {
   margin-inline: auto;
   padding-inline: 1rem;
@@ -135,7 +133,6 @@ body[data-animations='false'] *::after {
 }
 
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -161,7 +158,6 @@ body[data-animations='false'] *::after {
   @apply hidden;
 }
 
-
 /** Utilities */
 
 @utility blur-bg {
@@ -172,9 +168,8 @@ body[data-animations='false'] *::after {
   background-color: var(--color-Grey-900);
 }
 
-
 @utility pill-bg {
-  @apply rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm transition-colors duration-200 hover:border-white/20
+  @apply rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-sm transition-colors duration-200 hover:border-white/20;
 }
 
 @utility button-primary {
@@ -186,7 +181,7 @@ body[data-animations='false'] *::after {
 }
 
 @utility tooltip-secondary {
-  @apply text-xs text-default-500 bg-white/5 border border-white/5 backdrop-blur-md;
+  @apply text-default-500 border border-white/5 bg-white/5 text-xs backdrop-blur-md;
 }
 
 @utility kbd {
@@ -198,7 +193,7 @@ body[data-animations='false'] *::after {
 }
 
 @utility selectable-button {
-  @apply pill-bg flex items-center justify-center gap-2 capitalize transition-colors duration-200 text-Grey-300 border-white/10 hover:border-white/20 hover:bg-white/10;
+  @apply pill-bg text-Grey-300 flex items-center justify-center gap-2 border-white/10 capitalize transition-colors duration-200 hover:border-white/20 hover:bg-white/10;
 
   &[data-is-selected='true'] {
     @apply border-Secondary-400 bg-Secondary-500/20 text-Secondary-50;
@@ -219,56 +214,12 @@ body {
 }
 
 .icon {
-  @apply transition-colors duration-200 hover:text-Grey-400
+  @apply hover:text-Grey-400 transition-colors duration-200;
 }
-
 
 .ring-offset-background {
-  --tw-ring-offset-color: #121829
+  --tw-ring-offset-color: #121829;
 }
-
-
-/** Sonnner */
-[data-sonner-toast] {
-  @apply blur-bg border-border;
-}
-
-[data-sonner-toast]:not([data-type='loading']) {
-  & [data-icon] {
-    height: calc(100% + 2px);
-    position: absolute;
-    left: 0;
-    width: 45px;
-    justify-content: center;
-    color: white;
-    border-radius: 8px 0 0 8px;
-
-    & svg {
-      width: 25px;
-      height: 25px;
-    }
-  }
-
-  & [data-content] {
-    margin-left: 40px;
-  }
-}
-
-[data-sonner-toast][data-type='success'] [data-icon] {
-  @apply bg-Warning-500
-}
-
-[data-sonner-toast][data-type='error'] [data-icon] {
-  @apply bg-Error-700
-}
-
-[data-sonner-toast][data-type='loading'] [data-icon] {
-  width: 20px;
-  margin-right: 15px;
-}
-
-
-
 
 @utility outline-heading {
   @apply text-Secondary-500 text-8xl font-bold uppercase lg:text-9xl;
@@ -282,23 +233,22 @@ body {
       mask-image: linear-gradient(to right, var(--color-blur) 36%, transparent 100%);
     }
   }
-
 }
 
 .prose-custom {
   @apply text-Grey-300;
 
   h2 {
-    @apply text-2xl font-bold text-white mt-12 mb-4 border-b border-white/10 pb-4;
+    @apply mt-12 mb-4 border-b border-white/10 pb-4 text-2xl font-bold text-white;
   }
 
   p,
   ul {
-    @apply text-base leading-relaxed mb-4;
+    @apply mb-4 text-base leading-relaxed;
   }
 
   ul {
-    @apply list-disc pl-6 space-y-2;
+    @apply list-disc space-y-2 pl-6;
   }
 
   a {
@@ -310,14 +260,22 @@ body {
   }
 
   .summary-box {
-    @apply bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4 my-6 flex items-start gap-3;
+    @apply my-6 flex items-start gap-3 rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4;
   }
 
   .summary-box p {
-    @apply text-yellow-400/90 text-sm m-0;
+    @apply m-0 text-sm text-yellow-400/90;
   }
 
   .summary-box strong {
     @apply text-yellow-300;
+  }
+}
+
+/* Toaster */
+[aria-label='toast']:not(:has(.text-danger-600, .text-success-600, .text-secondary-600, .text-warning-600)) {
+  & [aria-label='descriptionIcon'],
+  & [aria-label='loadingIcon'] i {
+    @apply fill-white text-white;
   }
 }

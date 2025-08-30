@@ -6,6 +6,9 @@ export const META_FIELDS = ['$createdAt', '$permissions', '$collectionId', '$dat
 export type ConfirmationSetting = 'enabled' | 'disabled';
 export type ActivityAction = 'completed' | 'rated' | 'added';
 export type HiddenSection = typeof HIDDEN_PROFILE_SECTIONS[number];
+export type AccountPrefs = {
+    hasSeenOnboarding: 'TRUE' | 'FALSE';
+};
 
 export type Activity = {
     action: ActivityAction;
@@ -90,8 +93,8 @@ export type CreateProfileInput = {
     userId: string;
     name: string;
     email: string;
-    avatarUrl?: string;
-    username?: string;
+    avatarUrl: string;
+    username: string;
 };
 export type CreateUserPreferencesInput = Omit<UserPreferences, keyof Document>;
 export type CreateLibraryInput = Omit<Library, keyof Document | 'items'>;
@@ -106,7 +109,7 @@ export type UpdateProfileInput = Partial<
         favoriteGenres: number[];
         contentPreferences: string[];
         favoriteNetworks: number[];
-        recentActivity: string[];
+        recentActivity: Activity[];
     }
 >;
 export type UpdateUserPreferencesInput = Partial<CreateUserPreferencesInput>;

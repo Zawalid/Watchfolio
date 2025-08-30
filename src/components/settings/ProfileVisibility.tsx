@@ -58,7 +58,7 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
       });
       onSuccess?.();
     } catch (error) {
-      console.log(error);
+      log(error);
       addToast({ title: 'Update Failed', description: 'Could not update profile visibility.', color: 'danger' });
     }
   };
@@ -136,7 +136,7 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
                 </motion.div>
               )}
             </AnimatePresence>
-            
+
             <AnimatePresence>
               {isLibraryPublic && (
                 <motion.div

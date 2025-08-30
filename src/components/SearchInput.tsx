@@ -40,7 +40,7 @@ export default function SearchInput() {
         try {
           return await getSuggestions(debouncedInputValue, 10);
         } catch (error) {
-          console.error('Error fetching suggestions:', error);
+          log('ERR', 'Error fetching suggestions:', error);
           return [];
         }
       },

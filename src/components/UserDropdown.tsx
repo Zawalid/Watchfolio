@@ -38,14 +38,24 @@ export default function UserDropdown() {
         confirmationKey: 'sign-out',
       });
       if (!confirmed) return;
-      await authSignOut();
-      addToast({ title: 'Signed out successfully', description: 'You have been signed out.', color: 'success' });
-      // navigate('/home'); // TODO : restore after finishing
-      if (location.pathname.includes('settings')) navigate('/');
+      addToast({
+        title: 'Signing out...',
+        description: 'Please wait while we sign you out.',
+        color: 'default',
+        promise: authSignOut().then(() => {
+          addToast({
+            title: 'Signed out successfully',
+            description: 'We hope to see you again soon!',
+            color: 'success',
+          });
+          // navigate('/home'); // TODO : restore after finishing
+          if (location.pathname.includes('settings')) navigate('/');
+        }),
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       addToast({ title: 'Sign out failed', description: errorMessage, color: 'danger' });
-      console.error('Error signing out:', error);
+      log('ERR', 'Error signing out:', error);
     }
   };
 

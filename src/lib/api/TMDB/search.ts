@@ -96,7 +96,7 @@ export const getSuggestions = async (query: string, limit: number) => {
 
     return uniqueSuggestions.slice(0, limit);
   } catch (error) {
-    console.error('Error fetching enhanced suggestions:', error);
+    log("ERR", 'Error fetching enhanced suggestions:', error);
     return [];
   }
 };

@@ -14,7 +14,7 @@ import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import FiltersModal from '@/components/FiltersModal';
 import SortBy from '@/components/SortBy';
-import LibraryInfiniteCardsList from '@/components/library/LibraryInfiniteCardsList';
+import LibraryInfiniteCardsList from '@/components/library/LibraryCardsList';
 import { useFilteredLibrary } from '@/hooks/library/useFilteredLibrary';
 import { getLibraryCount } from '@/utils/library';
 import { Status } from '@/components/ui/Status';
@@ -43,6 +43,8 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
 
   const items = profile.library?.items?.length ? profile.library.items : [];
   const filteredItems = useFilteredLibrary(items as LibraryMedia[], status);
+
+  log(filteredItems);
 
   const visibleStatuses = LIBRARY_MEDIA_STATUS.filter(
     (s) => isOwnProfile || !hiddenProfileSections.includes(`library.${s.value}`)
@@ -149,8 +151,8 @@ export default function UserLibrary({ profile }: { profile: Profile }) {
         </div>
         <div className='flex-1 space-y-8'>
           <LibraryInfiniteCardsList
-            items={filteredItems}
-            allItems={items as LibraryMedia[]}
+            // items={filteredItems}
+            // allItems={items as LibraryMedia[]}
             status={status}
             isOwnProfile={isOwnProfile}
           />

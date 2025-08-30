@@ -1,18 +1,28 @@
 import { useCallback, useState } from 'react';
 import { CheckCircle2, Upload, DatabaseZap, Film, Tv } from 'lucide-react';
-import { Button, addToast, Select, SelectItem, SelectSection, Switch } from '@heroui/react';
+import { Button, addToast, Select, SelectItem, SelectSection, Switch, closeToast } from '@heroui/react';
 import { FileDropper } from '@/components/ui/FileDropper';
-import { useLibraryStore } from '@/stores/useLibraryStore';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
-import { generateMediaId } from '@/utils/library';
 import { useWorker } from '@/hooks/useWorker';
 import { LIBRARY_IMPORT_MAX_SIZE } from '@/utils/constants';
+import { useImportLibrary } from '@/hooks/library/useLibraryMutations';
+import { getAllLibraryItemIds } from '@/lib/rxdb';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 interface ImportProps {
   onClose: () => void;
 }
 
 type ImportStage = 'select' | 'processing' | 'preview' | 'options' | 'complete';
+
+// Type definition for the preview stats object
+type ImportPreviewStats = {
+  totalItems: number;
+  movies: number;
+  tvShows: number;
+  newItems: number;
+  updatedItems: number;
+};
 
 const STRATEGY_DESCRIPTIONS = {
   smart: 'Updates existing items with new data while preserving your ratings and custom fields. Adds new items.',
@@ -36,75 +46,116 @@ const ProcessingView = ({ message, icon }: { message: string; icon: React.ReactN
 );
 
 export default function Import({ onClose }: ImportProps) {
-  const [importPreview, setImportPreview] = useState<{
-    totalItems: number;
-    movies: number;
-    tvShows: number;
-    newItems: number;
-    updatedItems: number;
-  } | null>(null);
+  const [importPreview, setImportPreview] = useState<ImportPreviewStats | null>(null);
   const [importStage, setImportStage] = useState<ImportStage>('select');
   const [importOptions, setImportOptions] = useState({
     mergeStrategy: 'smart' as 'smart' | 'overwrite' | 'skip',
     keepExistingFavorites: true,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [parsedItems, setParsedItems] = useState<LibraryMedia[] | null>(null);
-  const [isImporting, setIsImporting] = useState(false);
+  const userId = useAuthStore((state) => state.user?.$id);
 
-  const library = useLibraryStore((state) => state.library);
-  const { importLibrary } = useLibraryStore();
+  const { mutateAsync: importLibrary, isPending: isImporting } = useImportLibrary();
 
-  const { postMessage: parseContent, isProcessing: isParsing } = useWorker<LibraryMedia[]>(WORKER_URL, {
-    onSuccess: (items) => {
-      setParsedItems(items);
-      const movieCount = items.filter((item) => item.media_type === 'movie').length;
-      const tvCount = items.filter((item) => item.media_type === 'tv').length;
-      const currentLibrary = library || {};
-      let newItemsCount = 0;
-      let updatedItemsCount = 0;
-
-      for (const item of items) {
-        const id = generateMediaId(item);
-        if (currentLibrary[id]) updatedItemsCount++;
-        else newItemsCount++;
+  const { postMessage, isProcessing: isParsing } = useWorker(WORKER_URL, {
+    onSuccess: async (message) => {
+      log(message);
+      if (message.type === 'success-preview') {
+        setImportPreview(message.data);
+        setImportStage('preview');
+      } else if (message.type === 'success-get-all') {
+        await runImportInChunks(message.data);
       }
-
-      if (newItemsCount === 0 && updatedItemsCount === 0) {
-        addToast({
-          title: 'No items to process',
-          description: 'The import file does not contain any valid items for your library.',
-          color: 'warning',
-        });
-        handleReset();
-        return;
-      }
-
-      setImportPreview({
-        totalItems: items.length,
-        movies: movieCount,
-        tvShows: tvCount,
-        newItems: newItemsCount,
-        updatedItems: updatedItemsCount,
-      });
-      setImportStage('preview');
     },
     onError: (errorMsg) => {
       addToast({
-        title: 'File parsing error',
-        description: errorMsg || 'The selected file is invalid.',
+        title: 'An Error Occurred',
+        description: errorMsg || 'The process could not be completed.',
         color: 'danger',
       });
       handleReset();
     },
   });
 
+  const runImportInChunks = async (itemsToImport: LibraryMedia[]) => {
+    if (!itemsToImport || itemsToImport.length === 0) {
+      addToast({
+        title: 'Empty File',
+        description: 'No items were found in the selected file to import.',
+        color: 'warning',
+      });
+      setImportStage('options');
+      return;
+    }
+
+    const totalItems = itemsToImport.length;
+    let progressToastKey: string | null = null;
+
+    try {
+      const importProcess = async () => {
+        const CHUNK_SIZE = 500;
+        for (let i = 0; i < totalItems; i += CHUNK_SIZE) {
+          const chunk = itemsToImport.slice(i, i + CHUNK_SIZE);
+          await importLibrary(chunk);
+        }
+        return totalItems;
+      };
+
+      progressToastKey = addToast({
+        title: 'Importing Your Library',
+        description: `Working on adding ${totalItems} items to your collection. Please wait...`,
+        color: 'default',
+        promise: importProcess(),
+      });
+
+      if (progressToastKey) closeToast(progressToastKey);
+
+      setImportStage('complete');
+      setTimeout(() => {
+        addToast({
+          title: 'Import Complete!',
+          description: `Your library has been successfully updated with ${totalItems} items.`,
+          color: 'success',
+          timeout: 3000,
+        });
+        onClose();
+      }, 500);
+    } catch (error) {
+      if (progressToastKey) closeToast(progressToastKey);
+
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred during the import.';
+      addToast({
+        title: 'Import Failed',
+        description: errorMessage,
+        color: 'danger',
+      });
+      setImportStage('options');
+    }
+  };
+
+  const processFile = useCallback(
+    async (file: File) => {
+      setSelectedFile(file);
+      setImportStage('processing');
+
+      // Use the new helper function instead of a direct DB call
+      const existingIds = await getAllLibraryItemIds(userId);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        const format = file.name.split('.').pop()?.toLowerCase() as 'json' | 'csv';
+        postMessage({ type: 'parse', content, format, existingIds });
+      };
+      reader.readAsText(file);
+    },
+    [postMessage, userId]
+  );
+
   const handleFileSelect = (files: File[]) => {
     if (files.length === 0) return;
     const file = files[0];
-    const fileExtension = file.name.split('.').pop()?.toLowerCase();
-
-    if (!fileExtension || !['json', 'csv'].includes(fileExtension)) {
+    if (!['json', 'csv'].includes(file.name.split('.').pop()?.toLowerCase() || '')) {
       addToast({ title: 'Invalid file format.', description: 'Please select a JSON or CSV file.', color: 'danger' });
       return;
     }
@@ -115,50 +166,10 @@ export default function Import({ onClose }: ImportProps) {
     processFile(file);
   };
 
-  const processFile = useCallback(
-    (file: File) => {
-      setSelectedFile(file);
-      setImportStage('processing');
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        const format = file.name.split('.').pop()?.toLowerCase() as 'json' | 'csv';
-        parseContent({ type: 'parse', content, format });
-      };
-      reader.onerror = () =>
-        addToast({ title: 'File reading error', description: 'Failed to read the file.', color: 'danger' });
-      reader.readAsText(file);
-    },
-    [parseContent]
-  );
-
-  const handleImport = useCallback(async () => {
-    if (!parsedItems) return;
-    setIsImporting(true);
+  const handleImport = useCallback(() => {
     setImportStage('processing');
-
-    try {
-      const importedCount = await importLibrary(parsedItems, importOptions);
-      setImportStage('complete');
-      setTimeout(() => {
-        addToast({
-          title: 'Import successful',
-          description: `${importedCount} items were processed.`,
-          color: 'success',
-        });
-        onClose();
-      }, 1500);
-    } catch (error) {
-      addToast({
-        title: 'Import error',
-        description: `Failed to import library: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        color: 'danger',
-      });
-      setImportStage('options');
-    } finally {
-      setIsImporting(false);
-    }
-  }, [parsedItems, importOptions, importLibrary, onClose]);
+    postMessage({ type: 'get-all-items' });
+  }, [postMessage]);
 
   const handleReset = () => {
     setSelectedFile(null);
@@ -225,40 +236,32 @@ export default function Import({ onClose }: ImportProps) {
                   <span className='text-Grey-300 max-w-[240px] truncate text-xs sm:max-w-xs'>{selectedFile.name}</span>
                 </div>
               </div>
-
-              <div className='space-y-3'>
-                <h3 className='text-Primary-50 font-medium'>File Summary</h3>
-                <div className='grid grid-cols-1 gap-3 text-sm sm:grid-cols-3'>
-                  <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
-                    <span className='text-Grey-300'>Total Items</span>
-                    <span className='text-Primary-50 text-xl font-semibold'>{importPreview.totalItems}</span>
-                  </div>
-                  <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
-                    <span className='text-Grey-300 flex items-center gap-1.5'>
-                      <Film className='size-4' /> Movies
-                    </span>
-                    <span className='text-Primary-50 text-xl font-semibold'>{importPreview.movies}</span>
-                  </div>
-                  <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
-                    <span className='text-Grey-300 flex items-center gap-1.5'>
-                      <Tv className='size-4' /> TV Shows
-                    </span>
-                    <span className='text-Primary-50 text-xl font-semibold'>{importPreview.tvShows}</span>
-                  </div>
+              <div className='grid grid-cols-1 gap-3 text-sm sm:grid-cols-3'>
+                <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
+                  <span className='text-Grey-300'>Total Items</span>
+                  <span className='text-Primary-50 text-xl font-semibold'>{importPreview.totalItems}</span>
+                </div>
+                <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
+                  <span className='text-Grey-300 flex items-center gap-1.5'>
+                    <Film className='size-4' /> Movies
+                  </span>
+                  <span className='text-Primary-50 text-xl font-semibold'>{importPreview.movies}</span>
+                </div>
+                <div className='bg-blur flex flex-col justify-between rounded-lg border border-white/10 p-3'>
+                  <span className='text-Grey-300 flex items-center gap-1.5'>
+                    <Tv className='size-4' /> TV Shows
+                  </span>
+                  <span className='text-Primary-50 text-xl font-semibold'>{importPreview.tvShows}</span>
                 </div>
               </div>
-
-              <div className='space-y-3'>
-                <h3 className='text-Primary-50 font-medium'>Changes to Your Library</h3>
-                <div className='bg-blur space-y-3 rounded-lg border border-white/10 p-4'>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-Grey-300 text-sm'>New Items to Add</span>
-                    <span className='font-medium text-green-400'>{importPreview.newItems}</span>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <span className='text-Grey-300 text-sm'>Existing Items to Update</span>
-                    <span className='font-medium text-blue-400'>{importPreview.updatedItems}</span>
-                  </div>
+              <div className='bg-blur space-y-3 rounded-lg border border-white/10 p-4'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-Grey-300 text-sm'>New Items to Add</span>
+                  <span className='font-medium text-green-400'>{importPreview.newItems}</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-Grey-300 text-sm'>Existing Items to Update</span>
+                  <span className='font-medium text-blue-400'>{importPreview.updatedItems}</span>
                 </div>
               </div>
             </div>
