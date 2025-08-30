@@ -13,6 +13,12 @@ const useInvalidateLibraryQueries = () => {
   return () => queryClient.invalidateQueries({ queryKey: ['library'] });
 };
 
+const useInfo = () => {
+  const userId = useAuthStore((state) => state.user?.$id) || null;
+  const library = useAuthStore((state) => state.user?.profile.library) || null;
+  return { userId, library };
+};
+
 const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
   const title = (media as Movie).title || (media as TvShow).name;
   const releaseDate = (media as Movie).release_date || (media as TvShow).first_air_date || undefined;
@@ -36,7 +42,7 @@ const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
 
 export const useAddOrUpdateLibraryItem = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
-  const library = useAuthStore((state) => state.user?.profile.library);
+  const { userId, library } = useInfo();
 
   return useMutation({
     mutationFn: ({
@@ -48,11 +54,21 @@ export const useAddOrUpdateLibraryItem = () => {
       toggleFavorite?: boolean;
     }) => {
       const metadata = media ? getMediaMetadata(media) : {};
-      const updatedItem = { ...item, ...metadata };
+      const updatedItem = { ...item, ...metadata, userId };
 
-      return addOrUpdateLibraryItem(updatedItem, library?.$id || null);
+      log(updatedItem);
+
+      return addOrUpdateLibraryItem(updatedItem, { library, userId });
     },
     onSuccess: invalidateQueries,
+    onError: (error) => {
+      log('ERR', 'Failed to add or update library item:', error);
+      addToast({
+        title: 'Failed to add or update library item',
+        description: 'An unexpected error occurred. Please try again.',
+        color: 'danger',
+      });
+    },
   });
 };
 
@@ -62,28 +78,43 @@ export const useRemoveLibraryItem = () => {
   return useMutation({
     mutationFn: (item: LibraryMedia) => deleteLibraryItem(item.id),
     onSuccess: () => invalidateQueries(),
+    onError: (error) => {
+      log('ERR', 'Failed to remove library item:', error);
+      addToast({
+        title: 'Failed to remove library item',
+        description: 'An unexpected error occurred. Please try again.',
+        color: 'danger',
+      });
+    },
   });
 };
 export const useImportLibrary = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
-  const userId = useAuthStore((state) => state.user?.$id) || null;
-  const library = useAuthStore((state) => state.user?.profile.library?.$id) || null;
+  const { userId, library } = useInfo();
 
   return useMutation({
     mutationFn: (items: LibraryMedia[]) => bulkaddOrUpdateLibraryItem(items.map((i) => ({ ...i, library, userId }))),
-    onSuccess:  invalidateQueries
+    onSuccess: invalidateQueries,
+    onError: (error) => {
+      log('ERR', 'Failed to import library items:', error);
+      addToast({
+        title: 'Failed to import library items',
+        description: 'An unexpected error occurred. Please try again.',
+        color: 'danger',
+      });
+    },
   });
 };
 
 export const useClearLibrary = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
   const { confirm } = useConfirmationModal();
-  const library = useAuthStore((state) => state.user?.profile.library);
+  const { library } = useInfo();
 
   const clearMutation = useMutation({
     mutationFn: async () => {
       const clear = async () => {
-        if (library?.$id) await appwriteService.library.clearLibrary(library.$id);
+        if (library) await appwriteService.library.clearLibrary(library);
         await recreateDB();
       };
 

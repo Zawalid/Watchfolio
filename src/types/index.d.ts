@@ -30,6 +30,7 @@ type Categories = 'popular' | 'top-rated' | 'now-playing' | 'upcoming' | 'on-tv'
 interface UserProfile {
   profile: Profile;
   stats: LibraryStats;
+  recentActivity: Activity[];
 }
 
 // ======

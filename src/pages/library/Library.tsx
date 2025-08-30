@@ -1,4 +1,4 @@
-import LibraryCardsList from '@/components/library/LibraryCardsList';
+import LibraryView from '@/components/library/LibraryView';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 
@@ -7,5 +7,5 @@ export default function Library({ status }: { status: LibraryFilterStatus }) {
     status === 'all' ? 'Your Library' : LIBRARY_MEDIA_STATUS.find((m) => m.value === status)?.label || status
   );
 
-  return <LibraryCardsList status={status || 'all'} isOwnProfile />;
+  return <LibraryView status={status} />;
 }

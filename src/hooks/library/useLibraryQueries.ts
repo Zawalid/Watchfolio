@@ -8,7 +8,7 @@ import {
 } from '@/lib/rxdb';
 import { queryKeys } from '@/lib/react-query';
 import { useAuthStore } from '@/stores/useAuthStore';
-
+import { appwriteService } from '@/lib/appwrite/api';
 
 const PAGE_SIZE = 20;
 
@@ -27,15 +27,18 @@ const mapSortBy = (sortBy: string) => {
   }
 };
 
-export const useInfiniteLibraryItems = (filters: {
-  status: LibraryFilterStatus;
-  sortBy: string;
-  sortDir: 'asc' | 'desc';
-  query?: string;
-  mediaType?: MediaType | 'all';
-  genres?: string[];
-  networks?: number[];
-}) => {
+export const useInfiniteLibraryItems = (
+  filters: {
+    status: LibraryFilterStatus;
+    sortBy: string;
+    sortDir: 'asc' | 'desc';
+    query?: string;
+    mediaType?: MediaType | 'all';
+    genres?: string[];
+    networks?: number[];
+  },
+  options: { enabled?: boolean }
+) => {
   const userId = useAuthStore((state) => state.user?.$id);
 
   const query = useInfiniteQuery({
@@ -51,6 +54,7 @@ export const useInfiniteLibraryItems = (filters: {
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
     initialPageParam: 0,
+    enabled: options.enabled,
   });
 
   if (query.isError) log(query.error);
@@ -113,4 +117,28 @@ export const useLibraryTotalCount = () => {
       {} as Record<string, number>
     )
   );
+};
+
+export const useInfinitePublicLibraryItems = (
+  libraryId: string,
+  filters: { status: LibraryFilterStatus; query?: string },
+  options: { enabled?: boolean }
+) => {
+  return useInfiniteQuery({
+    queryKey: ['public-library', libraryId, filters],
+    queryFn: async ({ pageParam = 0 }) => {
+      const items = await appwriteService.libraryMedia.getPublicLibraryItems(
+        libraryId,
+        PAGE_SIZE,
+        pageParam * PAGE_SIZE,
+        filters
+      );
+      return items.documents;
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
+    },
+    initialPageParam: 0,
+    enabled: options.enabled,
+  });
 };

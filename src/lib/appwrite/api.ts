@@ -31,7 +31,7 @@ class BaseAPI {
       tableId: collectionId,
       rowId: documentId || ID.unique(),
       data,
-      permissions
+      permissions,
     })) as unknown as T;
   }
 
@@ -40,7 +40,7 @@ class BaseAPI {
       databaseId: DATABASE_ID,
       tableId: collectionId,
       rowId: documentId,
-      queries
+      queries,
     })) as unknown as T;
   }
 
@@ -53,7 +53,7 @@ class BaseAPI {
       databaseId: DATABASE_ID,
       tableId: collectionId,
       rowId: documentId,
-      data
+      data,
     })) as unknown as T;
   }
 
@@ -61,7 +61,7 @@ class BaseAPI {
     await tablesDB.deleteRow({
       databaseId: DATABASE_ID,
       tableId: collectionId,
-      rowId: documentId
+      rowId: documentId,
     });
   }
 
@@ -69,7 +69,7 @@ class BaseAPI {
     const response = await tablesDB.listRows({
       databaseId: DATABASE_ID,
       tableId: collectionId,
-      queries
+      queries,
     });
 
     return {
@@ -88,9 +88,7 @@ export class ProfileAPI extends BaseAPI {
     return this.createDocument<Profile>(TABLES.PROFILES, profileData, undefined, permissions);
   }
   async get(profileId: string) {
-    return this.getDocument<Profile>(TABLES.PROFILES, profileId, [
-      Query.select(['*', 'preferences.*', 'library.*']),
-    ]);
+    return this.getDocument<Profile>(TABLES.PROFILES, profileId, [Query.select(['*', 'preferences.*', 'library.*'])]);
   }
   async getByUserId(userId: string) {
     const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
@@ -113,10 +111,7 @@ export class ProfileAPI extends BaseAPI {
   }
 
   async getByEmail(email: string) {
-    const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
-      Query.equal('email', email),
-      Query.limit(1),
-    ]);
+    const result = await this.listDocuments<Profile>(TABLES.PROFILES, [Query.equal('email', email), Query.limit(1)]);
     return result.documents[0] || null;
   }
 
@@ -126,10 +121,11 @@ export class ProfileAPI extends BaseAPI {
       Query.limit(1),
     ]);
     const profile = result.documents[0];
+    log(result.documents[0]);
 
-    if (!profile || !profile.library?.$id) return null;
+    if (!profile || !profile.library) return null;
     //? Im fetching the library because Appwrite only support a max depth of three levels, which means i can't get the media relationship on the library items
-    const library = await appwriteService.library.get(profile.library.$id);
+    const library = await appwriteService.library.get(profile.library);
     if (!library) return null;
 
     const items = library.items?.length ? (library.items as LibraryMedia[]) : [];
@@ -164,8 +160,9 @@ export class ProfileAPI extends BaseAPI {
     };
 
     return {
-      profile: { ...profile, library, recentActivity: profile.recentActivity.map((e) => JSON.parse(String(e))) },
+      profile,
       stats,
+      recentActivity: profile.recentActivity.map((e) => JSON.parse(String(e))),
     };
   }
 
@@ -177,7 +174,9 @@ export class ProfileAPI extends BaseAPI {
 
     const entryToLog: Activity = { ...newActivity, timestamp: new Date().toISOString() };
 
-    const recentActivity = [entryToLog, ...existingActivities].slice(0, 5).map((entry) => JSON.stringify(entry)) as unknown as Activity[];
+    const recentActivity = [entryToLog, ...existingActivities]
+      .slice(0, 5)
+      .map((entry) => JSON.stringify(entry)) as unknown as Activity[];
 
     await this.update(profileId, { recentActivity });
   }
@@ -193,7 +192,7 @@ export class ProfileAPI extends BaseAPI {
       ]);
       return result.total === 0;
     } catch (error) {
-      log("ERR", 'Error checking username availability:', error);
+      log('ERR', 'Error checking username availability:', error);
       return false; // Safer to assume unavailable on error
     }
   }
@@ -277,9 +276,7 @@ export class LibraryMediaAPI extends BaseAPI {
   }
 
   async get(itemId: string) {
-    return this.getDocument<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, itemId, [
-      Query.select(['*', 'library.*']),
-    ]);
+    return this.getDocument<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, itemId, [Query.select(['*', 'library.*'])]);
   }
 
   async update(itemId: string, itemData: UpdateAppwriteLibraryMediaInput) {
@@ -294,31 +291,27 @@ export class LibraryMediaAPI extends BaseAPI {
     return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, queries);
   }
 
-  async getByLibrary(libraryId: string, queries?: string[]) {
-    const baseQueries = [Query.equal('library', libraryId)];
-    return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, [...baseQueries, ...(queries || [])]);
-  }
-
-  async getByLibraryAndTmdbId(libraryId: string, tmdbId: number, mediaType: MediaType) {
-    const result = await this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, [
+  async getPublicLibraryItems(
+    libraryId: string,
+    limit: number,
+    offset: number,
+    filters: { status?: LibraryFilterStatus; query?: string }
+  ) {
+    const queries = [
       Query.equal('library', libraryId),
-      Query.equal('tmdbId', tmdbId),
-      Query.equal('mediaType', mediaType),
-      Query.limit(1),
-    ]);
-    return result.documents[0] || null;
-  }
+      Query.limit(limit),
+      Query.offset(offset),
+      Query.orderDesc('$createdAt'), // or any default sort you prefer
+    ];
 
-  async getByStatus(libraryId: string, status: string) {
-    return this.getByLibrary(libraryId, [Query.equal('status', status)]);
-  }
+    if (filters.status && filters.status !== 'all') {
+      queries.push(Query.equal('status', filters.status));
+    }
+    if (filters.query) {
+      queries.push(Query.search('title', filters.query));
+    }
 
-  async getFavorites(libraryId: string) {
-    return this.getByLibrary(libraryId, [Query.equal('isFavorite', true)]);
-  }
-
-  async search(libraryId: string, title: string, limit: number = 20) {
-    return this.getByLibrary(libraryId, [Query.search('title', title), Query.limit(limit)]);
+    return this.listDocuments<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, queries);
   }
 }
 
@@ -507,7 +500,7 @@ export class AppwriteService {
       await tablesDB.listRows({
         databaseId: DATABASE_ID,
         tableId: TABLES.PROFILES,
-        queries: [Query.limit(1)]
+        queries: [Query.limit(1)],
       });
       return true;
     } catch {

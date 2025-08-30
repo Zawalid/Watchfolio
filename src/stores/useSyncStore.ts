@@ -30,7 +30,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
     const { user } = useAuthStore.getState();
     if (user && user.profile.preferences.autoSync) {
       try {
-        await startReplication(user.$id, user.profile.library?.$id || null);
+        await startReplication(user.$id, user.profile.library || null);
       } catch (error) {
         log("ERR", 'Failed to start sync:', error);
         get().setSyncStatus('error');
@@ -52,7 +52,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
     }
 
     try {
-      const tempReplication = await startReplication(user.$id, user.profile.library?.$id || null);
+      const tempReplication = await startReplication(user.$id, user.profile.library || null);
       if (tempReplication) {
         await tempReplication.awaitInitialReplication();
         await stopReplication();
@@ -73,7 +73,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
     await updateUserPreferences({ autoSync: enabled });
 
     if (enabled) {
-      await startReplication(user.$id, user.profile.library?.$id || null);
+      await startReplication(user.$id, user.profile.library || null);
     } else {
       await stopReplication();
     }

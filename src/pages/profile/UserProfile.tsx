@@ -20,7 +20,7 @@ export default function ProfilePage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['user', username],
-    queryFn: async () => await appwriteService.profile.getUserProfile(username!),
+    queryFn: () => appwriteService.profile.getUserProfile(username!),
     enabled: !!username,
   });
 
@@ -92,7 +92,7 @@ export default function ProfilePage() {
               }
             >
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <StatsInsights stats={data.stats} profile={profile} />
+                <StatsInsights stats={data.stats} profile={profile} recentActivity={data.recentActivity} />
               </motion.div>
             </Tab>
           )}
@@ -124,7 +124,7 @@ export default function ProfilePage() {
               }
             >
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                <UserLibrary profile={profile} />
+                <UserLibrary profile={profile} stats={data.stats} />
               </motion.div>
             </Tab>
           )}

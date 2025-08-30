@@ -113,7 +113,10 @@ export const getLibraryItemByTmdbId = async (tmdbId: number, media_type: MediaTy
 
 export const addOrUpdateLibraryItem = async (
   media: Partial<LibraryMedia> & Pick<LibraryMedia, 'id'>,
-  library: string | null
+  refs: {
+    userId: string | null;
+    library: string | null;
+  }
 ): Promise<LibraryMedia> => {
   const db = await getWatchfolioDB();
   const now = new Date().toISOString();
@@ -145,7 +148,8 @@ export const addOrUpdateLibraryItem = async (
       rating: typeof media.rating === 'number' ? media.rating : undefined,
       totalMinutesRuntime: typeof media.totalMinutesRuntime === 'number' ? media.totalMinutesRuntime : undefined,
       networks: Array.isArray(media.networks) ? media.networks : [],
-      library,
+      library: refs.library,
+      userId: refs.userId,
     };
 
     const newDoc = await db.libraryMedia.insert(data);

@@ -53,11 +53,18 @@ const renderEmptyState = (props: EmptyProps) => {
   );
 };
 
-export default function StatsInsights({ profile, stats }: { profile: Profile; stats: LibraryStats }) {
+export default function StatsInsights({
+  profile,
+  stats,
+  recentActivity,
+}: {
+  profile: Profile;
+  stats: LibraryStats;
+  recentActivity: Activity[];
+}) {
   const { checkIsOwnProfile } = useAuthStore();
 
   const isOwnProfile = checkIsOwnProfile(profile.username);
-  const recentActivity = profile.recentActivity || [];
   const hiddenProfileSections = profile?.hiddenProfileSections || [];
   const visibleSectionsButStatistics = ['stats.overview', 'stats.topGenres', 'stats.recentActivity'].filter(
     (section) => !hiddenProfileSections.includes(section as HiddenSection)
