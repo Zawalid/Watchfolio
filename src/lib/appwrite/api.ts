@@ -193,7 +193,7 @@ export class ProfileAPI extends BaseAPI {
       ]);
       return result.total === 0;
     } catch (error) {
-      console.error('Error checking username availability:', error);
+      log("ERR", 'Error checking username availability:', error);
       return false; // Safer to assume unavailable on error
     }
   }
@@ -258,7 +258,7 @@ export class LibraryAPI extends BaseAPI {
 
   async clearLibrary(libraryId: string) {
     await this.delete(libraryId);
-    await this.create({averageRating:0}, libraryId);
+    await this.create({ averageRating: 0 }, libraryId);
   }
 }
 
@@ -271,7 +271,7 @@ export class LibraryMediaAPI extends BaseAPI {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { userId, libraryId, ...cleanItemData } = itemData;
 
-    const data = {...cleanItemData,library: libraryId as unknown as Library};
+    const data = { ...cleanItemData, library: libraryId as unknown as Library };
 
     return this.createDocument<AppwriteLibraryMedia>(TABLES.LIBRARY_MEDIA, data, documentId, permissions);
   }

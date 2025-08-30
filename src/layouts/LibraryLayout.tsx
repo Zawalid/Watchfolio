@@ -123,7 +123,7 @@ export default function LibraryLayout() {
       <div
         className={cn(
           'flex h-full flex-col gap-8 transition-all duration-300',
-          showTabs ? 'w-[calc(100%-260px)] translate-x-[290px]' : 'w-full translate-x-0'
+          showTabs ? 'w-[calc(100%-290px)] translate-x-[290px]' : 'w-full translate-x-0'
         )}
       >
         <div className='flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between'>

@@ -70,7 +70,7 @@ export default function Library() {
         color: 'success',
       });
     } catch (error) {
-      console.error('Failed to update default status:', error);
+      log('ERR', 'Failed to update default status:', error);
       addToast({
         title: 'Error',
         description: 'Failed to update default status. Please try again.',

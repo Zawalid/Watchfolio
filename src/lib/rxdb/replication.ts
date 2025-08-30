@@ -10,8 +10,6 @@ let replicationState: RxReplicationState<LibraryMedia, AppwriteCheckpointType> |
 let receivedSubscription: Subscription | null = null; // To hold the subscription
 let currentUserId: string | null = null;
 
-
-
 const setSyncStatus = (status: SyncStatus) => useSyncStore.getState().setSyncStatus(status);
 
 export const startReplication = async (userId: string, library: string | null) => {
@@ -90,7 +88,7 @@ export const startReplication = async (userId: string, library: string | null) =
     // -----------------------------------------
 
     replicationState.error$.subscribe((error) => {
-      console.error('Replication error:', error);
+      log('ERR', 'Replication error:', error);
       setSyncStatus('error');
     });
 
@@ -112,7 +110,7 @@ export const startReplication = async (userId: string, library: string | null) =
 
     return replicationState;
   } catch (error) {
-    console.error('Failed to start replication:', error);
+    log('ERR', 'Failed to start replication:', error);
     setSyncStatus('error');
     currentUserId = null;
     replicationState = null;

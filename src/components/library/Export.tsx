@@ -22,6 +22,7 @@ const estimateFileSize = (count: number, format: 'json' | 'csv'): string => {
 };
 
 const WORKER_URL = new URL('../../workers/export.worker.ts', import.meta.url);
+const CHUNK_SIZE = 1000;
 
 export default function Export({ onClose }: { onClose: () => void }) {
   const [exportFormat, setExportFormat] = useState<'json' | 'csv'>('json');
@@ -29,14 +30,14 @@ export default function Export({ onClose }: { onClose: () => void }) {
     status: 'all',
     type: 'all',
   });
-  const library = useAuthStore((state) => state.user?.profile.library);
+  const userId = useAuthStore((state) => state.user?.$id);
 
   const exportedType = exportFilter.type === 'all' ? undefined : exportFilter.type;
   const libraryCount = useLibraryTotalCount();
 
-  const { postMessage, isProcessing } = useWorker<string>(WORKER_URL, {
-    onSuccess: (data) => {
-      const blob = new Blob([data], { type: exportFormat === 'json' ? 'application/json' : 'text/csv' });
+  const { postMessage, isProcessing } = useWorker(WORKER_URL, {
+    onSuccess: (message) => {
+      const blob = new Blob([message.data], { type: exportFormat === 'json' ? 'application/json' : 'text/csv' });
       const url = URL.createObjectURL(blob);
       const fileName = formatFilename(exportFilter.type, exportFilter.status, exportFormat);
       const key = addToast({
@@ -71,18 +72,43 @@ export default function Export({ onClose }: { onClose: () => void }) {
   });
 
   const handleExport = useCallback(async () => {
-    const items = await getAllLibraryItems(library?.$id, {
-      status: exportFilter.status,
-      mediaType: exportedType,
-      limit: 10000,
+    addToast({
+      title: 'Preparing Your Export',
+      description: "We're gathering your items. This may take a few moments.",
+      color: 'default',
     });
-    if (items.length === 0) {
-      addToast({ title: 'No items to export', color: 'warning' });
-      return;
+
+    let offset = 0;
+    let hasMoreItems = true;
+    let totalItemsFetched = 0;
+
+    while (hasMoreItems) {
+      const items = await getAllLibraryItems(userId, {
+        status: exportFilter.status,
+        mediaType: exportedType,
+        limit: CHUNK_SIZE,
+        offset: offset,
+      });
+
+      if (items.length > 0) {
+        postMessage({ type: 'serialize-chunk', items });
+        totalItemsFetched += items.length;
+        offset += CHUNK_SIZE;
+      } else {
+        hasMoreItems = false;
+      }
     }
-    addToast({ title: 'Preparing your export...', description: 'This may take a moment.', color: 'secondary' });
-    postMessage({ type: 'serialize', format: exportFormat, items });
-  }, [library, exportFilter, exportedType, postMessage, exportFormat]);
+
+    if (totalItemsFetched === 0) {
+      addToast({
+        title: 'Nothing to Export',
+        description: "The selected filters didn't match any items in your library.",
+        color: 'warning',
+      });
+    } else {
+      postMessage({ type: 'export-complete', format: exportFormat });
+    }
+  }, [userId, exportFilter, exportedType, postMessage, exportFormat]);
 
   return (
     <div className='space-y-5'>
@@ -94,6 +120,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
           </label>
           <Select
             id='export-format'
+            aria-label='export-format'
             classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
             selectedKeys={[exportFormat]}
             onChange={(e) => setExportFormat(e.target.value as 'json' | 'csv')}
@@ -106,6 +133,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
           </label>
           <Select
             id='export-type'
+            aria-label='export-type'
             classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
             selectedKeys={[exportFilter.type]}
             onChange={(e) => setExportFilter({ ...exportFilter, type: e.target.value as MediaType | 'all' })}
@@ -119,6 +147,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
           </label>
           <Select
             id='export-filter'
+            aria-label='export-filter'
             classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
             items={[
               { key: 'all', label: `All Items (${libraryCount['all'] || 0})` },

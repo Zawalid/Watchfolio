@@ -39,7 +39,7 @@ export function ConfirmationModalProvider({ children }: { children: React.ReactN
       try {
         await updateUserPreferences({ [preferenceKey]: 'disabled' });
       } catch (error) {
-        console.error('Failed to update user preferences:', error);
+        log('ERR', 'Failed to update user preferences:', error);
       }
     }
   };

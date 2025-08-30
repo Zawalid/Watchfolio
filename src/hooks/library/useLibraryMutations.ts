@@ -4,18 +4,13 @@ import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { addOrUpdateLibraryItem, deleteLibraryItem, bulkaddOrUpdateLibraryItem, recreateDB } from '@/lib/rxdb';
 import { appwriteService } from '@/lib/appwrite/api';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { queryKeys } from '@/lib/react-query';
 import { GENRES } from '@/utils/constants/TMDB';
 import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
 
 // Helper to invalidate library queries
 const useInvalidateLibraryQueries = () => {
   const queryClient = useQueryClient();
-  return (item?: LibraryMedia) => {
-    queryClient.invalidateQueries({ queryKey: queryKeys.library({}) });
-    queryClient.invalidateQueries({ queryKey: queryKeys.libraryCount() });
-    if (item) queryClient.invalidateQueries({ queryKey: queryKeys.libraryItem(`${item.media_type}-${item.tmdbId}`) });
-  };
+  return () => queryClient.invalidateQueries({ queryKey: ['library'] });
 };
 
 const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
@@ -57,10 +52,7 @@ export const useAddOrUpdateLibraryItem = () => {
 
       return addOrUpdateLibraryItem(updatedItem, library?.$id || null);
     },
-    onSuccess: (item) => {
-      log(item);
-      invalidateQueries(item);
-    },
+    onSuccess: invalidateQueries,
   });
 };
 
@@ -69,15 +61,17 @@ export const useRemoveLibraryItem = () => {
 
   return useMutation({
     mutationFn: (item: LibraryMedia) => deleteLibraryItem(item.id),
-    onSuccess: (_, item) => invalidateQueries(item),
+    onSuccess: () => invalidateQueries(),
   });
 };
 export const useImportLibrary = () => {
   const invalidateQueries = useInvalidateLibraryQueries();
+  const userId = useAuthStore((state) => state.user?.$id) || null;
+  const library = useAuthStore((state) => state.user?.profile.library?.$id) || null;
 
   return useMutation({
-    mutationFn: (items: LibraryMedia[]) => bulkaddOrUpdateLibraryItem(items),
-    onSuccess: () => invalidateQueries(),
+    mutationFn: (items: LibraryMedia[]) => bulkaddOrUpdateLibraryItem(items.map((i) => ({ ...i, library, userId }))),
+    onSuccess:  invalidateQueries
   });
 };
 
@@ -88,10 +82,19 @@ export const useClearLibrary = () => {
 
   const clearMutation = useMutation({
     mutationFn: async () => {
-      if (library?.$id) {
-        await appwriteService.library.clearLibrary(library.$id);
-      }
-      await recreateDB();
+      const clear = async () => {
+        if (library?.$id) await appwriteService.library.clearLibrary(library.$id);
+        await recreateDB();
+      };
+
+      return new Promise((resolve) => {
+        addToast({
+          title: 'Clearing library...',
+          description: 'Please wait while we clear your library.',
+          color: 'default',
+          promise: clear().then(resolve),
+        });
+      });
     },
     onSuccess: () => {
       invalidateQueries();
@@ -102,7 +105,7 @@ export const useClearLibrary = () => {
       });
     },
     onError: (error) => {
-      console.error('Failed to clear library:', error);
+      log('ERR', 'Failed to clear library:', error);
       addToast({
         title: 'Failed to clear library',
         description: 'An unexpected error occurred. Please try again.',

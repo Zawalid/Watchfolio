@@ -39,7 +39,10 @@ if (import.meta.env.DEV && typeof window !== 'undefined') {
 
 // Debug Log
 const log = (...args: unknown[]): void => {
-  if (import.meta.env.DEV) console.log('🐛 [DEBUG]', ...args);
+  if (import.meta.env.DEV) {
+    if (args[0] === 'ERR') console.log('❌ [ERROR]', ...args.slice(1));
+    else console.log('🛠 [DEBUG]', ...args);
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

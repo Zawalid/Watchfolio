@@ -41,7 +41,7 @@ class AuthService {
 
       return newAccount;
     } catch (error) {
-      console.error('Create account error:', error);
+      log("ERR", 'Create account error:', error);
       throw this.formatError(error);
     }
   }
@@ -53,7 +53,7 @@ class AuthService {
       const session = await appwriteService.auth.createEmailSession(email, password);
       return session;
     } catch (error) {
-      console.error('Sign in error:', error);
+      log("ERR", 'Sign in error:', error);
       throw this.formatError(error);
     }
   }
@@ -65,7 +65,7 @@ class AuthService {
     try {
       await appwriteService.auth.deleteCurrentSession();
     } catch (error) {
-      console.error('Sign out error:', error);
+      log("ERR", 'Sign out error:', error);
       throw this.formatError(error);
     }
   }
@@ -92,12 +92,12 @@ class AuthService {
 
           return await this.getCurrentUser();
         } catch (profileError) {
-          console.error('Failed to create profile for OAuth user:', profileError);
+          log("ERR", 'Failed to create profile for OAuth user:', profileError);
           return null;
         }
       }
     } catch (error) {
-      console.error('Get current user error:', error);
+      log("ERR", 'Get current user error:', error);
       return null;
     }
   }
@@ -109,7 +109,7 @@ class AuthService {
     try {
       return await appwriteService.auth.createRecovery(email, `${window.location.origin}/reset-password`);
     } catch (error) {
-      console.error('Reset password error:', error);
+      log("ERR", 'Reset password error:', error);
       throw this.formatError(error);
     }
   }
@@ -121,7 +121,7 @@ class AuthService {
     try {
       return await appwriteService.auth.updateRecovery(userId, secret, password);
     } catch (error) {
-      console.error('Update password error:', error);
+      log("ERR", 'Update password error:', error);
       throw this.formatError(error);
     }
   }
@@ -131,7 +131,7 @@ class AuthService {
     try {
       return await appwriteService.userPreferences.create(DEFAULT_USER_PREFERENCES);
     } catch (error) {
-      console.error('Create default user preferences error:', error);
+      log("ERR", 'Create default user preferences error:', error);
       throw error;
     }
   }
@@ -143,7 +143,7 @@ class AuthService {
     try {
       return await appwriteService.auth.updateName(name);
     } catch (error) {
-      console.error('Update user name error:', error);
+      log("ERR", 'Update user name error:', error);
       throw this.formatError(error);
     }
   }
@@ -164,7 +164,7 @@ class AuthService {
       // Return updated user
       return await this.getCurrentUser();
     } catch (error) {
-      console.error('Update user email error:', error);
+      log("ERR", 'Update user email error:', error);
       throw this.formatError(error);
     }
   }
@@ -176,7 +176,7 @@ class AuthService {
     try {
       await appwriteService.auth.updatePassword(newPassword, oldPassword);
     } catch (error) {
-      console.error('Update user password error:', error);
+      log("ERR", 'Update user password error:', error);
       throw this.formatError(error);
     }
   }
@@ -194,7 +194,7 @@ class AuthService {
 
       return await this.getCurrentUser();
     } catch (error) {
-      console.error('Update user profile error:', error);
+      log("ERR", 'Update user profile error:', error);
       throw this.formatError(error);
     }
   }
@@ -213,7 +213,7 @@ class AuthService {
 
       return await this.getCurrentUser();
     } catch (error) {
-      console.error('Update user preferences error:', error);
+      log("ERR", 'Update user preferences error:', error);
       throw this.formatError(error);
     }
   }
@@ -225,7 +225,7 @@ class AuthService {
     try {
       return await appwriteService.auth.updatePreferences(preferences);
     } catch (error) {
-      console.error('Update user name error:', error);
+      log("ERR", 'Update user name error:', error);
       throw this.formatError(error);
     }
   }
@@ -243,7 +243,7 @@ class AuthService {
       }
       await appwriteService.auth.deleteAllSessions();
     } catch (error) {
-      console.error('Delete user account error:', error);
+      log("ERR", 'Delete user account error:', error);
       throw this.formatError(error);
     }
   } /**
@@ -277,7 +277,7 @@ class AuthService {
 
       return profile;
     } catch (error) {
-      console.error('Create user profile error:', error);
+      log("ERR", 'Create user profile error:', error);
       throw error;
     }
   }
@@ -292,7 +292,7 @@ class AuthService {
 
       return await appwriteService.library.create(libraryData);
     } catch (error) {
-      console.error('Create user library error:', error);
+      log("ERR", 'Create user library error:', error);
       throw error;
     }
   }
@@ -309,7 +309,7 @@ class AuthService {
 
       await appwriteService.auth.createOAuth2Session(OAuthProvider.Google, success, failure);
     } catch (error) {
-      console.error('Google sign in error:', error);
+      log("ERR", 'Google sign in error:', error);
       throw this.formatError(error);
     }
   } /**
@@ -321,7 +321,7 @@ class AuthService {
       const url = `${window.location.origin}/verify-email`;
       return await appwriteService.auth.createVerification(url);
     } catch (error) {
-      console.error('Send email verification error:', error);
+      log("ERR", 'Send email verification error:', error);
       throw this.formatError(error);
     }
   }
@@ -333,7 +333,7 @@ class AuthService {
     try {
       return await appwriteService.auth.updateVerification(userId, secret);
     } catch (error) {
-      console.error('Confirm email verification error:', error);
+      log("ERR", 'Confirm email verification error:', error);
       throw this.formatError(error);
     }
   }
@@ -372,7 +372,7 @@ class AuthService {
     try {
       await appwriteService.auth.deleteSession(sessionId);
     } catch (error) {
-      console.error(`Failed to delete session ${sessionId}:`, error);
+      log("ERR", `Failed to delete session ${sessionId}:`, error);
       throw this.formatError(error);
     }
   }
@@ -384,7 +384,7 @@ class AuthService {
     try {
       await appwriteService.auth.deleteSessions();
     } catch (error) {
-      console.error('Failed to delete other sessions:', error);
+      log("ERR", 'Failed to delete other sessions:', error);
       throw this.formatError(error);
     }
   }

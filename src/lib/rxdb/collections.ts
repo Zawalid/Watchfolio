@@ -78,6 +78,12 @@ export const getAllLibraryItems = async (
   return docs.map((d) => d.toJSON() as LibraryMedia);
 };
 
+export const getAllLibraryItemIds = async (userId?: string): Promise<Set<string>> => {
+  const db = await getWatchfolioDB();
+  const allDocs = await db.libraryMedia.find({ selector: { userId } }).exec();
+  return new Set(allDocs.map((doc) => doc.id));
+};
+
 export const getLibraryItemsByIds = async (ids: string[]): Promise<LibraryMedia[]> => {
   if (!ids || ids.length === 0) return [];
   const db = await getWatchfolioDB();

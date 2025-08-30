@@ -32,7 +32,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
       try {
         await startReplication(user.$id, user.profile.library?.$id || null);
       } catch (error) {
-        console.error('Failed to start sync:', error);
+        log("ERR", 'Failed to start sync:', error);
         get().setSyncStatus('error');
       }
     }
@@ -58,7 +58,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
         await stopReplication();
       }
     } catch (error) {
-      console.error('Manual sync failed:', error);
+      log("ERR", 'Manual sync failed:', error);
       if (isReplicationActive()) {
         await stopReplication();
       }

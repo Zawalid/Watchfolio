@@ -363,6 +363,7 @@ const QuickActions = ({
         message: `Are you sure you want to remove "${item.title}" from your library?`,
         confirmText: 'Remove',
         confirmVariant: 'danger',
+        confirmationKey: 'remove-from-library',
       });
       if (confirmed) removeItem(item);
     }

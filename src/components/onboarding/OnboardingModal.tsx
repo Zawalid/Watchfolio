@@ -41,8 +41,7 @@ export default function OnboardingModal() {
   const [direction, setDirection] = useState(1);
   const totalSteps = steps.length;
 
-  const disclosure = useDisclosure({isOpen: showOnboardingModal,
-  });
+  const disclosure = useDisclosure({ isOpen: showOnboardingModal });
 
   const CurrentStepComponent = steps[currentStep]?.component;
   const isFirstStep = currentStep === 0;
@@ -59,7 +58,7 @@ export default function OnboardingModal() {
     else nextStep();
   });
   useHotkeys('esc', () => {
-    if(showOnboardingModal) closeOnboardingModal();
+    if (showOnboardingModal) closeOnboardingModal();
   });
 
   const nextStep = () => {
@@ -73,7 +72,7 @@ export default function OnboardingModal() {
   };
 
   const handleComplete = async () => {
-    if(!showOnboardingModal) return
+    if (!showOnboardingModal) return;
     try {
       addToast({
         title: 'Welcome to Watchfolio!',
@@ -82,7 +81,7 @@ export default function OnboardingModal() {
       });
       closeOnboardingModal();
     } catch (error) {
-      console.error('Failed to complete onboarding:', error);
+      log('ERR', 'Failed to complete onboarding:', error);
       addToast({
         title: 'Error',
         description: 'Failed to save preferences. You can update them later in settings.',
@@ -103,7 +102,7 @@ export default function OnboardingModal() {
   if (!CurrentStepComponent) return null;
 
   return (
-    <Modal disclosure={disclosure} size='5xl' classNames={{closeButton : "hidden"}}>
+    <Modal disclosure={disclosure} size='5xl' classNames={{ closeButton: 'hidden' }}>
       <ModalBody>
         <div className='bg-Grey-800 absolute top-0 right-0 left-0 h-1'>
           <motion.div

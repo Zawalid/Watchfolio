@@ -32,17 +32,6 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
 
         <Tabs classNames={{ ...TABS_CLASSNAMES, tabList: `${TABS_CLASSNAMES.tabList} w-full` }}>
           <Tab
-            key='export'
-            title={
-              <div className='flex items-center gap-2'>
-                <Download className='size-4' />
-                <span>Export</span>
-              </div>
-            }
-          >
-            <Export onClose={onClose} />
-          </Tab>
-          <Tab
             key='import'
             title={
               <div className='flex items-center gap-2'>
@@ -52,6 +41,17 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
             }
           >
             <Import onClose={onClose} />
+          </Tab>
+          <Tab
+            key='export'
+            title={
+              <div className='flex items-center gap-2'>
+                <Download className='size-4' />
+                <span>Export</span>
+              </div>
+            }
+          >
+            <Export onClose={onClose} />
           </Tab>
         </Tabs>
 

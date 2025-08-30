@@ -1,27 +1,52 @@
 import { filterObject } from '@/utils';
 
-interface WorkerMessage {
-  type: 'serialize';
-  format: 'json' | 'csv';
+interface WorkerChunkMessage {
+  type: 'serialize-chunk';
   items: LibraryMedia[];
 }
 
+interface WorkerCompleteMessage {
+  type: 'export-complete';
+  format: 'json' | 'csv';
+}
+
+type WorkerMessage = WorkerChunkMessage | WorkerCompleteMessage;
+
+// Store items in memory across multiple messages
+let accumulatedItems: LibraryMedia[] = [];
+
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
-  const { type, format, items } = event.data;
+  const message = event.data;
 
-  if (type !== 'serialize') return;
+  // Handle incoming chunks by adding them to our array
+  if (message.type === 'serialize-chunk') {
+    accumulatedItems.push(...message.items);
+    return;
+  }
 
-  const updatedItems = items.map((item) => filterObject(item, ['library', 'userId'], 'exclude'));
+  // Handle the final signal to process all accumulated items
+  if (message.type === 'export-complete') {
+    if (accumulatedItems.length === 0) {
+      self.postMessage({ type: 'error', error: 'No items were provided to export.' });
+      return;
+    }
 
-  try {
-    const serializedData = format === 'json' ? serializeToJSON(updatedItems) : serializeToCSV(updatedItems);
-    // Send the serialized string back
-    self.postMessage({ type: 'success', data: serializedData });
-  } catch (error) {
-    self.postMessage({
-      type: 'error',
-      error: error instanceof Error ? error.message : String(error),
-    });
+    const updatedItems = accumulatedItems.map((item) => filterObject(item, ['library', 'userId'], 'exclude'));
+
+    try {
+      const serializedData = message.format === 'json' ? serializeToJSON(updatedItems) : serializeToCSV(updatedItems);
+
+      // Send the single, complete serialized string back
+      self.postMessage({ type: 'success', data: serializedData });
+    } catch (error) {
+      self.postMessage({
+        type: 'error',
+        error: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      // Reset the state for the next export operation
+      accumulatedItems = [];
+    }
   }
 };
 

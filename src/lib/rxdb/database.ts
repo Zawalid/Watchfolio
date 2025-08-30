@@ -60,7 +60,7 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
         },
       })
       .catch((err) => {
-        console.error('🔴 DATABASE CREATION FAILED:', err);
+        log("ERR", '🔴 DATABASE CREATION FAILED:', err);
         dbPromise = null;
         throw err;
       });

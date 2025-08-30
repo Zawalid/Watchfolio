@@ -10,7 +10,7 @@ import {
   UpdateUserPreferencesInput,
   UserWithProfile,
 } from '@/lib/appwrite/types';
-import {  destroyDB, getDBStatus } from '@/lib/rxdb';
+import { destroyDB, getDBStatus } from '@/lib/rxdb';
 import { authStorePartializer } from './utils';
 import { useSyncStore } from './useSyncStore';
 
@@ -221,7 +221,7 @@ export const useAuthStore = create<AuthState>()(
           const updatedUser = await authService.getCurrentUser();
           set({ user: updatedUser });
         } catch (error) {
-          console.error('Failed to refresh user:', error);
+          log("ERR", 'Failed to refresh user:', error);
           set({ syncError: 'Failed to refresh user data' });
         }
       },

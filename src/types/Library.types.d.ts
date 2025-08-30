@@ -23,8 +23,8 @@ interface LibraryMedia {
   totalMinutesRuntime?: number | null;
   networks?: number[] | null;
 
-  library: string| null;
-  userId?: string;
+  library: string | null;
+  userId?: string | null;
 
   // Future fields
   // watchDates?: string[]; // Array of ISO date strings
