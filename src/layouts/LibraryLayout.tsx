@@ -36,7 +36,7 @@ import SortBy from '@/components/SortBy';
 // TODO : Display the sync status somewhere else when the sidebar is hidden
 
 export default function LibraryLayout() {
-  const [query, setQuery] = useQueryState('query', { defaultValue: '' });
+  const [query, setQuery] = useQueryState('query', { defaultValue: '', shallow: false });
   const [showTabs, setShowTabs] = useLocalStorageState('show-tabs', true);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -168,7 +168,7 @@ export default function LibraryLayout() {
                 { key: 'user_rating', label: 'Your Rating' },
                 { key: 'rating', label: 'Rating' },
                 { key: 'release_date', label: 'Release Date' },
-                {key: 'runtime', label: 'Runtime'}
+                { key: 'runtime', label: 'Runtime' },
               ]}
               defaultSort='recent'
             />

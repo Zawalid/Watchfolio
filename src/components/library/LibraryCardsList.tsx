@@ -14,6 +14,7 @@ import { Status } from '@/components/ui/Status';
 import MediaCardsListSkeleton from '../media/MediaCardsListSkeleton';
 import { useQueryState } from 'nuqs';
 import { NETWORKS } from '@/utils/constants/TMDB';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface LibraryCardsListProps {
   status: LibraryFilterStatus;
@@ -23,12 +24,13 @@ interface LibraryCardsListProps {
 export default function LibraryCardsList({ status, isOwnProfile }: LibraryCardsListProps) {
   const { sortBy, sortDir, selectedTypes, selectedGenres, selectedNetworks } = useDiscoverParams(undefined, 'recent');
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
+  const debouncedQuery = useDebounce(query, 300);
 
   const { ref, inView } = useInView({ rootMargin: '400px' });
 
   const { data, fetchNextPage, hasNextPage, isLoading, isError } = useInfiniteLibraryItems({
     status,
-    query,
+    query: debouncedQuery,
     sortBy,
     sortDir: sortDir as 'asc' | 'desc',
     mediaType: selectedTypes && selectedTypes.length === 1 ? (selectedTypes[0] as MediaType) : undefined,
