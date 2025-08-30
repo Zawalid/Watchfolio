@@ -4,13 +4,11 @@ import { containerVariants, itemVariants } from '@/lib/animations';
 import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import NetworkCard from '@/pages/networks/NetworkCard';
 import { Profile } from '@/lib/appwrite/types';
+import { useOutletContext } from 'react-router';
 
-interface ViewingTasteProps {
-  profile: Profile;
-  isOwnProfile:boolean
-}
+export default function ViewingTaste() {
+  const { profile, isOwnProfile } = useOutletContext<{ profile: Profile; isOwnProfile: boolean }>();
 
-export default function ViewingTaste({ profile, isOwnProfile }: ViewingTasteProps) {
   return (
     <motion.div variants={containerVariants} className='lg:grid-cols- grid gap-6'>
       {profile.favoriteGenres && (

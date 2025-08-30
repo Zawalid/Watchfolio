@@ -5,8 +5,11 @@ import LibraryView from '@/components/library/LibraryView';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { Profile } from '@/lib/appwrite/types';
+import { useOutletContext } from 'react-router';
 
-export default function UserLibrary({ profile, stats }: { profile: Profile; stats: LibraryStats }) {
+export default function UserLibrary() {
+  const { profile, stats } = useOutletContext<{ profile: Profile; stats: LibraryStats }>();
+
   const { checkIsOwnProfile } = useAuthStore();
   const [status, setStatus] = useState<LibraryFilterStatus>('all');
   const isOwnProfile = checkIsOwnProfile(profile.username);
