@@ -31,7 +31,7 @@ export default function DeleteAccount() {
         navigate('/');
       } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
-        console.error('Failed to delete account:', error);
+        log('ERR', 'Failed to delete account:', error);
         addToast({
           title: 'Error deleting account',
           description: errorMessage,

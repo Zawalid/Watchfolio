@@ -31,7 +31,7 @@ export function FileDropper({
   maxSize = 5242880, // 5MB
   maxFiles = 10,
   className,
-  disabled
+  disabled,
 }: FileDropperProps) {
   const [, setError] = useState<string>('');
   const [fileStatuses, setFileStatuses] = useState<Map<string, FileUploadStatus>>(new Map());
@@ -148,7 +148,7 @@ export function FileDropper({
     addToast({
       title: 'Retrying upload',
       description: `Retrying upload for ${file.name}`,
-      color: 'secondary',
+      color: 'default',
     });
 
     simulateUpload(file);

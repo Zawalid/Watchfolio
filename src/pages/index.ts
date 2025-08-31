@@ -21,13 +21,18 @@ export { default as CelebrityDetails } from './celebrity/CelebrityDetails';
 export { default as Networks } from './networks/Networks';
 export { default as NetworkDetails } from './networks/NetworkDetails';
 
-// User & Profile
-export { default as UserProfile } from './profile/UserProfile';
+// Settings
 export { default as Profile } from './settings/Profile';
 export { default as Preferences } from './settings/Preferences';
 export { default as PrivacySecurity } from './settings/PrivacySecurity';
 export { default as LibrarySettings } from './settings/Library';
 export { default as Devices } from './settings/Devices';
+
+// Profile
+export { default as UserProfile } from './profile/UserProfile';
+export { default as UserLibrary } from './profile/UserLibrary';
+export { default as StatsInsights } from './profile/StatsInsights';
+export { default as ViewingTaste } from './profile/ViewingTaste';
 
 // Auth
 export { default as EmailVerification } from './auth/EmailVerification';

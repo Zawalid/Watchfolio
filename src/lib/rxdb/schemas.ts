@@ -1,7 +1,7 @@
 import type { RxJsonSchema } from 'rxdb';
 
-export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
-  version: 0,
+export const LibraryItemschema: RxJsonSchema<LibraryMedia> = {
+  version: 3,
   primaryKey: 'id',
   type: 'object',
   properties: {
@@ -63,8 +63,10 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
     genres: {
       type: 'array',
       items: {
-        type: 'string',
-        maxLength: 50,
+        type: 'integer',
+        minimum: 0,
+        maximum: 2147483647,
+        multipleOf: 1,
       },
     },
     rating: {
@@ -76,7 +78,6 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
       type: ['integer', 'null'],
       minimum: 0,
       maximum: 9999999999999,
-      multipleOf: 1,
     },
     networks: {
       type: 'array',
@@ -92,21 +93,46 @@ export const libraryMediaSchema: RxJsonSchema<LibraryMedia> = {
       maxLength: 2000,
     },
     library: {
-      type: ['object', 'null'],
-      additionalProperties: true,
-      properties: {
-        averageRating: {
-          type: ['number', 'null'],
-          minimum: 0,
-          maximum: 10,
-        },
-      },
+      type: ['string', 'null'],
+      maxLength: 40,
     },
     userId: {
-      type: ['string', 'null'],
+      type: 'string',
       maxLength: 100,
     },
   },
-  required: ['id', 'status', 'isFavorite', 'lastUpdatedAt', 'tmdbId', 'title', 'media_type', 'library'],
-  indexes: [['media_type', 'tmdbId'], ['status'], ['isFavorite']],
+  required: [
+    'id',
+    'status',
+    'isFavorite',
+    'addedAt',
+    'lastUpdatedAt',
+    'tmdbId',
+    'title',
+    'media_type',
+    'library',
+    'userId',
+  ],
+  indexes: [
+    // getAllLibraryItems
+    ['userId', 'status'],
+    ['userId', 'media_type'],
+    ['userId', 'isFavorite'],
+
+    // Filtering
+    ['userId', 'title'],
+
+    // Sorting
+    ['userId', 'addedAt'],
+    ['userId', 'lastUpdatedAt'],
+    ['tmdbId', 'media_type'],
+
+    'userId',
+    'status',
+
+    // Multi-filter
+    ['userId', 'status', 'media_type'],
+    ['userId', 'isFavorite', 'media_type'],
+    ['userId', 'media_type', 'status'],
+  ],
 };

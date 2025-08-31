@@ -1,7 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useQueryState, parseAsArrayOf, parseAsString } from 'nuqs';
-import { FunnelX, Filter as FilterIcon, Film, Tv, Calendar, Star, Globe, Filter, MonitorCog } from 'lucide-react';
+import {
+  FunnelX,
+  Filter as FilterIcon,
+  Film,
+  Tv,
+  Calendar,
+  Star,
+  Globe,
+  Filter,
+  MonitorCog,
+  Check,
+} from 'lucide-react';
 import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@heroui/react';
@@ -54,16 +64,80 @@ export default function FiltersModal({
   const { isOpen, onClose, onOpen } = disclosure;
   const { registerNavigator, unregisterNavigator } = useNavigation();
 
-  const { selectedTypes, setSelectedTypes, numberOfFilters, hasFilters, clearAllFilters } = useFiltersParams();
+  const {
+    selectedTypes,
+    setSelectedTypes,
+    selectedGenres,
+    setSelectedGenres,
+    selectedNetworks,
+    setSelectedNetworks,
+    language,
+    setLanguage,
+    minRating,
+    maxRating,
+    setMinRating,
+    setMaxRating,
+    minYear,
+    maxYear,
+    setMinYear,
+    setMaxYear,
+    numberOfFilters,
+    hasFilters,
+    clearAllFilters,
+  } = useFiltersParams();
+
+  // Local state for pending changes (before applying)
+  const [pendingTypes, setPendingTypes] = useState<string[] | null>(selectedTypes);
+  const [pendingGenres, setPendingGenres] = useState<string[] | null>(selectedGenres);
+  const [pendingNetworks, setPendingNetworks] = useState<string[] | null>(selectedNetworks);
+  const [pendingLanguage, setPendingLanguage] = useState<string | null>(language);
+  const [pendingMinRating, setPendingMinRating] = useState<number | null>(minRating);
+  const [pendingMaxRating, setPendingMaxRating] = useState<number | null>(maxRating);
+  const [pendingMinYear, setPendingMinYear] = useState<number | null>(minYear);
+  const [pendingMaxYear, setPendingMaxYear] = useState<number | null>(maxYear);
+
+  // Check if there are pending changes
+  const hasPendingChanges =
+    JSON.stringify(pendingTypes) !== JSON.stringify(selectedTypes) ||
+    JSON.stringify(pendingGenres) !== JSON.stringify(selectedGenres) ||
+    JSON.stringify(pendingNetworks) !== JSON.stringify(selectedNetworks) ||
+    pendingLanguage !== language ||
+    pendingMinRating !== minRating ||
+    pendingMaxRating !== maxRating ||
+    pendingMinYear !== minYear ||
+    pendingMaxYear !== maxYear;
+
+ const hasCurrentFilters = 
+  selectedGenres?.length || 
+  selectedNetworks?.length || 
+  selectedTypes?.length || 
+  language || 
+  minRating !== null || 
+  maxRating !== null || 
+  minYear !== null || 
+  maxYear !== null;
+  // Reset pending state when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setPendingTypes(selectedTypes);
+      setPendingGenres(selectedGenres);
+      setPendingNetworks(selectedNetworks);
+      setPendingLanguage(language);
+      setPendingMinRating(minRating);
+      setPendingMaxRating(maxRating);
+      setPendingMinYear(minYear);
+      setPendingMaxYear(maxYear);
+    }
+  }, [isOpen, selectedTypes, selectedGenres, selectedNetworks, language, minRating, maxRating, minYear, maxYear]);
 
   useHotkeys(getShortcut('toggleFilters')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
   useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
-  useHotkeys(getShortcut('filterMovies')?.hotkey || '', () => toggleMediaType('movie'), [selectedTypes]);
-  useHotkeys(getShortcut('filterTvShows')?.hotkey || '', () => toggleMediaType('tv'), [selectedTypes]);
+  useHotkeys(getShortcut('filterMovies')?.hotkey || '', () => toggleMediaType('movie'), [pendingTypes]);
+  useHotkeys(getShortcut('filterTvShows')?.hotkey || '', () => toggleMediaType('tv'), [pendingTypes]);
   useHotkeys(
     getShortcut('clearFilters')?.hotkey || '',
     () => {
-      if (hasFilters) clearAllFilters();
+      if (hasFilters) clearAllPendingFilters();
     },
     [hasFilters]
   );
@@ -74,20 +148,82 @@ export default function FiltersModal({
   }, [isOpen, registerNavigator, unregisterNavigator]);
 
   const toggleMediaType = (typeId: string) => {
-    setSelectedTypes((types) => {
+    setPendingTypes((types) => {
       const current = types || [];
       if (current.length && current.length === MEDIA_TYPES.length - 1) return null;
       return current.includes(typeId) ? current.filter((t) => t !== typeId) : [...current, typeId];
     });
   };
 
+  const applyFilters = () => {
+    setSelectedTypes(pendingTypes);
+    setSelectedGenres(pendingGenres);
+    setSelectedNetworks(pendingNetworks);
+    setLanguage(pendingLanguage);
+    setMinRating(pendingMinRating);
+    setMaxRating(pendingMaxRating);
+    setMinYear(pendingMinYear);
+    setMaxYear(pendingMaxYear);
+    onClose();
+  };
+  
+  const clearAllPendingFilters = () => {
+    setPendingTypes(null);
+    setPendingGenres(null);
+    setPendingNetworks(null);
+    setPendingLanguage(null);
+    setPendingMinRating(null);
+    setPendingMaxRating(null);
+    setPendingMinYear(null);
+    setPendingMaxYear(null);
+    clearAllFilters();
+    onClose();
+  };
+
+  const resetPendingFilters = () => {
+    setPendingTypes(selectedTypes);
+    setPendingGenres(selectedGenres);
+    setPendingNetworks(selectedNetworks);
+    setPendingLanguage(language);
+    setPendingMinRating(minRating);
+    setPendingMaxRating(maxRating);
+    setPendingMinYear(minYear);
+    setPendingMaxYear(maxYear);
+  };
+
   const renderedFilters = filterOptions.map((option) => {
-    if (option === 'genres') return <GenresFilter key='genres' />;
-    if (option === 'networks') return <NetworksFilter key='networks' />;
-    if (option === 'types') return <TypesFilter key='types' />;
-    if (option === 'language') return <LanguageFilter key='language' />;
-    if (option === 'ratingRange') return <RatingRangeFilter key='ratingRange' />;
-    if (option === 'releaseYear') return <ReleaseYearFilter key='releaseYear' />;
+    if (option === 'genres')
+      return <GenresFilter key='genres' pendingGenres={pendingGenres} setPendingGenres={setPendingGenres} />;
+    if (option === 'networks')
+      return (
+        <NetworksFilter key='networks' pendingNetworks={pendingNetworks} setPendingNetworks={setPendingNetworks} />
+      );
+    if (option === 'types')
+      return <TypesFilter key='types' pendingTypes={pendingTypes} setPendingTypes={setPendingTypes} />;
+    if (option === 'language')
+      return (
+        <LanguageFilter key='language' pendingLanguage={pendingLanguage} setPendingLanguage={setPendingLanguage} />
+      );
+    if (option === 'ratingRange')
+      return (
+        <RatingRangeFilter
+          key='ratingRange'
+          pendingMinRating={pendingMinRating}
+          pendingMaxRating={pendingMaxRating}
+          setPendingMinRating={setPendingMinRating}
+          setPendingMaxRating={setPendingMaxRating}
+        />
+      );
+    if (option === 'releaseYear')
+      return (
+        <ReleaseYearFilter
+          key='releaseYear'
+          pendingMinYear={pendingMinYear}
+          pendingMaxYear={pendingMaxYear}
+          setPendingMinYear={setPendingMinYear}
+          setPendingMaxYear={setPendingMaxYear}
+        />
+      );
     return null;
   });
 
@@ -120,11 +256,22 @@ export default function FiltersModal({
             <h2 className='text-Primary-50 text-xl font-semibold'>{title}</h2>
           </div>
           <div className='space-y-6'>{renderedFilters}</div>
-          {hasFilters && (
-            <Button className='button-secondary! shrink-0' onPress={clearAllFilters}>
-              Clear All Filters
+
+          {/* Action buttons */}
+          <div className='border-Primary-500/20 grid grid-cols-2 gap-3 border-t pt-4'>
+            <Button className='button-primary!' onPress={applyFilters} isDisabled={!hasPendingChanges}>
+              <Check className='size-4' />
+              Apply Filters
             </Button>
-          )}
+            <Button
+              className='button-secondary!'
+              onPress={() => (hasCurrentFilters ? clearAllPendingFilters() : resetPendingFilters())}
+              isDisabled={!hasPendingChanges && !hasCurrentFilters}
+            >
+              {hasCurrentFilters ? 'Clear Filters' : 'Reset Filters'}
+            </Button>
+          </div>
+
           <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border p-3'>
             <p className='text-Primary-300 text-xs'>
               <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='toggleFilters' /> to toggle
@@ -137,14 +284,19 @@ export default function FiltersModal({
   );
 }
 
-function GenresFilter() {
-  const { selectedGenres, setSelectedGenres } = useFiltersParams();
+function GenresFilter({
+  pendingGenres,
+  setPendingGenres,
+}: {
+  pendingGenres: string[] | null;
+  setPendingGenres: (value: string[] | null) => void;
+}) {
   const toggle = (slug: string) => {
-    const list = selectedGenres || [];
+    const list = pendingGenres || [];
     if (list.includes(slug)) {
-      setSelectedGenres(list.length > 1 ? list.filter((g) => g !== slug) : null);
+      setPendingGenres(list.length > 1 ? list.filter((g) => g !== slug) : null);
     } else {
-      setSelectedGenres([...list, slug]);
+      setPendingGenres([...list, slug]);
     }
   };
   return (
@@ -156,14 +308,14 @@ function GenresFilter() {
           </div>
           Genre
         </h3>
-        {selectedGenres?.length ? <ClearFilter onClear={() => setSelectedGenres(null)} /> : null}
+        {pendingGenres?.length ? <ClearFilter onClear={() => setPendingGenres(null)} /> : null}
       </div>
       <div className='flex flex-wrap gap-2'>
         {GENRES.map(({ id, label, slug }) => (
           <Button
             key={id}
             className='selectable-button!'
-            data-is-selected={selectedGenres?.includes(slug) || false}
+            data-is-selected={pendingGenres?.includes(slug) || false}
             onPress={() => toggle(slug)}
           >
             {label}
@@ -174,14 +326,19 @@ function GenresFilter() {
   );
 }
 
-function NetworksFilter() {
-  const { selectedNetworks, setSelectedNetworks } = useFiltersParams();
+function NetworksFilter({
+  pendingNetworks,
+  setPendingNetworks,
+}: {
+  pendingNetworks: string[] | null;
+  setPendingNetworks: (value: string[] | null) => void;
+}) {
   const toggle = (slug: string) => {
-    const list = selectedNetworks || [];
+    const list = pendingNetworks || [];
     if (list.includes(slug)) {
-      setSelectedNetworks(list.length > 1 ? list.filter((n) => n !== slug) : null);
+      setPendingNetworks(list.length > 1 ? list.filter((n) => n !== slug) : null);
     } else {
-      setSelectedNetworks([...list, slug]);
+      setPendingNetworks([...list, slug]);
     }
   };
 
@@ -194,7 +351,7 @@ function NetworksFilter() {
           </div>
           Network
         </h3>
-        {selectedNetworks?.length ? <ClearFilter onClear={() => setSelectedNetworks(null)} /> : null}
+        {pendingNetworks?.length ? <ClearFilter onClear={() => setPendingNetworks(null)} /> : null}
       </div>
       <Slider>
         {NETWORKS.map((network) => (
@@ -202,7 +359,7 @@ function NetworksFilter() {
             <NetworkCard
               network={network}
               type='button'
-              isSelected={selectedNetworks?.includes(network.slug)}
+              isSelected={pendingNetworks?.includes(network.slug)}
               onSelect={() => toggle(network.slug)}
             />
           </Slider.Slide>
@@ -212,10 +369,15 @@ function NetworksFilter() {
   );
 }
 
-function TypesFilter() {
-  const [selectedTypes, setSelectedTypes] = useQueryState('types', parseAsArrayOf(parseAsString));
+function TypesFilter({
+  pendingTypes,
+  setPendingTypes,
+}: {
+  pendingTypes: string[] | null;
+  setPendingTypes: React.Dispatch<React.SetStateAction<string[] | null>>;
+}) {
   const toggle = (id: string) => {
-    setSelectedTypes((types) => {
+    setPendingTypes((types) => {
       const list = types || [];
       if (list.length && list.length === MEDIA_TYPES.length - 1) return null;
       return list.includes(id) ? list.filter((t) => t !== id) : [...list, id];
@@ -230,14 +392,14 @@ function TypesFilter() {
           </div>
           Type
         </h3>
-        {selectedTypes?.length ? <ClearFilter onClear={() => setSelectedTypes(null)} /> : null}
+        {pendingTypes?.length ? <ClearFilter onClear={() => setPendingTypes(null)} /> : null}
       </div>
       <div className='flex flex-wrap gap-3'>
         {MEDIA_TYPES.map(({ id, label, icon: Icon, shortcut }) => (
           <Button
             key={id}
             className='selectable-button!'
-            data-is-selected={selectedTypes?.includes(id) || false}
+            data-is-selected={pendingTypes?.includes(id) || false}
             onPress={() => toggle(id)}
           >
             <Icon className='size-4' />
@@ -250,8 +412,13 @@ function TypesFilter() {
   );
 }
 
-function LanguageFilter() {
-  const { language, setLanguage } = useFiltersParams();
+function LanguageFilter({
+  pendingLanguage,
+  setPendingLanguage,
+}: {
+  pendingLanguage: string | null;
+  setPendingLanguage: (value: string | null) => void;
+}) {
   return (
     <div className='space-y-3'>
       <div className='flex items-center justify-between'>
@@ -261,12 +428,12 @@ function LanguageFilter() {
           </div>
           Language
         </h3>
-        {language ? <ClearFilter onClear={() => setLanguage(null)} /> : null}
+        {pendingLanguage ? <ClearFilter onClear={() => setPendingLanguage(null)} /> : null}
       </div>
       <Select
         placeholder='Select language'
-        selectedKeys={language ? [language] : []}
-        onSelectionChange={(keys) => setLanguage((Array.from(keys)[0] as string) || null)}
+        selectedKeys={pendingLanguage ? [pendingLanguage] : []}
+        onSelectionChange={(keys) => setPendingLanguage((Array.from(keys)[0] as string) || null)}
         classNames={{ ...SELECT_CLASSNAMES, trigger: SELECT_CLASSNAMES.trigger + ' w-full' }}
       >
         {POPULAR_LANGUAGES.map(({ code, name }) => (
@@ -277,20 +444,30 @@ function LanguageFilter() {
   );
 }
 
-function RatingRangeFilter() {
-  const { minRating, maxRating, setMinRating, setMaxRating } = useFiltersParams();
-
+function RatingRangeFilter({
+  pendingMinRating,
+  pendingMaxRating,
+  setPendingMinRating,
+  setPendingMaxRating,
+}: {
+  pendingMinRating: number | null;
+  pendingMaxRating: number | null;
+  setPendingMinRating: (value: number | null) => void;
+  setPendingMaxRating: (value: number | null) => void;
+}) {
   let minError: string | null = null;
   let maxError: string | null = null;
 
-  if (minRating != null) {
-    if (minRating < 0 || minRating > 10) minError = 'Min rating must be between 0 and 10';
-    else if (maxRating != null && minRating > maxRating) minError = 'Min rating cannot be greater than max rating';
+  if (pendingMinRating != null) {
+    if (pendingMinRating < 0 || pendingMinRating > 10) minError = 'Min rating must be between 0 and 10';
+    else if (pendingMaxRating != null && pendingMinRating > pendingMaxRating)
+      minError = 'Min rating cannot be greater than max rating';
   }
 
-  if (maxRating != null) {
-    if (maxRating < 0 || maxRating > 10) maxError = 'Max rating must be between 0 and 10';
-    else if (minRating != null && maxRating < minRating) maxError = 'Max rating cannot be less than min rating';
+  if (pendingMaxRating != null) {
+    if (pendingMaxRating < 0 || pendingMaxRating > 10) maxError = 'Max rating must be between 0 and 10';
+    else if (pendingMinRating != null && pendingMaxRating < pendingMinRating)
+      maxError = 'Max rating cannot be less than min rating';
   }
 
   return (
@@ -302,11 +479,11 @@ function RatingRangeFilter() {
           </div>
           Rating Range
         </h3>
-        {(minRating || maxRating) && (
+        {(pendingMinRating || pendingMaxRating) && (
           <ClearFilter
             onClear={() => {
-              setMinRating(null);
-              setMaxRating(null);
+              setPendingMinRating(null);
+              setPendingMaxRating(null);
             }}
           />
         )}
@@ -318,8 +495,8 @@ function RatingRangeFilter() {
           min='0'
           max='10'
           step='0.1'
-          value={minRating ?? ''}
-          onChange={(e) => setMinRating(e.target.value ? parseFloat(e.target.value) : null)}
+          value={pendingMinRating ?? ''}
+          onChange={(e) => setPendingMinRating(e.target.value ? parseFloat(e.target.value) : null)}
           label='Min Rating'
           placeholder='0.0'
           error={minError}
@@ -330,8 +507,8 @@ function RatingRangeFilter() {
           min='0'
           max='10'
           step='0.1'
-          value={maxRating ?? ''}
-          onChange={(e) => setMaxRating(e.target.value ? parseFloat(e.target.value) : null)}
+          value={pendingMaxRating ?? ''}
+          onChange={(e) => setPendingMaxRating(e.target.value ? parseFloat(e.target.value) : null)}
           label='Max Rating'
           placeholder='10.0'
           error={maxError}
@@ -341,21 +518,32 @@ function RatingRangeFilter() {
   );
 }
 
-function ReleaseYearFilter() {
+function ReleaseYearFilter({
+  pendingMinYear,
+  pendingMaxYear,
+  setPendingMinYear,
+  setPendingMaxYear,
+}: {
+  pendingMinYear: number | null;
+  pendingMaxYear: number | null;
+  setPendingMinYear: (value: number | null) => void;
+  setPendingMaxYear: (value: number | null) => void;
+}) {
   const currentYear = new Date().getFullYear();
-  const { minYear, maxYear, setMinYear, setMaxYear } = useFiltersParams();
 
   let minError: string | null = null;
   let maxError: string | null = null;
 
-  if (minYear != null) {
-    if (minYear < 1900 || minYear > currentYear + 2) minError = `Min year must be between 1900 and ${currentYear + 2}`;
-    else if (maxYear != null && minYear > maxYear) minError = 'From year cannot be after To year';
+  if (pendingMinYear != null) {
+    if (pendingMinYear < 1900 || pendingMinYear > currentYear + 2)
+      minError = `Min year must be between 1900 and ${currentYear + 2}`;
+    else if (pendingMaxYear != null && pendingMinYear > pendingMaxYear) minError = 'From year cannot be after To year';
   }
 
-  if (maxYear != null) {
-    if (maxYear < 1900 || maxYear > currentYear + 2) maxError = `Max year must be between 1900 and ${currentYear + 2}`;
-    else if (minYear != null && maxYear < minYear) maxError = 'To year cannot be before From year';
+  if (pendingMaxYear != null) {
+    if (pendingMaxYear < 1900 || pendingMaxYear > currentYear + 2)
+      maxError = `Max year must be between 1900 and ${currentYear + 2}`;
+    else if (pendingMinYear != null && pendingMaxYear < pendingMinYear) maxError = 'To year cannot be before From year';
   }
 
   return (
@@ -367,11 +555,11 @@ function ReleaseYearFilter() {
           </div>
           Release Year
         </h3>
-        {(minYear || maxYear) && (
+        {(pendingMinYear || pendingMaxYear) && (
           <ClearFilter
             onClear={() => {
-              setMinYear(null);
-              setMaxYear(null);
+              setPendingMinYear(null);
+              setPendingMaxYear(null);
             }}
           />
         )}
@@ -382,8 +570,8 @@ function ReleaseYearFilter() {
           type='number'
           min='1900'
           max={currentYear + 2}
-          value={minYear ?? ''}
-          onChange={(e) => setMinYear(e.target.value ? parseInt(e.target.value) : null)}
+          value={pendingMinYear ?? ''}
+          onChange={(e) => setPendingMinYear(e.target.value ? parseInt(e.target.value) : null)}
           label='From Year'
           placeholder='1900'
           error={minError}
@@ -393,8 +581,8 @@ function ReleaseYearFilter() {
           type='number'
           min='1900'
           max={currentYear + 2}
-          value={maxYear ?? ''}
-          onChange={(e) => setMaxYear(e.target.value ? parseInt(e.target.value) : null)}
+          value={pendingMaxYear ?? ''}
+          onChange={(e) => setPendingMaxYear(e.target.value ? parseInt(e.target.value) : null)}
           label='To Year'
           placeholder={String(currentYear + 2)}
           error={maxError}

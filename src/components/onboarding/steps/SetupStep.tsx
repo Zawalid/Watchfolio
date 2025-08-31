@@ -59,7 +59,7 @@ export default function SetupStep() {
         contentPreferences: preferences.selectedContentPreferences,
       });
     } catch (error) {
-      console.error('Failed to save preferences:', error);
+      log('ERR', 'Failed to save preferences:', error);
     }
   };
 

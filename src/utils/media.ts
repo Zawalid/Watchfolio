@@ -69,13 +69,18 @@ export const generateMediaLink = (item?: Media | LibraryMedia) => {
   return `/${mediaType === 'tv' ? 'tv' : 'movies'}/details/${(item as LibraryMedia).tmdbId || item.id}-${slugify(title || '')}`;
 };
 
-export const isMedia = (obj: Media | LibraryMedia): obj is Media => obj && ('vote_average' in obj || 'original_language' in obj);
+export const isMedia = (obj: Media | LibraryMedia): obj is Media =>
+  obj && ('vote_average' in obj || 'original_language' in obj);
 
-export const getGenres = (genre_ids?: number[]) =>
-  genre_ids
-    ?.slice(0, 2)
-    .map((id) => GENRES.find((genre) => genre.id === id)?.label || 'Unknown')
-    .filter(Boolean) || [];
+export const getGenres = (ids?: number[] | null) => {
+  if (!ids) return [];
+  return (
+    ids
+      .slice(0, 2)
+      .map((id) => GENRES.find((genre) => genre.id === id)?.label || 'Unknown')
+      .filter(Boolean) || []
+  );
+};
 
 // Person Details Utilities
 /**

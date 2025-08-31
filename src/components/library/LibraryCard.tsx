@@ -1,4 +1,5 @@
 import BaseMediaCard from '@/components/media/BaseMediaCard';
+import { getGenres } from '@/utils/media';
 
 interface LibraryCardProps {
   item: LibraryMedia;
@@ -18,7 +19,7 @@ export default function LibraryCard({ item, tabIndex, isOwnProfile }: LibraryCar
       posterPath={item.posterPath}
       releaseDate={item.releaseDate}
       rating={item.rating}
-      genres={item.genres}
+      genres={getGenres(item.genres || [])}
       item={item}
       tabIndex={tabIndex}
       isOwnProfile={isOwnProfile}

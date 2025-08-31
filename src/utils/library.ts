@@ -6,9 +6,10 @@ import { isMedia } from './media';
  * Generates a consistent key for a media item
  */
 export const generateMediaId = (media?: Media | LibraryMedia) => {
+  log(media);
   if (!media) return '';
   if (isMedia(media)) return `${media.media_type}-${media.id}`;
-  return media.id.toString();
+  return (media.id || media.tmdbId).toString();
 };
 
 export const getLibraryCount = ({
@@ -68,7 +69,7 @@ export const logLibraryActivity = (
   if (newItemData.status === 'completed' && existingItem?.status !== 'completed') log('completed');
 
   // Condition 3: Log when a rating is added or changed
-  if (newItemData.userRating && (newItemData.userRating !== existingItem?.userRating)) {
+  if (newItemData.userRating && newItemData.userRating !== existingItem?.userRating) {
     log('rated', { rating: newItemData.userRating });
   }
 };
@@ -119,5 +120,19 @@ export const mergeLibraryItems = (
   return {
     mergedLibrary,
     importCount: importedItems.length,
+  };
+};
+
+export const libraryMediaToMedia = (item: LibraryMedia): Partial<Media> => {
+  return {
+    id: item.tmdbId,
+    title: item.title,
+    name: item.title,
+    overview: item.overview || '',
+    release_date: item.releaseDate || null,
+    poster_path: item.posterPath || null,
+    media_type: item.media_type,
+    vote_average: item.rating || 0,
+    genre_ids: item.genres ? item.genres : [],
   };
 };

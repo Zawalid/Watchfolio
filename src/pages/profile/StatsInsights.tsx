@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Star, Film, Tv, Clock, Target, BarChart3, Activity as ActivityIcon, Award, Zap } from 'lucide-react';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import StatCard, { StatCardProps } from './StatCard';
+import StatCard, { StatCardProps } from '../../components/profile/StatCard';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { EmptyProps, Status } from '@/components/ui/Status';
 import { cn, formatTimeAgo } from '@/utils';
-import { Link } from 'react-router';
+import { Link, useOutletContext } from 'react-router';
 import { generateMediaLink, getTmdbImage } from '@/utils/media';
 import { Activity, HiddenSection, Profile } from '@/lib/appwrite/types';
 import { useAuthStore } from '@/stores/useAuthStore';
@@ -53,11 +53,16 @@ const renderEmptyState = (props: EmptyProps) => {
   );
 };
 
-export default function StatsInsights({ profile, stats }: { profile: Profile; stats: LibraryStats }) {
+export default function StatsInsights() {
+  const { profile, stats, recentActivity } = useOutletContext<{
+    profile: Profile;
+    stats: LibraryStats;
+    recentActivity: Activity[];
+  }>();
+
   const { checkIsOwnProfile } = useAuthStore();
 
   const isOwnProfile = checkIsOwnProfile(profile.username);
-  const recentActivity = profile.recentActivity || [];
   const hiddenProfileSections = profile?.hiddenProfileSections || [];
   const visibleSectionsButStatistics = ['stats.overview', 'stats.topGenres', 'stats.recentActivity'].filter(
     (section) => !hiddenProfileSections.includes(section as HiddenSection)

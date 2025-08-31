@@ -18,7 +18,7 @@ export function useLocalStorageState<T>(
       const item = localStorage.getItem(KEY);
       return item ? JSON.parse(item) : initialValue instanceof Function ? initialValue() : initialValue;
     } catch (error) {
-      console.error('Error reading from localStorage:', error);
+      log("ERR", 'Error reading from localStorage:', error);
       return initialValue instanceof Function ? initialValue() : initialValue;
     }
   });
@@ -28,7 +28,7 @@ export function useLocalStorageState<T>(
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
     } catch (error) {
-      console.error('Error writing to localStorage:', error);
+      log("ERR", 'Error writing to localStorage:', error);
     }
   }, [KEY, state]);
 

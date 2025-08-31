@@ -3,13 +3,16 @@ import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
+import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
-import { libraryMediaSchema } from './schemas';
+import { LibraryItemschema } from './schemas';
+import { GENRES } from '@/utils/constants/TMDB';
 
 // Add plugins
 if (import.meta.env.DEV) addRxPlugin(RxDBDevModePlugin);
 addRxPlugin(RxDBQueryBuilderPlugin);
 addRxPlugin(RxDBUpdatePlugin);
+addRxPlugin(RxDBMigrationSchemaPlugin);
 
 interface WatchfolioDatabase {
   libraryMedia: RxCollection<LibraryMedia>;
@@ -31,7 +34,7 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
   if (dbInstance) return dbInstance;
   if (dbPromise) return dbPromise;
 
-  console.log('Creating Watchfolio database...');
+  log('Creating Watchfolio database...');
 
   dbPromise = createRxDatabase({
     name: 'watchfolio',
@@ -39,21 +42,41 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
       storage: getRxStorageDexie(),
     }),
     multiInstance: false,
-    ignoreDuplicate: true,
   }).then(async (db) => {
-    await db.addCollections({
-      libraryMedia: {
-        schema: libraryMediaSchema,
-        migrationStrategies: {},
-        autoMigrate: false,
-      },
-    });
+    await db
+      .addCollections({
+        libraryMedia: {
+          schema: LibraryItemschema,
+          migrationStrategies: {
+            1: (oldDoc) => {
+              return oldDoc;
+            },
+            2: (oldDoc) => {
+              const newDoc = { ...oldDoc };
+              newDoc.library = oldDoc.library?.$id || null;
+              return newDoc;
+            },
+            3: (oldDoc) => {
+              const newDoc = { ...oldDoc };
+              newDoc.genres =
+                oldDoc.genres?.map((genre: string) => GENRES.find((g) => g.label === genre)?.id || null) || [];
+              return newDoc;
+            },
+          },
+          autoMigrate: true,
+        },
+      })
+      .catch((err) => {
+        log('ERR', '🔴 DATABASE CREATION FAILED:', err);
+        dbPromise = null;
+        throw err;
+      });
 
     dbInstance = db as unknown as WatchfolioDatabase;
-    console.log('Watchfolio database created successfully');
     return dbInstance;
   });
 
+  log('Watchfolio database created successfully');
   return dbPromise;
 };
 
@@ -63,7 +86,7 @@ export const destroyDB = async (): Promise<void> => {
     dbInstance = null;
   }
   dbPromise = null;
-  console.log('Watchfolio database destroyed');
+  log('Watchfolio database destroyed');
 };
 
 export const recreateDB = async (): Promise<void> => {

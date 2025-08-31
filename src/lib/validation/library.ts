@@ -40,10 +40,10 @@ const libraryMediaOptionalSchema = z.object({
 });
 
 // Complete library media item schema
-export const libraryMediaSchema = libraryMediaBaseSchema.merge(libraryMediaOptionalSchema);
+export const LibraryItemschema = libraryMediaBaseSchema.merge(libraryMediaOptionalSchema);
 
 // Schema for array of library items (for validating imported data)
-export const libraryImportSchema = z.array(libraryMediaSchema);
+export const libraryImportSchema = z.array(LibraryItemschema);
 
 // Schema for import options
 export const importOptionsSchema = z.object({

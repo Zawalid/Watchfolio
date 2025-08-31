@@ -6,7 +6,7 @@ import { router } from './router';
 
 import '@/styles/index.css';
 import { useAuthStore } from './stores/useAuthStore';
-import { useLibraryStore } from './stores/useLibraryStore';
+import { useSyncStore } from './stores/useSyncStore';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -32,7 +32,18 @@ if (import.meta.env.DEV && typeof window !== 'undefined') {
 
   if (!devtoolsMounted) {
     mountStoreDevtool('AuthStore', useAuthStore);
-    mountStoreDevtool('LibraryStore', useLibraryStore);
+    mountStoreDevtool('SyncStore', useSyncStore);
     devtoolsMounted = true;
   }
 }
+
+// Debug Log
+const log = (...args: unknown[]): void => {
+  if (import.meta.env.DEV) {
+    if (args[0] === 'ERR') console.log('❌ [ERROR]', ...args.slice(1));
+    else console.log('🛠 [DEBUG]', ...args);
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+if (typeof window !== 'undefined') (window as any).log = log;

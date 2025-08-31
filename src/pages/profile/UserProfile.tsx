@@ -1,12 +1,9 @@
-import { useParams } from 'react-router';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router';
 import { motion } from 'framer-motion';
 import { ChartBarStacked, Library, Heart, UserSearch, Lock, EyeOff } from 'lucide-react';
 import ProfileHeader from '@/components/profile/ProfileHeader';
-import StatsInsights from '@/components/profile/StatsInsights';
-import ViewingTaste from '@/components/profile/ViewingTaste';
 import { Tab, Tabs } from '@heroui/react';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
-import UserLibrary from '@/components/profile/UserLibrary';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { appwriteService } from '@/lib/appwrite/api';
 import { useQuery } from '@tanstack/react-query';
@@ -17,10 +14,15 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const { checkIsOwnProfile } = useAuthStore();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const pathSegments = location.pathname.split('/');
+  const activeTab = pathSegments[3] || 'stats';
 
   const { data, isLoading } = useQuery({
     queryKey: ['user', username],
-    queryFn: async () => await appwriteService.profile.getUserProfile(username!),
+    queryFn: () => appwriteService.profile.getUserProfile(username!),
     enabled: !!username,
   });
 
@@ -80,55 +82,53 @@ export default function ProfilePage() {
           message="This user's library and stats are private."
         />
       ) : (
-        <Tabs classNames={TABS_CLASSNAMES} defaultSelectedKey='stats'>
-          {(isOwnProfile || !hiddenProfileSections.includes('stats')) && (
-            <Tab
-              key='stats'
-              title={
-                <div className='flex items-center gap-2'>
-                  <ChartBarStacked className='size-4' />
-                  <span>Stats & Insights</span>
-                </div>
-              }
-            >
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                <StatsInsights stats={data.stats} profile={profile} />
-              </motion.div>
-            </Tab>
-          )}
+        <>
+          <Tabs
+            classNames={TABS_CLASSNAMES}
+            selectedKey={activeTab}
+            defaultSelectedKey='stats'
+            onSelectionChange={(key) => navigate(`/u/${username}/${key}`)}
+          >
+            {(isOwnProfile || !hiddenProfileSections.includes('stats')) && (
+              <Tab
+                key='stats'
+                title={
+                  <div className='flex items-center gap-2'>
+                    <ChartBarStacked className='size-4' />
+                    <span>Stats & Insights</span>
+                  </div>
+                }
+              ></Tab>
+            )}
 
-          {(isOwnProfile || !hiddenProfileSections.includes('taste')) && (
-            <Tab
-              key='taste'
-              title={
-                <div className='flex items-center gap-2'>
-                  <Heart className='size-4' />
-                  <span>Viewing Taste</span>
-                </div>
-              }
-            >
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                <ViewingTaste profile={profile} isOwnProfile={isOwnProfile} />
-              </motion.div>
-            </Tab>
-          )}
+            {(isOwnProfile || !hiddenProfileSections.includes('taste')) && (
+              <Tab
+                key='taste'
+                title={
+                  <div className='flex items-center gap-2'>
+                    <Heart className='size-4' />
+                    <span>Viewing Taste</span>
+                  </div>
+                }
+              ></Tab>
+            )}
 
-          {(isOwnProfile || !hiddenProfileSections.includes('library')) && (
-            <Tab
-              key='library'
-              title={
-                <div className='flex items-center gap-2'>
-                  <Library className='size-4' />
-                  <span>Library</span>
-                </div>
-              }
-            >
-              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-                <UserLibrary profile={profile} />
-              </motion.div>
-            </Tab>
-          )}
-        </Tabs>
+            {(isOwnProfile || !hiddenProfileSections.includes('library')) && (
+              <Tab
+                key='library'
+                title={
+                  <div className='flex items-center gap-2'>
+                    <Library className='size-4' />
+                    <span>Library</span>
+                  </div>
+                }
+              ></Tab>
+            )}
+          </Tabs>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <Outlet context={{ profile, stats: data.stats, isOwnProfile }} />
+          </motion.div>
+        </>
       )}
     </motion.div>
   );

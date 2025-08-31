@@ -6,7 +6,7 @@ import { z } from 'zod';
 const RawMediaSchema = z.object({
   id: z.string().optional(),
   tmdbId: z.coerce.number({ invalid_type_error: 'must be a number' }).positive('must be a positive number'),
-  media_type: z.enum(['movie', 'tv'], { required_error: 'must be either "movie" or "tv"' }),
+  media_type: z.enum(['movie', 'tv'], { invalid_type_error: 'must be either "movie" or "tv"' }),
   title: z.string().trim().min(1, 'cannot be empty').optional(),
   status: z.enum(['watching', 'willWatch', 'onHold', 'dropped', 'none', 'completed']).optional().default('none'),
   isFavorite: z.coerce.boolean().optional().default(false),
@@ -16,10 +16,16 @@ const RawMediaSchema = z.object({
   lastUpdatedAt: z.coerce.date({ invalid_type_error: 'is not a valid date' }).optional(),
   releaseDate: z.coerce.date().nullable().optional(),
   posterPath: z.string().nullable().optional(),
-  genres: z.preprocess((val) => (typeof val === 'string' ? JSON.parse(val) : val), z.array(z.string()).optional().default([])),
+  genres: z.preprocess(
+    (val) => (typeof val === 'string' ? JSON.parse(val) : val),
+    z.array(z.number()).optional().default([])
+  ),
   rating: z.coerce.number().nullable().optional(),
   totalMinutesRuntime: z.coerce.number().int().nullable().optional(),
-  networks: z.preprocess((val) => (typeof val === 'string' ? JSON.parse(val) : val), z.array(z.number()).optional().default([])),
+  networks: z.preprocess(
+    (val) => (typeof val === 'string' ? JSON.parse(val) : val),
+    z.array(z.number()).optional().default([])
+  ),
   overview: z.string().nullable().optional(),
   userId: z.string().nullable().optional(),
 });
@@ -31,7 +37,6 @@ const FinalMediaSchema = RawMediaSchema.transform((data) => {
     ...data,
     id: data.id || `${data.media_type}-${data.tmdbId}`,
     title: data.title || `Untitled ${data.media_type}-${data.tmdbId}`,
-    // Add the required 'library' field and convert dates back to ISO strings
     library: null,
     addedAt: (data.addedAt || now).toISOString(),
     lastUpdatedAt: (data.lastUpdatedAt || now).toISOString(),
@@ -43,41 +48,31 @@ const ImportSchema = z.array(RawMediaSchema);
 
 // --- WORKER MESSAGE HANDLING ---
 
-interface WorkerMessage {
+interface ParseMessage {
   type: 'parse';
   format: 'json' | 'csv';
   content: string;
+  existingIds: Set<string>;
 }
 
+interface GetAllItemsMessage {
+  type: 'get-all-items';
+}
+
+type WorkerMessage = ParseMessage | GetAllItemsMessage;
+
+// This will hold the parsed data in memory between messages
+let parsedLibraryItems: LibraryMedia[] = [];
+
 self.onmessage = (event: MessageEvent<WorkerMessage>) => {
-  const { type, format, content } = event.data;
-  if (type !== 'parse' || !content) {
-    self.postMessage({ type: 'error', error: 'Invalid message format' });
-    return;
-  }
+  const message = event.data;
 
   try {
-    if (!content || content.trim() === '') {
-      throw new Error('The import file appears to be empty.');
+    if (message.type === 'parse') {
+      handleParseMessage(message);
+    } else if (message.type === 'get-all-items') {
+      handleGetAllItemsMessage();
     }
-
-    let rawData: unknown[];
-    if (format === 'json') {
-      rawData = parseJSON(content);
-    } else if (format === 'csv') {
-      rawData = parseCSV(content);
-    } else {
-      throw new Error('Unsupported format.');
-    }
-
-    const parsed = ImportSchema.safeParse(rawData);
-    if (!parsed.success) {
-      throw new Error(formatZodError(parsed.error));
-    }
-
-    const finalData = parsed.data.map(item => FinalMediaSchema.parse(item));
-    self.postMessage({ type: 'success', data: finalData });
-
   } catch (error) {
     self.postMessage({
       type: 'error',
@@ -85,6 +80,49 @@ self.onmessage = (event: MessageEvent<WorkerMessage>) => {
     });
   }
 };
+
+function handleParseMessage({ content, format, existingIds }: ParseMessage) {
+  if (!content || content.trim() === '') {
+    throw new Error('The import file appears to be empty.');
+  }
+
+  const rawData: unknown[] = format === 'json' ? parseJSON(content) : parseCSV(content);
+
+  const parsed = ImportSchema.safeParse(rawData);
+  if (!parsed.success) {
+    throw new Error(formatZodError(parsed.error));
+  }
+
+  const finalData = parsed.data.map((item) => FinalMediaSchema.parse(item)) as LibraryMedia[];
+  parsedLibraryItems = finalData; // Store data in the worker's state
+
+  // Calculate stats inside the worker to avoid blocking the main thread
+  const movieCount = finalData.filter((item) => item.media_type === 'movie').length;
+  const tvCount = finalData.length - movieCount;
+  let newItemsCount = 0;
+  let updatedItemsCount = 0;
+
+  for (const item of finalData) {
+    if (existingIds.has(item.id)) updatedItemsCount++;
+    else newItemsCount++;
+  }
+
+  self.postMessage({
+    type: 'success-preview',
+    data: {
+      totalItems: finalData.length,
+      movies: movieCount,
+      tvShows: tvCount,
+      newItems: newItemsCount,
+      updatedItems: updatedItemsCount,
+    },
+  });
+}
+
+function handleGetAllItemsMessage() {
+  self.postMessage({ type: 'success-get-all', data: parsedLibraryItems });
+  parsedLibraryItems = []; // Clear memory after sending the data
+}
 
 // --- HELPER FUNCTIONS ---
 
@@ -112,7 +150,7 @@ function parseCSV(content: string): Record<string, unknown>[] {
   const lines = content.trim().split('\n');
   if (lines.length <= 1) throw new Error('CSV must contain a header and at least one data row.');
 
-  const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
+  const headers = lines[0].split(',').map((h) => h.replace(/"/g, '').trim());
   const items: Record<string, unknown>[] = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -136,11 +174,13 @@ function parseCSVRow(line: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
     if (char === '"' && inQuotes && line[i + 1] === '"') {
-      current += '"'; i++;
+      current += '"';
+      i++;
     } else if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ',' && !inQuotes) {
-      result.push(current); current = '';
+      result.push(current);
+      current = '';
     } else {
       current += char;
     }

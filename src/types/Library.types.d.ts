@@ -18,13 +18,13 @@ interface LibraryMedia {
   overview?: string | null;
   posterPath?: string | null;
   releaseDate?: string | null;
-  genres?: string[] | null;
+  genres?: number[] | null;
   rating?: number | null;
   totalMinutesRuntime?: number | null;
   networks?: number[] | null;
 
-  library: { $id: string; averageRating?: number } | null;
-  userId?: string;
+  library: string | null;
+  userId?: string | null;
 
   // Future fields
   // watchDates?: string[]; // Array of ISO date strings
@@ -52,6 +52,12 @@ interface LibraryStats {
   topGenres: Array<{ name: string; count: number }>;
 }
 
-// Sync Types
-
-type SyncStatus = 'offline' | 'connecting' | 'online' | 'syncing' | 'error';
+type LibraryFilters = {
+  status: LibraryFilterStatus;
+  query?: string;
+  sortBy?: string;
+  sortDir?: 'asc' | 'desc';
+  mediaType?: MediaType;
+  genres?: number[];
+  networks?: number[];
+};

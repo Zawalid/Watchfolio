@@ -61,7 +61,7 @@ export default function AuthModal() {
       setPendingOnboarding(true);
       await signInWithGoogle();
     } catch (error) {
-      console.error('Google sign in failed:', error);
+      log('ERR', 'Google sign in failed:', error);
       addToast({
         title: 'Sign in failed',
         description: 'Failed to sign in with Google. Please try again.',
