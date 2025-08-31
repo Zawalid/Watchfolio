@@ -308,7 +308,7 @@ export class LibraryMediaAPI extends BaseAPI {
       queries.push(Query.equal('media_type', filters.mediaType));
     }
     if (filters.genres && filters.genres.length > 0) {
-      queries.push(Query.contains('genres', filters.genres));
+      queries.push(Query.contains('genres', filters.genres as unknown as string[]));
     }
     if (filters.networks && filters.networks.length > 0) {
       queries.push(Query.contains('networks', filters.networks as unknown as string[]));

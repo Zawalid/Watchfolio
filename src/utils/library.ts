@@ -1,7 +1,6 @@
 import { appwriteService } from '@/lib/appwrite/api';
 import { Activity, ActivityAction } from '@/lib/appwrite/types';
 import { isMedia } from './media';
-import { GENRES } from './constants/TMDB';
 
 /**
  * Generates a consistent key for a media item
@@ -134,10 +133,6 @@ export const libraryMediaToMedia = (item: LibraryMedia): Partial<Media> => {
     poster_path: item.posterPath || null,
     media_type: item.media_type,
     vote_average: item.rating || 0,
-    genre_ids: item.genres
-      ? item.genres
-          .map((genre) => GENRES.find((g) => g.label === genre)?.id)
-          .filter((id): id is number => typeof id === 'number')
-      : [],
+    genre_ids: item.genres ? item.genres : [],
   };
 };

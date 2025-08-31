@@ -18,7 +18,7 @@ interface LibraryMedia {
   overview?: string | null;
   posterPath?: string | null;
   releaseDate?: string | null;
-  genres?: string[] | null;
+  genres?: number[] | null;
   rating?: number | null;
   totalMinutesRuntime?: number | null;
   networks?: number[] | null;
@@ -58,6 +58,6 @@ type LibraryFilters = {
   sortBy?: string;
   sortDir?: 'asc' | 'desc';
   mediaType?: MediaType;
-  genres?: string[];
+  genres?: number[];
   networks?: number[];
 };

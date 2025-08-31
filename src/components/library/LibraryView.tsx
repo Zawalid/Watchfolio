@@ -16,7 +16,7 @@ import {
   useLibraryTotalCount,
 } from '@/hooks/library/useLibraryQueries';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { NETWORKS } from '@/utils/constants/TMDB';
+import { GENRES, NETWORKS } from '@/utils/constants/TMDB';
 import { generateMediaLink } from '@/utils/media';
 import { Profile } from '@/lib/appwrite/types';
 import MediaCard from '../media/MediaCard';
@@ -49,7 +49,7 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
       sortBy,
       sortDir: sortDir as 'asc' | 'desc',
       mediaType: selectedTypes && selectedTypes.length === 1 ? (selectedTypes[0] as MediaType) : undefined,
-      genres: selectedGenres || undefined,
+      genres: GENRES.filter((g) => selectedGenres?.includes(g.slug)).map((g) => g.id) || undefined,
       networks: NETWORKS.filter((n) => selectedNetworks?.includes(n.slug)).map((n) => n.id) || undefined,
     };
   }, [status, debouncedQuery, sortBy, sortDir, selectedTypes, selectedGenres, selectedNetworks]);

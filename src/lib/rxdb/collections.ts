@@ -52,7 +52,7 @@ export const getAllLibraryItems = async (
     status?: LibraryFilterStatus;
     query?: string;
     mediaType?: MediaType | 'all';
-    genres?: string[];
+    genres?: number[];
     networks?: number[];
   } = {}
 ): Promise<LibraryMedia[]> => {
@@ -144,7 +144,7 @@ export const addOrUpdateLibraryItem = async (
       overview: media.overview?.trim() || undefined,
       posterPath: media.posterPath?.trim() || undefined,
       releaseDate: media.releaseDate?.trim() || undefined,
-      genres: Array.isArray(media.genres) ? media.genres.filter((g) => g?.trim()) : [],
+      genres: Array.isArray(media.genres) ? media.genres : [],
       rating: typeof media.rating === 'number' ? media.rating : undefined,
       totalMinutesRuntime: typeof media.totalMinutesRuntime === 'number' ? media.totalMinutesRuntime : undefined,
       networks: Array.isArray(media.networks) ? media.networks : [],

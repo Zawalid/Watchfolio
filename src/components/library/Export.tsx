@@ -72,7 +72,7 @@ export default function Export({ onClose }: { onClose: () => void }) {
   });
 
   const handleExport = useCallback(async () => {
-    addToast({
+    const key = addToast({
       title: 'Preparing Your Export',
       description: "We're gathering your items. This may take a few moments.",
       color: 'default',
@@ -107,6 +107,9 @@ export default function Export({ onClose }: { onClose: () => void }) {
       });
     } else {
       postMessage({ type: 'export-complete', format: exportFormat });
+      setTimeout(() => {
+        if (key) closeToast(key);
+      }, 500);
     }
   }, [userId, exportFilter, exportedType, postMessage, exportFormat]);
 

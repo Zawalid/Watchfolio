@@ -2,10 +2,11 @@ import { createRxDatabase, addRxPlugin, RxCollection } from 'rxdb/plugins/core';
 import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder';
 import { RxDBUpdatePlugin } from 'rxdb/plugins/update';
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie';
-import { RxDBDevModePlugin, } from 'rxdb/plugins/dev-mode';
+import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode';
 import { RxDBMigrationSchemaPlugin } from 'rxdb/plugins/migration-schema';
 import { wrappedValidateAjvStorage } from 'rxdb/plugins/validate-ajv';
 import { LibraryItemschema } from './schemas';
+import { GENRES } from '@/utils/constants/TMDB';
 
 // Add plugins
 if (import.meta.env.DEV) addRxPlugin(RxDBDevModePlugin);
@@ -55,12 +56,18 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
               newDoc.library = oldDoc.library?.$id || null;
               return newDoc;
             },
+            3: (oldDoc) => {
+              const newDoc = { ...oldDoc };
+              newDoc.genres =
+                oldDoc.genres?.map((genre: string) => GENRES.find((g) => g.label === genre)?.id || null) || [];
+              return newDoc;
+            },
           },
           autoMigrate: true,
         },
       })
       .catch((err) => {
-        log("ERR", '🔴 DATABASE CREATION FAILED:', err);
+        log('ERR', '🔴 DATABASE CREATION FAILED:', err);
         dbPromise = null;
         throw err;
       });

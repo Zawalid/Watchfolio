@@ -18,7 +18,7 @@ const RawMediaSchema = z.object({
   posterPath: z.string().nullable().optional(),
   genres: z.preprocess(
     (val) => (typeof val === 'string' ? JSON.parse(val) : val),
-    z.array(z.string()).optional().default([])
+    z.array(z.number()).optional().default([])
   ),
   rating: z.coerce.number().nullable().optional(),
   totalMinutesRuntime: z.coerce.number().int().nullable().optional(),

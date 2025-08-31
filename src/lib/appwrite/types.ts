@@ -65,7 +65,6 @@ export interface Library extends Document {
 
 export interface AppwriteLibraryMedia extends Document {
   // Library item fields
-  id?: string;
   status: WatchStatus;
   isFavorite: boolean;
   userRating?: number;
@@ -80,7 +79,7 @@ export interface AppwriteLibraryMedia extends Document {
   overview?: string | null;
   posterPath?: string | null;
   releaseDate?: string | null;
-  genres?: string[] | null;
+  genres?: number[] | null;
   rating?: number | null;
   totalMinutesRuntime?: number | null;
   networks?: number[] | null;

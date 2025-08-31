@@ -4,7 +4,6 @@ import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { addOrUpdateLibraryItem, deleteLibraryItem, bulkaddOrUpdateLibraryItem, recreateDB } from '@/lib/rxdb';
 import { appwriteService } from '@/lib/appwrite/api';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { GENRES } from '@/utils/constants/TMDB';
 import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
 
 // Helper to invalidate library queries
@@ -28,10 +27,7 @@ const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
     title: title?.trim() || `${media.media_type} ${media.id}`,
     posterPath: media.poster_path?.trim() || undefined,
     releaseDate: releaseDate?.trim() || undefined,
-    genres:
-      (media.genres?.map((g: { id: number; name: string }) => g.name?.trim()).filter(Boolean) as string[]) ||
-      (media.genre_ids?.map((id) => GENRES.find((g) => g.id === id)?.label?.trim()).filter(Boolean) as string[]) ||
-      [],
+    genres: media.genre_ids || media.genres?.map((g) => g.id)  || [],
     rating: media.vote_average ? +getRating(media.vote_average) : undefined,
     totalMinutesRuntime: calculateTotalMinutesRuntime(media) || undefined,
     networks: (media as TvShow).networks?.map((n) => n.id).filter((id) => typeof id === 'number') || [],

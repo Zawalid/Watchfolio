@@ -434,14 +434,6 @@
                     "default": null
                 },
                 {
-                    "key": "genres",
-                    "type": "string",
-                    "required": false,
-                    "array": true,
-                    "size": 50,
-                    "default": null
-                },
-                {
                     "key": "rating",
                     "type": "double",
                     "required": false,
@@ -518,6 +510,15 @@
                     "array": false,
                     "size": 38,
                     "default": null
+                },
+                {
+                    "key": "genres",
+                    "type": "integer",
+                    "required": false,
+                    "array": true,
+                    "min": 0,
+                    "max": 2147483647,
+                    "default": null
                 }
             ],
             "indexes": [
@@ -551,6 +552,17 @@
                     "status": "available",
                     "attributes": [
                         "status"
+                    ],
+                    "orders": [
+                        "ASC"
+                    ]
+                },
+                {
+                    "key": "search",
+                    "type": "fulltext",
+                    "status": "available",
+                    "attributes": [
+                        "title"
                     ],
                     "orders": [
                         "ASC"

@@ -85,7 +85,7 @@ export default function LibraryViewLayout({
             onChange={onTabChange}
             tabs={tabs}
           />
-          {isOwnProfile && <SyncStatus className='mt-auto mb-3' />}
+          {isOwnProfile && <SyncStatus className='mt-auto mb-5' />}
         </aside>
       </div>
 
