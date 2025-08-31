@@ -221,7 +221,7 @@ export const useAuthStore = create<AuthState>()(
           const updatedUser = await authService.getCurrentUser();
           set({ user: updatedUser });
         } catch (error) {
-          log("ERR", 'Failed to refresh user:', error);
+          log('ERR', 'Failed to refresh user:', error);
           set({ syncError: 'Failed to refresh user data' });
         }
       },
@@ -237,7 +237,10 @@ export const useAuthStore = create<AuthState>()(
       closeAuthModal: () => set({ showAuthModal: false }),
       switchAuthMode: (type) => set({ authModalType: type }),
       openOnboardingModal: () => set({ showOnboardingModal: true }),
-      closeOnboardingModal: () => set({ showOnboardingModal: false }),
+      closeOnboardingModal: () => {
+        set({ showOnboardingModal: false });
+        useSyncStore.getState().manualSync();
+      },
       setPendingOnboarding: (value) => {
         set({ pendingOnboarding: value });
         if (value === false) authService.updateAccountPreferences({ hasSeenOnboarding: 'TRUE' });

@@ -43,7 +43,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
   },
 
   manualSync: async () => {
-    const { user } = useAuthStore.getState();
+    const user  = useAuthStore.getState().user;
     if (!user) throw new Error('User not authenticated');
 
     if (isReplicationActive()) {
