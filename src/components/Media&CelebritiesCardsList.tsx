@@ -57,10 +57,14 @@ export default function MediaAndCelebritiesCardsList(
       emptyMessage={
         contentType === 'person'
           ? 'It seems there are no celebrities at the moment. Please come back and check later.'
-          : 'It seems there are no media at the moment. Please come back and check later.'
+          : props.queryKey.includes('recommendations')
+            ? "We couldn't find any recommendations based on this content. Explore trending titles instead."
+            : props.queryKey.includes('similar')
+              ? "We couldn't find any similar content based on this item. Discover more trending shows and movies."
+              : 'It seems there are no media at the moment. Please come back and check later.'
       }
       emptyIcon={contentType === 'person' ? Users2Icon : Film}
-      emptyTitle={contentType === 'person' ? 'No Celebrities' : 'No Media'}
+      emptyTitle={contentType === 'person' ? 'No Celebrities Available' : 'No Titles Available'}
       onSelect={(item) => {
         if (isPerson(item)) navigate(`/celebrities/${item.id}-${slugify(item.name)}`);
         else navigate(generateMediaLink(item));

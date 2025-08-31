@@ -1,7 +1,17 @@
 import { useLocation, useNavigate } from 'react-router';
 import { Avatar, Button, closeToast } from '@heroui/react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
-import { ChevronDownIcon, UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle, UserPlus } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  UserIcon,
+  Settings,
+  LibraryBig,
+  Heart,
+  LogOut,
+  HelpCircle,
+  UserPlus,
+  RefreshCw,
+} from 'lucide-react';
 import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
@@ -9,6 +19,8 @@ import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { ShortcutKey } from './ui/ShortcutKey';
 import { SIGN_IN_ICON } from './ui/Icons';
+import { useSyncStore } from '@/stores/useSyncStore';
+import { formatTimeAgo } from '@/utils';
 
 const isActive = (path: string, username?: string) => {
   if (path === '/profile') return location.pathname === `/u/${username}`;
@@ -48,7 +60,7 @@ export default function UserDropdown() {
             description: 'We hope to see you again soon!',
             color: 'success',
           });
-          if(key) closeToast(key)
+          if (key) closeToast(key);
           // navigate('/home'); // TODO : restore after finishing
           if (location.pathname.includes('settings')) navigate('/');
         }),
@@ -87,7 +99,7 @@ export default function UserDropdown() {
       <DropdownMenu
         aria-label='User menu'
         className='w-80 p-0'
-        disabledKeys={['user-info']}
+        disabledKeys={['user-info', 'sync']}
         itemClasses={{
           base: 'flex items-center hover:bg-white/5! gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-Grey-200 hover:text-Primary-50 [&.active]:text-Primary-400! [&.active]:bg-Primary-500/20!',
         }}
@@ -185,6 +197,14 @@ export default function UserDropdown() {
 
         {/* Logout Button */}
         <DropdownSection classNames={{ group: 'border-t border-white/10 pt-2' }}>
+          <DropdownItem
+            key='sync'
+            className='cursor-auto data-[disabled=true]:pointer-events-auto data-[disabled=true]:opacity-100'
+          >
+            <SyncIndicatorSection />
+          </DropdownItem>
+        </DropdownSection>
+        <DropdownSection classNames={{ group: 'border-t border-white/10 pt-2' }}>
           {isAuthenticated ? (
             <DropdownItem
               key='logout'
@@ -207,6 +227,21 @@ export default function UserDropdown() {
     </Dropdown>
   );
 }
+
+const SyncIndicatorSection = () => {
+  const { lastSyncTime, manualSync, syncStatus } = useSyncStore();
+  return (
+    <button className='flex w-full items-center justify-between gap-2' onClick={manualSync}>
+      <div className='flex items-center gap-2'>
+        <RefreshCw className={'size-4' + (syncStatus === 'syncing' ? ' animate-spin text-blue-400' : '')} />
+        <span className={syncStatus === 'syncing' ? 'text-blue-400' : ''}>
+          {syncStatus === 'syncing' ? 'Syncing' : 'Sync'}
+        </span>
+      </div>
+      {lastSyncTime && <span className='text-Grey-500'>{formatTimeAgo(lastSyncTime)}</span>}
+    </button>
+  );
+};
 
 const SignInSection = () => {
   const { openAuthModal } = useAuthStore();

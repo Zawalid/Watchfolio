@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useInfiniteQuery, useQuery, InfiniteData, QueryFunctionContext } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
-import { useQueryState } from 'nuqs';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { cn } from '@/utils';
 import { Status } from '@/components/ui/Status';
 import { Pagination } from '@/components/ui/Pagination';
 import { Slider, SliderProps } from '@/components/ui/Slider';
 import { PaginationProps } from '@heroui/react';
+import { useFiltersParams } from '@/hooks/useFiltersParams';
 
 export type InfiniteCardsListProps<T> = {
   queryKey: readonly unknown[];
@@ -67,7 +67,7 @@ export function InfiniteCardsList<T>({
   paginationProps,
   onSelect,
 }: InfiniteCardsListProps<T>) {
-  const [query] = useQueryState('query', { defaultValue: '' });
+  const { hasFilters, query } = useFiltersParams();
 
   // Normal query for paginated results
   const normalQuery = useQuery<TMDBResponse<T>, Error>({
@@ -150,7 +150,7 @@ export function InfiniteCardsList<T>({
 
   if (isLoading) return <SkeletonComponent asSlider={asSlider} />;
   if (isError) return <Status.Error message={errorMessage} onRetry={() => refetch()} />;
-  if (!results.length) return <Status.NoResults message={noResultsMessage} />;
+  if (!results.length && (hasFilters || !!query)) return <Status.NoResults message={noResultsMessage} />;
   if (totalResults === 0) return <Status.Empty Icon={emptyIcon} title={emptyTitle} message={emptyMessage} />;
 
   if (asSlider) {

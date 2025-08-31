@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, Calendar, Heart, MapPin, Film } from 'lucide-react';
+import { Award, Calendar, Heart, MapPin, Film, UserRoundX } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { LazyImage } from '@/components/ui/LazyImage';
 import { cn, slugify } from '@/utils';
@@ -134,11 +134,17 @@ export default function CelebrityCard({ person, tabIndex = 0 }: CelebrityCardPro
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className='size-full'
         >
-          <LazyImage
-            src={getTmdbImage(displayPerson, 'w500')}
-            alt={displayPerson.name}
-            className={cn('size-full object-cover', isDeceased && 'saturate-75')}
-          />
+          {displayPerson.profile_path ? (
+            <LazyImage
+              src={getTmdbImage(displayPerson, 'w500')}
+              alt={displayPerson.name}
+              className={cn('size-full object-cover', isDeceased && 'saturate-75')}
+            />
+          ) : (
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <UserRoundX className='size-12 fill-gray-500 text-gray-500' />
+            </div>
+          )}
         </motion.div>
 
         {/* Enhanced gradients for better text visibility */}
