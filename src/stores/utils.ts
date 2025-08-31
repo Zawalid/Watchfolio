@@ -43,7 +43,8 @@ export const authStorePartializer = (state: AuthState) => {
   const user = pick(state.user, userKeysToKeep);
   const profile = pick(state.user.profile, profileKeysToKeep);
   const preferences = pick(state.user.profile.preferences, preferencesKeysToKeep);
-  const userPreferences = { ...preferences, ...state.userPreferences };
+
+  const userPreferences = { ...state.userPreferences, ...preferences };
 
   return {
     isAuthenticated: state.isAuthenticated,

@@ -194,16 +194,16 @@ export default function UserDropdown() {
             Keyboard Shortcuts
           </DropdownItem>
         </DropdownSection>
-
-        {/* Logout Button */}
-        <DropdownSection classNames={{ group: 'border-t border-white/10 pt-2' }}>
-          <DropdownItem
-            key='sync'
-            className='cursor-auto data-[disabled=true]:pointer-events-auto data-[disabled=true]:opacity-100'
-          >
-            <SyncIndicatorSection />
-          </DropdownItem>
-        </DropdownSection>
+        {isAuthenticated ? (
+          <DropdownSection classNames={{ group: 'border-t border-white/10 pt-2' }}>
+            <DropdownItem
+              key='sync'
+              className='cursor-auto data-[disabled=true]:pointer-events-auto data-[disabled=true]:opacity-100'
+            >
+              <SyncIndicatorSection />
+            </DropdownItem>
+          </DropdownSection>
+        ) : null}
         <DropdownSection classNames={{ group: 'border-t border-white/10 pt-2' }}>
           {isAuthenticated ? (
             <DropdownItem

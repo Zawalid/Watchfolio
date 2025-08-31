@@ -80,7 +80,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const session = await authService.signIn({ email, password });
           const user = await authService.getCurrentUser();
-          set({ user, isAuthenticated: !!user, isLoading: false });
+          set({ user, userPreferences: user?.profile.preferences, isAuthenticated: !!user, isLoading: false });
           await useSyncStore.getState().startSync();
           return session;
         } catch (error) {
