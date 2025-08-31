@@ -85,7 +85,11 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
 
   if (isLoading) return <MediaCardsListSkeleton />;
   if (isError) return <Status.Error message='There was an error loading the media list. Please try again.' />;
-  if (items.length === 0) return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
+  if (items.length === 0) {
+    if (!isOwnProfile)
+      return <Status.Empty title='This Library is Empty' message='This user has not added any items yet.' />;
+    return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
+  }
 
   return (
     <>
@@ -140,14 +144,3 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
     </>
   );
 }
-
-// if (!items.length) {
-//   return (
-//     <Status.Empty
-//       title={isOwnProfile ? 'Your Library is Empty' : 'This Library is Empty'}
-//       message={
-//         isOwnProfile ? 'Start adding movies and shows to see them here.' : 'This user has not added any items yet.'
-//       }
-//     />
-//   );
-// }

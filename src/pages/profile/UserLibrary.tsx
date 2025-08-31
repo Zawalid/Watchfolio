@@ -21,7 +21,7 @@ export default function UserLibrary() {
 
   return (
     <LibraryViewLayout
-      sidebarTitle={`${profile.name.split(' ')[0]}'s Library`}
+      sidebarTitle={isOwnProfile ? 'My Library' : `${profile.name.split(' ')[0]}'s Library`}
       tabs={[
         {
           label: `All (${stats.all})`,

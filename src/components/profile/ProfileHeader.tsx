@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Share2, UserRoundPen, Check, Film, Tv, Clapperboard, CalendarDays, Clock } from 'lucide-react';
+import { Share2, UserRoundPen, Check, Film, Tv, Clapperboard, CalendarDays, Clock, Copy } from 'lucide-react';
 import { Button, useDisclosure } from '@heroui/react';
 import { Tooltip } from '@heroui/react';
 import { Avatar } from '@heroui/react';
@@ -30,6 +30,26 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
   const disclosure = useDisclosure();
   const { copied, copy } = useCopyToClipboard();
   const joinedDate = profile.$createdAt ? formatDate(profile.$createdAt) : null;
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const shareData = {
+      title: `${profile.name} on Watchfolio`,
+      text: `Check out ${profile.name}'s profile on Watchfolio!`,
+      url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        log('ERR', err);
+        await copy(url);
+      }
+    } else {
+      await copy(url);
+    }
+  };
 
   return (
     <>
@@ -102,16 +122,28 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
             {/* Right: Actions */}
             <div className='flex flex-wrap items-center gap-3 sm:justify-end sm:gap-3'>
               {profile.visibility === 'public' && (
-                <Tooltip content={copied ? 'Link copied!' : 'Copy profile link'} className='tooltip-secondary!'>
-                  <Button
-                    isIconOnly
-                    className='button-secondary!'
-                    onPress={async () => await copy(window.location.href)}
-                    aria-label='Share profile'
-                  >
-                    {copied ? <Check className='text-Success-400 h-4 w-4' /> : <Share2 className='h-4 w-4' />}
-                  </Button>
-                </Tooltip>
+                <>
+                  <Tooltip content={copied ? 'Link copied!' : 'Copy profile link'} className='tooltip-secondary!'>
+                    <Button
+                      isIconOnly
+                      className='button-secondary!'
+                      onPress={async () => await copy(window.location.href)}
+                      aria-label='Share profile'
+                    >
+                      {copied ? <Check className='text-Success-400 h-4 w-4' /> : <Copy className='h-4 w-4' />}
+                    </Button>
+                  </Tooltip>
+                  <Tooltip content='Share profile' className='tooltip-secondary!'>
+                    <Button
+                      isIconOnly
+                      className='button-secondary!'
+                      onPress={handleShare}
+                      aria-label='Share profile'
+                    >
+                      <Share2 className='h-4 w-4' />
+                    </Button>
+                  </Tooltip>
+                </>
               )}
 
               {isOwnProfile && (

@@ -45,7 +45,7 @@ export function ErrorScreen({ error, resetErrorBoundary }: ErrorScreenProps) {
   const [isRetrying, setIsRetrying] = useState(false);
 
   const handleGoHome = () => {
-    navigate('/');
+    navigate('/home');
     resetErrorBoundary();
   };
 

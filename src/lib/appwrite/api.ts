@@ -88,13 +88,13 @@ export class ProfileAPI extends BaseAPI {
     return this.createDocument<Profile>(TABLES.PROFILES, profileData, undefined, permissions);
   }
   async get(profileId: string) {
-    return this.getDocument<Profile>(TABLES.PROFILES, profileId, [Query.select(['*', 'preferences.*', 'library.*'])]);
+    return this.getDocument<Profile>(TABLES.PROFILES, profileId, [Query.select(['*', 'preferences.*'])]);
   }
   async getByUserId(userId: string) {
     const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
       Query.equal('userId', userId),
       Query.limit(1),
-      Query.select(['*', 'preferences.*', 'library.*']),
+      Query.select(['*', 'preferences.*']),
     ]);
     return result.documents[0] || null;
   }
