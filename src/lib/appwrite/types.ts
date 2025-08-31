@@ -59,7 +59,7 @@ export interface UserPreferences extends Document {
 // --- Library & Media ---
 
 export interface Library extends Document {
-  averageRating?: number;
+  stats?: string;
   items?: LibraryMedia[]; // LibraryMedia type assumed to be defined elsewhere
 }
 
