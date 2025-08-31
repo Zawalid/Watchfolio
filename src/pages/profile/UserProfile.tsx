@@ -126,7 +126,7 @@ export default function ProfilePage() {
             )}
           </Tabs>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Outlet context={{ profile, stats: data.stats, isOwnProfile }} />
+            <Outlet context={{ profile, stats: data.stats, isOwnProfile, recentActivity: data.recentActivity }} />
           </motion.div>
         </>
       )}

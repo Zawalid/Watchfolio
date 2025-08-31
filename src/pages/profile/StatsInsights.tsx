@@ -9,6 +9,7 @@ import { Link, useOutletContext } from 'react-router';
 import { generateMediaLink, getTmdbImage } from '@/utils/media';
 import { Activity, HiddenSection, Profile } from '@/lib/appwrite/types';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { GENRES } from '@/utils/constants/TMDB';
 
 const getStats = (stats: LibraryStats) => {
   const statusCards: StatCardProps[] = LIBRARY_MEDIA_STATUS.map((status) => ({
@@ -298,7 +299,7 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
       <div className='space-y-4'>
         {stats.topGenres.slice(0, 6).map((genre, index) => (
           <motion.div
-            key={genre.name}
+            key={genre.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.8 + index * 0.1 }}
@@ -318,7 +319,7 @@ function TopGenres({ stats, isOwnProfile }: { stats: LibraryStats; isOwnProfile:
                   )}
                 />
                 <span className='text-Grey-300 text-sm font-medium transition-colors group-hover:text-white'>
-                  {genre.name}
+                  {GENRES.find(g => g.id === genre.id)?.label || 'Unknown'}
                 </span>
               </div>
               <div className='flex items-center gap-2'>

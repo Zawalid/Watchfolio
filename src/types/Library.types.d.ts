@@ -49,7 +49,7 @@ interface LibraryStats {
   tvShows: number;
   totalHoursWatched: number;
   averageRating: number;
-  topGenres: Array<{ name: string; count: number }>;
+  topGenres: Array<{ id: number; count: number }>;
 }
 
 type LibraryFilters = {

@@ -1,8 +1,13 @@
 import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, type Models } from 'appwrite';
 import { tablesDB, account, storage, locale, DATABASE_ID, TABLES, BUCKETS } from '@/lib/appwrite';
-import { getLibraryCount } from '@/utils/library';
-
-import type { Profile, CreateProfileInput, UpdateProfileInput, Activity, UserLocation } from './types';
+import type {
+  Profile,
+  CreateProfileInput,
+  UpdateProfileInput,
+  Activity,
+  UserLocation,
+  ProfileWithLibrary,
+} from './types';
 import type { UserPreferences, CreateUserPreferencesInput, UpdateUserPreferencesInput } from './types';
 import type { Library, CreateLibraryInput, UpdateLibraryInput } from './types';
 import type { AppwriteLibraryMedia, CreateAppwriteLibraryMediaInput, UpdateAppwriteLibraryMediaInput } from './types';
@@ -116,47 +121,31 @@ export class ProfileAPI extends BaseAPI {
   }
 
   async getUserProfile(username: string): Promise<UserProfile | null> {
-    const result = await this.listDocuments<Profile>(TABLES.PROFILES, [
+    const result = await this.listDocuments<ProfileWithLibrary>(TABLES.PROFILES, [
       Query.equal('username', username),
       Query.limit(1),
+      Query.select(['*', 'library.stats']),
     ]);
     const profile = result.documents[0];
-    
+
     if (!profile || !profile.library) return null;
-    //? Im fetching the library because Appwrite only support a max depth of three levels, which means i can't get the media relationship on the library items
-    const library = await appwriteService.library.get(profile.library);
-    if (!library) return null;
 
-    const items = library.items?.length ? (library.items as LibraryMedia[]) : [];
-    const counts = getLibraryCount({ items }) as Record<LibraryFilterStatus, number>;
-
-    const ratedItems: number[] = [];
-    const genreCounts: { [key: string]: number } = {};
-    let totalMinutesRuntime = 0;
-
-    for (const item of items) {
-      if (item.userRating && typeof item.userRating === 'number') ratedItems.push(item.userRating);
-      item.genres?.forEach((genre) => {
-        genreCounts[genre] = (genreCounts[genre] || 0) + 1;
-      });
-      totalMinutesRuntime += item.totalMinutesRuntime || 0;
-    }
-
-    const averageRating = ratedItems.length > 0 ? ratedItems.reduce((a, b) => a + b, 0) / ratedItems.length : 0;
-
-    const topGenres = Object.entries(genreCounts)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 6);
-
-    const stats: LibraryStats = {
-      ...counts,
-      movies: getLibraryCount({ items, filter: 'all', mediaType: 'movie' }) as number,
-      tvShows: getLibraryCount({ items, filter: 'all', mediaType: 'tv' }) as number,
-      totalHoursWatched: Math.round(totalMinutesRuntime / 60),
-      averageRating,
-      topGenres,
-    };
+    const stats = profile.library.stats
+      ? JSON.parse(profile.library.stats)
+      : {
+          all: 0,
+          watching: 0,
+          completed: 0,
+          willWatch: 0,
+          onHold: 0,
+          dropped: 0,
+          favorites: 0,
+          movies: 0,
+          tvShows: 0,
+          totalHoursWatched: 0,
+          averageRating: 0,
+          topGenres: [],
+        };
 
     return {
       profile,
@@ -256,7 +245,7 @@ export class LibraryAPI extends BaseAPI {
 
   async clearLibrary(libraryId: string) {
     await this.delete(libraryId);
-    await this.create({ averageRating: 0 }, libraryId);
+    await this.create({ stats: '{}' }, libraryId);
   }
 }
 

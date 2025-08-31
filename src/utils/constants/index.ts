@@ -124,4 +124,3 @@ export const HIDDEN_PROFILE_SECTIONS = [
   'library.dropped',
   'library.favorites',
 ] as const;
-
