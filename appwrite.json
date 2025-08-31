@@ -565,12 +565,44 @@
         "documents.write"
       ],
       "schedule": "",
-      "timeout": 15,
+      "timeout": 300,
       "enabled": true,
       "logging": true,
       "entrypoint": "src/main.js",
       "commands": "npm install",
       "path": "functions/Library Stats"
+    },
+    {
+      "$id": "68b4ad09003271d3b1be",
+      "name": "Cleanup Deleted Media",
+      "runtime": "node-22",
+      "execute": ["users"],
+      "events": [],
+      "scopes": [
+        "databases.read",
+        "databases.write",
+        "tables.read",
+        "collections.read",
+        "tables.write",
+        "collections.write",
+        "columns.read",
+        "attributes.read",
+        "columns.write",
+        "attributes.write",
+        "indexes.read",
+        "indexes.write",
+        "rows.read",
+        "documents.read",
+        "rows.write",
+        "documents.write"
+      ],
+      "schedule": "0 2 1,15 * *",
+      "timeout": 300,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "src/main.js",
+      "commands": "npm install",
+      "path": "functions/Cleanup Deleted Media"
     }
   ]
 }
