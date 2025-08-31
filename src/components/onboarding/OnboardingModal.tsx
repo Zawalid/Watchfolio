@@ -47,19 +47,10 @@ export default function OnboardingModal() {
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
 
-  useHotkeys('left', () => {
-    if (!isFirstStep && showOnboardingModal) prevStep();
-  });
-  useHotkeys('right', () => {
-    if (!isLastStep && showOnboardingModal) nextStep();
-  });
-  useHotkeys('enter', () => {
-    if (isLastStep && showOnboardingModal) handleComplete();
-    else nextStep();
-  });
-  useHotkeys('esc', () => {
-    if (showOnboardingModal) closeOnboardingModal();
-  });
+  useHotkeys('left', () => (!isFirstStep ? prevStep() : null), { enabled: showOnboardingModal });
+  useHotkeys('right', () => (!isLastStep ? nextStep() : null), { enabled: showOnboardingModal });
+  useHotkeys('enter', () => (isLastStep ? handleComplete() : nextStep()), { enabled: showOnboardingModal });
+  useHotkeys('esc', closeOnboardingModal, { enabled: showOnboardingModal });
 
   const nextStep = () => {
     setDirection(1);

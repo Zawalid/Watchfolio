@@ -1,9 +1,9 @@
-import { createContext, useContext  } from 'react';
+import { createContext, useContext } from 'react';
 
 interface NavigationContextType {
   activeNavigator: string | null;
-  registerNavigator: (id: string) => void;
-  unregisterNavigator: (id: string) => void;
+  registerNavigation: (id: string) => void;
+  unregisterNavigation: (id: string) => void;
   isActive: (id: string) => boolean;
 }
 
@@ -16,4 +16,3 @@ export function useNavigation() {
   }
   return context;
 }
-  

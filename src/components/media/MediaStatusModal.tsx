@@ -21,13 +21,13 @@ interface MediaStatusModalProps {
 
 export default function MediaStatusModal({ disclosure, media }: MediaStatusModalProps) {
   const [hoverRating, setHoverRating] = useState<number | undefined>(undefined);
-  const { registerNavigator, unregisterNavigator } = useNavigation();
+  const { registerNavigation, unregisterNavigation } = useNavigation();
 
   useEffect(() => {
-    if (disclosure.isOpen) registerNavigator('media-status-modal');
-    else unregisterNavigator('media-status-modal');
-    return () => unregisterNavigator('media-status-modal');
-  }, [disclosure.isOpen, registerNavigator, unregisterNavigator]);
+    if (disclosure.isOpen) registerNavigation('media-status-modal');
+    else unregisterNavigation('media-status-modal');
+    return () => unregisterNavigation('media-status-modal');
+  }, [disclosure.isOpen, registerNavigation, unregisterNavigation]);
 
   const id = generateMediaId(media);
   const { data: libraryItem } = useLibraryItem(id);
@@ -36,7 +36,7 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   const handleStatusOrRatingChange = (status?: WatchStatus, userRating?: number | undefined) => {
     addOrUpdateItem({
       item: {
-        id : libraryItem?.id || id,
+        id: libraryItem?.id || id,
         ...(status && { status }),
         ...(userRating && { userRating }),
       },

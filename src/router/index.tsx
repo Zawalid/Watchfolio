@@ -178,11 +178,11 @@ export const router = createBrowserRouter([
         path: 'legal',
         children: [
           {
-            path: 'terms-of-service',
+            path: 'terms',
             Component: TermsOfService,
           },
           {
-            path: 'privacy-policy',
+            path: 'privacy',
             Component: PrivacyPolicy,
           },
         ],

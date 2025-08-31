@@ -58,7 +58,7 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
       });
       onSuccess?.();
     } catch (error) {
-      log(error);
+      log("ERR",error);
       addToast({ title: 'Update Failed', description: 'Could not update profile visibility.', color: 'danger' });
     }
   };

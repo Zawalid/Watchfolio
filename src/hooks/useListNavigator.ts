@@ -1,3 +1,4 @@
+import { useNavigation } from '@/contexts/NavigationContext';
 import { useEffect, useCallback, useRef, useState } from 'react';
 
 // Constants for grid calculation
@@ -73,6 +74,7 @@ export function useListNavigator({
 }: UseListNavigatorOptions) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(initialIndex && initialIndex > -1 ? initialIndex : -1);
+  const { isActive, registerNavigation, unregisterNavigation } = useNavigation();
 
   const keys = { ...defaultKeybindings, ...customKeybindings };
 
@@ -92,7 +94,12 @@ export function useListNavigator({
   }, [currentIndex, enabled, autoFocus, containerRef, itemSelector]);
 
   useEffect(() => {
-    if (!enabled || itemCount === 0) {
+    if (enabled) registerNavigation('list-navigator');
+    return () => unregisterNavigation('list-navigator');
+  }, [enabled, registerNavigation, unregisterNavigation]);
+
+  useEffect(() => {
+    if (!enabled || itemCount === 0 || !isActive('list-navigator')) {
       return;
     }
 
@@ -140,7 +147,7 @@ export function useListNavigator({
       if (isKey(keys.first)) navigate(0);
       if (isKey(keys.last)) navigate(itemCount - 1);
 
-      if (isKey(keys.select)) {
+      if (isKey(keys.select) && currentIndex > -1) {
         if (onSelect && currentIndex > -1) {
           onSelect(currentIndex);
         }

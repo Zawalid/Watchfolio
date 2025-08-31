@@ -7,8 +7,8 @@ import {
   getLibraryItemByTmdbId,
 } from '@/lib/rxdb';
 import { queryKeys } from '@/lib/react-query';
-import { useAuthStore } from '@/stores/useAuthStore';
 import { appwriteService } from '@/lib/appwrite/api';
+import { useInfo } from './useLibraryMutations';
 
 const PAGE_SIZE = 20;
 
@@ -28,7 +28,7 @@ const mapSortBy = (sortBy: string) => {
 };
 
 export const useInfiniteLibraryItems = (filters: LibraryFilters, options: { enabled?: boolean }) => {
-  const userId = useAuthStore((state) => state.user?.$id);
+  const { userId } = useInfo();
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.library({ userId, ...filters }),
@@ -80,7 +80,7 @@ export const useLibraryItemsByIds = (ids: string[]) => {
 const status: LibraryFilterStatus[] = ['all', 'watching', 'willWatch', 'onHold', 'dropped', 'completed', 'favorites'];
 
 export const useLibraryTotalCount = () => {
-  const userId = useAuthStore((state) => state.user?.$id);
+  const { userId } = useInfo()
 
   const { data } = useQuery({
     queryKey: queryKeys.libraryCount(userId),

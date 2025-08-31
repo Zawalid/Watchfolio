@@ -43,7 +43,7 @@ export default function MediaAndCelebritiesCardsList(
         }
       }}
       SkeletonComponent={contentType === 'person' ? CelebritiesCardsListSkeleton : MediaCardsListSkeleton}
-      getItemKey={(item: MediaOrPerson) => item.id}
+      getItemKey={(item: MediaOrPerson) => `${isPerson(item) ? 'person' : item.media_type}-${item.id}`}
       errorMessage={
         contentType === 'person'
           ? 'There was an error loading the celebrity list. Please try again.'

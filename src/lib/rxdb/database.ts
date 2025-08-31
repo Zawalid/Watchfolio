@@ -62,6 +62,9 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
                 oldDoc.genres?.map((genre: string) => GENRES.find((g) => g.label === genre)?.id || null) || [];
               return newDoc;
             },
+            4: (oldDoc) => {
+              return oldDoc;
+            },
           },
           autoMigrate: true,
         },

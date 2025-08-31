@@ -28,7 +28,7 @@ export default function SearchInput() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const { registerNavigator, unregisterNavigator } = useNavigation();
+  const { registerNavigation, unregisterNavigation } = useNavigation();
 
   const debouncedInputValue = useDebounce(inputValue, DEBOUNCE_DELAY);
 
@@ -72,12 +72,12 @@ export default function SearchInput() {
 
   useEffect(() => {
     if (showSuggestions) {
-      registerNavigator('search-suggestions');
+      registerNavigation('search-suggestions');
     } else {
-      unregisterNavigator('search-suggestions');
+      unregisterNavigation('search-suggestions');
     }
-    return () => unregisterNavigator('search-suggestions');
-  }, [registerNavigator, showSuggestions, unregisterNavigator]);
+    return () => unregisterNavigation('search-suggestions');
+  }, [registerNavigation, showSuggestions, unregisterNavigation]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

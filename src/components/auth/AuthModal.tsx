@@ -181,11 +181,11 @@ export default function AuthModal() {
       <ModalFooter className='pt-2'>
         <p className='text-Grey-400 w-full text-center text-xs'>
           By continuing, you agree to our
-          <Link to='/terms' className='text-Primary-400 hover:text-Primary-300'>
+          <Link to='/legal/terms' className='text-Primary-400 hover:text-Primary-300 mx-1'>
             Terms of Service
-          </Link>{' '}
+          </Link>
           and
-          <Link to='/privacy' className='text-Primary-400 hover:text-Primary-300'>
+          <Link to='/legal/privacy' className='text-Primary-400 hover:text-Primary-300 ml-1'>
             Privacy Policy
           </Link>
         </p>

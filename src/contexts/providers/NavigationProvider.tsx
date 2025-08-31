@@ -4,11 +4,11 @@ import { NavigationContext } from '../NavigationContext';
 export function NavigationProvider({ children }: { children: ReactNode }) {
   const [activeNavigator, setActiveNavigator] = useState<string | null>(null);
 
-  const registerNavigator = (id: string) => {
+  const registerNavigation = (id: string) => {
     setActiveNavigator(id);
   };
 
-  const unregisterNavigator = (id: string) => {
+  const unregisterNavigation = (id: string) => {
     if (activeNavigator === id) {
       setActiveNavigator(null);
     }
@@ -19,7 +19,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <NavigationContext.Provider value={{ activeNavigator, registerNavigator, unregisterNavigator, isActive }}>
+    <NavigationContext.Provider value={{ activeNavigator, registerNavigation, unregisterNavigation, isActive }}>
       {children}
     </NavigationContext.Provider>
   );

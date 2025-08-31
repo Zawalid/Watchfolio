@@ -12,8 +12,8 @@ const useInvalidateLibraryQueries = () => {
   return () => queryClient.invalidateQueries({ queryKey: ['library'] });
 };
 
-const useInfo = () => {
-  const userId = useAuthStore((state) => state.user?.$id) || null;
+export const useInfo = () => {
+  const userId = useAuthStore((state) => state.user?.$id) || 'guest-user';
   const library = useAuthStore((state) => state.user?.profile.library) || null;
   return { userId, library };
 };
@@ -27,7 +27,7 @@ const getMediaMetadata = (media: Media): Partial<LibraryMedia> => {
     title: title?.trim() || `${media.media_type} ${media.id}`,
     posterPath: media.poster_path?.trim() || undefined,
     releaseDate: releaseDate?.trim() || undefined,
-    genres: media.genre_ids || media.genres?.map((g) => g.id)  || [],
+    genres: media.genre_ids || media.genres?.map((g) => g.id) || [],
     rating: media.vote_average ? +getRating(media.vote_average) : undefined,
     totalMinutesRuntime: calculateTotalMinutesRuntime(media) || undefined,
     networks: (media as TvShow).networks?.map((n) => n.id).filter((id) => typeof id === 'number') || [],
@@ -51,8 +51,6 @@ export const useAddOrUpdateLibraryItem = () => {
     }) => {
       const metadata = media ? getMediaMetadata(media) : {};
       const updatedItem = { ...item, ...metadata, userId };
-
-      log(updatedItem);
 
       return addOrUpdateLibraryItem(updatedItem, { library, userId });
     },

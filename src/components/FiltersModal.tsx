@@ -62,7 +62,7 @@ export default function FiltersModal({
   title = 'Apply Filters',
 }: FiltersModalProps) {
   const { isOpen, onClose, onOpen } = disclosure;
-  const { registerNavigator, unregisterNavigator } = useNavigation();
+  const { registerNavigation, unregisterNavigation } = useNavigation();
 
   const {
     selectedTypes,
@@ -107,15 +107,15 @@ export default function FiltersModal({
     pendingMinYear !== minYear ||
     pendingMaxYear !== maxYear;
 
- const hasCurrentFilters = 
-  selectedGenres?.length || 
-  selectedNetworks?.length || 
-  selectedTypes?.length || 
-  language || 
-  minRating !== null || 
-  maxRating !== null || 
-  minYear !== null || 
-  maxYear !== null;
+  const hasCurrentFilters =
+    selectedGenres?.length ||
+    selectedNetworks?.length ||
+    selectedTypes?.length ||
+    language ||
+    minRating !== null ||
+    maxRating !== null ||
+    minYear !== null ||
+    maxYear !== null;
   // Reset pending state when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -143,9 +143,9 @@ export default function FiltersModal({
   );
 
   useEffect(() => {
-    if (isOpen) registerNavigator('filter-modal');
-    return () => unregisterNavigator('filter-modal');
-  }, [isOpen, registerNavigator, unregisterNavigator]);
+    if (isOpen) registerNavigation('filter-modal');
+    return () => unregisterNavigation('filter-modal');
+  }, [isOpen, registerNavigation, unregisterNavigation]);
 
   const toggleMediaType = (typeId: string) => {
     setPendingTypes((types) => {
@@ -166,7 +166,7 @@ export default function FiltersModal({
     setMaxYear(pendingMaxYear);
     onClose();
   };
-  
+
   const clearAllPendingFilters = () => {
     setPendingTypes(null);
     setPendingGenres(null);

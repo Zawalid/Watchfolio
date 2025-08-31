@@ -8,6 +8,8 @@ import { Button } from '@heroui/react';
 import { common } from '@/lib/validation/settings';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { addToast } from '@heroui/react';
+import { useNavigation } from '@/contexts/NavigationContext';
+import { useEffect } from 'react';
 
 const signInSchema = z.object({ email: common.email, password: common.password });
 const signUpSchema = z.object(common);
@@ -30,7 +32,14 @@ type SignUpFormData = {
 
 export default function AuthForm({ type, onSuccess }: AuthFormProps) {
   const navigate = useNavigate();
-  const { signIn, signUp, isLoading } = useAuthStore();
+  const { signIn, signUp, showAuthModal, isLoading } = useAuthStore();
+
+  const { registerNavigation, unregisterNavigation } = useNavigation();
+
+  useEffect(() => {
+    if (showAuthModal) registerNavigation('auth-modal');
+    return () => unregisterNavigation('auth-modal');
+  }, [showAuthModal, registerNavigation, unregisterNavigation]);
 
   const {
     register,
@@ -44,6 +53,8 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
       password: '',
     },
   });
+
+  const isPending = isLoading || isSubmitting;
 
   const onSubmit = async (data: SignInFormData | SignUpFormData) => {
     try {
@@ -81,7 +92,6 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
     }
   };
 
-  const isPending = isLoading || isSubmitting;
 
   return (
     <form className='flex flex-col gap-4' onSubmit={handleSubmit(onSubmit)}>
@@ -105,7 +115,7 @@ export default function AuthForm({ type, onSuccess }: AuthFormProps) {
             addToast({
               title: 'Coming Soon',
               description: 'Password reset functionality will be available soon.',
-              color: 'primary',
+              color: 'default',
             });
           }}
         >

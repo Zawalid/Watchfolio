@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router';
-import { Avatar, Button } from '@heroui/react';
+import { Avatar, Button, closeToast } from '@heroui/react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
 import { ChevronDownIcon, UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle, UserPlus } from 'lucide-react';
 import { addToast } from '@heroui/react';
@@ -38,7 +38,7 @@ export default function UserDropdown() {
         confirmationKey: 'sign-out',
       });
       if (!confirmed) return;
-      addToast({
+      const key = addToast({
         title: 'Signing out...',
         description: 'Please wait while we sign you out.',
         color: 'default',
@@ -48,6 +48,7 @@ export default function UserDropdown() {
             description: 'We hope to see you again soon!',
             color: 'success',
           });
+          if(key) closeToast(key)
           // navigate('/home'); // TODO : restore after finishing
           if (location.pathname.includes('settings')) navigate('/');
         }),

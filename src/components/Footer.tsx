@@ -39,8 +39,8 @@ const footerLinks = [
   {
     title: 'Legal',
     links: [
-      { label: 'Terms of Service', href: '/legal/terms-of-service', icon: null },
-      { label: 'Privacy Policy', href: '/legal/privacy-policy', icon: null },
+      { label: 'Terms of Service', href: '/legal/terms', icon: null },
+      { label: 'Privacy Policy', href: '/legal/privacy', icon: null },
     ],
   },
 ];
@@ -142,7 +142,7 @@ export default function Footer() {
                 </div>
               }
             >
-              <button className='heading gradient font-semibold text-base italic'>Walid Zakan</button>
+              <button className='heading gradient text-base font-semibold italic'>Walid Zakan</button>
             </Tooltip>
           </div>
         </div>
@@ -150,4 +150,3 @@ export default function Footer() {
     </footer>
   );
 }
-

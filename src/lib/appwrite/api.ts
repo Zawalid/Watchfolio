@@ -121,8 +121,7 @@ export class ProfileAPI extends BaseAPI {
       Query.limit(1),
     ]);
     const profile = result.documents[0];
-    log(result.documents[0]);
-
+    
     if (!profile || !profile.library) return null;
     //? Im fetching the library because Appwrite only support a max depth of three levels, which means i can't get the media relationship on the library items
     const library = await appwriteService.library.get(profile.library);

@@ -35,7 +35,6 @@ export default function ViewingTaste({ onSuccess }: { onSuccess?: () => void }) 
   const preferences = values.contentPreferences;
 
   const onSubmit = async (data: FormData) => {
-    log(data);
     if (!isDirty || !user) return;
     try {
       await updateUserProfile(data);
@@ -47,7 +46,7 @@ export default function ViewingTaste({ onSuccess }: { onSuccess?: () => void }) 
       });
       onSuccess?.();
     } catch (error) {
-      log(error);
+      log("ERR",error);
       addToast({
         title: 'Save Failed',
         description: 'Could not update your preferences. Please try again.',
