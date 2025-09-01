@@ -1,46 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
-import { Heart, Layers, LibraryBig } from 'lucide-react';
 import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, SETTINGS_ICON } from '@/components/ui/Icons';
-import UserDropdown from './navbar/UserDropdown';
-import NavItem from './navbar/NavItem';
-import { MobileDrawerTrigger } from './navbar/MobileDrawer';
-
-const navigationItems = [
-  {
-    label: 'Home',
-    icon: HOME_ICON,
-    href: '/home',
-    matches: ['/home'],
-  },
-  {
-    label: 'Movies',
-    icon: MOVIES_ICON,
-    href: '/movies',
-    matches: ['/movies'],
-  },
-  {
-    label: 'TV Shows',
-    icon: TV_ICON,
-    href: '/tv',
-    matches: ['/tv'],
-  },
-  {
-    label: 'Collections',
-    icon: <Layers className='h-4 w-4' />,
-    href: '/collections',
-    matches: ['/collections'],
-  },
-  {
-    label: 'Search',
-    icon: SEARCH_ICON,
-    href: '/search',
-    matches: ['/search'],
-  },
-];
+import { Heart, LibraryBig, SETTINGS_ICON } from '@/components/ui/Icons';
+import UserDropdown from './UserDropdown';
+import NavItem from './NavItem';
+import { MobileDrawerTrigger } from './MobileDrawer';
+import { getLinks } from './utils';
 
 function QuickActions() {
   const navigate = useNavigate();
@@ -98,8 +65,8 @@ function QuickActions() {
 }
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated } = useAuthStore();
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,7 +78,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const visibleItems = navigationItems;
   const homeLink = isAuthenticated ? '/home' : '/';
 
   return (
@@ -135,7 +101,7 @@ export default function Navbar() {
           </Link>
 
           <div className='hidden items-center space-x-1 md:flex'>
-            {visibleItems.map((item) => (
+            {getLinks(["home"]).map((item) => (
               <NavItem key={item.href} label={item.label} icon={item.icon} href={item.href} matches={item.matches} />
             ))}
           </div>

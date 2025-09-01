@@ -1,88 +1,19 @@
-import { useLocation, useNavigate } from 'react-router';
-import { Avatar, Button, closeToast } from '@heroui/react';
+import { Avatar } from '@heroui/react';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
-import {
-  ChevronDownIcon,
-  UserIcon,
-  Settings,
-  LibraryBig,
-  Heart,
-  LogOut,
-  HelpCircle,
-  UserPlus,
-  RefreshCw,
-} from 'lucide-react';
-import { addToast } from '@heroui/react';
+import { ChevronDownIcon, UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
+import { ShortcutKey } from '../ui/ShortcutKey';
+import { UserInfoSection, SignInSection, SyncIndicatorSection } from './Shared';
+import { useSignOut, getAvatarUrl, isActive } from './utils';
 import { AVATAR_CLASSNAMES, DROPDOWN_CLASSNAMES } from '@/styles/heroui';
-import { getDefaultAvatarUrl } from '@/utils/avatar';
-import { ShortcutKey } from './ui/ShortcutKey';
-import { SIGN_IN_ICON } from './ui/Icons';
-import { useSyncStore } from '@/stores/useSyncStore';
-import { formatTimeAgo } from '@/utils';
-
-const isActive = (path: string, username?: string) => {
-  if (path === '/profile') return location.pathname === `/u/${username}`;
-  if (path === '/settings') return location.pathname.startsWith('/settings');
-  if (path === '/library')
-    return location.pathname.startsWith('/library') && location.pathname !== '/library/favorites';
-  if (path === '/library/favorites') return location.pathname === '/library/favorites';
-  return false;
-};
 
 export default function UserDropdown() {
-  const { user, signOut: authSignOut } = useAuthStore();
-  const { confirm } = useConfirmationModal();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { user } = useAuthStore();
+  const { signOut } = useSignOut();
 
   const isAuthenticated = !!user;
-
-  const signOut = async () => {
-    if (!isAuthenticated) return;
-    try {
-      const confirmed = await confirm({
-        title: 'Sign Out',
-        message: 'Are you sure you want to sign out?',
-        confirmText: 'Sign Out',
-        cancelText: 'Cancel',
-        confirmationKey: 'sign-out',
-      });
-      if (!confirmed) return;
-      const key = addToast({
-        title: 'Signing out...',
-        description: 'Please wait while we sign you out.',
-        color: 'default',
-        promise: authSignOut().then(() => {
-          addToast({
-            title: 'Signed out successfully',
-            description: 'We hope to see you again soon!',
-            color: 'success',
-          });
-          if (key) closeToast(key);
-          // navigate('/home'); // TODO : restore after finishing
-          if (location.pathname.includes('settings')) navigate('/');
-        }),
-      });
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-      addToast({ title: 'Sign out failed', description: errorMessage, color: 'danger' });
-      log('ERR', 'Error signing out:', error);
-    }
-  };
-
-  const avatarUrl = isAuthenticated
-    ? user.profile.avatarUrl || `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user.name}`
-    : getDefaultAvatarUrl('guest');
-  const firstName = isAuthenticated ? user.name.split(' ')[0] : 'Guest';
-  const joinDate = isAuthenticated
-    ? new Date(user.$createdAt).toLocaleDateString('en-US', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : '';
+  const avatarUrl = getAvatarUrl(user, isAuthenticated);
+  const firstName = isAuthenticated ? user?.name.split(' ')[0] : 'Guest';
 
   return (
     <Dropdown
@@ -111,18 +42,7 @@ export default function UserDropdown() {
             base: 'border-b border-white/10 py-2 mb-2 px-4 data-[hover=true]:bg-transparent',
           }}
         >
-          <div className='flex items-center gap-3'>
-            <Avatar src={avatarUrl} classNames={AVATAR_CLASSNAMES} size='lg' />
-            <div className='min-w-0 flex-1'>
-              <h3 className='text-Primary-50 truncate text-lg font-semibold'>
-                {isAuthenticated ? user.name : 'Guest'}
-              </h3>
-              {isAuthenticated && <p className='text-Secondary-400 text-sm font-medium'>@{user.profile.username}</p>}
-              <p className='text-Grey-500 mt-1 text-xs'>
-                {isAuthenticated ? `Member since ${joinDate}` : 'Sign in to access more features'}
-              </p>
-            </div>
-          </div>
+          <UserInfoSection  size='lg' />
         </DropdownItem>
 
         <DropdownSection
@@ -227,50 +147,3 @@ export default function UserDropdown() {
     </Dropdown>
   );
 }
-
-const SyncIndicatorSection = () => {
-  const { lastSyncTime, manualSync, syncStatus } = useSyncStore();
-  return (
-    <button className='flex w-full items-center justify-between gap-2' onClick={manualSync}>
-      <div className='flex items-center gap-2'>
-        <RefreshCw className={'size-4' + (syncStatus === 'syncing' ? ' animate-spin text-blue-400' : '')} />
-        <span className={syncStatus === 'syncing' ? 'text-blue-400' : ''}>
-          {syncStatus === 'syncing' ? 'Syncing' : 'Sync'}
-        </span>
-      </div>
-      {lastSyncTime && <span className='text-Grey-500'>{formatTimeAgo(lastSyncTime)}</span>}
-    </button>
-  );
-};
-
-const SignInSection = () => {
-  const { openAuthModal } = useAuthStore();
-
-  return (
-    <div className='px-3 py-2'>
-      <div className='mb-3 text-center'>
-        <h4 className='text-Primary-50 heading mb-1 text-base'>
-          Join <span className='gradient inline!'>Watchfolio</span>
-        </h4>
-        <p className='text-Grey-400 text-xs leading-relaxed'>
-          Sign in to save your favorite movies & shows, track your watching progress, and discover personalized
-          recommendations.
-        </p>
-      </div>
-      <div className='space-y-2'>
-        <Button onPress={() => openAuthModal('signin')} size='sm' className='button-primary! w-full'>
-          <span className='[&>svg]:h-4 [&>svg]:w-4'>{SIGN_IN_ICON}</span>
-          Sign In
-        </Button>
-        <Button
-          onPress={() => openAuthModal('signup')}
-          size='sm'
-          className='button-secondary! w-full'
-          startContent={<UserPlus className='size-4' />}
-        >
-          Create Account
-        </Button>
-      </div>
-    </div>
-  );
-};
