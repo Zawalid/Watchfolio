@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useId, useMemo, useRef, useS
 import { motion, AnimatePresence, MotionConfig, Transition, Variant } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { cn } from '@/utils';
-import { X_ICON } from '@/components/ui/Icons';
+import { XIcon } from '@/components/ui/Icons';
 import useClickOutside from '@/hooks/useClickOutside';
 
 export type MorphingDialogContextType = {
@@ -330,7 +330,7 @@ function MorphingDialogClose({ children, className, variants }: MorphingDialogCl
       exit='exit'
       variants={variants}
     >
-      {children || X_ICON}
+      {children || <XIcon />}
     </motion.button>
   );
 }

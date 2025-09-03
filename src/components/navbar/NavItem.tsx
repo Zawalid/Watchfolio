@@ -3,19 +3,20 @@ import { motion } from 'framer-motion';
 
 interface NavItemProps {
   label: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   href: string;
-  matches?: string[];
+  matches?: readonly string[];
   className?: string;
 }
 
 export default function NavItem({ label, icon, href, matches = [], className = '' }: NavItemProps) {
   const location = useLocation();
-
   const isActive =
     matches.length > 0
       ? matches.some((match) => (match === '/' ? location.pathname === match : location.pathname.startsWith(match)))
       : location.pathname === href;
+
+  const Icon = icon;
 
   return (
     <Link
@@ -46,9 +47,9 @@ export default function NavItem({ label, icon, href, matches = [], className = '
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
-        {icon}
+        <Icon />
       </motion.span>
-      <span className='relative font-medium'>{label}</span>
+      <span className='relative text-nowrap font-medium'>{label}</span>
 
       {/* Active indicator */}
       {isActive && (

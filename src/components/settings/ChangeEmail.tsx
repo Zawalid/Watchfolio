@@ -8,7 +8,7 @@ import { Modal } from '@/components/ui/Modal';
 import { changeEmailSchema } from '@/lib/validation/settings';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
-import { UPDATE_ICON } from '@/components/ui/Icons';
+import { UpdateIcon } from '@/components/ui/Icons';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
 
@@ -100,7 +100,7 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
           )}
         </div>
         <Button isIconOnly color='primary' size='lg' onPress={disclosure.onOpen}>
-          {UPDATE_ICON}
+          <UpdateIcon />
         </Button>
       </div>
       <Modal disclosure={disclosure} className='max-w-xl'>

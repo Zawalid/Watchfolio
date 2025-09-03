@@ -1,90 +1,9 @@
 import { Link, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
-import {
-  COLLECTIONS_ICON,
-  HOME_ICON,
-  MOVIES_ICON,
-  SEARCH_ICON,
-  TV_ICON,
-} from '@/components/ui/Icons';
+import { getLinks } from './Shared';
 
-// const navigationItems = [
-//   {
-//     label: 'Home',
-//     icon: HOME_ICON,
-//     href: '/',
-//     matches: ['/'],
-//     description: 'Discover trending content',
-//   },
-//   {
-//     label: 'Movies',
-//     icon: MOVIES_ICON,
-//     href: '/movies',
-//     matches: ['/movies'],
-//     description: 'Browse movies',
-//   },
-//   {
-//     label: 'TV Shows',
-//     icon: TV_ICON,
-//     href: '/tv',
-//     matches: ['/tv'],
-//     description: 'Explore TV series',
-//   },
-//   {
-//     label: 'Search',
-//     icon: SEARCH_ICON,
-//     href: '/search',
-//     matches: ['/search'],
-//     description: 'Find your favorites',
-//   },
-//   {
-//     label: 'Library',
-//     icon: COLLECTIONS_ICON,
-//     href: '/library',
-//     matches: ['/library'],
-//     authRequired: true,
-//     description: 'Your personal collection',
-//   },
-// ];
-
-const navigationItems = [
-  {
-    label: 'Home',
-    icon: HOME_ICON,
-    href: '/',
-    matches: ['/'],
-  },
-  {
-    label: 'TV Shows',
-    icon: TV_ICON,
-    href: '/tv',
-    matches: ['/tv'],
-  },
-  {
-    label: 'Library',
-    icon: COLLECTIONS_ICON,
-    href: '/library',
-    matches: ['/library'],
-  },
-  {
-    label: 'Movies',
-    icon: MOVIES_ICON,
-    href: '/movies',
-    matches: ['/movies'],
-  },
-  {
-    label: 'Search',
-    icon: SEARCH_ICON,
-    href: '/search',
-    matches: ['/search'],
-  },
-];
-
-// Persistent Bottom Navigation Bar for mobile
 export default function BottomNavBar() {
   const location = useLocation();
-
-
 
   return (
     <motion.nav
@@ -95,7 +14,7 @@ export default function BottomNavBar() {
       aria-label='Bottom navigation'
     >
       <div className='flex items-center justify-around px-2 py-2'>
-        {navigationItems.map((item) => {
+        {getLinks(['home', 'tv', 'library', 'movies', 'search']).map((item) => {
           const isActive = item.matches.some((match) =>
             match === '/' ? location.pathname === match : location.pathname.startsWith(match)
           );
@@ -109,7 +28,7 @@ export default function BottomNavBar() {
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <span className='[&>svg]:h-5 [&>svg]:w-5'>{item.icon}</span>
+              <item.icon className='size:w-5' />
               <span className='text-xs font-medium'>{item.label}</span>
             </Link>
           );

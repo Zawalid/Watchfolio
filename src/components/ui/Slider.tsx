@@ -1,7 +1,7 @@
 import { Swiper, SwiperProps, SwiperSlide } from 'swiper/react';
 import { SwiperEvents, Swiper as SwiperType } from 'swiper/types';
 import { Navigation, A11y, Keyboard, Mousewheel, Autoplay, FreeMode,EffectCreative, Pagination, EffectCube } from 'swiper/modules';
-import { LEFT_ARROW_ICON, RIGHT_ARROW_ICON } from './Icons';
+import { LeftArrowIcon, RightArrowIcon } from './Icons';
 import { useRef, useState, useEffect } from 'react';
 
 // ------------- Types & Interfaces -------------
@@ -169,7 +169,7 @@ export function Slider({
             aria-disabled={disabledButtons.prev}
             aria-label='Previous slides'
           >
-            {customNavigationButtons?.prev || LEFT_ARROW_ICON}
+            {customNavigationButtons?.prev || <LeftArrowIcon />}
           </button>
           <button
             id={navigationIds.next}
@@ -179,7 +179,7 @@ export function Slider({
             aria-disabled={disabledButtons.next}
             aria-label='Next slides'
           >
-            {customNavigationButtons?.next || RIGHT_ARROW_ICON}
+            {customNavigationButtons?.next || <RightArrowIcon />}
           </button>
         </div>
       )}

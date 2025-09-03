@@ -3,11 +3,11 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
 import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { Heart, LibraryBig, SETTINGS_ICON } from '@/components/ui/Icons';
+import { Heart, LibraryBig, SettingsIcon } from '@/components/ui/Icons';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
 import { MobileDrawerTrigger } from './MobileDrawer';
-import { getLinks } from './utils';
+import { getLinks } from './Shared';
 
 function QuickActions() {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ function QuickActions() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library')}
-          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isLibraryActive && !isFavoritesActive
               ? 'text-Primary-400 bg-Primary-500/20'
               : 'text-Grey-400 hover:text-Primary-400'
@@ -34,12 +34,13 @@ function QuickActions() {
           <LibraryBig className='size-5' />
         </motion.button>
       </Tooltip>
+
       <Tooltip content='Favorites' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library/favorites')}
-          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isFavoritesActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Favorites'
@@ -47,17 +48,18 @@ function QuickActions() {
           <Heart className='size-5' />
         </motion.button>
       </Tooltip>
+
       <Tooltip content='Settings' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/settings')}
-          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isSettingsActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Settings'
         >
-          <span className='[&>svg]:size-5'>{SETTINGS_ICON}</span>
+          <SettingsIcon className='size-5' />
         </motion.button>
       </Tooltip>
     </div>
@@ -101,7 +103,7 @@ export default function Navbar() {
           </Link>
 
           <div className='hidden items-center space-x-1 md:flex'>
-            {getLinks(["home"]).map((item) => (
+            {getLinks(['home', 'movies', 'tv', 'collections', 'search']).map((item) => (
               <NavItem key={item.href} label={item.label} icon={item.icon} href={item.href} matches={item.matches} />
             ))}
           </div>

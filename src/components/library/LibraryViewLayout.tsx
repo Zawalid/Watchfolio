@@ -9,7 +9,7 @@ import { Tabs } from '@/components/ui/Tabs';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { cn } from '@/utils';
 import { getShortcut } from '@/utils/keyboardShortcuts';
-import { SyncStatus } from './SyncStatus';
+import { SyncStatusIndicator } from './SyncStatusIndicator';
 import FiltersModal from '../FiltersModal';
 import SortBy from '../SortBy';
 
@@ -85,7 +85,7 @@ export default function LibraryViewLayout({
             onChange={onTabChange}
             tabs={tabs}
           />
-          {isOwnProfile && <SyncStatus className='mt-auto mb-5' />}
+          {isOwnProfile && <SyncStatusIndicator className='mt-auto mb-5' />}
         </aside>
       </div>
 

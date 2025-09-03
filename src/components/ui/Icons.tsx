@@ -1,7 +1,5 @@
-// TODO : delete this file and use lucide-icons instead
-
 // Input
-export const NAME_ICON = (
+export const NameIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     stroke='currentColor'
     fill='none'
@@ -12,13 +10,14 @@ export const NAME_ICON = (
     width='24'
     height='24'
     xmlns='http://www.w3.org/2000/svg'
+    {...props}
   >
     <path d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'></path>
     <circle cx='12' cy='7' r='4'></circle>
   </svg>
 );
-export const EMAIL_ICON = (
-  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const EmailIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M17 20.5H7C4 20.5 2 19 2 15.5V8.5C2 5 4 3.5 7 3.5H17C20 3.5 22 5 22 8.5V15.5C22 19 20 20.5 17 20.5Z'
       stroke='#475069'
@@ -37,8 +36,8 @@ export const EMAIL_ICON = (
     />
   </svg>
 );
-export const SEARCH_ICON = (
-  <svg width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const SearchIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z'
       strokeWidth='1.5'
@@ -49,8 +48,8 @@ export const SEARCH_ICON = (
     <path d='M22 22L20 20' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' stroke='currentColor'></path>
   </svg>
 );
-export const PASSWORD_ICON = (
-  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const PasswordIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M9 22H15C20 22 22 20 22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22Z'
       stroke='#475069'
@@ -77,8 +76,8 @@ export const PASSWORD_ICON = (
     <path d='M13.3949 10.7H13.4039' stroke='#475069' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
   </svg>
 );
-export const VISIBLE_ICON = (
-  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const VisibleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M15.5799 11.9999C15.5799 13.9799 13.9799 15.5799 11.9999 15.5799C10.0199 15.5799 8.41992 13.9799 8.41992 11.9999C8.41992 10.0199 10.0199 8.41992 11.9999 8.41992C13.9799 8.41992 15.5799 10.0199 15.5799 11.9999Z'
       stroke='currentColor'
@@ -95,8 +94,8 @@ export const VISIBLE_ICON = (
     />
   </svg>
 );
-export const INVISIBLE_ICON = (
-  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const InvisibleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M14.5299 9.47004L9.46992 14.53C8.81992 13.88 8.41992 12.99 8.41992 12C8.41992 10.02 10.0199 8.42004 11.9999 8.42004C12.9899 8.42004 13.8799 8.82004 14.5299 9.47004Z'
       stroke='currentColor'
@@ -135,8 +134,8 @@ export const INVISIBLE_ICON = (
     />
   </svg>
 );
-export const TITLE_ICON = (
-  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const TitleIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M22 15V9C22 4 20 2 15 2H9C4 2 2 4 2 9V15C2 20 4 22 9 22H15C20 22 22 20 22 15Z'
       stroke='currentColor'
@@ -163,8 +162,8 @@ export const TITLE_ICON = (
     />
   </svg>
 );
-export const LINK_ICON = (
-  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none'>
+export const LinkIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' {...props}>
     <path
       d='M3.27 12C2.48 11.05 2 9.83 2 8.5C2 5.48 4.47 3 7.5 3H12.5C15.52 3 18 5.48 18 8.5C18 11.52 15.53 14 12.5 14H10'
       stroke='currentColor'
@@ -181,7 +180,7 @@ export const LINK_ICON = (
     />
   </svg>
 );
-export const AT_ICON = (
+export const AtIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='24'
@@ -193,6 +192,7 @@ export const AT_ICON = (
     strokeLinecap='round'
     strokeLinejoin='round'
     className='lucide lucide-at-sign-icon lucide-at-sign'
+    {...props}
   >
     <circle cx='12' cy='12' r='4' />
     <path d='M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8' />
@@ -200,7 +200,7 @@ export const AT_ICON = (
 );
 
 // Card Actions
-export const ADD_TO_LIST_ICON = (
+export const AddToListIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -208,6 +208,7 @@ export const ADD_TO_LIST_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -216,7 +217,7 @@ export const ADD_TO_LIST_ICON = (
     />
   </svg>
 );
-export const WATCHLIST_ICON = (
+export const WatchlistIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -224,6 +225,7 @@ export const WATCHLIST_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -232,7 +234,7 @@ export const WATCHLIST_ICON = (
     />
   </svg>
 );
-export const WATCHLIST_ADDED_ICON = (
+export const WatchlistAddedIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -240,6 +242,7 @@ export const WATCHLIST_ADDED_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -248,7 +251,7 @@ export const WATCHLIST_ADDED_ICON = (
     />
   </svg>
 );
-export const FAVORITE_ICON = (
+export const FavoriteIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -256,6 +259,7 @@ export const FAVORITE_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -264,7 +268,7 @@ export const FAVORITE_ICON = (
     />
   </svg>
 );
-export const ADDED_ICON = (
+export const AddedIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -272,6 +276,7 @@ export const ADDED_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -280,7 +285,7 @@ export const ADDED_ICON = (
     />
   </svg>
 );
-export const WATCH_LATER_ICON = (
+export const WatchLaterIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='24'
@@ -291,6 +296,7 @@ export const WATCH_LATER_ICON = (
     strokeWidth='2'
     strokeLinecap='round'
     strokeLinejoin='round'
+    {...props}
   >
     <path d='m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z' />
     <path d='m9 10 2 2 4-4' />
@@ -298,7 +304,7 @@ export const WATCH_LATER_ICON = (
 );
 
 // Navbar
-export const SIGN_IN_ICON = (
+export const SignInIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -306,6 +312,7 @@ export const SIGN_IN_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6 rotate-180'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -314,7 +321,7 @@ export const SIGN_IN_ICON = (
     />
   </svg>
 );
-export const SIGN_OUT_ICON = (
+export const SignOutIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -322,6 +329,7 @@ export const SIGN_OUT_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -330,7 +338,7 @@ export const SIGN_OUT_ICON = (
     />
   </svg>
 );
-export const SETTINGS_ICON = (
+export const SettingsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -338,6 +346,7 @@ export const SETTINGS_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -347,7 +356,7 @@ export const SETTINGS_ICON = (
     <path strokeLinecap='round' strokeLinejoin='round' d='M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z' />
   </svg>
 );
-export const HOME_ICON = (
+export const HomeIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='24'
@@ -358,12 +367,13 @@ export const HOME_ICON = (
     strokeWidth='2'
     strokeLinecap='round'
     strokeLinejoin='round'
+    {...props}
   >
     <path d='M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8' />
     <path d='M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z' />
   </svg>
 );
-export const MOVIES_ICON = (
+export const MoviesIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='24'
@@ -374,6 +384,7 @@ export const MOVIES_ICON = (
     strokeWidth='2'
     strokeLinecap='round'
     strokeLinejoin='round'
+    {...props}
   >
     <rect width='18' height='18' x='3' y='3' rx='2' />
     <path d='M7 3v18' />
@@ -385,7 +396,7 @@ export const MOVIES_ICON = (
     <path d='M17 16.5h4' />
   </svg>
 );
-export const TV_ICON = (
+export const TvIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='24'
@@ -396,12 +407,13 @@ export const TV_ICON = (
     strokeWidth='2'
     strokeLinecap='round'
     strokeLinejoin='round'
+    {...props}
   >
     <rect width='20' height='15' x='2' y='7' rx='2' ry='2' />
     <polyline points='17 2 12 7 7 2' />
   </svg>
 );
-export const COLLECTIONS_ICON = (
+export const CollectionsIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     width='24'
@@ -412,6 +424,7 @@ export const COLLECTIONS_ICON = (
     strokeWidth='2'
     strokeLinecap='round'
     strokeLinejoin='round'
+    {...props}
   >
     <path d='M11 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v1.5' />
     <path d='M13.9 17.45c-1.2-1.2-1.14-2.8-.2-3.73a2.43 2.43 0 0 1 3.44 0l.36.34.34-.34a2.43 2.43 0 0 1 3.45-.01c.95.95 1 2.53-.2 3.74L17.5 21Z' />
@@ -419,7 +432,7 @@ export const COLLECTIONS_ICON = (
 );
 
 // Other
-export const GOOGLE_ICON = (
+export const GoogleIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     stroke='currentColor'
     fill='currentColor'
@@ -428,6 +441,7 @@ export const GOOGLE_ICON = (
     height='200'
     width='200'
     xmlns='http://www.w3.org/2000/svg'
+    {...props}
   >
     <path
       fill='#FFC107'
@@ -452,7 +466,7 @@ export const GOOGLE_ICON = (
   </svg>
 );
 
-export const UPDATE_ICON = (
+export const UpdateIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -460,6 +474,7 @@ export const UPDATE_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -468,7 +483,7 @@ export const UPDATE_ICON = (
     />
   </svg>
 );
-export const WARNING_ICON = (
+export const WarningIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -476,6 +491,7 @@ export const WARNING_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -484,7 +500,7 @@ export const WARNING_ICON = (
     />
   </svg>
 );
-export const LEFT_ARROW_ICON = (
+export const LeftArrowIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -492,11 +508,12 @@ export const LEFT_ARROW_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
   </svg>
 );
-export const RIGHT_ARROW_ICON = (
+export const RightArrowIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -504,11 +521,12 @@ export const RIGHT_ARROW_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
   </svg>
 );
-export const X_ICON = (
+export const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -516,11 +534,12 @@ export const X_ICON = (
     strokeWidth={1.5}
     stroke='currentColor'
     className='size-6'
+    {...props}
   >
     <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
   </svg>
 );
-export const DOWN_CHEVRON_ICON = (
+export const DownChevronIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -529,11 +548,12 @@ export const DOWN_CHEVRON_ICON = (
     stroke='currentColor'
     aria-hidden='true'
     data-slot='icon'
+    {...props}
   >
     <path strokeLinecap='round' strokeLinejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' />
   </svg>
 );
-export const CALENDAR_ICON = (
+export const CalendarIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     fill='none'
@@ -542,6 +562,7 @@ export const CALENDAR_ICON = (
     stroke='currentColor'
     aria-hidden='true'
     data-slot='icon'
+    {...props}
   >
     <path
       strokeLinecap='round'
@@ -551,6 +572,23 @@ export const CALENDAR_ICON = (
   </svg>
 );
 
+export const CloudCheck = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='24'
+    height='24'
+    viewBox='0 0 24 24'
+    fill='none'
+    stroke='currentColor'
+    stroke-width='2'
+    strokeLinecap='round'
+    strokeLinejoin='round'
+    {...props}
+  >
+    <path d='m17 15-5.5 5.5L9 18' />
+    <path d='M5 17.743A7 7 0 1 1 15.71 10h1.79a4.5 4.5 0 0 1 1.5 8.742' />
+  </svg>
+);
 
-
+// eslint-disable-next-line react-refresh/only-export-components
 export * from 'lucide-react';

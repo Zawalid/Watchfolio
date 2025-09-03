@@ -4,7 +4,7 @@ import { Button } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { GOOGLE_ICON } from '@/components/ui/Icons';
+import { GoogleIcon } from '@/components/ui/Icons';
 import AuthForm from './AuthForm';
 import { addToast } from '@heroui/react';
 import { Link } from 'react-router';
@@ -158,7 +158,7 @@ export default function AuthModal() {
           className='w-full bg-white font-medium text-black hover:bg-white/90'
           isLoading={isSigningInWithGoogle}
           isDisabled={isLoading}
-          startContent={!isSigningInWithGoogle && GOOGLE_ICON}
+          startContent={!isSigningInWithGoogle && <GoogleIcon />}
           onPress={handleGoogleSignIn}
         >
           Continue with Google
