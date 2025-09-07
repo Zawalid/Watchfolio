@@ -32,7 +32,7 @@ export default function NavItem({ label, icon, href, matches = [], className = '
       {isActive && (
         <motion.div
           layoutId='navbar-active-background'
-          className='from-Primary-500/20 to-Secondary-500/20 border-Primary-500/30 shadow-Primary-500/10 absolute inset-0 rounded-xl border bg-gradient-to-r shadow-lg'
+          className='from-Primary-500/20 to-Secondary-500/20 border-Primary-500/30 shadow-Primary-500/10 absolute inset-0 rounded-t-xl border bg-gradient-to-r shadow-lg'
           transition={{
             type: 'spring',
             stiffness: 500,
@@ -55,7 +55,7 @@ export default function NavItem({ label, icon, href, matches = [], className = '
       {isActive && (
         <motion.div
           layoutId='navbar-active-indicator'
-          className='from-Primary-400 via-Secondary-400 to-Tertiary-400 absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-gradient-to-r'
+          className='from-Primary-400 via-Secondary-400 to-Tertiary-400 absolute inset-x-0 bottom-0 h-0.5 rounded-t-full bg-gradient-to-r'
           transition={{
             type: 'spring',
             stiffness: 500,

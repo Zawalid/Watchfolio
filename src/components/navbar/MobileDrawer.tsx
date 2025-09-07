@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Link, } from 'react-router';
+import { Link } from 'react-router';
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { Avatar } from '@heroui/react';
 import { UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { AVATAR_CLASSNAMES } from '@/styles/heroui';
+import { AVATAR_CLASSNAMES, DRAWER_CLASSNAMES } from '@/styles/heroui';
 import { ShortcutKey } from '../ui/ShortcutKey';
 import { UserInfoSection, SignInSection, getLinks, isLinkActive, useSignOut, getAvatarUrl } from './Shared';
 import { SyncStatusIndicator } from '../library/SyncStatusIndicator';
@@ -26,12 +26,8 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       isOpen={isOpen}
       onClose={onClose}
       placement='right'
-      // size='full'
-      classNames={{
-        base: 'bg-Grey-900/95 backdrop-blur-xl border-l border-white/10',
-        wrapper: 'z-50',
-        backdrop: 'bg-black/60 backdrop-blur-sm',
-      }}
+      backdrop='blur'
+      classNames={{ ...DRAWER_CLASSNAMES, base: DRAWER_CLASSNAMES.base + ' border-l border-white/10' }}
     >
       <DrawerContent>
         <DrawerHeader className='flex items-center justify-between border-b border-white/10 px-4 py-4'>
@@ -58,7 +54,9 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               >
                 <div className='flex flex-col items-center gap-2 text-center'>
                   <LibraryBig className={`size-6 ${isLinkActive('/library') ? 'text-Primary-400' : 'text-Grey-300'}`} />
-                  <span className={`text-sm font-medium ${isLinkActive('/library') ? 'text-Primary-50' : 'text-Grey-200'}`}>
+                  <span
+                    className={`text-sm font-medium ${isLinkActive('/library') ? 'text-Primary-50' : 'text-Grey-200'}`}
+                  >
                     Library
                   </span>
                 </div>
@@ -247,7 +245,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
               transition={{ delay: 0.7 }}
               className='border-t border-white/5 px-4 py-4'
             >
-              <SyncStatusIndicator asDropDownOption />
+              <SyncStatusIndicator />
             </motion.div>
           )}
         </DrawerBody>

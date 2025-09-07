@@ -47,7 +47,7 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
 
   return (
-    <Modal disclosure={disclosure} size='lg'>
+    <Modal disclosure={disclosure} size='lg' classNames={{ base: 'full-mobile-modal' }}>
       <ModalBody className='space-y-8 p-8'>
         <StatusSection
           selectedStatus={libraryItem?.status || 'none'}

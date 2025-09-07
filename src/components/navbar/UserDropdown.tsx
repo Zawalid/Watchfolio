@@ -120,7 +120,7 @@ export default function UserDropdown() {
               key='sync'
               className='cursor-auto bg-none p-0 hover:bg-none data-[disabled=true]:pointer-events-auto data-[disabled=true]:opacity-100'
             >
-              <SyncStatusIndicator asDropDownOption />
+              <SyncStatusIndicator  />
             </DropdownItem>
           </DropdownSection>
         ) : null}

@@ -111,11 +111,13 @@ body[data-animations='false'] *::after {
   }
 
   @media (width >=640px) {
-    max-width: 640px;
+    max-width: none;
+    padding-inline: 2rem;
   }
 
   @media (width >=768px) {
-    max-width: 768px;
+    max-width: none;
+    padding-inline: 3rem;
   }
 
   @media (width >=1024px) {
@@ -278,4 +280,8 @@ body {
   & [aria-label='loadingIcon'] i {
     @apply fill-white text-white;
   }
+}
+
+@utility full-mobile-modal {
+  @apply max-sm:size-full! max-sm:max-w-none! max-sm:max-h-none! max-sm:rounded-none
 }

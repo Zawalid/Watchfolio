@@ -21,7 +21,7 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
   useHotkeys(getShortcut('toggleImportExport')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
 
   return (
-    <Modal disclosure={disclosure} size='xl'>
+    <Modal disclosure={disclosure} size='xl' classNames={{ base: 'full-mobile-modal' }}>
       <ModalBody className='space-y-6 p-6'>
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>
@@ -55,7 +55,7 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
           </Tab>
         </Tabs>
 
-        <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border p-3'>
+        <div className='border-Primary-500/20 mt-auto bg-Primary-500/10 rounded-lg border p-3'>
           <p className='text-Primary-300 text-xs'>
             <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='toggleImportExport' /> to toggle
             this panel

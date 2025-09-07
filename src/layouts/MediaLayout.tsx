@@ -103,16 +103,26 @@ export default function MediaLayout({
   );
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-4 pt-8 sm:space-y-6 md:mt-0'>
       {/* Header */}
-      <div className='flex items-center justify-between'>
+      <div
+        className={cn(
+          'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4',
+          category && 'flex-row items-center justify-between'
+        )}
+      >
         <div className='flex items-center gap-3'>
-          <div className={cn('flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br', iconGradient)}>
-            <MainIcon className='h-6 w-6 text-white' />
+          <div
+            className={cn(
+              'flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br sm:size-12',
+              iconGradient
+            )}
+          >
+            <MainIcon className='size-5 text-white sm:size-6' />
           </div>
           <div>
-            <h1 className='heading gradient'>{title}</h1>
-            <p className='text-Grey-400 text-sm'>{subtitle}</p>
+            <h1 className='heading gradient text-xl sm:text-2xl'>{title}</h1>
+            <p className='text-Grey-400 text-xs sm:text-sm'>{subtitle}</p>
           </div>
         </div>
         <div className='flex items-center gap-3'>
@@ -121,7 +131,8 @@ export default function MediaLayout({
         </div>
       </div>
 
-      <div className='flex flex-wrap gap-3'>
+      {/* Categories - Responsive grid/flex */}
+      <div className='mobile:flex grid grid-cols-2 flex-wrap gap-2 sm:gap-3'>
         {categories.map((cat) => {
           const Icon = cat.icon;
           const isActive = category === cat.id;
@@ -131,26 +142,29 @@ export default function MediaLayout({
               key={cat.id}
               onClick={() => handleCategorySelect(cat.id)}
               className={cn(
-                'group flex items-center gap-2 rounded-xl border px-4 py-2.5 transition-all duration-200',
+                'group flex items-center gap-2 rounded-xl border px-3 py-2 transition-all duration-200 sm:px-4 sm:py-2.5',
                 isActive
                   ? 'from-Secondary-500 to-Secondary-600 border-white/20 bg-gradient-to-r text-white shadow-lg shadow-black/20'
                   : 'bg-Grey-800/50 text-Grey-300 border-Grey-700/50 hover:bg-Grey-700/50 hover:border-Grey-600/50 hover:text-white'
               )}
             >
               <Icon
-                className={cn('h-4 w-4 transition-transform group-hover:scale-110', isActive && 'drop-shadow-sm')}
+                className={cn(
+                  'h-3 w-3 transition-transform group-hover:scale-110 sm:h-4 sm:w-4',
+                  isActive && 'drop-shadow-sm'
+                )}
               />
-              <span className='text-sm font-medium'>{cat.label}</span>
+              <span className='text-xs font-medium sm:text-sm'>{cat.label}</span>
             </button>
           );
         })}
       </div>
 
       {/* Results Header */}
-      <div className='flex items-center justify-between border-b border-white/5 pb-4'>
-        <div>
-          <h2 className='text-lg font-semibold text-white'>{getDisplayTitle()}</h2>
-          <p className='text-Grey-400 mt-1 text-sm'>
+      <div className='xs:flex-row xs:items-center xs:justify-between flex flex-col gap-3 border-b border-white/5 pb-4'>
+        <div className='min-w-0 flex-1'>
+          <h2 className='truncate text-base font-semibold text-white sm:text-lg'>{getDisplayTitle()}</h2>
+          <p className='text-Grey-400 mt-1 line-clamp-2 text-xs sm:line-clamp-1 sm:text-sm'>
             {category
               ? categories.find((c) => c.id === category)?.description
               : `Discover your next ${title.toLowerCase()} from our vast collection`}
@@ -159,7 +173,7 @@ export default function MediaLayout({
         {category && (
           <button
             onClick={() => setCategory(null)}
-            className='bg-Grey-800/50 hover:bg-Grey-700/50 text-Grey-400 border-Grey-700/50 hover:border-Grey-600/50 flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-all duration-200 hover:text-white'
+            className='bg-Grey-800/50 hover:bg-Grey-700/50 text-Grey-400 border-Grey-700/50 hover:border-Grey-600/50 flex shrink-0 items-center justify-center gap-2 rounded-lg border px-3 py-1.5 text-xs transition-all duration-200 hover:text-white sm:text-sm'
           >
             <span>Show All</span>
             <span className='text-xs'>×</span>

@@ -83,7 +83,7 @@ export default function AuthModal() {
   };
 
   return (
-    <Modal disclosure={disclosure} size='lg'>
+    <Modal disclosure={disclosure} size='lg' classNames={{ base: 'full-mobile-modal max-sm:justify-center' }}>
       <ModalHeader className='flex flex-col gap-2 p-4'>
         <motion.div
           className='text-center'
@@ -101,7 +101,7 @@ export default function AuthModal() {
         </motion.div>
       </ModalHeader>
 
-      <ModalBody className='relative space-y-4'>
+      <ModalBody className='relative space-y-4 max-sm:flex-none'>
         <motion.div
           className='pointer-events-none absolute inset-0 opacity-5'
           animate={{

@@ -26,7 +26,7 @@ export default function KeyboardShortcuts(  ) {
   useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
 
   return (
-    <Modal disclosure={disclosure}>
+    <Modal disclosure={disclosure} classNames={{ base: 'full-mobile-modal' }}>
       <ModalBody className='space-y-6 p-6'>
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>

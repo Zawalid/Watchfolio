@@ -15,8 +15,8 @@ const links = [
     id: 'home',
     label: 'Home',
     icon: Home,
-    href: '/',
-    matches: ['/'],
+    href: '/home',
+    matches: ['/home'],
     description: 'Discover trending content',
   },
   {

@@ -247,7 +247,7 @@ export default function FiltersModal({
           )}
         </Button>
       </Tooltip>
-      <Modal disclosure={disclosure} size='4xl'>
+      <Modal disclosure={disclosure} size='4xl' classNames={{ base: 'sm:max-h-[90vh] max-sm:rounded-none max-h-full' }}>
         <ModalBody className='space-y-6 p-6'>
           <div className='flex items-center gap-3'>
             <div className='bg-Primary-500/20 rounded-lg p-2'>

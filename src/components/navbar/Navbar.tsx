@@ -18,13 +18,13 @@ function QuickActions() {
   const isSettingsActive = location.pathname.startsWith('/settings');
 
   return (
-    <div className='hidden items-center gap-2 md:flex'>
+    <div className='hidden items-center gap-2 lg:flex'>
       <Tooltip content='Library' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library')}
-          className={`flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isLibraryActive && !isFavoritesActive
               ? 'text-Primary-400 bg-Primary-500/20'
               : 'text-Grey-400 hover:text-Primary-400'
@@ -40,7 +40,7 @@ function QuickActions() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library/favorites')}
-          className={`flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isFavoritesActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Favorites'
@@ -54,7 +54,7 @@ function QuickActions() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/settings')}
-          className={`flex size-11 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isSettingsActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Settings'

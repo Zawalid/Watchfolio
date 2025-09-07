@@ -21,7 +21,7 @@ export default function Layout() {
 
   return (
     <Providers>
-      <div className='flex h-full min-h-dvh flex-col'>
+      <div className='flex h-full min-h-dvh flex-col pb-21 md:pb-0'>
         <Navbar />
         <main
           className='container mx-auto min-h-screen flex-1 px-4 pt-14 pb-20 sm:px-6 sm:pt-16 md:pt-18 md:pb-8 lg:px-8 lg:pt-20 xl:px-12'

@@ -50,7 +50,6 @@ export default function OnboardingModal() {
   useHotkeys('left', () => (!isFirstStep ? prevStep() : null), { enabled: showOnboardingModal });
   useHotkeys('right', () => (!isLastStep ? nextStep() : null), { enabled: showOnboardingModal });
   useHotkeys('enter', () => (isLastStep ? handleComplete() : nextStep()), { enabled: showOnboardingModal });
-  useHotkeys('esc', closeOnboardingModal, { enabled: showOnboardingModal });
 
   const nextStep = () => {
     setDirection(1);
@@ -93,7 +92,7 @@ export default function OnboardingModal() {
   if (!CurrentStepComponent) return null;
 
   return (
-    <Modal disclosure={disclosure} size='5xl' classNames={{ closeButton: 'hidden' }}>
+    <Modal disclosure={disclosure} isDismissable={false} size='5xl' classNames={{ closeButton: 'hidden' }}>
       <ModalBody>
         <div className='bg-Grey-800 absolute top-0 right-0 left-0 h-1'>
           <motion.div
