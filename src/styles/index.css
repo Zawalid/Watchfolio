@@ -212,7 +212,7 @@ body[data-animations='false'] *::after {
 }
 
 body {
-  @apply dark blur-bg bg-[url('/images/Background.svg')] antialiased;
+  @apply dark blur-bg antialiased;
 }
 
 .icon {

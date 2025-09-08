@@ -68,30 +68,13 @@ export default function LibraryViewLayout({
       {/* Main Content */}
       <div
         className={cn(
-          'flex h-full flex-col gap-8 transition-all duration-300',
-          'sm:ml-0', // Reset any margin on small screens
+          'flex h-full flex-col gap-8 transition-all pt-6 md:pt-0 duration-300',
+          'sm:ml-0', 
           showSidebar && isAbove('lg') ? 'sm:w-[calc(100%-290px)] sm:translate-x-[290px]' : 'w-full translate-x-0'
         )}
       >
-        {/* Top Bar */}
-        <div className='flex flex-col gap-5 md:flex-row md:items-center md:justify-between'>
+        <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex items-center gap-2'>
-            {/* Only show toggle button on desktop when sidebar is hidden */}
-            {!showSidebar && (
-              <Tooltip
-                content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
-                className='tooltip-secondary!'
-              >
-                <Button
-                  isIconOnly
-                  className='button-secondary!'
-                  onPress={() => setShowSidebar(true)}
-                  aria-label='Show sidebar'
-                >
-                  <PanelLeftClose className='size-4 rotate-180' />
-                </Button>
-              </Tooltip>
-            )}
             <Input
               type='text'
               icon='search'
@@ -103,13 +86,23 @@ export default function LibraryViewLayout({
               ref={searchInputRef}
               onChange={(e) => setQuery(e.target.value)}
             />
+            {!showSidebar && (
+              <Tooltip
+                content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
+                className='tooltip-secondary!'
+              >
+                <Button
+                  isIconOnly
+                  className='button-secondary! max-sm:order-1'
+                  onPress={() => setShowSidebar(true)}
+                  aria-label='Show sidebar'
+                >
+                  <PanelLeftClose className='size-4 rotate-180' />
+                </Button>
+              </Tooltip>
+            )}
           </div>
           <div className='flex items-center gap-3'>
-            <FiltersModal
-              disclosure={filtersDisclosure}
-              title='Library Filters'
-              filterOptions={['genres', 'networks', 'types']}
-            />
             <SortBy
               options={[
                 { key: 'recent', label: 'Recently Added' },
@@ -120,6 +113,11 @@ export default function LibraryViewLayout({
                 { key: 'runtime', label: 'Runtime' },
               ]}
               defaultSort='recent'
+            />
+            <FiltersModal
+              disclosure={filtersDisclosure}
+              title='Library Filters'
+              filterOptions={['genres', 'networks', 'types']}
             />
             {renderActions?.()}
           </div>

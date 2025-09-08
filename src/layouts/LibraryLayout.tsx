@@ -69,6 +69,7 @@ export default function LibraryLayout() {
               startContent={<Trash2 className='size-4 shrink-0' />}
               onPress={clearLibrary}
               className='text-danger'
+              classNames={{shortcut : "w-min shrink-0 min-w-0  pl-0 ml-0"}}
               color='danger'
               description='Permanently delete all items'
               shortcut={<ShortcutKey shortcutName='clearLibrary' className='opacity-80' />}

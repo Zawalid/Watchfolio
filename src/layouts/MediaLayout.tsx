@@ -103,7 +103,7 @@ export default function MediaLayout({
   );
 
   return (
-    <div className='space-y-4 pt-8 sm:space-y-6 md:mt-0'>
+    <div className='space-y-4 pt-6 sm:space-y-6 md:mt-0'>
       {/* Header */}
       <div
         className={cn(

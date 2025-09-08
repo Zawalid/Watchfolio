@@ -9,7 +9,7 @@ export default function BottomNavBar() {
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className='bg-Grey-900/95 fixed right-0 bottom-0 left-0 z-30 border-t border-white/10 pb-2 backdrop-blur-xl md:hidden'
+      className='bg-blur blur-bg fixed right-0 bottom-0 left-0 z-30 border-t border-white/10 pb-2 backdrop-blur-xl md:hidden'
       role='navigation'
       aria-label='Bottom navigation'
     >
@@ -21,7 +21,7 @@ export default function BottomNavBar() {
             <Link
               key={item.href}
               to={item.href}
-              className={`focus:ring-Primary-500/50 flex flex-col items-center gap-1 rounded-lg px-3 py-2 transition-all duration-200 focus:ring-2 focus:outline-none ${
+              className={`focus:ring-Primary-500/50 flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 transition-all duration-200 focus:ring-2 focus:outline-none ${
                 isActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:bg-white/5 hover:text-white'
               }`}
               aria-current={isActive ? 'page' : undefined}

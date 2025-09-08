@@ -34,6 +34,7 @@ interface FiltersModalProps {
   disclosure: Disclosure;
   filterOptions?: FilterOption[];
   title?: string;
+  className?:string
 }
 
 const MEDIA_TYPES = [
@@ -60,6 +61,7 @@ export default function FiltersModal({
   disclosure,
   filterOptions = ['genres', 'networks', 'types'],
   title = 'Apply Filters',
+  className
 }: FiltersModalProps) {
   const { isOpen, onClose, onOpen } = disclosure;
   const { registerNavigation, unregisterNavigation } = useNavigation();
@@ -234,7 +236,7 @@ export default function FiltersModal({
           isIconOnly
           className={cn(
             'button-secondary! relative overflow-visible',
-            hasFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20'
+            hasFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20',className
           )}
           onPress={onOpen}
           aria-label='Show filters'
