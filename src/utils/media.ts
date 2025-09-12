@@ -27,9 +27,15 @@ export const getMediaType = (media: Media): MediaType => {
 
 export const getTmdbImage = (
   item?: Media | Person | Collection | Episode | Image | Season | Suggestion | null,
-  size: TmdbImageSize = 'w500'
+  size: TmdbImageSize = 'w500',
+  backdrop?: boolean
 ): string => {
   if (!item) return '/images/placeholder.png';
+
+  if (backdrop) {
+    if ('backdrop_path' in item && item.backdrop_path) return `http://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
+  }
+
   if ('poster_path' in item && item.poster_path) return `http://image.tmdb.org/t/p/${size}${item.poster_path}`;
   if ('backdrop_path' in item && item.backdrop_path) return `http://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
   if ('profile_path' in item && item.profile_path) return `http://image.tmdb.org/t/p/${size}${item.profile_path}`;
