@@ -37,7 +37,7 @@ export default function NetworkCard({
     );
   }
   return (
-    <Button className='selectable-button! h-28 w-32' data-is-selected={isSelected} onPress={() => onSelect?.(network)}>
+    <Button className={cn('selectable-button! h-28 w-32',className) }data-is-selected={isSelected} onPress={() => onSelect?.(network)}>
       {network.logo ? (
         <img
           src={network.logo}

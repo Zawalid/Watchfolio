@@ -23,7 +23,7 @@ export default function PageLayout({
 
   return (
     <motion.div
-      className='mobile:space-y-8 space-y-6 pt-6 md:mt-0'
+      className='mobile:space-y-8 space-y-6 pt-6'
       variants={containerVariants}
       initial='hidden'
       animate='visible'

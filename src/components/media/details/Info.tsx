@@ -280,7 +280,7 @@ function Details({ media }: { media: Media }) {
               <NetworkCard
                 key={network.id}
                 network={network}
-                className='mobile:h-14 mobile:w-28 h-10 w-20 p-2 sm:h-12 sm:w-24 sm:p-3'
+                className='min-h-20 h-14'
               />
             ))}
           </div>
