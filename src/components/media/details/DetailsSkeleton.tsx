@@ -8,20 +8,20 @@ export default function DetailsSkeleton({ type }: { type: MediaType }) {
   return (
     <div className='min-h-screen'>
       {/* Mobile Hero Section */}
-      <div className='relative lg:hidden'>
+      <div className='relative lg: hidden'>
         {/* Backdrop */}
         <div className='relative h-[70vh] w-full overflow-hidden'>
-          <div 
-            className='absolute inset-0 scale-110 animate-pulse opacity-70'
+          {/* <div 
+            className='absolute inset-0 scale-110 animate-puls opacity-70'
             {...backgroundImage}
           />
           <div className='absolute inset-0 bg-gradient-to-t from-Grey-900 via-Grey-900/60 to-Grey-900/30' />
-          <div className='absolute inset-0 bg-gradient-to-t from-Grey-900 via-transparent to-transparent' />
+          <div className='absolute inset-0 bg-gradient-to-t from-Grey-900 via-transparent to-transparent' /> */}
         </div>
 
         {/* Content Overlay */}
         <div className='absolute inset-0 flex flex-col justify-end p-6 pb-8'>
-          <div className='animate-pulse space-y-4'>
+          <div className='animate-puls space-y-4'>
             {/* Tags */}
             <div className='flex flex-wrap gap-2'>
               <div className='bg-Grey-700/50 h-6 w-16 rounded-full' />
@@ -60,21 +60,21 @@ export default function DetailsSkeleton({ type }: { type: MediaType }) {
       </div>
 
       {/* Desktop Layout */}
-      <div className='relative hidden lg:block'>
+      <div className='relative hidden lgblock'>
         {/* Backdrop */}
-        <div className='absolute inset-0 h-[100vh] w-screen overflow-hidden -mx-6'>
+        {/* <div className='absolute inset-0 h-[100vh] w-screen overflow-hidden -mx-6'>
           <div 
-            className='absolute inset-0 scale-110 animate-pulse opacity-30'
+            className='absolute inset-0 scale-110 animate-puls opacity-30'
             {...backgroundImage}
           />
           <div className='absolute inset-0 bg-gradient-to-r from-Grey-900 via-Grey-900/95 to-Grey-900/60' />
           <div className='absolute inset-0 bg-gradient-to-t from-Grey-900 via-transparent to-transparent' />
           <div className='absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-Grey-900' />
-        </div>
+        </div> */}
 
         {/* Content */}
         <div className='relative z-10 mx-auto max-w-7xl px-6 pt-24'>
-          <div className='flex animate-pulse gap-12'>
+          <div className='flex animate-puls gap-12'>
             {/* Floating Poster */}
             <div className='flex-shrink-0'>
               <div className='relative aspect-[2/3] w-[320px] rounded-xl shadow-2xl' {...backgroundImage} />
@@ -156,18 +156,18 @@ export default function DetailsSkeleton({ type }: { type: MediaType }) {
       {/* Main Cast Section Skeleton */}
       <section className='py-8 lg:py-12'>
         <div className='mx-auto max-w-7xl px-4 sm:px-6'>
-          <div className='bg-Grey-700/50 mb-6 inline-block h-7 w-40 animate-pulse rounded-lg sm:h-8 sm:w-48' />
+          <div className='bg-Grey-700/50 mb-6 inline-block h-7 w-40 animate-puls rounded-lg sm:h-8 sm:w-48' />
           <div className='relative'>
             <Slider>
               {Array.from({ length: 15 }).map((_, i) => (
-                <Slider.Slide key={i} className='w-[80px] sm:w-[100px]!'>
+                <Slider.Slide key={i} className='w-[80px]! sm:w-[100px]!'>
                   <div>
                     <div className='aspect-square overflow-hidden rounded-full'>
                       <div className='size-full' {...backgroundImage} />
                     </div>
                     <div className='mt-2 text-center'>
-                      <div className='bg-Grey-700/50 mx-auto h-3 w-16 animate-pulse rounded sm:h-4 sm:w-20' />
-                      <div className='bg-Grey-700/50 mx-auto mt-1 h-2.5 w-12 animate-pulse rounded sm:h-3 sm:w-16' />
+                      <div className='bg-Grey-700/50 mx-auto h-3 w-16 animate-puls rounded sm:h-4 sm:w-20' />
+                      <div className='bg-Grey-700/50 mx-auto mt-1 h-2.5 w-12 animate-puls rounded sm:h-3 sm:w-16' />
                     </div>
                   </div>
                 </Slider.Slide>
@@ -181,16 +181,16 @@ export default function DetailsSkeleton({ type }: { type: MediaType }) {
       {type === 'tv' && (
         <section className='py-8 lg:py-12'>
           <div className='mx-auto max-w-7xl px-4 sm:px-6'>
-            <div className='bg-Grey-700/50 mb-6 h-7 w-24 animate-pulse rounded-lg sm:h-8 sm:w-32' />
+            <div className='bg-Grey-700/50 mb-6 h-7 w-24 animate-puls rounded-lg sm:h-8 sm:w-32' />
             <div className='relative'>
               <Slider>
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Slider.Slide key={i} className='w-[140px] sm:w-[180px]!'>
+                  <Slider.Slide key={i} className='w-[140px]! sm:w-[180px]!'>
                     <div className='relative overflow-hidden rounded-lg'>
                       <div className='aspect-[2/3]' {...backgroundImage} />
                       <div className='absolute bottom-0 left-0 w-full space-y-1.5 p-2 sm:space-y-2 sm:p-3'>
-                        <div className='bg-Grey-700/50 h-3 w-3/4 animate-pulse rounded sm:h-4' />
-                        <div className='bg-Grey-700/50 h-3 w-1/2 animate-pulse rounded sm:h-4' />
+                        <div className='bg-Grey-700/50 h-3 w-3/4 animate-puls rounded sm:h-4' />
+                        <div className='bg-Grey-700/50 h-3 w-1/2 animate-puls rounded sm:h-4' />
                       </div>
                     </div>
                   </Slider.Slide>
@@ -204,14 +204,14 @@ export default function DetailsSkeleton({ type }: { type: MediaType }) {
       {/* Trailers Section Skeleton */}
       <section className='py-8 lg:py-12'>
         <div className='mx-auto max-w-7xl px-4 sm:px-6'>
-          <div className='bg-Grey-700/50 mb-6 h-7 w-32 animate-pulse rounded-lg sm:h-8 sm:w-40' />
+          <div className='bg-Grey-700/50 mb-6 h-7 w-32 animate-puls rounded-lg sm:h-8 sm:w-40' />
           <Slider>
             {Array.from({ length: 4 }).map((_, i) => (
-              <Slider.Slide key={i} className='w-[280px] sm:w-[360px] lg:w-[430px]!'>
+              <Slider.Slide key={i} className='w-[280px]! sm:w-[360px]! '>
                 <div className='aspect-video rounded-lg' {...backgroundImage} />
                 <div className='mt-2'>
-                  <div className='bg-Grey-700/50 h-3 w-48 animate-pulse rounded sm:h-4 sm:w-56' />
-                  <div className='bg-Grey-700/50 mt-1 h-2.5 w-24 animate-pulse rounded sm:h-3 sm:w-32' />
+                  <div className='bg-Grey-700/50 h-3 w-48 animate-puls rounded sm:h-4 sm:w-56' />
+                  <div className='bg-Grey-700/50 mt-1 h-2.5 w-24 animate-puls rounded sm:h-3 sm:w-32' />
                 </div>
               </Slider.Slide>
             ))}
@@ -223,7 +223,7 @@ export default function DetailsSkeleton({ type }: { type: MediaType }) {
       {[1, 2].map((i) => (
         <section key={i} className='py-8 lg:py-12'>
           <div className='mx-auto max-w-7xl px-4 sm:px-6'>
-            <div className='bg-Grey-700/50 mb-6 h-7 w-44 animate-pulse rounded-lg sm:h-8 sm:w-56' />
+            <div className='bg-Grey-700/50 mb-6 h-7 w-44 animate-puls rounded-lg sm:h-8 sm:w-56' />
             <MediaCardsListSkeleton asSlider={true} />
           </div>
         </section>

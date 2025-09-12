@@ -22,7 +22,7 @@ export default function Seasons({ seasons, show }: { seasons: Season[]; show: Tv
       <div className='relative'>
         <Slider spaceBetween={16} className='seasons-slider'>
           {filteredSeasons.map((season) => (
-            <SwiperSlide key={season.id} className='w-[200px]!'>
+            <SwiperSlide key={season.id} className='w-[150px]! mobile:w-[200px]!'>
               <MorphingDialog
                 transition={{
                   duration: 0.3,
