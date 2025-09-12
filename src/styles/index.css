@@ -283,5 +283,5 @@ body {
 }
 
 @utility full-mobile-modal {
-  @apply max-sm:size-full! max-sm:max-w-none! max-sm:max-h-none! max-sm:rounded-none
+  @apply max-sm:size-full! max-sm:max-w-none! max-sm:max-h-none! max-sm:rounded-none!
 }

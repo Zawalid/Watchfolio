@@ -231,14 +231,14 @@ function Details({ media }: { media: Media }) {
       <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8 lg:gap-12'>
         <div>
           <h4 className='mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase'>Status</h4>
-          <p className='pill-bg text-sm text-gray-200'>
+          <p className='pill-bg text-sm w-fit text-gray-200'>
             {getMediaType(media) === 'tv' ? (media as TvShow).status : 'Released'}
           </p>
         </div>
 
         <div>
           <h4 className='mb-2 text-xs font-medium tracking-wide text-gray-400 uppercase'>Language</h4>
-          <p className='pill-bg text-sm text-gray-200'>
+          <p className='pill-bg text-sm w-fit text-gray-200'>
             {LANGUAGES.find((lang) => lang.iso_639_1 === media.original_language)?.name || 'Unknown'}
           </p>
         </div>

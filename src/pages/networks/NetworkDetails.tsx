@@ -41,7 +41,7 @@ export default function NetworkDetails() {
           src={network.logo.replace('w500', 'original')}
           alt={`${network.name} logo`}
           className={cn(
-            'relative z-10 max-h-[200px] object-contain drop-shadow-2xl',
+            'relative z-10 max-h-[150px] sm:max-h-[200px] object-contain drop-shadow-2xl',
             network.invertOnHover && 'invert'
           )}
         />

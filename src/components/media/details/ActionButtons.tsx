@@ -50,7 +50,7 @@ export default function ActionButtons({ media }: ActionButtonsProps) {
       {trailer && (
         <Modal
           disclosure={trailerDisclosure}
-          className='max-w-[85vw]'
+          className='max-md:size-full max-w-none max-h-none md:max-w-[85vw]'
           classNames={{ closeButton: 'bg-white text-black hover:bg-white/90 hover:text-black/90' }}
         >
           <div className='relative aspect-video size-full overflow-hidden rounded-xl'>

@@ -204,7 +204,7 @@ function RatingSection({
         )}
       </div>
       <div className='flex flex-col items-center gap-4'>
-        <div className='flex mobile:flex-wrap justify-center gap-1'>
+        <div className='flex max-xs:flex-wrap mobile:flex-wrap justify-center gap-1'>
           {[...Array(10)].map((_, i) => {
             const rateValue = i + 1;
             return (
