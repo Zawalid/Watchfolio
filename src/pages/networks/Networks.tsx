@@ -3,31 +3,43 @@ import { Tv } from 'lucide-react';
 import { NETWORKS } from '@/utils/constants/TMDB';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import NetworkCard from './NetworkCard';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import PageLayout from '@/layouts/PageLayout';
+import { Input } from '@/components/ui/Input';
+import { useQueryState } from 'nuqs';
+import { Status } from '@/components/ui/Status';
 
 export default function Networks() {
-  usePageTitle('TV Networks');
-  
-  return (
-    <motion.div variants={containerVariants} className='container mx-auto space-y-8 px-4 py-8'>
-      <motion.div className='flex items-center gap-4' variants={itemVariants}>
-        <div className='from-Tertiary-400 to-Primary-400 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
-          <Tv className='h-6 w-6 text-white drop-shadow-sm' />
-        </div>
-        <div>
-          <h1 className='heading gradient'>TV Networks</h1>
-          <p className='text-Grey-400 text-sm'>Discover shows from your favorite streaming platforms</p>
-        </div>
-      </motion.div>
+  const [query, setQuery] = useQueryState('query', { defaultValue: '', shallow: false });
 
-      {/* Networks Grid */}
+  const searchedNetworks = NETWORKS.filter((network) => network.name.toLowerCase().includes(query.toLowerCase()));
+
+  return (
+    <PageLayout Icon={Tv} title='TV Networks' subtitle='Discover shows from your favorite streaming platforms'>
+      <Input
+        type='text'
+        icon='search'
+        parentClassname='w-full md:w-80'
+        name='search'
+        value={query}
+        label='Search Networks'
+        placeholder='Search by title...'
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <motion.div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3' variants={containerVariants}>
-        {NETWORKS.map((network) => (
-          <motion.div key={network.id} variants={itemVariants}>
-            <NetworkCard network={network} />
-          </motion.div>
-        ))}
+        {searchedNetworks.length > 0 ? (
+          searchedNetworks.map((network) => (
+            <motion.div key={network.id} variants={itemVariants}>
+              <NetworkCard network={network} />
+            </motion.div>
+          ))
+        ) : (
+          <Status.Empty
+            title='No Networks Found'
+            message='Try adjusting your search to find what you are looking for.'
+            Icon={Tv}
+          />
+        )}
       </motion.div>
-    </motion.div>
+    </PageLayout>
   );
 }

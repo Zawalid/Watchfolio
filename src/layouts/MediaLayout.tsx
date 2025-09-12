@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { motion } from 'framer-motion';
 import { useDisclosure } from '@heroui/react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { LucideIcon } from 'lucide-react';
@@ -7,6 +8,8 @@ import FiltersModal, { FilterOption } from '@/components/FiltersModal';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import SortBy from '@/components/SortBy';
 import { cn } from '@/utils';
+import PageLayout from './PageLayout';
+import { itemVariants } from '@/lib/animations';
 
 interface MediaCategory {
   id: string;
@@ -19,7 +22,6 @@ interface MediaLayoutProps {
   title: string;
   subtitle: string;
   icon: LucideIcon;
-  iconGradient: string;
   categories: MediaCategory[];
   sortOptions: Array<{ key: string; label: string }>;
   filterOptions: FilterOption[];
@@ -34,7 +36,6 @@ export default function MediaLayout({
   title,
   subtitle,
   icon: MainIcon,
-  iconGradient,
   categories,
   sortOptions,
   filterOptions,
@@ -103,36 +104,24 @@ export default function MediaLayout({
   );
 
   return (
-    <div className='space-y-4 pt-6 sm:space-y-6 md:mt-0'>
-      {/* Header */}
-      <div
-        className={cn(
-          'flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4',
-          category && 'flex-row items-center justify-between'
-        )}
-      >
-        <div className='flex items-center gap-3'>
-          <div
-            className={cn(
-              'flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br sm:size-12',
-              iconGradient
-            )}
-          >
-            <MainIcon className='size-5 text-white sm:size-6' />
-          </div>
-          <div>
-            <h1 className='heading gradient text-xl sm:text-2xl'>{title}</h1>
-            <p className='text-Grey-400 text-xs sm:text-sm'>{subtitle}</p>
-          </div>
-        </div>
+    <PageLayout
+      Icon={MainIcon}
+      title={title}
+      subtitle={subtitle}
+      pageTitle={null}
+      headerChildren={
         <div className='flex items-center gap-3'>
           {!category && <SortBy options={sortOptions} defaultSort='popularity' />}
           <FiltersModal disclosure={filtersDisclosure} title={filterTitle} filterOptions={filterOptions} />
         </div>
-      </div>
-
+      }
+      headerClassName={cn(
+        'flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
+        category && 'flex-row items-center justify-between'
+      )}
+    >
       {/* Categories - Responsive grid/flex */}
-      <div className='mobile:flex grid grid-cols-2 flex-wrap gap-2 sm:gap-3'>
+      <motion.div variants={itemVariants} className='mobile:flex grid grid-cols-2 flex-wrap gap-2 sm:gap-3'>
         {categories.map((cat) => {
           const Icon = cat.icon;
           const isActive = category === cat.id;
@@ -154,11 +143,11 @@ export default function MediaLayout({
                   isActive && 'drop-shadow-sm'
                 )}
               />
-              <span className='text-xs font-medium sm:text-sm'>{cat.label}</span>
+              <span className='text-sm font-medium'>{cat.label}</span>
             </button>
           );
         })}
-      </div>
+      </motion.div>
 
       {/* Results Header */}
       <div className='xs:flex-row xs:items-center xs:justify-between flex flex-col gap-3 border-b border-white/5 pb-4'>
@@ -182,6 +171,6 @@ export default function MediaLayout({
       </div>
 
       <Outlet />
-    </div>
+    </PageLayout>
   );
 }

@@ -34,7 +34,6 @@ export default function TvLayout() {
       title='TV Shows'
       subtitle='Discover your next binge-worthy series'
       icon={Tv}
-      iconGradient='from-Secondary-400 to-Primary-400'
       categories={TV_CATEGORIES}
       sortOptions={[
         { key: 'popularity', label: 'Popularity' },

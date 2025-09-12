@@ -101,7 +101,7 @@ export default function Search() {
   }, [location.state?.fromOnboarding, location.state?.action]);
 
   return (
-    <div className='flex h-full flex-col gap-8'>
+    <div className='flex h-full flex-col gap-8 pt-6 md:mt-0'>
       <AnimatePresence>
         <WelcomeBanner
           title='Welcome to Search!'
@@ -145,7 +145,7 @@ export default function Search() {
 const SearchTabs = React.memo(
   ({ contentType, onTabChange }: { contentType: string; onTabChange: (tabId: string) => void }) => (
     <motion.div
-      className='border-Grey-800/50 flex items-center gap-2 self-center border-b pb-4'
+      className='border-Grey-800/50 mobile:flex items-center mobile:self-center grid grid-cols-2 gap-2 border-b pb-4'
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}

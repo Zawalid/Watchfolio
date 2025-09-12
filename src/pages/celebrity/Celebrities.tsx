@@ -4,9 +4,9 @@ import { Users, TrendingUp, Sparkles } from 'lucide-react';
 import { queryKeys } from '@/lib/react-query';
 import { getPopularPeople, getTrendingPeople } from '@/lib/api/TMDB';
 import { cn } from '@/utils';
-import { containerVariants, itemVariants } from '@/lib/animations';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import { itemVariants } from '@/lib/animations';
 import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsList';
+import PageLayout from '@/layouts/PageLayout';
 
 const CELEBRITY_CATEGORIES = [
   {
@@ -26,27 +26,14 @@ const CELEBRITY_CATEGORIES = [
 export default function Celebrities() {
   const [category, setCategory] = useQueryState('category', parseAsString.withDefault('popular'));
 
-  usePageTitle(`${category ? CELEBRITY_CATEGORIES.find((c) => c.id === category)?.label : ''} Celebrities`);
-
-  const handleCategorySelect = (categoryId: string) => {
-    setCategory(categoryId);
-  };
-
   return (
-    <motion.div className='space-y-8' variants={containerVariants} initial='hidden' animate='visible'>
-      {/* Header */}
+    <PageLayout
+      Icon={Users}
+      title='Celebrities'
+      subtitle='Discover talented actors, visionary directors, and creative minds'
+      pageTitle={`${category ? CELEBRITY_CATEGORIES.find((c) => c.id === category)?.label : ''} Celebrities`}
+    >
       <motion.div variants={itemVariants} className='space-y-6'>
-        <div className='flex items-center gap-4'>
-          <div className='from-Tertiary-400 to-Primary-400 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
-            <Users className='h-6 w-6 text-white drop-shadow-sm' />
-          </div>
-          <div>
-            <h1 className='heading gradient'>Celebrities</h1>
-            <p className='text-Grey-400 text-sm'>Discover talented actors, visionary directors, and creative minds</p>
-          </div>
-        </div>
-
-        {/* Categories */}
         <div className='flex flex-wrap gap-3'>
           {CELEBRITY_CATEGORIES.map((cat) => {
             const Icon = cat.icon;
@@ -55,11 +42,11 @@ export default function Celebrities() {
             return (
               <button
                 key={cat.id}
-                onClick={() => handleCategorySelect(cat.id)}
+                onClick={() => setCategory(cat.id)}
                 className={cn(
                   'group flex items-center gap-2 rounded-xl border px-4 py-2.5 transition-all duration-200',
                   isActive
-                    ? 'from-Tertiary-500 to-Primary-500 border-white/20 bg-gradient-to-r text-white shadow-lg shadow-black/20'
+                    ? 'from-Secondary-500 to-Secondary-600 border-white/20 bg-gradient-to-r text-white shadow-lg shadow-black/20'
                     : 'bg-Grey-800/50 text-Grey-300 border-Grey-700/50 hover:bg-Grey-700/50 hover:border-Grey-600/50 hover:text-white'
                 )}
               >
@@ -97,6 +84,6 @@ export default function Celebrities() {
           useInfiniteQuery={true}
         />
       </motion.div>
-    </motion.div>
+    </PageLayout>
   );
 }

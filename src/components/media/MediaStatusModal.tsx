@@ -48,7 +48,7 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
 
   return (
     <Modal disclosure={disclosure} size='lg' classNames={{ base: 'full-mobile-modal' }}>
-      <ModalBody className='space-y-8 p-8'>
+      <ModalBody className='space-y-8 py-8 px-4 mobile:px-8'>
         <StatusSection
           selectedStatus={libraryItem?.status || 'none'}
           setSelectedStatus={handleStatusOrRatingChange}
@@ -137,7 +137,7 @@ function StatusButton({
   return (
     <Button
       className={cn(
-        'group relative h-auto w-full justify-start gap-4 px-6 py-3 text-left transition-all',
+        'group relative h-auto w-full justify-start gap-4 px-3 mobile:px-6 py-3 text-left transition-all',
         isSelected
           ? 'border border-gray-600 bg-gray-700 text-white'
           : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white'
@@ -204,7 +204,7 @@ function RatingSection({
         )}
       </div>
       <div className='flex flex-col items-center gap-4'>
-        <div className='flex flex-wrap justify-center gap-1'>
+        <div className='flex mobile:flex-wrap justify-center gap-1'>
           {[...Array(10)].map((_, i) => {
             const rateValue = i + 1;
             return (

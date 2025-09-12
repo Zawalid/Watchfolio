@@ -134,12 +134,7 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
                     </Button>
                   </Tooltip>
                   <Tooltip content='Share profile' className='tooltip-secondary!'>
-                    <Button
-                      isIconOnly
-                      className='button-secondary!'
-                      onPress={handleShare}
-                      aria-label='Share profile'
-                    >
+                    <Button isIconOnly className='button-secondary!' onPress={handleShare} aria-label='Share profile'>
                       <Share2 className='h-4 w-4' />
                     </Button>
                   </Tooltip>

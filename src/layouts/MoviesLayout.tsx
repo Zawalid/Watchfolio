@@ -34,7 +34,6 @@ export default function MoviesLayout() {
       title='Movies'
       subtitle='Discover your next cinematic adventure'
       icon={Film}
-      iconGradient='from-Success-400 to-Primary-400'
       categories={MOVIE_CATEGORIES}
       sortOptions={[
         { key: 'popularity', label: 'Popularity' },

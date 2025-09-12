@@ -54,7 +54,7 @@ export default function LibrarySidebar({
       <Drawer
         isOpen={drawerDisclosure.isOpen}
         onClose={drawerDisclosure.onClose}
-        size='sm'
+        size={isBelow('mobile') ? 'full' : 'sm'}
         placement='left'
         backdrop='blur'
         classNames={{

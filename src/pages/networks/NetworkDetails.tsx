@@ -35,7 +35,7 @@ export default function NetworkDetails() {
     <motion.div className='flex h-full flex-col gap-8' variants={containerVariants} initial='hidden' animate='visible'>
       <motion.div
         variants={itemVariants}
-        className='relative grid h-[300px] place-content-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-t from-black/50 to-transparent p-8 shadow-2xl'
+        className='relative grid h-60 md:h-[300px] place-content-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-t from-black/50 to-transparent p-8 shadow-2xl'
       >
         <img
           src={network.logo.replace('w500', 'original')}
@@ -52,12 +52,12 @@ export default function NetworkDetails() {
         className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'
       >
         <div className='flex items-center gap-3'>
-          <div className='from-Success-400 to-Primary-400 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
-            <Tv className='h-6 w-6 text-white drop-shadow-sm' />
+          <div className='from-Success-400 to-Primary-400 flex shrink-0 size-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
+            <Tv className='size-6 text-white' />
           </div>
           <div>
-            <h1 className='heading gradient'>{network.name}</h1>
-            <p className='text-Grey-400 text-sm'>Explore popular TV shows from this network.</p>
+            <h1 className='heading gradient max-sm:text-2xl'>{network.name}</h1>
+            <p className='text-Grey-400 max-sm:text-sm'>Explore popular TV shows from this network.</p>
           </div>
         </div>
         <div className='flex items-center gap-3'>

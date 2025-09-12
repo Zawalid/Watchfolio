@@ -82,7 +82,7 @@
   --color-Grey-700: #323b54;
   --color-Grey-800: #20283e;
   --color-Grey-900: #121829;
-  --color-blur: rgba(18, 24, 41, 0.8);
+  --color-blur: rgba(18, 24, 41);
   --color-border: #292f46;
 
   --font-poppins: Poppins;
@@ -164,7 +164,7 @@ body[data-animations='false'] *::after {
 
 @utility blur-bg {
   background-image: url('/images/Background.svg');
-  background-size: cover;
+  /* background-size: cover; */
   background-repeat: no-repeat;
   background-position: center;
   background-color: var(--color-Grey-900);
@@ -212,7 +212,7 @@ body[data-animations='false'] *::after {
 }
 
 body {
-  @apply dark blur-bg antialiased;
+  @apply dark bg-blur blur-bg antialiased;
 }
 
 .icon {

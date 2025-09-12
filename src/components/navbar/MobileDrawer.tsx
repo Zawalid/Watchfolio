@@ -9,6 +9,7 @@ import { AVATAR_CLASSNAMES, DRAWER_CLASSNAMES } from '@/styles/heroui';
 import { ShortcutKey } from '../ui/ShortcutKey';
 import { UserInfoSection, SignInSection, getLinks, isLinkActive, useSignOut, getAvatarUrl } from './Shared';
 import { SyncStatusIndicator } from '../library/SyncStatusIndicator';
+import { useViewportSize } from '@/hooks/useViewportSize';
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface MobileDrawerProps {
 export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { user } = useAuthStore();
   const { signOut } = useSignOut();
+  const { isBelow } = useViewportSize();
 
   const isAuthenticated = !!user;
 
@@ -25,6 +27,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
     <Drawer
       isOpen={isOpen}
       onClose={onClose}
+      size={isBelow('mobile') ? 'full' : 'sm'}
       placement='right'
       backdrop='blur'
       classNames={{ ...DRAWER_CLASSNAMES, base: DRAWER_CLASSNAMES.base + ' border-l border-white/10' }}
