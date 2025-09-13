@@ -56,9 +56,8 @@ export default function Profile() {
         <Details />
       </SettingSection>
       <SettingSection Icon={Heart} title='Viewing Taste'>
-        <ViewingTaste />
+        {/* <ViewingTaste /> */}
       </SettingSection>
-    
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function Preferences() {
   };
 
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='flex flex-col gap-6 sm:gap-8'>
       <SettingSection Icon={Settings} title='Preferences'>
         <SettingItem
           title='Remove from library confirmation'
@@ -105,9 +105,9 @@ export default function Preferences() {
             <img
               src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${user?.location?.countryCode}.svg`}
               alt={user?.location?.country}
-              className='h-4 w-5 rounded-sm'
+              className='h-3 w-4 rounded-sm sm:h-4 sm:w-5'
             />
-            <span className='text-Grey-300 text-sm'>{user?.location.country}</span>
+            <span className='text-Grey-300 text-xs sm:text-sm'>{user?.location.country}</span>
           </div>
         </SettingItem>
       </SettingSection>

@@ -122,7 +122,7 @@ export default function AvatarManager({
         </div>
       </div>
 
-      <Modal disclosure={disclosure} className='max-w-2xl'>
+      <Modal disclosure={disclosure} className='max-w-2xl' classNames={{ base: 'full-mobile-modal' }}>
         <ModalHeader className='flex flex-col'>
           <h4 className='text-Primary-100 text-lg font-semibold'>Change Avatar</h4>
           <p className='text-Grey-300 text-sm'>Choose a new avatar from our generators or use a custom URL.</p>

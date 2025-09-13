@@ -103,7 +103,10 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
           <UpdateIcon />
         </Button>
       </div>
-      <Modal disclosure={disclosure} className='max-w-xl'>
+      <Modal
+        disclosure={disclosure}
+        className='max-w-xl'
+      >
         <ModalHeader className='flex flex-col'>
           <h4 className='text-Primary-100 text-lg font-semibold'>Change email address</h4>
           <p className='text-Grey-300 text-sm'>
