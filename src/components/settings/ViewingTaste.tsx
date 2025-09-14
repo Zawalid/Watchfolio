@@ -58,7 +58,7 @@ export default function ViewingTaste({ onSuccess }: { onSuccess?: () => void }) 
   if (!user) return null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='space-y-8'>
+    <form onSubmit={handleSubmit(onSubmit)} className='space-y-8 overflow-hidden'>
       <TasteEditor
         favoriteContentType={values.favoriteContentType}
         selectedGenres={genres}

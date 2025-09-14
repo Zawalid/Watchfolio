@@ -1,6 +1,7 @@
 import { cn } from '@/utils';
 import { Lock } from 'lucide-react';
 import { ElementType, ReactNode } from 'react';
+import { Switch } from '../ui/Switch';
 
 type SettingSectionProps = {
   Icon: ElementType;
@@ -12,7 +13,7 @@ type SettingSectionProps = {
 
 export function SettingSection({ Icon, title, children, iconClassName, iconContainerClassName }: SettingSectionProps) {
   return (
-    <section className='mobile:space-y-4 space-y-3'>
+    <section className='space-y-5'>
       <div className='mobile:gap-3 flex items-center gap-2'>
         <div
           className={cn(
@@ -40,6 +41,9 @@ interface SettingItemProps {
   className?: string;
   comingSoon?: boolean;
   tag?: string;
+  isChecked?: boolean;
+  isSwitchDisabled?: boolean;
+  onChange?: (checked: boolean) => void;
 }
 
 export function SettingItem({
@@ -51,11 +55,14 @@ export function SettingItem({
   className,
   comingSoon = false,
   tag,
+  isChecked,
+  isSwitchDisabled,
+  onChange,
 }: SettingItemProps) {
   return (
     <div
       className={cn(
-        'mobile:grid mobile:grid-cols-[1fr_auto] mobile:items-center mobile:gap-4 relative flex flex-col gap-3 lg:gap-6',
+        'xs:grid xs:grid-cols-[1fr_auto] xs:items-center xs:gap-4 relative flex flex-col gap-3 lg:gap-6',
         className
       )}
     >
@@ -70,11 +77,13 @@ export function SettingItem({
       </div>
       <div
         className={cn(
-          'transition-all duration-200 sm:flex sm:justify-end',
+          'transition-all duration-200 self-end',
           isDisabled && 'pointer-events-none opacity-40'
         )}
       >
-        {children}
+        {children || (
+          <Switch checked={isChecked} onChange={(e) => onChange?.(e.target.checked)} disabled={isSwitchDisabled} />
+        )}
       </div>
     </div>
   );

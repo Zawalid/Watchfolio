@@ -7,18 +7,19 @@ import { Button } from '@heroui/react';
 import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { privacySchema } from '@/lib/validation/settings';
-import { Switch } from '@/components/ui/Switch';
 import { Check } from 'lucide-react';
 import { cn } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { SettingItem } from './SettingSection';
 import { UpdateProfileInput } from '@/lib/appwrite/types';
+import { useViewportSize } from '@/hooks/useViewportSize';
 
 type FormData = z.infer<typeof privacySchema>;
 type SectionKey = z.infer<typeof privacySchema>['hiddenProfileSections'][number];
 
 export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => void }) {
   const { user, updateUserProfile, isLoading } = useAuthStore();
+  const { isBelow } = useViewportSize();
   const {
     handleSubmit,
     watch,
@@ -74,13 +75,10 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
         title='Public Profile'
         description='Allow others to see your profile and activity'
         isDisabled={isLoading}
-      >
-        <Switch
-          checked={currentVisibility === 'public'}
-          onChange={(e) => setValue('visibility', e.target.checked ? 'public' : 'private', { shouldDirty: true })}
-          disabled={isLoading}
-        />
-      </SettingItem>
+        isChecked={currentVisibility === 'public'}
+        isSwitchDisabled={isLoading}
+        onChange={(checked) => setValue('visibility', checked ? 'public' : 'private', { shouldDirty: true })}
+      />
 
       <AnimatePresence>
         {currentVisibility === 'public' && (
@@ -92,7 +90,7 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
           >
             <div>
               <h4 className='text-Grey-300 mb-2 text-sm font-medium sm:text-base'>Visible Profile Sections</h4>
-              <div className='grid gap-3 mobile:grid-cols-2 md:grid-cols-3'>
+              <div className='mobile:grid-cols-2 grid gap-3 md:grid-cols-3'>
                 <GranularControl isChecked={isStatsPublic} onToggle={() => handleSectionToggle('stats')}>
                   Stats & Insights
                 </GranularControl>
@@ -102,9 +100,11 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
                 >
                   Viewing Taste
                 </GranularControl>
-                <GranularControl isChecked={isLibraryPublic}
-                className='mobile:col-span-2 md:col-span-1'
-                 onToggle={() => handleSectionToggle('library')}>
+                <GranularControl
+                  isChecked={isLibraryPublic}
+                  className='mobile:col-span-2 md:col-span-1'
+                  onToggle={() => handleSectionToggle('library')}
+                >
                   Full Library
                 </GranularControl>
               </div>
@@ -119,7 +119,7 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
                   className='bg-white/ space-y-3 rounded-lg border border-white/10 p-3 sm:p-4'
                 >
                   <h5 className='text-Grey-300 text-sm font-medium sm:text-base'>Visible Stats & Insights</h5>
-                  <div className='grid grid-cols-1 gap-x-4 gap-y-3 mobile:grid-cols-2 lg:grid-cols-3'>
+                  <div className='mobile:grid-cols-2 grid grid-cols-1 gap-x-4 gap-y-3 lg:grid-cols-3'>
                     {[
                       { label: 'Statistics', value: 'statistics' },
                       { label: 'Overview', value: 'overview' },
@@ -148,7 +148,7 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
                   className='bg-white/ space-y-3 rounded-lg border border-white/10 p-3 sm:p-4'
                 >
                   <h5 className='text-Grey-300 text-sm font-medium sm:text-base'>Visible Library Statuses</h5>
-                  <div className='grid grid-cols-1 gap-x-4 gap-y-3 mobile:grid-cols-2 md:grid-cols-3'>
+                  <div className='mobile:grid-cols-2 grid grid-cols-1 gap-x-4 gap-y-3 md:grid-cols-3'>
                     {LIBRARY_MEDIA_STATUS.map((status) => (
                       <GranularControl
                         key={status.value}
@@ -172,14 +172,24 @@ export default function ProfileVisibility({ onSuccess }: { onSuccess?: () => voi
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4'
+          className='flex flex-col gap-3 mobile:flex-row mobile:items-center mobile:justify-end mobile:gap-4'
         >
           {isDirty && (
             <>
-              <Button className='bg-Grey-800 hover:bg-Grey-700 w-full sm:w-auto' onPress={() => reset()}>
+              <Button
+                className='bg-Grey-800 hover:bg-Grey-700 w-full sm:w-auto'
+                onPress={() => reset()}
+                size={isBelow('sm') ? 'sm' : 'md'}
+              >
                 Cancel
               </Button>
-              <Button color='primary' type='submit' isLoading={isSubmitting || isLoading} className='w-full sm:w-auto'>
+              <Button
+                color='primary'
+                type='submit'
+                isLoading={isSubmitting || isLoading}
+                className='w-full sm:w-auto'
+                size={isBelow('sm') ? 'sm' : 'md'}
+              >
                 {isSubmitting || isLoading ? 'Saving...' : 'Save Changes'}
               </Button>
             </>

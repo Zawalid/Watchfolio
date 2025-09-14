@@ -113,7 +113,7 @@ export default function Details({ onSuccess }: { onSuccess?: (data: UpdateProfil
       {/* Email Verification Section */}
       {!user.emailVerification && (
         <div className='rounded-lg border border-orange-500/20 bg-orange-500/10 p-4'>
-          <div className='flex items-center justify-between'>
+          <div className='flex flex-col gap-3 mobile:flex-row mobile:items-center mobile:justify-between'>
             <div>
               <h3 className='text-sm font-medium text-orange-400'>Email Verification Required</h3>
               <p className='text-Grey-400 text-sm'>Please verify your email address to access all features.</p>
