@@ -148,7 +148,7 @@ export class ProfileAPI extends BaseAPI {
         };
 
     return {
-      profile,
+      profile: { ...profile, library: profile.library.$id },
       stats,
       recentActivity: profile.recentActivity.map((e) => JSON.parse(String(e))),
     };

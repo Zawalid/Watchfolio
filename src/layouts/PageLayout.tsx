@@ -35,7 +35,7 @@ export default function PageLayout({
             <Icon className='size-6 text-white' />
           </div>
           <div>
-            <h1 className='heading gradient max-sm:text-2xl'>{title}</h1>
+            <h1 className='heading gradient max-sm:text-3xl max-xs:text-2xl'>{title}</h1>
             <p className='text-Grey-400 max-sm:text-sm'>{subtitle}</p>
           </div>
         </div>

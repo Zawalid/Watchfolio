@@ -17,7 +17,7 @@ export const AVATAR_CLASSNAMES = {
 };
 
 export const TABS_CLASSNAMES = {
-  tabList: 'bg-white/5 border border-white/5 backdrop-blur-md  p-1',
+  tabList: 'bg-white/5 border border-white/5 backdrop-blur-md max-xs:flex-wrap p-1',
   tab: 'text-white/70 hover:text-white transition-colors duration-200 data-[selected=true]:text-white',
   cursor: 'bg-white/10! shadow-none!',
 };

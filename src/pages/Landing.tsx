@@ -325,7 +325,7 @@ export default function LandingPage() {
   const { openAuthModal } = useAuthStore();
 
   return (
-    <div className='relative overflow-hidden'>
+    <div className='relative overflow-hidden pt-6'>
       <motion.div variants={containerVariants} initial='hidden' animate='visible'>
         <section className='flex min-h-screen items-center justify-center px-4 sm:px-6'>
           <div className='mx-auto max-w-4xl text-center'>
@@ -340,7 +340,7 @@ export default function LandingPage() {
               </motion.div>
 
               <motion.div variants={itemVariants} className='space-y-3 sm:space-y-4'>
-                <h1 className='heading space-x-2 text-3xl sm:space-x-3 sm:text-4xl md:text-5xl lg:text-6xl'>
+                <h1 className='heading flex flex-wrap justify-center gap-2 text-3xl sm:gap-3 sm:text-4xl md:text-5xl lg:text-6xl'>
                   <motion.span
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -406,20 +406,22 @@ export default function LandingPage() {
                   variants={cardVariants}
                   className='bg-blur overflow-hidden rounded-xl border border-white/10 shadow-2xl backdrop-blur-xl sm:rounded-2xl'
                 >
-                  <div className='p-4 sm:p-6'>
-                    <div className='grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-5'>
-                      <div className='space-y-3 sm:space-y-4 lg:col-span-3'>
-                        <div className='flex items-center gap-2 sm:gap-3'>
-                          <div className='from-Primary-500 to-Secondary-500 flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br sm:h-8 sm:w-8'>
-                            <TrendingUp className='h-3 w-3 text-white sm:h-4 sm:w-4' />
+                  <div className='xs:p-6 p-3 sm:p-6'>
+                    <div className='xs:gap-6 grid grid-cols-1 gap-3 sm:gap-6 lg:grid-cols-5'>
+                      <div className='xs:space-y-4 space-y-3 sm:space-y-4 lg:col-span-3'>
+                        <div className='xs:gap-3 flex items-center gap-2 sm:gap-3'>
+                          <div className='from-Primary-500 to-Secondary-500 xs:h-8 xs:w-8 xs:rounded-lg flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br sm:h-8 sm:w-8'>
+                            <TrendingUp className='xs:h-4 xs:w-4 h-3 w-3 text-white sm:h-4 sm:w-4' />
                           </div>
-                          <span className='text-xs font-semibold text-white sm:text-sm'>Trending This Week</span>
-                          <div className='bg-Success-500/20 text-Success-400 rounded-full px-1.5 py-0.5 text-xs sm:px-2 sm:py-1'>
+                          <span className='xs:text-base text-xs font-semibold text-white sm:text-sm'>
+                            Trending This Week
+                          </span>
+                          <div className='bg-Success-500/20 text-Success-400 xs:px-2.5 xs:py-1 flex-shrink-0 rounded-full px-1.5 py-0.5 text-xs sm:px-2 sm:py-1'>
                             Live
                           </div>
                         </div>
 
-                        <div className='grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-3'>
+                        <div className='xs:grid xs:grid-cols-1 xs:gap-4 xs:space-y-0 space-y-2 sm:grid-cols-2 sm:gap-3'>
                           {[
                             {
                               title: 'Dune: Part Two',
@@ -435,26 +437,26 @@ export default function LandingPage() {
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 1 + i * 0.1 }}
-                              className='group cursor-pointer rounded-lg border border-white/10 bg-white/5 p-2 transition-all duration-300 hover:border-white/20 hover:bg-white/10 sm:rounded-xl sm:p-3'
+                              className='group xs:rounded-lg xs:p-4 cursor-pointer rounded-md border border-white/10 bg-white/5 p-2.5 transition-all duration-300 hover:border-white/20 hover:bg-white/10 sm:rounded-xl sm:p-3'
                             >
-                              <div className='flex gap-2 sm:gap-3'>
-                                <div className='from-Primary-500/30 to-Secondary-500/30 flex h-10 w-6 items-center justify-center rounded bg-gradient-to-b sm:h-12 sm:w-8'>
-                                  <Film className='text-Primary-400 h-3 w-3 sm:h-4 sm:w-4' />
+                              <div className='xs:gap-4 flex gap-2.5 sm:gap-3'>
+                                <div className='from-Primary-500/30 to-Secondary-500/30 xs:h-14 xs:w-12 flex h-10 w-8 flex-shrink-0 items-center justify-center rounded bg-gradient-to-b sm:h-12 sm:w-8'>
+                                  <Film className='text-Primary-400 xs:h-5 xs:w-5 h-3.5 w-3.5 sm:h-4 sm:w-4' />
                                 </div>
-                                <div className='min-w-0 flex-1 space-y-1 sm:space-y-2'>
-                                  <h3 className='group-hover:text-Primary-300 truncate text-xs font-semibold text-white transition-colors sm:text-sm'>
+                                <div className='xs:space-y-2 min-w-0 flex-1 space-y-0.5 sm:space-y-2'>
+                                  <h3 className='group-hover:text-Primary-300 xs:text-base truncate text-xs font-semibold text-white transition-colors sm:text-sm'>
                                     {movie.title}
                                   </h3>
                                   <div className='flex items-center justify-between'>
-                                    <div className='text-Grey-400 flex items-center gap-1 text-xs sm:gap-2'>
-                                      <div className='flex items-center gap-0.5 sm:gap-1'>
-                                        <Star className='text-Warning-400 h-2 w-2 fill-current sm:h-2.5 sm:w-2.5' />
+                                    <div className='text-Grey-400 xs:gap-2 xs:text-sm flex items-center gap-1 text-xs sm:gap-2'>
+                                      <div className='xs:gap-1 flex items-center gap-0.5 sm:gap-1'>
+                                        <Star className='text-Warning-400 xs:h-3.5 xs:w-3.5 h-2.5 w-2.5 fill-current sm:h-2.5 sm:w-2.5' />
                                         <span>{movie.rating}</span>
                                       </div>
                                       <span>•</span>
                                       <span>{movie.year}</span>
-                                      <span className='xs:inline hidden'>•</span>
-                                      <span className='xs:inline hidden'>{movie.genre}</span>
+                                      <span className='mobile:inline hidden'>•</span>
+                                      <span className='mobile:inline hidden'>{movie.genre}</span>
                                     </div>
                                   </div>
                                 </div>
@@ -464,15 +466,15 @@ export default function LandingPage() {
                         </div>
                       </div>
 
-                      <div className='space-y-3 sm:space-y-4 lg:col-span-2'>
-                        <div className='flex items-center gap-2 sm:gap-3'>
-                          <div className='from-Success-500 to-Secondary-500 flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br sm:h-8 sm:w-8'>
-                            <BarChart3 className='h-3 w-3 text-white sm:h-4 sm:w-4' />
+                      <div className='xs:mt-0 xs:space-y-4 mt-4 space-y-3 sm:space-y-4 lg:col-span-2'>
+                        <div className='xs:gap-3 flex items-center gap-2 sm:gap-3'>
+                          <div className='from-Success-500 to-Secondary-500 xs:h-8 xs:w-8 xs:rounded-lg flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br sm:h-8 sm:w-8'>
+                            <BarChart3 className='xs:h-4 xs:w-4 h-3 w-3 text-white sm:h-4 sm:w-4' />
                           </div>
-                          <span className='text-xs font-semibold text-white sm:text-sm'>Your Library</span>
+                          <span className='xs:text-base text-xs font-semibold text-white sm:text-sm'>Your Library</span>
                         </div>
 
-                        <div className='space-y-1.5 sm:space-y-2'>
+                        <div className='xs:space-y-3 space-y-1.5 sm:space-y-2'>
                           {[
                             { icon: Eye, label: 'Watching', count: '12', color: 'text-Secondary-400', trend: '+2' },
                             {
@@ -490,21 +492,23 @@ export default function LandingPage() {
                               initial={{ opacity: 0, x: 20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: 1.2 + i * 0.1 }}
-                              className='flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-2 transition-all duration-300 hover:bg-white/10 sm:p-3'
+                              className='xs:rounded-lg xs:p-4 flex items-center justify-between rounded-md border border-white/10 bg-white/5 p-2 transition-all duration-300 hover:bg-white/10 sm:p-3'
                             >
-                              <div className='flex items-center gap-2 sm:gap-3'>
+                              <div className='xs:gap-4 flex items-center gap-2 sm:gap-3'>
                                 <div
-                                  className={`${stat.color} flex h-6 w-6 items-center justify-center rounded-lg bg-white/10 sm:h-8 sm:w-8`}
+                                  className={`${stat.color} xs:h-10 xs:w-10 xs:rounded-lg flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-white/10 sm:h-8 sm:w-8`}
                                 >
-                                  <stat.icon className='h-3 w-3 sm:h-4 sm:w-4' />
+                                  <stat.icon className='xs:h-5 xs:w-5 h-3 w-3 sm:h-4 sm:w-4' />
                                 </div>
-                                <div>
-                                  <div className='text-Grey-300 text-xs font-medium sm:text-sm'>{stat.label}</div>
-                                  <div className='text-Grey-400 text-xs'>{stat.trend} this week</div>
+                                <div className='min-w-0 flex-1'>
+                                  <div className='text-Grey-300 xs:text-base text-xs font-medium sm:text-sm'>
+                                    {stat.label}
+                                  </div>
+                                  <div className='text-Grey-400 xs:text-sm text-xs'>{stat.trend} this week</div>
                                 </div>
                               </div>
                               <div className='text-right'>
-                                <div className='text-sm font-bold text-white sm:text-lg'>{stat.count}</div>
+                                <div className='xs:text-xl text-sm font-bold text-white sm:text-lg'>{stat.count}</div>
                               </div>
                             </motion.div>
                           ))}
@@ -516,25 +520,25 @@ export default function LandingPage() {
 
                 <motion.div
                   variants={floatingVariants}
-                  className='border-Primary-500/20 bg-Primary-500/10 absolute -top-2 -left-2 hidden h-12 w-20 rounded-lg border p-2 backdrop-blur-sm sm:-top-3 sm:-left-3 sm:h-16 sm:w-24 sm:rounded-xl sm:p-3 lg:block'
+                  className='border-Primary-500/20 bg-Primary-500/10 xs:-top-3 xs:-left-3 xs:h-16 xs:w-24 xs:rounded-xl xs:p-3 mobile:block absolute -top-1 -left-1 hidden h-12 w-18 rounded border p-1.5 backdrop-blur-sm sm:-top-3 sm:-left-3 sm:h-16 sm:w-24 sm:rounded-xl sm:p-3'
                 >
-                  <div className='flex items-center gap-1 sm:gap-2'>
-                    <Heart className='text-Error-400 h-2.5 w-2.5 sm:h-3 sm:w-3' />
+                  <div className='xs:gap-2 flex items-center gap-0.5 sm:gap-2'>
+                    <Heart className='text-Error-400 xs:h-3 xs:w-3 h-2.5 w-2.5 sm:h-3 sm:w-3' />
                     <span className='text-xs font-medium text-white'>Liked</span>
                   </div>
-                  <div className='text-sm font-bold text-white sm:text-lg'>89</div>
+                  <div className='xs:text-lg text-xs font-bold text-white sm:text-lg'>89</div>
                   <div className='text-Success-400 text-xs'>+12%</div>
                 </motion.div>
 
                 <motion.div
                   variants={floatingVariants}
-                  className='border-Secondary-500/20 bg-Secondary-500/10 absolute -top-2 -right-2 hidden h-12 w-20 rounded-lg border p-2 backdrop-blur-sm sm:-top-3 sm:-right-3 sm:h-16 sm:w-24 sm:rounded-xl sm:p-3 lg:block'
+                  className='border-Secondary-500/20 bg-Secondary-500/10 xs:-top-3 xs:-right-3 xs:h-16 xs:w-24 xs:rounded-xl xs:p-3 mobile:block absolute -top-1 -right-1 hidden h-12 w-18 rounded border p-1.5 backdrop-blur-sm sm:-top-3 sm:-right-3 sm:h-16 sm:w-24 sm:rounded-xl sm:p-3'
                 >
-                  <div className='flex items-center gap-1 sm:gap-2'>
-                    <Clock className='text-Secondary-400 h-2.5 w-2.5 sm:h-3 sm:w-3' />
+                  <div className='xs:gap-2 flex items-center gap-0.5 sm:gap-2'>
+                    <Clock className='text-Secondary-400 xs:h-3 xs:w-3 h-2.5 w-2.5 sm:h-3 sm:w-3' />
                     <span className='text-xs font-medium text-white'>Hours</span>
                   </div>
-                  <div className='text-sm font-bold text-white sm:text-lg'>234</div>
+                  <div className='xs:text-lg text-xs font-bold text-white sm:text-lg'>234</div>
                   <div className='text-Success-400 text-xs'>+8%</div>
                 </motion.div>
               </div>

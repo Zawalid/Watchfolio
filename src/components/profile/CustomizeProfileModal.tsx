@@ -18,8 +18,8 @@ export default function CustomizeProfileModal({ disclosure }: { disclosure: Disc
   };
 
   return (
-    <Modal disclosure={disclosure} size='5xl'>
-      <ModalBody className='space-y-8 p-8'>
+    <Modal disclosure={disclosure} size='5xl' classNames={{ base: 'full-mobile-modal' }}>
+      <ModalBody className='space-y-8 md:p-8'>
         <SettingSection Icon={User} title='Profile Information'>
           <Details
             onSuccess={(data) => {

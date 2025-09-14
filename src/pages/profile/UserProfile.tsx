@@ -72,7 +72,11 @@ export default function ProfilePage() {
   const allSectionsHidden = !isStatsVisible && !isTasteVisible && !isLibraryVisible;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className='space-y-8'>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className='mobile:space-y-8 pt-6 mobile:px-0 space-y-6 px-2'
+    >
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} stats={data.stats} />
       {allSectionsHidden ? (
         <Status.Empty
@@ -83,48 +87,50 @@ export default function ProfilePage() {
         />
       ) : (
         <>
-          <Tabs
-            classNames={TABS_CLASSNAMES}
-            selectedKey={activeTab}
-            defaultSelectedKey='stats'
-            onSelectionChange={(key) => navigate(`/u/${username}/${key}`)}
-          >
-            {(isOwnProfile || !hiddenProfileSections.includes('stats')) && (
-              <Tab
-                key='stats'
-                title={
-                  <div className='flex items-center gap-2'>
-                    <ChartBarStacked className='size-4' />
-                    <span>Stats & Insights</span>
-                  </div>
-                }
-              ></Tab>
-            )}
+          <div className='mobile:px-0 px-1'>
+            <Tabs
+              classNames={TABS_CLASSNAMES}
+              selectedKey={activeTab}
+              defaultSelectedKey='stats'
+              onSelectionChange={(key) => navigate(`/u/${username}/${key}`)}
+            >
+              {(isOwnProfile || !hiddenProfileSections.includes('stats')) && (
+                <Tab
+                  key='stats'
+                  title={
+                    <div className='mobile:gap-2 flex items-center gap-1'>
+                      <ChartBarStacked className='mobile:size-4 size-3' />
+                      <span className='mobile:text-sm text-xs'>Stats & Insights</span>
+                    </div>
+                  }
+                ></Tab>
+              )}
 
-            {(isOwnProfile || !hiddenProfileSections.includes('taste')) && (
-              <Tab
-                key='taste'
-                title={
-                  <div className='flex items-center gap-2'>
-                    <Heart className='size-4' />
-                    <span>Viewing Taste</span>
-                  </div>
-                }
-              ></Tab>
-            )}
+              {(isOwnProfile || !hiddenProfileSections.includes('taste')) && (
+                <Tab
+                  key='taste'
+                  title={
+                    <div className='mobile:gap-2 flex items-center gap-1'>
+                      <Heart className='mobile:size-4 size-3' />
+                      <span className='mobile:text-sm text-xs'>Viewing Taste</span>
+                    </div>
+                  }
+                ></Tab>
+              )}
 
-            {(isOwnProfile || !hiddenProfileSections.includes('library')) && (
-              <Tab
-                key='library'
-                title={
-                  <div className='flex items-center gap-2'>
-                    <Library className='size-4' />
-                    <span>Library</span>
-                  </div>
-                }
-              ></Tab>
-            )}
-          </Tabs>
+              {(isOwnProfile || !hiddenProfileSections.includes('library')) && (
+                <Tab
+                  key='library'
+                  title={
+                    <div className='mobile:gap-2 flex items-center gap-1'>
+                      <Library className='mobile:size-4 size-3' />
+                      <span className='mobile:text-sm text-xs'>Library</span>
+                    </div>
+                  }
+                ></Tab>
+              )}
+            </Tabs>
+          </div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Outlet context={{ profile, stats: data.stats, isOwnProfile, recentActivity: data.recentActivity }} />
           </motion.div>

@@ -207,7 +207,7 @@ body[data-animations='false'] *::after {
 }
 
 @utility gradient {
-  @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
+  @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent!;
 }
 
 body {
