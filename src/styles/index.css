@@ -204,11 +204,10 @@ body[data-animations='false'] *::after {
 
 @utility heading {
   @apply text-4xl leading-tight font-black text-white sm:text-5xl;
+}
 
-  & .gradient,
-  &.gradient {
-    @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
-  }
+@utility gradient {
+  @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
 }
 
 body {

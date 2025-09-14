@@ -72,13 +72,18 @@ export default function SetupStep() {
   }, [preferences, isAuthenticated]);
 
   return (
-    <div className='mx-auto max-w-4xl space-y-8'>
-      <motion.div variants={itemVariants} initial='hidden' animate='visible' className='space-y-4 text-center'>
-        <h2 className='text-2xl leading-tight font-black text-white sm:text-3xl'>
+    <div className='mobile:space-y-8 mx-auto max-w-4xl space-y-6'>
+      <motion.div
+        variants={itemVariants}
+        initial='hidden'
+        animate='visible'
+        className='mobile:space-y-4 space-y-3 text-center'
+      >
+        <h2 className='mobile:text-2xl text-xl leading-tight font-black text-white sm:text-3xl'>
           Tell Us About Your
           <span className='gradient-text'> Entertainment Taste</span>
         </h2>
-        <p className='text-Grey-300 mx-auto max-w-2xl text-lg leading-relaxed'>
+        <p className='text-Grey-300 mobile:text-lg mx-auto max-w-2xl text-base leading-relaxed'>
           Share your preferences so we can recommend content that matches your taste. You can change these anytime.
         </p>
       </motion.div>

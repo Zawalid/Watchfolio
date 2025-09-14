@@ -184,28 +184,6 @@ const SearchResults = React.memo(
     query: string;
     getQueryFunction: (pageParam: number) => () => Promise<TMDBResponse<Media | Person>>;
   }) => (
-    <div>
-      {/* {contentType === 'person' ? (
-        <CelebritiesCardsList
-          queryKey={queryKeys.search(contentType, query)}
-          queryFn={async ({ pageParam = 1 }) => {
-            const res = await getQueryFunction(pageParam as number)();
-            return res as TMDBResponse<Person>;
-          }}
-          enabled={!!query}
-          useInfiniteQuery={true}
-        />
-      ) : (
-        <MediaAndCelebritiesCardsList
-          queryKey={queryKeys.search(contentType, query)}
-          queryFn={async ({ pageParam = 1 }) => {
-            const res = await getQueryFunction(pageParam as number)();
-            return res as TMDBResponse<Media>;
-          }}
-          enabled={!!query}
-          useInfiniteQuery={true}
-        />
-      )} */}
       <MediaAndCelebritiesCardsList
         contentType={contentType}
         queryKey={queryKeys.search(contentType, query)}
@@ -216,7 +194,6 @@ const SearchResults = React.memo(
         enabled={!!query}
         useInfiniteQuery={true}
       />
-    </div>
   )
 );
 
@@ -228,7 +205,7 @@ const NoSearchQuery = React.memo(({ handleSearch }: { handleSearch: (searchTerm:
     transition={{ duration: 0.6, ease: 'easeOut' }}
   >
     <motion.div
-      className='relative mb-8'
+      className='relative mb-12'
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
@@ -276,11 +253,11 @@ const NoSearchQuery = React.memo(({ handleSearch }: { handleSearch: (searchTerm:
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
       className='max-w-lg space-y-4'
     >
-      <h2 className='heading'>
+      <h2 className='heading max-mobile:text-3xl max-xs:text-2xl'>
         What's Your Next
         <span className='gradient'>Favorite?</span>
       </h2>
-      <p className='text-Grey-300 text-base leading-relaxed'>
+      <p className='text-Grey-300 text-base leading-relaxed max-mobile:text-sm'>
         Search through thousands of movies, TV shows, and celebrities to discover your next favorite and build your
         personal collection.
       </p>
@@ -293,9 +270,9 @@ const NoSearchQuery = React.memo(({ handleSearch }: { handleSearch: (searchTerm:
       className='mt-10 space-y-4'
     >
       <div className='flex items-center justify-center gap-2'>
-        <div className='to-Grey-700/50 h-px max-w-[60px] flex-1 bg-gradient-to-r from-transparent'></div>
+        <div className='to-Grey-700 h-[2px] max-w-[60px] flex-1 bg-gradient-to-r from-transparent'></div>
         <p className='text-Grey-300 text-sm font-medium tracking-wider uppercase'>Popular Searches</p>
-        <div className='to-Grey-700/50 h-px max-w-[60px] flex-1 bg-gradient-to-l from-transparent'></div>
+        <div className='to-Grey-700 h-[2px] max-w-[60px] flex-1 bg-gradient-to-l from-transparent'></div>
       </div>
 
       <div className='flex flex-wrap justify-center gap-2'>
