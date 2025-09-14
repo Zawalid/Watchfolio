@@ -12,7 +12,7 @@ export default function Profile() {
 
   if (!isAuthenticated) {
     return (
-      <div className='space-y-6'>
+      <div className='space-y-6 mt-12 lg:mt-0'>
         <div className='border-Primary-500/20 from-Primary-500/5 to-Primary-600/10 flex flex-col items-center gap-6 rounded-xl border bg-gradient-to-br p-8 text-center'>
           <div className='bg-Primary-500/10 border-Primary-500/20 rounded-full border p-4'>
             <User className='text-Primary-400 size-8' />

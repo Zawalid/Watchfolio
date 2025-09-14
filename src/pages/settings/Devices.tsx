@@ -11,7 +11,7 @@ export default function Devices() {
 
   if (!isAuthenticated) {
     return (
-      <div className='flex flex-col gap-8'>
+      <div className='flex flex-col gap-8 mt-12 lg:mt-0'>
         <div className='flex flex-col items-center gap-6 rounded-xl border border-Primary-500/20 bg-gradient-to-br from-Primary-500/5 to-Primary-600/10 p-8 text-center'>
           <div className='rounded-full border border-Primary-500/20 bg-Primary-500/10 p-4'>
             <HardDrive className='size-8 text-Primary-400' />
