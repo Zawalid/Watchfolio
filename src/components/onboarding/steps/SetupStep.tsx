@@ -79,11 +79,11 @@ export default function SetupStep() {
         animate='visible'
         className='mobile:space-y-4 space-y-3 text-center'
       >
-        <h2 className='mobile:text-2xl text-xl leading-tight font-black text-white sm:text-3xl'>
+        <h2 className='xs:text-2xl mobile:text-3xl text-xl leading-tight font-black text-white'>
           Tell Us About Your
-          <span className='gradient-text'> Entertainment Taste</span>
+          <span className='gradient inline'> Entertainment Taste</span>
         </h2>
-        <p className='text-Grey-300 mobile:text-lg mx-auto max-w-2xl text-base leading-relaxed'>
+        <p className='text-Grey-300 xs:text-base mobile:text-lg mx-auto max-w-2xl text-sm leading-relaxed'>
           Share your preferences so we can recommend content that matches your taste. You can change these anytime.
         </p>
       </motion.div>

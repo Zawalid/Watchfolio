@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@heroui/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button, ModalHeader } from '@heroui/react';
+import { ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import WelcomeStep from './steps/WelcomeStep';
 import SetupStep from './steps/SetupStep';
@@ -41,7 +41,7 @@ export default function OnboardingModal() {
   const [direction, setDirection] = useState(1);
   const totalSteps = steps.length;
 
-  const disclosure = useDisclosure({ isOpen: true });
+  const disclosure = useDisclosure({ isOpen: showOnboardingModal });
 
   const CurrentStepComponent = steps[currentStep]?.component;
   const isFirstStep = currentStep === 0;
@@ -98,6 +98,14 @@ export default function OnboardingModal() {
       size='5xl'
       classNames={{ base: 'full-mobile-modal', closeButton: 'hidden' }}
     >
+      <ModalHeader className='border-none p- relative'>
+        {!isLastStep && (
+          <Button size='sm' className='button-secondary! absolute top-4 right-4' onPress={closeOnboardingModal}>
+            <ChevronLast className='h-4 w-4' />
+            Skip
+          </Button>
+        )}
+      </ModalHeader>
       <ModalBody>
         <div className='bg-Grey-800 absolute top-0 right-0 left-0 h-1'>
           <motion.div
@@ -122,7 +130,7 @@ export default function OnboardingModal() {
                 x: { type: 'spring', stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 },
               }}
-              className='mobile:p-8 mobile:pt-12 pt-8'
+              className='mobile:p-4 sm:p-8 pt-8'
             >
               <CurrentStepComponent />
             </motion.div>
@@ -135,35 +143,21 @@ export default function OnboardingModal() {
             <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcut='← →' /> to navigate
           </p>
         </div>
-        <div className='mobile:gap-3 flex gap-2'>
+        <div className='mobile:flex-row mobile:gap-3 flex flex-col-reverse gap-2'>
           {!isFirstStep && (
-            <Button
-              className='button-secondary! mobile:flex-none flex-1'
-              startContent={<ChevronLeft className='h-4 w-4' />}
-              onPress={prevStep}
-            >
+            <Button className='button-secondary!' startContent={<ChevronLeft className='h-4 w-4' />} onPress={prevStep}>
               Previous
             </Button>
           )}
 
           <Button
             color='primary'
-            className='mobile:flex-none flex-1 font-semibold'
+            className='font-semibold'
             endContent={isLastStep ? null : <ChevronRight className='h-4 w-4' />}
             onPress={handleNext}
           >
             {isLastStep ? 'Get Started' : 'Next'}
           </Button>
-
-          {!isLastStep && (
-            <Button
-              variant='light'
-              className='text-Grey-400 hover:text-Grey-300 mobile:block hidden'
-              onPress={closeOnboardingModal}
-            >
-              Skip for now
-            </Button>
-          )}
         </div>
       </ModalFooter>
     </Modal>

@@ -43,14 +43,14 @@ export default function WelcomeStep() {
         </motion.div>
 
         <motion.div variants={itemVariants} className='mobile:space-y-4 space-y-3'>
-          <h1 className='xs:text-2xl text-xl leading-tight font-black text-white mobile:text-3xl'>
+          <h1 className='xs:text-2xl mobile:text-3xl text-xl leading-tight font-black text-white'>
             Welcome to
             <span className='gradient inline'> Watchfolio</span>
           </h1>
 
           <motion.p
             variants={itemVariants}
-            className='text-Grey-300 text-sm xs:text-base mobile:text-lg mx-auto max-w-2xl leading-relaxed'
+            className='text-Grey-300 xs:text-base mobile:text-lg mx-auto max-w-2xl text-sm leading-relaxed'
           >
             Your personal entertainment universe is ready! Let's personalize your experience by learning about your
             taste and preferences.
@@ -122,13 +122,13 @@ export default function WelcomeStep() {
             </p>
           </div>
 
-          <div className='mobile:flex-row mobile:gap-8 flex flex-col items-center justify-center gap-6'>
+          <div className='mobile:flex-row flex flex-col items-center justify-center gap-x-6 mobile:gap-x-8 gap-y-3'>
             {[
               { step: 1, title: 'Welcome', status: 'current', icon: '🎉' },
               { step: 2, title: 'Taste Setup', status: 'upcoming', icon: '🎯' },
               { step: 3, title: 'Get Started', status: 'upcoming', icon: '🚀' },
             ].map((item, index) => (
-              <div key={index} className='mobile:gap-4 flex items-center gap-3'>
+              <div key={index} className='mobile:flex-row flex flex-col items-center mobile:gap-6 gap-3'>
                 <div className='mobile:gap-3 flex flex-col items-center gap-2'>
                   <div
                     className={`mobile:h-14 mobile:w-14 mobile:rounded-2xl relative flex h-12 w-12 items-center justify-center rounded-xl border-2 transition-all duration-500 ${
@@ -161,7 +161,7 @@ export default function WelcomeStep() {
                 </div>
 
                 {index < 2 && (
-                  <div className='from-Grey-600/30 via-Grey-500/50 to-Grey-600/30 mobile:w-12 flex h-0.5 w-8 bg-gradient-to-r' />
+                  <div className='from-Grey-600/30 via-Grey-500/50 to-Grey-600/30 mobile:h-0.5 mobile:w-8 flex w-0.5 h-8 bg-gradient-to-r' />
                 )}
               </div>
             ))}

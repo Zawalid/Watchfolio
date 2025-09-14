@@ -77,11 +77,11 @@ export default function GetStartedStep() {
         </motion.div>
 
         <motion.div variants={itemVariants} className='mobile:space-y-4 space-y-3'>
-          <h1 className='mobile:text-2xl text-xl leading-tight font-black text-white sm:text-3xl'>
+          <h1 className='xs:text-2xl mobile:text-3xl text-xl leading-tight font-black text-white'>
             Ready to Start
-            <span className='gradient-text'>Your Journey?</span>
+            <span className='gradient inline'>Your Journey?</span>
           </h1>
-          <p className='text-Grey-400 mobile:text-lg mx-auto max-w-2xl text-base leading-relaxed'>
+          <p className='text-Grey-300 xs:text-base mobile:text-lg mx-auto max-w-2xl text-sm leading-relaxed'>
             Jump right in and start building your personal entertainment collection.
           </p>
         </motion.div>

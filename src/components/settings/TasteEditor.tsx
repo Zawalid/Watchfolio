@@ -78,7 +78,7 @@ export default function TasteEditor({
           </h4>
           <p className='text-Grey-400 text-sm'>Do you prefer movies, TV shows, or both?</p>
         </div>
-        <div className='flex gap-3'>
+        <div className='grid grid-cols-2 mobile:grid-cols-3 gap-3'>
           {[
             { value: 'movies', label: 'Movies Only', icon: Film },
             { value: 'tv', label: 'TV Shows Only', icon: Tv },
@@ -86,7 +86,7 @@ export default function TasteEditor({
           ].map((option) => (
             <Button
               key={option.value}
-              className='selectable-button! flex-1'
+              className='selectable-button! shrink-0 max-mobile:last:col-span-2'
               data-is-selected={favoriteContentType === option.value}
               onPress={() => onContentTypeChange(option.value as FavoriteContentType)}
             >
