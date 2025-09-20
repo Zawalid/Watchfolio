@@ -325,7 +325,7 @@ export default function LandingPage() {
   const { openAuthModal } = useAuthStore();
 
   return (
-    <div className='relative overflow-hidden pt-6'>
+    <div className='relative overflow-hidden'>
       <motion.div variants={containerVariants} initial='hidden' animate='visible'>
         <section className='flex min-h-screen items-center justify-center px-4 sm:px-6'>
           <div className='mx-auto max-w-4xl text-center'>

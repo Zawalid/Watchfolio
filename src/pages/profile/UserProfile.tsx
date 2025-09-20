@@ -75,7 +75,7 @@ export default function ProfilePage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className='mobile:space-y-8 pt-6 mobile:px-0 space-y-6 px-2'
+      className='mobile:space-y-8 mobile:px-0 space-y-6 px-2'
     >
       <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} stats={data.stats} />
       {allSectionsHidden ? (

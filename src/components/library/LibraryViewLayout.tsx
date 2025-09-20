@@ -68,7 +68,7 @@ export default function LibraryViewLayout({
       {/* Main Content */}
       <div
         className={cn(
-          'flex h-full flex-col gap-8 transition-all pt-6 md:pt-0 duration-300',
+          'flex h-full flex-col gap-8 transition-all duration-300',
           'sm:ml-0', 
           showSidebar && isAbove('lg') ? 'sm:w-[calc(100%-290px)] sm:translate-x-[290px]' : 'w-full translate-x-0'
         )}

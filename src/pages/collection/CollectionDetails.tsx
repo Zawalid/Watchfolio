@@ -49,11 +49,11 @@ export default function CollectionDetails() {
   return (
     <motion.div className='space-y-8' variants={containerVariants} initial='hidden' animate='visible'>
       <motion.section variants={itemVariants}>
-        <div className='relative flex min-h-[500px] flex-col justify-end overflow-hidden rounded-xl p-8 text-white shadow-2xl [&_:first-child]:inset-0 [&>div]:absolute'>
+        <div className='relative flex h-70 flex-col justify-end overflow-hidden rounded-xl p-8 text-white shadow-2xl md:h-[400px] [&_:first-child]:inset-0 [&>div]:absolute'>
           <LazyImage
-            src={getTmdbImage({backdrop_path: collection.backdrop_path} as Collection, 'original')}
+            src={getTmdbImage({ backdrop_path: collection.backdrop_path } as Collection, 'original')}
             alt={formattedName}
-            className='object-cover'
+            className='object-cover size-full'
           />
           <div className='absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent' />
           <div className='relative z-10 space-y-4'>

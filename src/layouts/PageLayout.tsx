@@ -23,7 +23,7 @@ export default function PageLayout({
 
   return (
     <motion.div
-      className='mobile:space-y-8 space-y-6 pt-6'
+      className='mobile:space-y-8 space-y-6'
       variants={containerVariants}
       initial='hidden'
       animate='visible'
@@ -31,12 +31,12 @@ export default function PageLayout({
       {/* Header */}
       <motion.div variants={itemVariants} className={headerClassName || 'space-y-6'}>
         <div className='flex items-center gap-3'>
-          <div className='from-Success-400 to-Primary-400 flex size-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br'>
-            <Icon className='size-6 text-white' />
+          <div className='from-Success-400 to-Primary-400 flex size-10 xs:size-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br'>
+            <Icon className='size-5 xs:size-6 text-white' />
           </div>
           <div>
-            <h1 className='heading gradient max-sm:text-3xl max-xs:text-2xl'>{title}</h1>
-            <p className='text-Grey-400 max-sm:text-sm'>{subtitle}</p>
+            <h1 className='heading gradient text-xl sm:text-3xl xs:text-2xl'>{title}</h1>
+            <p className='text-Grey-400 text-xs xs:text-sm'>{subtitle}</p>
           </div>
         </div>
         {headerChildren}

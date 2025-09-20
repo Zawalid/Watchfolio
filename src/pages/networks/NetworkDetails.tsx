@@ -32,7 +32,7 @@ export default function NetworkDetails() {
     );
 
   return (
-    <motion.div className='flex h-full pt-6  flex-col gap-8' variants={containerVariants} initial='hidden' animate='visible'>
+    <motion.div className='flex h-full flex-col gap-8' variants={containerVariants} initial='hidden' animate='visible'>
       <motion.div
         variants={itemVariants}
         className='relative grid h-60 md:h-[300px] place-content-center overflow-hidden rounded-xl border border-white/10 bg-gradient-to-t from-black/50 to-transparent p-8 shadow-2xl'

@@ -125,7 +125,7 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
             </div>
 
             {/* Right: Actions */}
-            <div className='flex flex-wrap items-center gap-3 max-sm:w-full sm:justify-end sm:gap-3'>
+            <div className='grid xs:flex flex-wrap items-center gap-3 max-sm:w-full sm:justify-end sm:gap-3'>
               {isOwnProfile && (
                 <Button
                   onPress={disclosure.onOpen}
@@ -136,7 +136,7 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
                 </Button>
               )}
               {profile.visibility === 'public' && (
-                <div className={cn('flex justify-center gap-2', !isOwnProfile&& 'max-sm:w-full')}>
+                <div className={cn('flex max-xs:justify-between max-xs:absolute max-xs:-top-5 max-xs:w-full justify-center gap-2', !isOwnProfile&& 'max-sm:w-full')}>
                   <Tooltip content={copied ? 'Link copied!' : 'Copy profile link'} className='tooltip-secondary!'>
                     <Button
                       isIconOnly

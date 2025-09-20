@@ -13,7 +13,7 @@ export default function BottomNavBar() {
       role='navigation'
       aria-label='Bottom navigation'
     >
-      <div className='flex items-center justify-around px-2 py-2'>
+      <div className='flex items-center justify-around p-2'>
         {getLinks(['home', 'tv', 'library', 'movies', 'search']).map((item) => {
           const isActive = item.matches.some((match) => location.pathname.startsWith(match));
 
@@ -21,12 +21,12 @@ export default function BottomNavBar() {
             <Link
               key={item.href}
               to={item.href}
-              className={`focus:ring-Primary-500/50 flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 transition-all duration-200 focus:ring-2 focus:outline-none ${
+              className={`focus:ring-Primary-500/50 flex flex-col items-center gap-1 rounded-lg px-2 xs:px-3 py-1.5 transition-all duration-200 focus:ring-2 text-nowrap focus:outline-none ${
                 isActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:bg-white/5 hover:text-white'
               }`}
               aria-current={isActive ? 'page' : undefined}
             >
-              <item.icon className='size:w-5' />
+              <item.icon className='size-4 xs:size-6' />
               <span className='text-xs font-medium'>{item.label}</span>
             </Link>
           );

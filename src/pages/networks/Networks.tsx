@@ -25,11 +25,14 @@ export default function Networks() {
         placeholder='Search by title...'
         onChange={(e) => setQuery(e.target.value)}
       />
-      <motion.div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3' variants={containerVariants}>
+      <motion.div
+        className='grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 md:grid-cols-[repeat(auto-fill,minmax(250px,1fr))]'
+        variants={containerVariants}
+      >
         {searchedNetworks.length > 0 ? (
           searchedNetworks.map((network) => (
             <motion.div key={network.id} variants={itemVariants}>
-              <NetworkCard network={network} />
+              <NetworkCard network={network} className='aspect-auto' />
             </motion.div>
           ))
         ) : (
