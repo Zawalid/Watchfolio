@@ -91,7 +91,7 @@ export default function Navbar() {
         scrolled ? 'bg-Grey-900/40 shadow-2xl shadow-black/20 backdrop-blur-xl' : 'bg-transparent'
       }`}
     >
-      <div className='container mx-auto px-4 lg:px-6'>
+      <div className='container mx-auto px-6'>
         <div className='flex h-16 items-center justify-between'>
           <Link to={homeLink} className='group flex items-center space-x-2'>
             <motion.img

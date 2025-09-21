@@ -1,5 +1,5 @@
 import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, type Models } from 'appwrite';
-import { tablesDB, account, storage, locale, DATABASE_ID, TABLES, BUCKETS } from '@/lib/appwrite';
+import { tablesDB, account, storage, locale, functions, DATABASE_ID, TABLES, BUCKETS } from '@/lib/appwrite';
 import type {
   Profile,
   CreateProfileInput,
@@ -479,6 +479,39 @@ export class LocaleAPI {
 }
 
 /**
+ * AI Recommendations API - handles natural language AI recommendations
+ */
+export class AIRecommendationsAPI {
+  async getRecommendations(
+    description: string,
+    userLibrary: LibraryMedia[],
+    preferences: { contentType?: string; decade?: string; duration?: string } = {}
+  ) {
+    try {
+      const response = await functions.createExecution({
+        functionId: 'mood-recommendations',
+        body: JSON.stringify({
+          description: description.trim(),
+          userLibrary,
+          preferences,
+        }),
+      });
+
+      const result = JSON.parse(response.responseBody);
+
+      if (result.status !== 200) {
+        throw new Error(result.message || 'Failed to get recommendations');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('Error getting AI recommendations:', error);
+      throw new Error('Failed to get AI recommendations. Please try again.');
+    }
+  }
+}
+
+/**
  * Main API service that combines all sub-services
  */
 export class AppwriteService {
@@ -489,6 +522,7 @@ export class AppwriteService {
   public auth = new AuthAPI();
   public storage = new StorageAPI();
   public locale = new LocaleAPI();
+  public aiRecommendations = new AIRecommendationsAPI();
 
   /**
    * Health check - test if Appwrite is accessible

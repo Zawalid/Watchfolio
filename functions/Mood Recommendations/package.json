@@ -1,0 +1,14 @@
+{
+  "name": "mood-recommendations",
+  "version": "1.0.0",
+  "description": "Gemini AI-powered mood-based content recommendations",
+  "main": "src/main.js",
+  "scripts": {
+    "build": "node --experimental-default-type=module build.js",
+    "dev": "node --experimental-default-type=module --watch src/main.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  },
+  "type": "module"
+}

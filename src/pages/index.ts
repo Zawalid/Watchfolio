@@ -34,6 +34,9 @@ export { default as UserLibrary } from './profile/UserLibrary';
 export { default as StatsInsights } from './profile/StatsInsights';
 export { default as ViewingTaste } from './profile/ViewingTaste';
 
+// Recommendations
+export { default as MoodRecommendations } from './recommendations/MoodRecommendations';
+
 // Auth
 export { default as EmailVerification } from './auth/EmailVerification';
 
