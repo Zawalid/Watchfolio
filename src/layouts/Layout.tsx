@@ -24,9 +24,10 @@ export default function Layout() {
       <div className='flex h-full min-h-dvh flex-col pb-21 md:pb-0'>
         <Navbar />
         <main
-          className='container mx-auto min-h-screen flex-1 px-4 pt-20 pb-20 sm:px-6 sm:pt-22 md:pt-24 md:pb-8 lg:px-8 lg:pt-26 xl:px-12'
+          className='container mx-auto max-w-screen min-h-screen flex-1 px-4 lg:px-6 py-20'
           role='main'
           aria-label='Main content'
+          style={{ '--container-padding': 'max(1rem, calc((100vw - 100%) / 2))' } as React.CSSProperties}
         >
           <Outlet />
         </main>

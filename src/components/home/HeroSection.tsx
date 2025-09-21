@@ -92,25 +92,6 @@ export default function HeroSection() {
           </Slider.Slide>
         ))}
       </Slider>
-
-      {/* {featuredItems.length > 1 && (
-        
-          )} */}
-      {/* <div className='absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-3'>
-            {featuredItems.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={cn(
-                  'focus:ring-Primary-500/50 h-2 w-2 rounded-full transition-all duration-500 focus:ring-2 focus:outline-none',
-                  index === currentIndex
-                    ? 'bg-Primary-400 shadow-Primary-500/50 w-8 shadow-lg'
-                    : 'bg-white/50 hover:scale-125 hover:bg-white/80'
-                )}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div> */}
     </div>
   );
 }

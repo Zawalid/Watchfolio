@@ -116,15 +116,15 @@ export default function HeroItem({ item }: HeroItemProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className='flex items-center gap-4'
+            className='flex flex-col flex-wrap mobile:flex-row mobile:items-center gap-4'
           >
             <AddToLibraryButtons
               media={item}
               classNames={{
                 addToLibrary: (is) =>
-                  `button-primary! px-8 shadow-lg ${is ? 'from-Success-600 to-Success-700 hover:from-Success-700 hover:to-Success-800 shadow-Success-600/20' : ''}`,
+                  `button-primary! max-sm:flex-1 px-8 shadow-lg ${is ? 'from-Success-600 to-Success-700 hover:from-Success-700 hover:to-Success-800 shadow-Success-600/20' : ''}`,
                 favorite: (is) =>
-                  `button-secondary! px-8 shadow-lg hover:border-white/50 hover:bg-white/20 ${is ? 'bg-Error-500/20 border-Error-500/50 text-Error-300 hover:bg-Error-500/30 hover:border-Error-500/70' : ''}`,
+                  `button-secondary! max-sm:flex-1 px-8 shadow-lg hover:border-white/50 hover:bg-white/20 ${is ? 'bg-Error-500/20 border-Error-500/50 text-Error-300 hover:bg-Error-500/30 hover:border-Error-500/70' : ''}`,
               }}
             />
 
@@ -133,7 +133,7 @@ export default function HeroItem({ item }: HeroItemProps) {
               to={generateMediaLink(item)}
               size='lg'
               variant='light'
-              className='px-6 py-6 text-base font-semibold text-white/80 transition-all duration-200 hover:bg-white/10 hover:text-white'
+              className='px-6 py-6 text-base max-sm:w-full font-semibold text-white/80 transition-all duration-200 hover:bg-white/10 hover:text-white'
               startContent={<Info className='h-5 w-5' />}
             >
               More Info

@@ -5,20 +5,25 @@ import { Link } from 'react-router';
 import { Button } from '@heroui/react';
 import { getCollection } from '@/lib/api/TMDB';
 import { LazyImage } from '@/components/ui/LazyImage';
+import { Slider } from '@/components/ui/Slider';
 import { getTmdbImage } from '@/utils/media';
 import { slugify } from '@/utils';
+import { MOVIE_COLLECTIONS } from '@/utils/constants/TMDB';
 
 const FEATURED_COLLECTIONS = [
-  { id: 230, name: 'The Godfather Collection', category: 'Classic' },
-  { id: 86311, name: 'The Avengers Collection', category: 'Superhero' },
-  { id: 1241, name: 'Harry Potter Collection', category: 'Fantasy' },
-  { id: 10, name: 'Star Wars Collection', category: 'Epic Saga' },
-];
+  ...MOVIE_COLLECTIONS.blockbusters.slice(0, 6),
+  ...MOVIE_COLLECTIONS.superheroes.slice(0, 4),
+  ...MOVIE_COLLECTIONS.classics.slice(0, 4),
+  ...MOVIE_COLLECTIONS.action.slice(0, 4),
+].map((collection, index) => ({
+  ...collection,
+  category: index < 6 ? 'Blockbuster' : index < 10 ? 'Superhero' : index < 14 ? 'Classic' : 'Action'
+}));
 
 export default function FranchisesSection() {
   return (
     <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
+      <div className='xs:flex-row xs:items-center xs:justify-between flex flex-col gap-3'>
         <div className='flex items-center gap-4'>
           <div className='from-Success-500 to-Secondary-500 shadow-Primary-500/25 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
             <FolderHeart className='h-6 w-6 text-white drop-shadow-sm' />
@@ -43,25 +48,13 @@ export default function FranchisesSection() {
         </Button>
       </div>
 
-      <div className='grid grid-cols-12 gap-3 sm:gap-4'>
-        <div className='col-span-12 lg:col-span-5'>
-          <CollectionCard collection={FEATURED_COLLECTIONS[0]} index={0} variant='hero' />
-        </div>
-
-        <div className='col-span-12 grid grid-cols-12 gap-3 sm:gap-4 lg:col-span-7'>
-          <div className='col-span-6'>
-            <CollectionCard collection={FEATURED_COLLECTIONS[1]} index={1} variant='medium' />
-          </div>
-
-          <div className='col-span-6'>
-            <CollectionCard collection={FEATURED_COLLECTIONS[2]} index={2} variant='medium' />
-          </div>
-
-          <div className='col-span-12'>
-            <CollectionCard collection={FEATURED_COLLECTIONS[3]} index={3} variant='wide' />
-          </div>
-        </div>
-      </div>
+      <Slider autoplay>
+        {FEATURED_COLLECTIONS.map((collection, index) => (
+          <Slider.Slide key={collection.id} className='group w-[280px]! sm:w-[350px]!'>
+            <CollectionCard collection={collection} index={index} />
+          </Slider.Slide>
+        ))}
+      </Slider>
     </div>
   );
 }
@@ -73,78 +66,26 @@ interface CollectionCardProps {
     category: string;
   };
   index: number;
-  variant: 'hero' | 'medium' | 'small' | 'wide';
 }
 
 const formatName = (name: string) => {
   return name.replace(' Collection', '').trim();
 };
 
-const getCardDimensions = (variant: CollectionCardProps['variant']) => {
-  switch (variant) {
-    case 'hero':
-      return 'aspect-[4/5] sm:aspect-[3/4]';
-    case 'medium':
-      return 'aspect-[4/5]';
-    case 'small':
-      return 'aspect-square';
-    case 'wide':
-      return 'aspect-[16/5]';
-    default:
-      return 'aspect-[4/5]';
-  }
-};
-
-const getTextSizing = (variant: CollectionCardProps['variant']) => {
-  switch (variant) {
-    case 'hero':
-      return {
-        title: 'text-xl sm:text-2xl',
-        category: 'text-sm',
-        count: 'text-sm',
-      };
-    case 'medium':
-      return {
-        title: 'text-lg',
-        category: 'text-xs',
-        count: 'text-xs',
-      };
-    case 'small':
-      return {
-        title: 'text-base',
-        category: 'text-xs',
-        count: 'text-xs',
-      };
-    case 'wide':
-      return {
-        title: 'text-base',
-        category: 'text-xs',
-        count: 'text-xs',
-      };
-    default:
-      return {
-        title: 'text-lg',
-        category: 'text-xs',
-        count: 'text-xs',
-      };
-  }
-};
-
-function CollectionCard({ collection, index, variant }: CollectionCardProps) {
+function CollectionCard({ collection, index }: CollectionCardProps) {
   const { data: collectionData } = useQuery({
     queryKey: ['collection', collection.id],
     queryFn: () => getCollection(collection.id),
     staleTime: 1000 * 60 * 30,
   });
 
-  const textSizing = getTextSizing(variant);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
-      className={`group relative cursor-pointer ${getCardDimensions(variant)}`}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
+      className='group relative cursor-pointer aspect-video'
     >
       <Link to={`/collections/${collection.id}-${slugify(collection.name)}`} className='block h-full w-full'>
         <div className='relative h-full w-full overflow-hidden rounded-xl bg-gradient-to-br from-slate-800/50 to-slate-900/80 backdrop-blur-sm transition-all duration-500 group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:shadow-black/40'>
@@ -163,12 +104,12 @@ function CollectionCard({ collection, index, variant }: CollectionCardProps) {
           </div>
 
           <div className='absolute right-0 bottom-0 left-0 space-y-1.5 p-4'>
-            <h3 className={`leading-tight font-bold text-white ${textSizing.title}`}>{formatName(collection.name)}</h3>
+            <h3 className='leading-tight font-bold text-white text-lg'>{formatName(collection.name)}</h3>
 
             {collectionData && (
               <div className='flex w-fit items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 font-medium text-white/90 shadow-lg backdrop-blur-md'>
                 <LibraryBig className='size-3' />
-                <span className={textSizing.count}>{collectionData.parts?.length || 0} movies</span>
+                <span className='text-xs'>{collectionData.parts?.length || 0} movies</span>
               </div>
             )}
           </div>

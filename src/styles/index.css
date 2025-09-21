@@ -223,7 +223,7 @@ body {
 }
 
 @utility outline-heading {
-  @apply text-Secondary-500 text-8xl font-bold uppercase lg:text-9xl;
+  @apply text-Secondary-500 text-6xl  sm:text-8xl font-bold uppercase lg:text-9xl;
 
   &:not(.filled) {
     -webkit-text-stroke: 2px;
