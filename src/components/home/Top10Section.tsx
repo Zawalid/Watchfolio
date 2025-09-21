@@ -7,6 +7,7 @@ import { queryKeys } from '@/lib/react-query';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
 import MediaCard from '@/components/media/MediaCard';
 import { Slider } from '@/components/ui/Slider';
+import { cn } from '@/utils';
 
 const movieQuery = {
   queryKey: queryKeys.trending('movie', 'day'),
@@ -36,13 +37,13 @@ export default function Top10Section() {
 
   return (
     <div className='space-y-8'>
-      <div className='flex items-center justify-between'>
+      <div className='xs:flex-row xs:items-center xs:justify-between flex flex-col gap-3'>
         <Title type={selectedTab} />
 
         <Tabs
           selectedKey={selectedTab}
           onSelectionChange={(key) => setSelectedTab(key as MediaType)}
-          classNames={TABS_CLASSNAMES}
+          classNames={{ ...TABS_CLASSNAMES, tabList: cn(TABS_CLASSNAMES.tabList, 'w-full flex-nowrap!') }}
         >
           <Tab key='movie' title='Movies' />
           <Tab key='tv' title='TV Shows' />
@@ -74,7 +75,10 @@ export default function Top10Section() {
       ) : (
         <Slider>
           {topItems.map((media, index) => (
-            <Slider.Slide key={media.id} className={`flex-shrink-0 ${index < 9 ? 'w-[300px]!' : 'w-[340px]!'}`}>
+            <Slider.Slide
+              key={media.id}
+              className={`flex-shrink-0 ${index < 9 ? 'sm:w-[300px]! w-[250px]!' : 'w-[275px]! sm:w-[340px]!'}`}
+            >
               <motion.div
                 className='group relative flex items-baseline'
                 initial={{ opacity: 0, y: 20 }}
@@ -84,14 +88,14 @@ export default function Top10Section() {
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 <div
-                  className={`outline-heading -mr-5 transition-all duration-300 group-hover:z-10 group-hover:-translate-2.5 group-hover:scale-105 ${hoveredItem === index ? 'filled' : ''}`}
+                  className={`outline-heading -mr-2 sm:-mr-5 transition-all duration-300 group-hover:z-10 group-hover:-translate-2.5 group-hover:scale-105 ${hoveredItem === index ? 'filled' : ''}`}
                 >
                   {index < 9 ? (
                     <span className='letter-shadow'>{index + 1}</span>
                   ) : (
                     <>
                       <span className='letter-shadow -ml-1'>1</span>
-                      <span className='letter-shadow -ml-7'>0</span>
+                      <span className='letter-shadow -ml-2 sm:-ml-7'>0</span>
                     </>
                   )}
                 </div>
@@ -111,15 +115,15 @@ export default function Top10Section() {
 
 function Title({ type }: { type?: MediaType }) {
   return (
-    <div className='flex items-center gap-5'>
+    <div className='flex items-center gap-3 sm:gap-5'>
       <h2 className='outline-heading'>
-        <span className='letter-shadow -ml-4'>T</span>
-        <span className='letter-shadow -ml-4'>O</span>
-        <span className='letter-shadow -ml-4'>P</span>
+        <span className='letter-shadow -ml-2 sm:-ml-4'>T</span>
+        <span className='letter-shadow -ml-2 sm:-ml-4'>O</span>
+        <span className='letter-shadow -ml-2 sm:-ml-4'>P</span>
         <span className='letter-shadow -ml-1'>1</span>
-        <span className='letter-shadow -ml-6'>0</span>
+        <span className='letter-shadow -ml-3 sm:-ml-6'>0</span>
       </h2>
-      <h3 className='flex flex-col gap-1 text-lg font-bold tracking-[4px] text-white uppercase'>
+      <h3 className='flex flex-col gap-1 text-sm font-bold tracking-[2px] text-white uppercase sm:text-lg sm:tracking-[4px]'>
         <span>{type === 'movie' ? 'Movies' : 'TV Shows'}</span>
         <span>Today</span>
       </h3>

@@ -1,46 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
-import { Heart, Layers, LibraryBig } from 'lucide-react';
 import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { HOME_ICON, MOVIES_ICON, SEARCH_ICON, TV_ICON, SETTINGS_ICON } from '@/components/ui/Icons';
-import { MobileNavTrigger } from './MobileNav';
+import { Heart, LibraryBig, SettingsIcon } from '@/components/ui/Icons';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
-
-const navigationItems = [
-  {
-    label: 'Home',
-    icon: HOME_ICON,
-    href: '/home',
-    matches: ['/home'],
-  },
-  {
-    label: 'Movies',
-    icon: MOVIES_ICON,
-    href: '/movies',
-    matches: ['/movies'],
-  },
-  {
-    label: 'TV Shows',
-    icon: TV_ICON,
-    href: '/tv',
-    matches: ['/tv'],
-  },
-  {
-    label: 'Collections',
-    icon: <Layers className='h-4 w-4' />,
-    href: '/collections',
-    matches: ['/collections'],
-  },
-  {
-    label: 'Search',
-    icon: SEARCH_ICON,
-    href: '/search',
-    matches: ['/search'],
-  },
-];
+import { MobileDrawerTrigger } from './MobileDrawer';
+import { getLinks } from './Shared';
 
 function QuickActions() {
   const navigate = useNavigate();
@@ -51,13 +18,13 @@ function QuickActions() {
   const isSettingsActive = location.pathname.startsWith('/settings');
 
   return (
-    <div className='hidden items-center gap-2 md:flex'>
+    <div className='hidden items-center gap-2 lg:flex'>
       <Tooltip content='Library' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library')}
-          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isLibraryActive && !isFavoritesActive
               ? 'text-Primary-400 bg-Primary-500/20'
               : 'text-Grey-400 hover:text-Primary-400'
@@ -67,12 +34,13 @@ function QuickActions() {
           <LibraryBig className='size-5' />
         </motion.button>
       </Tooltip>
+
       <Tooltip content='Favorites' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library/favorites')}
-          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isFavoritesActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Favorites'
@@ -80,17 +48,18 @@ function QuickActions() {
           <Heart className='size-5' />
         </motion.button>
       </Tooltip>
+
       <Tooltip content='Settings' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/settings')}
-          className={`flex size-9 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
+          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
             isSettingsActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
           }`}
           aria-label='Settings'
         >
-          <span className='[&>svg]:size-5'>{SETTINGS_ICON}</span>
+          <SettingsIcon className='size-5' />
         </motion.button>
       </Tooltip>
     </div>
@@ -98,8 +67,8 @@ function QuickActions() {
 }
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated } = useAuthStore();
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -111,7 +80,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const visibleItems = navigationItems;
   const homeLink = isAuthenticated ? '/home' : '/';
 
   return (
@@ -134,16 +102,23 @@ export default function Navbar() {
             />
           </Link>
 
-          <div className='hidden items-center space-x-1 md:flex'>
-            {visibleItems.map((item) => (
-              <NavItem key={item.href} label={item.label} icon={item.icon} href={item.href} matches={item.matches} />
+          <div className='hidden items-center space-x-2 md:flex'>
+            {getLinks(['home', 'movies', 'tv', 'collections', 'search']).map((item) => (
+              <NavItem
+                key={item.href}
+                label={item.label}
+                icon={item.icon}
+                href={item.href}
+                matches={item.matches}
+                className={item.href === '/collections' ? 'md:hidden lg:flex' : ''}
+              />
             ))}
           </div>
 
           <div className='flex items-center gap-3'>
             <QuickActions />
             <UserDropdown />
-            <MobileNavTrigger />
+            <MobileDrawerTrigger />
           </div>
         </div>
       </div>

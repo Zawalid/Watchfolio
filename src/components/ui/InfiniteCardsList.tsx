@@ -22,7 +22,6 @@ export type InfiniteCardsListProps<T> = {
   sliderProps?: Partial<SliderProps>;
   enabled?: boolean;
   useInfiniteQuery?: boolean;
-  gridClassName?: string;
   containerRef?: React.Ref<HTMLDivElement>;
   // Status messages
   errorMessage?: string;
@@ -57,7 +56,6 @@ export function InfiniteCardsList<T>({
   sliderProps,
   enabled = true,
   useInfiniteQuery: useInfinite = false,
-  gridClassName = 'grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5',
   containerRef,
   errorMessage = 'There was an error loading the list.',
   noResultsMessage = 'No results found.',
@@ -167,7 +165,7 @@ export function InfiniteCardsList<T>({
 
   return (
     <>
-      <div ref={containerRef || navRef} className={gridClassName}>
+      <div ref={containerRef || navRef} className='grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] mobile:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
         {results.map((item, idx) => (
           <CardComponent key={getItemKey(item)} item={item} tabIndex={currentIndex === idx ? 0 : -1} />
         ))}

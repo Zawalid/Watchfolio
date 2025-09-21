@@ -20,20 +20,76 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
   if (!seasonWithEps) return null;
 
   return (
-    <MorphingDialogContent className='bg-blur relative grid h-[80vh] w-full max-w-[80vw] grid-cols-[1fr_2.3fr] rounded-xl backdrop-blur-2xl'>
-      <motion.div variants={itemVariants}>
-        <div className='relative size-full overflow-hidden rounded-s-xl'>
+    <MorphingDialogContent className='bg-blur relative flex h-screen w-full flex-col overflow-auto lg:overflow-hidden md:rounded-xl backdrop-blur-2xl lg:grid md:h-[90vh] md:max-w-[90vw] lg:grid-cols-[1fr_2.3fr]'>
+      <motion.div variants={itemVariants} className='lg:relative'>
+        <div className='relative h-[35vh] w-full overflow-hidden lg:h-full lg:rounded-s-xl'>
           <img
-            src={getTmdbImage(seasonWithEps, 'w500')}
+            src={getTmdbImage(seasonWithEps, 'original')}
             alt={`${show.name}: ${seasonWithEps.name}`}
             className='size-full object-cover transition-all duration-500 hover:scale-105'
           />
-          <div className='absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 md:opacity-100'></div>
+          <div className='absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent lg:from-black/80 lg:via-transparent lg:to-transparent lg:lg:opacity-100 lg:opacity-0 lg:transition-opacity lg:duration-300'></div>
+
+          {/* Mobile overlay content */}
+          <div className='absolute inset-0 flex flex-col justify-end p-4 lg:hidden'>
+            <motion.div
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <h3 className='mb-2 text-2xl font-bold text-white'>{seasonWithEps.name}</h3>
+              <div className='mb-3 text-lg font-medium text-gray-300'>{show.name}</div>
+              <div className='flex flex-wrap gap-2'>
+                {seasonWithEps.air_date && (
+                  <span className='bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 backdrop-blur-md'>
+                    <svg
+                      xmlns='http://www.w3.org/2000/svg'
+                      className='mr-1 h-3 w-3'
+                      viewBox='0 0 20 20'
+                      fill='currentColor'
+                    >
+                      <path
+                        fillRule='evenodd'
+                        d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
+                        clipRule='evenodd'
+                      />
+                    </svg>
+                    {formatDate(seasonWithEps.air_date)}
+                  </span>
+                )}
+                <span className='bg-Tertiary-900/80 text-Tertiary-300 ring-Tertiary-500/30 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 backdrop-blur-md'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='mr-1 h-3 w-3'
+                    viewBox='0 0 20 20'
+                    fill='currentColor'
+                  >
+                    <path
+                      fillRule='evenodd'
+                      d='M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z'
+                      clipRule='evenodd'
+                    />
+                  </svg>
+                  {seasonWithEps.episodes?.length || 'N/A'} Episodes
+                </span>
+                {seasonWithEps.vote_average > 0 && (
+                  <span className='inline-flex items-center rounded-full bg-yellow-900/30 px-2.5 py-1 text-xs font-medium text-yellow-300 ring-1 ring-yellow-500/30 backdrop-blur-md'>
+                    <span className='mr-1 text-yellow-400'>★</span>
+                    {seasonWithEps.vote_average.toFixed(1)}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </motion.div>
 
-      <motion.div className='flex min-h-0 flex-col space-y-5 p-6' variants={containerVariants}>
-        <motion.div variants={itemVariants}>
+      <motion.div
+        className='flex min-h-0 flex-1 flex-col space-y-4 p-4 lg:space-y-5 lg:p-6'
+        variants={containerVariants}
+      >
+        {/* Desktop title and metadata - Hidden on mobile since it's in hero overlay */}
+        <motion.div variants={itemVariants} className='hidden lg:block'>
           <h3 className='text-2xl font-bold text-white'>
             {seasonWithEps.name}
             <span className='ml-1 text-xl font-semibold text-gray-300'>• {show.name}</span>
@@ -87,18 +143,20 @@ export default function SeasonDetails({ season, show }: { season: Season; show: 
           </div>
         </motion.div>
         {seasonWithEps.overview && (
+          <>
           <motion.div variants={itemVariants}>
-            <h4 className='mb-2 text-base font-medium tracking-wider text-gray-400 uppercase'>Overview</h4>
-            <div className='mt-1 rounded-md bg-white/5 p-2 transition-all hover:border-gray-700 hover:bg-gray-800/40'>
+            <h4 className='mb-2 text-sm font-medium tracking-wider text-gray-400 uppercase lg:text-base'>Overview</h4>
+            <div className='mt-1 rounded-md bg-white/5 p-3 transition-all hover:border-gray-700 hover:bg-gray-800/40 lg:p-2'>
               <p className='text-sm leading-relaxed text-gray-300'>{seasonWithEps.overview}</p>
             </div>
           </motion.div>
+          <div className='bg-border h-px'></div>
+          </>
         )}
-        <div className='bg-border h-px'></div>
         {seasonWithEps.episodes && seasonWithEps.episodes.length > 0 && (
           <motion.div variants={itemVariants} className='flex min-h-0 flex-1 flex-col'>
-            <h4 className='mb-2 text-base font-medium tracking-wider text-gray-400 uppercase'>Episodes</h4>
-            <div className='min-h-0 flex-1 overflow-auto'>
+            <h4 className='mb-3 text-sm font-medium tracking-wider text-gray-400 uppercase lg:text-base'>Episodes</h4>
+            <div className='lg:min-h-0 pb-8 lg:pb-0 flex-1 lg:overflow-auto'>
               <EpisodesList episodes={seasonWithEps.episodes} />
             </div>
           </motion.div>

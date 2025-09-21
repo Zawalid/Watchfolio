@@ -250,14 +250,19 @@ export default function FeaturesStep() {
   const currentFeatureData = features[currentFeature];
 
   return (
-    <div className='mx-auto max-w-4xl space-y-8'>
+    <div className='mobile:space-y-8 mx-auto max-w-4xl space-y-6'>
       {/* Header */}
-      <motion.div variants={itemVariants} initial='hidden' animate='visible' className='space-y-4 text-center'>
-        <h2 className='text-2xl leading-tight font-black text-white sm:text-3xl'>
+      <motion.div
+        variants={itemVariants}
+        initial='hidden'
+        animate='visible'
+        className='mobile:space-y-4 space-y-3 text-center'
+      >
+        <h2 className='mobile:text-2xl text-xl leading-tight font-black text-white sm:text-3xl'>
           Your Entertainment Library,
           <span className='gradient-text'>Perfectly Organized</span>
         </h2>
-        <p className='text-Grey-300 mx-auto max-w-2xl text-lg leading-relaxed'>
+        <p className='text-Grey-300 mobile:text-lg mx-auto max-w-2xl text-base leading-relaxed'>
           Rate, sync, and organize everything you watch—never lose track again
         </p>
       </motion.div>
@@ -283,7 +288,7 @@ export default function FeaturesStep() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className='grid grid-cols-1 items-center gap-12 lg:grid-cols-2'
+          className='mobile:gap-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-2'
         >
           {/* Feature content */}
           <div className='space-y-6'>
@@ -434,9 +439,9 @@ export default function FeaturesStep() {
         initial='hidden'
         animate='visible'
         transition={{ delay: 0.8 }}
-        className='pt-8 text-center'
+        className='mobile:pt-8 pt-6 text-center'
       >
-        <p className='text-Grey-400 text-sm'>
+        <p className='text-Grey-400 mobile:text-sm text-xs'>
           Simple tools, powerful organization. Your entertainment, perfectly tracked.
         </p>
       </motion.div>

@@ -7,7 +7,7 @@ import { NETWORKS } from '@/utils/constants/TMDB';
 export default function NetworksSection() {
   return (
     <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
+      <div className='xs:flex-row xs:items-center xs:justify-between flex flex-col gap-3'>
         <div className='flex items-center gap-4'>
           <div className='from-Primary-500 to-Secondary-500 shadow-Primary-500/20 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
             <Tv className='h-6 w-6 text-white drop-shadow-sm' />
@@ -32,7 +32,7 @@ export default function NetworksSection() {
 
       <Slider autoplay>
         {NETWORKS.slice(0, 12).map((network) => (
-          <Slider.Slide key={network.id} className='group w-[250px] sm:w-[300px]!'>
+          <Slider.Slide key={network.id} className='group w-[250px]! sm:w-[300px]!'>
             <Link
               to={`/networks/${network.slug}`}
               className='hover:bg-blur grid aspect-video place-content-center rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20'

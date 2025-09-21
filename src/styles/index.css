@@ -82,7 +82,7 @@
   --color-Grey-700: #323b54;
   --color-Grey-800: #20283e;
   --color-Grey-900: #121829;
-  --color-blur: rgba(18, 24, 41, 0.8);
+  --color-blur: rgba(18, 24, 41);
   --color-border: #292f46;
 
   --font-poppins: Poppins;
@@ -111,11 +111,13 @@ body[data-animations='false'] *::after {
   }
 
   @media (width >=640px) {
-    max-width: 640px;
+    max-width: none;
+    padding-inline: 2rem;
   }
 
   @media (width >=768px) {
-    max-width: 768px;
+    max-width: none;
+    padding-inline: 3rem;
   }
 
   @media (width >=1024px) {
@@ -162,7 +164,7 @@ body[data-animations='false'] *::after {
 
 @utility blur-bg {
   background-image: url('/images/Background.svg');
-  background-size: cover;
+  background-size: 100% auto;
   background-repeat: no-repeat;
   background-position: center;
   background-color: var(--color-Grey-900);
@@ -202,15 +204,14 @@ body[data-animations='false'] *::after {
 
 @utility heading {
   @apply text-4xl leading-tight font-black text-white sm:text-5xl;
+}
 
-  & .gradient,
-  &.gradient {
-    @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent;
-  }
+@utility gradient {
+  @apply from-Success-400 to-Primary-400 block bg-gradient-to-r bg-clip-text text-transparent!;
 }
 
 body {
-  @apply dark blur-bg bg-[url('/images/Background.svg')] antialiased;
+  @apply dark bg-blur blur-bg antialiased;
 }
 
 .icon {
@@ -222,7 +223,7 @@ body {
 }
 
 @utility outline-heading {
-  @apply text-Secondary-500 text-8xl font-bold uppercase lg:text-9xl;
+  @apply text-Secondary-500 text-6xl  sm:text-8xl font-bold uppercase lg:text-9xl;
 
   &:not(.filled) {
     -webkit-text-stroke: 2px;
@@ -278,4 +279,8 @@ body {
   & [aria-label='loadingIcon'] i {
     @apply fill-white text-white;
   }
+}
+
+@utility full-mobile-modal {
+  @apply max-sm:size-full! max-sm:m-0! max-sm:max-w-none! max-sm:max-h-none! max-sm:rounded-none!
 }

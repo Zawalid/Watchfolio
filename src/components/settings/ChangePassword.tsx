@@ -8,7 +8,7 @@ import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/reac
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { KeyRound, Info } from 'lucide-react';
+import { KeyRound } from 'lucide-react';
 
 type FormData = z.infer<typeof changePasswordSchema>;
 
@@ -63,43 +63,47 @@ export default function ChangePassword() {
     );
   }
   return (
-    <div className='space-y-4'>
-      <div className='flex items-start justify-between'>
-        <div className='flex gap-4'>
+    <div className='space-y-4 lg:space-y-6'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+        <div className='flex gap-3 sm:gap-4'>
           <div className='space-y-2'>
-            <h4 className='text-Primary-100 text-lg font-semibold'>Change Password</h4>
-            <p className='text-Grey-300 max-w-md text-sm'>
+            <h4 className='text-Primary-100 text-lg font-semibold sm:text-xl'>Change Password</h4>
+            <p className='text-Grey-300 max-w-md text-sm sm:text-base'>
               Keep your account secure with a strong, unique password. We recommend using a password manager.
             </p>
           </div>
         </div>
-        <Button color='primary' size='sm' onPress={disclosure.onOpen} className='flex items-center gap-2'>
-          <KeyRound className='size-4' />
-          Change Password
-        </Button>
+        <div className='flex-shrink-0'>
+          <Button
+            color='primary'
+            size='sm'
+            onPress={disclosure.onOpen}
+            className='flex w-full items-center justify-center gap-2 sm:w-auto'
+          >
+            <KeyRound className='size-4' />
+            Change Password
+          </Button>
+        </div>
       </div>
 
-      <div className='flex items-start gap-3'>
-        <Info className='text-Primary-400 mt-0.5 size-5 flex-shrink-0' />
         <div className='space-y-1'>
-          <p className='text-Primary-300 text-sm font-medium'>Password Security Tips</p>
-          <ul className='text-Grey-400 space-y-1 text-xs'>
+          <p className='text-Primary-300 text-sm font-medium sm:text-base'>Password Security Tips</p>
+          <ul className='text-Grey-400 space-y-1 text-xs sm:text-sm'>
             <li>• Use at least 12 characters with mixed case, numbers, and symbols</li>
             <li>• Avoid personal information or dictionary words</li>
             <li>• Use a unique password for this account</li>
             <li>• Consider using a password manager for better security</li>
           </ul>
-        </div>
       </div>
       <Modal disclosure={disclosure} className='max-w-xl'>
         <ModalHeader className='flex flex-col'>
-          <h4 className='text-Primary-100 text-lg font-semibold'>Change your password</h4>
-          <p className='text-Grey-300 text-sm'>
+          <h4 className='text-Primary-100 text-lg font-semibold sm:text-xl'>Change your password</h4>
+          <p className='text-Grey-300 text-sm sm:text-base'>
             Please enter your current password and new password to change your password.
           </p>
         </ModalHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <ModalBody className='flex flex-col gap-5'>
+          <ModalBody className='flex flex-col gap-4 sm:gap-5'>
             <PasswordInput
               {...register('password')}
               name='password'
@@ -119,11 +123,17 @@ export default function ChangePassword() {
               error={errors.confirm_password?.message}
             />
           </ModalBody>
-          <ModalFooter>
-            <Button className='bg-Grey-800 hover:bg-Grey-700' onPress={close}>
+          <ModalFooter className='flex-col gap-3 sm:flex-row sm:gap-2'>
+            <Button className='bg-Grey-800 hover:bg-Grey-700 w-full sm:w-auto' onPress={close}>
               Cancel
             </Button>
-            <Button color='primary' type='submit' isLoading={isSubmitting || isLoading} isDisabled={!isValid}>
+            <Button
+              color='primary'
+              type='submit'
+              isLoading={isSubmitting || isLoading}
+              isDisabled={!isValid}
+              className='w-full sm:w-auto'
+            >
               {isSubmitting || isLoading ? 'Changing...' : 'Change Password'}
             </Button>
           </ModalFooter>

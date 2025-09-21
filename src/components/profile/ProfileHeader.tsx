@@ -4,7 +4,7 @@ import { Button, useDisclosure } from '@heroui/react';
 import { Tooltip } from '@heroui/react';
 import { Avatar } from '@heroui/react';
 import { AVATAR_CLASSNAMES } from '@/styles/heroui';
-import { formatDate } from '@/utils';
+import { cn, formatDate } from '@/utils';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Profile } from '@/lib/appwrite/types';
 import CustomizeProfileModal from './CustomizeProfileModal';
@@ -59,26 +59,26 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
         className='from-Grey-800/50 to-Grey-900/50 relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br p-8 backdrop-blur-sm'
       >
         <div className='relative'>
-          <div className='flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between'>
+          <div className='flex flex-col items-center gap-6 md:flex-row md:items-start md:justify-between'>
             {/* Left: Avatar + Info */}
-            <div className='flex flex-col gap-6 sm:flex-row sm:items-start'>
+            <div className='flex flex-col gap-6 max-sm:items-center sm:flex-row sm:items-start'>
               <div className='relative'>
                 <Avatar
                   src={profile.avatarUrl}
                   alt={profile.name}
                   classNames={AVATAR_CLASSNAMES}
-                  className='size-28!'
+                  className='mobile:size-28! size-22'
                 />
               </div>
 
               {/* Name, username, bio, type */}
-              <div className='flex-1 space-y-4'>
+              <div className='flex flex-1 flex-col gap-4 max-sm:items-center max-sm:text-center'>
                 <div>
-                  <h1 className='heading gradient'>{profile.name}</h1>
+                  <h1 className='heading gradient max-xs:text-2xl max-mobile:text-3xl'>{profile.name}</h1>
                   <p className='text-Secondary-400 text-base font-medium'>@{profile.username}</p>
                 </div>
 
-                <p className='text-Grey-300 max-w-2xl text-sm leading-relaxed lg:text-base'>
+                <p className='text-Grey-300 max-w-2xl text-sm leading-relaxed md:text-base'>
                   {profile.bio ||
                     (isOwnProfile
                       ? 'Your bio is empty. Add something about yourself!'
@@ -89,7 +89,7 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className='flex flex-wrap gap-2'
+                  className='flex flex-wrap gap-x-2 gap-y-4 max-sm:justify-center'
                 >
                   <div className='bg-Grey-800/60 flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-sm backdrop-blur-sm'>
                     <Film className='text-Primary-400 h-4 w-4' />
@@ -103,7 +103,12 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
                   </div>
                 </motion.div>
 
-                <div className='flex flex-wrap items-center gap-3 text-sm'>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className='flex flex-wrap gap-x-2 gap-y-4 max-sm:justify-center'
+                >
                   <span className='bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
                     {getContentType(profile.favoriteContentType).icon}
                     <span>{getContentType(profile.favoriteContentType).display}</span>
@@ -115,14 +120,23 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
                       <span>Joined {joinedDate}</span>
                     </span>
                   )}
-                </div>
+                </motion.div>
               </div>
             </div>
 
             {/* Right: Actions */}
-            <div className='flex flex-wrap items-center gap-3 sm:justify-end sm:gap-3'>
+            <div className='grid xs:flex flex-wrap items-center gap-3 max-sm:w-full sm:justify-end sm:gap-3'>
+              {isOwnProfile && (
+                <Button
+                  onPress={disclosure.onOpen}
+                  className='button-primary px-4 py-2 max-sm:flex-1'
+                  startContent={<UserRoundPen className='h-4 w-4' />}
+                >
+                  Customize Profile
+                </Button>
+              )}
               {profile.visibility === 'public' && (
-                <>
+                <div className={cn('flex max-xs:justify-between max-xs:absolute max-xs:-top-5 max-xs:w-full justify-center gap-2', !isOwnProfile&& 'max-sm:w-full')}>
                   <Tooltip content={copied ? 'Link copied!' : 'Copy profile link'} className='tooltip-secondary!'>
                     <Button
                       isIconOnly
@@ -134,26 +148,11 @@ export default function ProfileHeader({ profile, isOwnProfile = false, stats }: 
                     </Button>
                   </Tooltip>
                   <Tooltip content='Share profile' className='tooltip-secondary!'>
-                    <Button
-                      isIconOnly
-                      className='button-secondary!'
-                      onPress={handleShare}
-                      aria-label='Share profile'
-                    >
+                    <Button isIconOnly className='button-secondary!' onPress={handleShare} aria-label='Share profile'>
                       <Share2 className='h-4 w-4' />
                     </Button>
                   </Tooltip>
-                </>
-              )}
-
-              {isOwnProfile && (
-                <Button
-                  onPress={disclosure.onOpen}
-                  className='button-primary px-4 py-2'
-                  startContent={<UserRoundPen className='h-4 w-4' />}
-                >
-                  Customize Profile
-                </Button>
+                </div>
               )}
             </div>
           </div>

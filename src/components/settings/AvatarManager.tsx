@@ -92,7 +92,7 @@ export default function AvatarManager({
 
   return (
     <>
-      <div className={cn('flex items-center gap-5', className)}>
+      <div className={cn('flex xs:flex-row flex-col items-center gap-5', className)}>
         <div className='relative'>
           <Avatar src={currentUrl} className='size-24!' classNames={AVATAR_CLASSNAMES} />
           <Tooltip
@@ -109,8 +109,8 @@ export default function AvatarManager({
             </div>
           </Tooltip>
         </div>
-        <div className='flex flex-col gap-2'>
-          <div className='flex gap-2'>
+        <div className='flex flex-col w-full gap-2'>
+          <div className='grid grid-cols-2 xs:flex gap-2 w-full'>
             <Button color='primary' size='sm' onPress={disclosure.onOpen}>
               Change Avatar
             </Button>
@@ -118,11 +118,11 @@ export default function AvatarManager({
               Reset to Default
             </Button>
           </div>
-          <p className='text-Grey-500 text-sm'>Use a custom URL or generate a new avatar.</p>
+          <p className='text-Grey-500 text-center xs:text-start text-sm'>Use a custom URL or generate a new avatar.</p>
         </div>
       </div>
 
-      <Modal disclosure={disclosure} className='max-w-2xl'>
+      <Modal disclosure={disclosure} className='max-w-2xl' classNames={{ base: 'full-mobile-modal' }}>
         <ModalHeader className='flex flex-col'>
           <h4 className='text-Primary-100 text-lg font-semibold'>Change Avatar</h4>
           <p className='text-Grey-300 text-sm'>Choose a new avatar from our generators or use a custom URL.</p>

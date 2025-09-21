@@ -41,8 +41,8 @@ export default function MediaDetails({ type }: { type: MediaType }) {
       <Info media={media} />
       <div>
         {type === 'tv' && 'seasons' in media && <Seasons seasons={media.seasons || []} show={media as TvShow} />}
-        <Cast cast={media.credits?.cast || []} />
         <Media videos={media.videos?.results || []} images={media.images} mediaTitle={mediaTitle} />
+        <Cast cast={media.credits?.cast || []} />
         <Similar type={type} id={media.id} />
         <Recommendations type={type} id={media.id} />
       </div>

@@ -2,14 +2,13 @@ import { useEffect, useMemo } from 'react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { motion } from 'framer-motion';
 import { Layers, Crown, Zap, Target, Heart, Skull, Laugh, Users, Grid3x3 } from 'lucide-react';
-
 import { MOVIE_COLLECTIONS } from '@/utils/constants/TMDB';
 import CollectionCard from '@/components/collection/CollectionCard';
 import { cn, slugify } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { useNavigate } from 'react-router';
 import { useListNavigator } from '@/hooks/useListNavigator';
-import { usePageTitle } from '@/hooks/usePageTitle';
+import PageLayout from '@/layouts/PageLayout';
 
 type CollectionCategory = keyof typeof MOVIE_COLLECTIONS;
 
@@ -74,8 +73,6 @@ export default function Collections() {
   const [category, setCategory] = useQueryState('category', parseAsString);
   const navigate = useNavigate();
 
-  usePageTitle(`${category ? COLLECTION_CATEGORIES.find((c) => c.id === category)?.label : ''} Movie Collections`);
-
   // Flatten all collections with their categories
   const allCollections = useMemo((): CollectionWithDetails[] => {
     return Object.entries(MOVIE_COLLECTIONS).flatMap(([categoryKey, collections]) =>
@@ -112,21 +109,16 @@ export default function Collections() {
   };
 
   return (
-    <motion.div className='space-y-8' variants={containerVariants} initial='hidden' animate='visible'>
+    <PageLayout
+      Icon={Layers}
+      title='Movie Collections'
+      subtitle='Discover epic movie franchises and series'
+      pageTitle={`${category ? COLLECTION_CATEGORIES.find((c) => c.id === category)?.label : ''} Movie Collections`}
+    >
       {/* Header */}
-      <motion.div variants={itemVariants} className='space-y-6'>
-        <div className='flex items-center gap-4'>
-          <div className='from-Primary-400 to-Secondary-400 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
-            <Layers className='h-6 w-6 text-white drop-shadow-sm' />
-          </div>
-          <div>
-            <h1 className='heading gradient'>Movie Collections</h1>
-            <p className='text-Grey-400 text-sm'>Discover epic movie franchises and series</p>
-          </div>
-        </div>
-
+      <motion.div variants={containerVariants} className='space-y-6'>
         {/* Categories */}
-        <div className='flex flex-wrap gap-3'>
+        <motion.div variants={itemVariants} className='mobile:flex grid grid-cols-2 flex-wrap gap-3'>
           {COLLECTION_CATEGORIES.map((cat) => {
             const Icon = cat.icon;
             const isActive = category === cat.id;
@@ -149,9 +141,12 @@ export default function Collections() {
               </button>
             );
           })}
-        </div>
+        </motion.div>
 
-        <div className='border-Grey-800/50 flex items-center justify-between border-b pb-4'>
+        <motion.div
+          variants={itemVariants}
+          className='border-Grey-800/50 mobile:items-center flex items-start justify-between border-b pb-4'
+        >
           <div>
             <h2 className='text-lg font-semibold text-white'>
               {COLLECTION_CATEGORIES.find((c) => c.id === category)?.label || 'All Collections'}
@@ -165,7 +160,8 @@ export default function Collections() {
             <div className='flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-2.5 py-1 text-xs text-white/90 backdrop-blur-md'>
               <Grid3x3 className='h-4 w-4' />
               <span className='text-sm'>
-                {displayedCollections.length} collection{displayedCollections.length !== 1 ? 's' : ''}
+                {displayedCollections.length}
+                <span className='mobile:inline hidden'>collection{displayedCollections.length !== 1 ? 's' : ''}</span>
               </span>
             </div>
             {category && (
@@ -178,7 +174,7 @@ export default function Collections() {
               </button>
             )}
           </div>
-        </div>
+        </motion.div>
       </motion.div>
 
       <motion.div variants={itemVariants}>
@@ -188,6 +184,6 @@ export default function Collections() {
           ))}
         </div>
       </motion.div>
-    </motion.div>
+    </PageLayout>
   );
 }

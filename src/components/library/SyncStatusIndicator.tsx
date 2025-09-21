@@ -1,11 +1,11 @@
 import { Tooltip } from '@heroui/react';
-import { WifiOff, RefreshCw, AlertCircle, Check, CloudOff } from 'lucide-react';
+import { WifiOff, RefreshCw, AlertCircle, CloudCheck, CloudOff } from '@/components/ui/Icons';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useSyncStore } from '@/stores/useSyncStore';
-import { cn } from '@/utils';
+import { cn, formatTimeAgo } from '@/utils';
 import { useQueryClient } from '@tanstack/react-query';
 
-export function SyncStatus({ className, asDropDownOption }: { className?: string; asDropDownOption?: boolean }) {
+export function SyncStatusIndicator({ className, asPill }: { className?: string; asPill?: boolean }) {
   const { isAuthenticated, openAuthModal } = useAuthStore();
   const { syncStatus, lastSyncTime, manualSync } = useSyncStore();
   const queryClient = useQueryClient();
@@ -58,7 +58,7 @@ export function SyncStatus({ className, asDropDownOption }: { className?: string
       case 'online':
         return {
           color: 'text-green-400',
-          icon: <Check className='size-4' />,
+          icon: <CloudCheck className='size-4' />,
           text: 'Synced',
           tooltip: lastSyncTime
             ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}`
@@ -79,37 +79,55 @@ export function SyncStatus({ className, asDropDownOption }: { className?: string
 
   const statusInfo = getStatusInfo();
 
-  if (asDropDownOption) {
+  if (asPill) {
     return (
-      <button
-        onClick={() => {
-          if (statusInfo.onClick) statusInfo.onClick();
-          queryClient.invalidateQueries({ queryKey: ['library'] });
-        }}
-        className={cn('text-sm', statusInfo.color)}
-      >
-        {statusInfo.text}
-      </button>
+      <Tooltip content={statusInfo.tooltip} className='tooltip-secondary!'>
+        <button
+          className={cn(
+            'flex items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-1 text-xs font-medium transition-colors duration-200',
+            statusInfo.color,
+            statusInfo.onClick ? 'cursor-pointer hover:bg-white/10' : 'cursor-default',
+            className
+          )}
+          onClick={() => {
+            if (statusInfo.onClick) statusInfo.onClick();
+            queryClient.invalidateQueries({ queryKey: ['library'] });
+          }}
+        >
+          {statusInfo.icon}
+          <span>{statusInfo.text}</span>
+        </button>
+      </Tooltip>
     );
   }
 
   return (
-    <Tooltip content={statusInfo.tooltip} className='tooltip-secondary!'>
-      <button
-        className={cn(
-          'flex items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-1 text-xs font-medium transition-colors duration-200',
-          statusInfo.color,
-          statusInfo.onClick ? 'cursor-pointer hover:bg-white/10' : 'cursor-default',
-          className
-        )}
-        onClick={() => {
-          if (statusInfo.onClick) statusInfo.onClick();
-          queryClient.invalidateQueries({ queryKey: ['library'] });
-        }}
-      >
-        {statusInfo.icon}
-        <span>{statusInfo.text}</span>
-      </button>
-    </Tooltip>
+    <button
+      className={cn(
+        'group flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5',
+        className
+      )}
+      onClick={manualSync}
+      disabled={syncStatus === 'syncing'}
+    >
+      <div className='flex items-center gap-3'>
+        <div className={`relative flex items-center justify-center [&>svg]:size-5 ${statusInfo.color}`}>
+          {statusInfo.icon}
+          {syncStatus === 'syncing' && (
+            <div className='border-t-Secondary-400 absolute inset-0 animate-spin rounded-full border-2 border-transparent' />
+          )}
+        </div>
+        <div className='flex flex-col items-start'>
+          <span className={`text-sm font-semibold ${statusInfo.color}`}>{statusInfo.text}</span>
+          {lastSyncTime && <span className='text-Grey-500 text-xs font-medium'>{formatTimeAgo(lastSyncTime)}</span>}
+        </div>
+      </div>
+
+      {syncStatus !== 'syncing' && (
+        <div className='opacity-0 transition-opacity duration-200 group-hover:opacity-100'>
+          <div className='bg-Primary-400 h-2 w-2 rounded-full' />
+        </div>
+      )}
+    </button>
   );
 }

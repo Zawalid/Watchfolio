@@ -8,7 +8,7 @@ import { Modal } from '@/components/ui/Modal';
 import { changeEmailSchema } from '@/lib/validation/settings';
 import { Input } from '@/components/ui/Input';
 import { PasswordInput } from '@/components/ui/PasswordInput';
-import { UPDATE_ICON } from '@/components/ui/Icons';
+import { UpdateIcon } from '@/components/ui/Icons';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useState } from 'react';
 
@@ -87,10 +87,10 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
         <div className='flex-1 space-y-1'>
           <Input defaultValue={email} type='email' label='Email' readOnly />{' '}
           {!verified && (
-            <div className='flex gap-2'>
+            <div className='flex flex-col text-nowrap items-start xs:flex-row gap-2'>
               <p className='text-Grey-500 text-sm'>Your email is not verified</p>
               <button
-                className='text-Primary-400 hover:text-Primary-500 text-sm transition-colors duration-200 disabled:opacity-50'
+                className='text-Primary-400 hover:text-Primary-500 text-xs xs:text-sm transition-colors duration-200 disabled:opacity-50'
                 onClick={handleResendVerification}
                 disabled={isSendingVerification}
               >
@@ -100,10 +100,13 @@ export default function ChangeEmail({ email, verified }: { email?: string; verif
           )}
         </div>
         <Button isIconOnly color='primary' size='lg' onPress={disclosure.onOpen}>
-          {UPDATE_ICON}
+          <UpdateIcon />
         </Button>
       </div>
-      <Modal disclosure={disclosure} className='max-w-xl'>
+      <Modal
+        disclosure={disclosure}
+        className='max-w-xl'
+      >
         <ModalHeader className='flex flex-col'>
           <h4 className='text-Primary-100 text-lg font-semibold'>Change email address</h4>
           <p className='text-Grey-300 text-sm'>

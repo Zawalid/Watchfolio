@@ -21,7 +21,7 @@ export default function NetworkCard({
         key={network.id}
         to={`/networks/${network.slug}`}
         className={cn(
-          'hover:bg-blur group grid aspect-video place-content-center rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20',
+          'hover:bg-blur group grid min-h-38 aspect-video place-content-center rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20',
           className
         )}
       >
@@ -37,7 +37,7 @@ export default function NetworkCard({
     );
   }
   return (
-    <Button className='selectable-button! h-28 w-32' data-is-selected={isSelected} onPress={() => onSelect?.(network)}>
+    <Button className={cn('selectable-button! h-28 w-32',className) }data-is-selected={isSelected} onPress={() => onSelect?.(network)}>
       {network.logo ? (
         <img
           src={network.logo}

@@ -1,6 +1,5 @@
 import { Settings, Palette, Globe } from 'lucide-react';
 import { addToast } from '@heroui/react';
-import { Switch } from '@/components/ui/Switch';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
@@ -30,44 +29,35 @@ export default function Preferences() {
   };
 
   return (
-    <div className='flex flex-col gap-8'>
+    <div className='flex flex-col gap-6 sm:gap-8'>
       <SettingSection Icon={Settings} title='Preferences'>
         <SettingItem
           title='Remove from library confirmation'
           description='Show confirmation dialog when removing items from library'
           isDisabled={isLoading}
-        >
-          <Switch
-            checked={userPreferences?.removeFromLibraryConfirmation === 'enabled'}
-            onChange={(e) => handleConfirmationToggle('removeFromLibraryConfirmation', e.target.checked)}
-            disabled={isLoading}
-          />
-        </SettingItem>
+          isChecked={userPreferences?.removeFromLibraryConfirmation === 'enabled'}
+          isSwitchDisabled={isLoading}
+          onChange={(checked) => handleConfirmationToggle('removeFromLibraryConfirmation', checked)}
+        />
 
         <SettingItem
           title='Clear library confirmation'
           description='Show confirmation dialog when clearing the library'
           isDisabled={isLoading}
-        >
-          <Switch
-            checked={userPreferences?.clearLibraryConfirmation === 'enabled'}
-            onChange={(e) => handleConfirmationToggle('clearLibraryConfirmation', e.target.checked)}
-            disabled={isLoading}
-          />
-        </SettingItem>
+          isChecked={userPreferences?.clearLibraryConfirmation === 'enabled'}
+          isSwitchDisabled={isLoading}
+          onChange={(checked) => handleConfirmationToggle('clearLibraryConfirmation', checked)}
+        />
 
         <SettingItem
           title='Sign out confirmation'
           description='Show confirmation dialog when signing out'
           isDisabled={!isAuthenticated}
           requiresAuth={true}
-        >
-          <Switch
-            checked={userPreferences?.signOutConfirmation === 'enabled'}
-            onChange={(e) => handleConfirmationToggle('signOutConfirmation', e.target.checked)}
-            disabled={isLoading || !isAuthenticated}
-          />
-        </SettingItem>
+          isChecked={userPreferences?.signOutConfirmation === 'enabled'}
+          onChange={(checked) => handleConfirmationToggle('signOutConfirmation', checked)}
+          isSwitchDisabled={isLoading || !isAuthenticated}
+        />
       </SettingSection>
 
       {/* Appearance */}
@@ -77,13 +67,10 @@ export default function Preferences() {
           description='Enable UI animations and transitions across the app'
           isDisabled={isLoading}
           tag='(Recommended)'
-        >
-          <Switch
-            checked={userPreferences?.enableAnimations === 'enabled'}
-            onChange={(e) => handleConfirmationToggle('enableAnimations', e.target.checked)}
-            disabled={isLoading}
-          />
-        </SettingItem>
+          isChecked={userPreferences?.enableAnimations === 'enabled'}
+          onChange={(checked) => handleConfirmationToggle('enableAnimations', checked)}
+          isSwitchDisabled={isLoading}
+        />
         <SettingItem title='Theme' description='Choose your preferred theme' isDisabled={true} comingSoon={true} />
       </SettingSection>
 
@@ -105,9 +92,9 @@ export default function Preferences() {
             <img
               src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${user?.location?.countryCode}.svg`}
               alt={user?.location?.country}
-              className='h-4 w-5 rounded-sm'
+              className='h-3 w-4 rounded-sm sm:h-4 sm:w-5'
             />
-            <span className='text-Grey-300 text-sm'>{user?.location.country}</span>
+            <span className='text-Grey-300 text-xs sm:text-sm'>{user?.location.country}</span>
           </div>
         </SettingItem>
       </SettingSection>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@heroui/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button, ModalHeader } from '@heroui/react';
+import { ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import WelcomeStep from './steps/WelcomeStep';
 import SetupStep from './steps/SetupStep';
@@ -50,7 +50,6 @@ export default function OnboardingModal() {
   useHotkeys('left', () => (!isFirstStep ? prevStep() : null), { enabled: showOnboardingModal });
   useHotkeys('right', () => (!isLastStep ? nextStep() : null), { enabled: showOnboardingModal });
   useHotkeys('enter', () => (isLastStep ? handleComplete() : nextStep()), { enabled: showOnboardingModal });
-  useHotkeys('esc', closeOnboardingModal, { enabled: showOnboardingModal });
 
   const nextStep = () => {
     setDirection(1);
@@ -93,7 +92,20 @@ export default function OnboardingModal() {
   if (!CurrentStepComponent) return null;
 
   return (
-    <Modal disclosure={disclosure} size='5xl' classNames={{ closeButton: 'hidden' }}>
+    <Modal
+      disclosure={disclosure}
+      isDismissable={false}
+      size='5xl'
+      classNames={{ base: 'full-mobile-modal', closeButton: 'hidden' }}
+    >
+      <ModalHeader className='border-none p- relative'>
+        {!isLastStep && (
+          <Button size='sm' className='button-secondary! absolute top-4 right-4' onPress={closeOnboardingModal}>
+            <ChevronLast className='h-4 w-4' />
+            Skip
+          </Button>
+        )}
+      </ModalHeader>
       <ModalBody>
         <div className='bg-Grey-800 absolute top-0 right-0 left-0 h-1'>
           <motion.div
@@ -118,20 +130,20 @@ export default function OnboardingModal() {
                 x: { type: 'spring', stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 },
               }}
-              className='p-8 pt-12'
+              className='mobile:p-4 sm:p-8 pt-8'
             >
               <CurrentStepComponent />
             </motion.div>
           </AnimatePresence>
         </div>
       </ModalBody>
-      <ModalFooter className='flex items-center justify-between'>
-        <div className='border-Primary-500/20 bg-Primary-500/10 rounded-lg border px-3 py-1.5'>
+      <ModalFooter className='mobile:flex-row mobile:items-center mobile:justify-between flex flex-col gap-3'>
+        <div className='border-Primary-500/20 bg-Primary-500/10 mobile:block hidden rounded-lg border px-3 py-1.5'>
           <p className='text-Primary-300 text-xs'>
             <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcut='← →' /> to navigate
           </p>
         </div>
-        <div className='flex gap-3'>
+        <div className='mobile:flex-row mobile:gap-3 flex flex-col-reverse gap-2'>
           {!isFirstStep && (
             <Button className='button-secondary!' startContent={<ChevronLeft className='h-4 w-4' />} onPress={prevStep}>
               Previous
@@ -146,12 +158,6 @@ export default function OnboardingModal() {
           >
             {isLastStep ? 'Get Started' : 'Next'}
           </Button>
-
-          {!isLastStep && (
-            <Button variant='light' className='text-Grey-400 hover:text-Grey-300' onPress={closeOnboardingModal}>
-              Skip for now
-            </Button>
-          )}
         </div>
       </ModalFooter>
     </Modal>

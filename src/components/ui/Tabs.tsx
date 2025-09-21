@@ -107,7 +107,7 @@ export function Tabs({
         const baseClasses = cn(
           'transition-colors duration-200 px-4 py-2 rounded-md font-medium',
           direction === 'vertical' ? 'w-full text-left' : 'inline-block',
-          isActive ? 'text-Primary-50' : 'text-Grey-300 hover:text-Grey-500',
+          isActive ? 'text-Primary-50' : 'text-Grey-300 hover:bg-white/5',
           tab.icon && 'flex items-center gap-2',
           tabClassName
         );

@@ -4,7 +4,7 @@ import { Button } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { GOOGLE_ICON } from '@/components/ui/Icons';
+import { GoogleIcon } from '@/components/ui/Icons';
 import AuthForm from './AuthForm';
 import { addToast } from '@heroui/react';
 import { Link } from 'react-router';
@@ -83,7 +83,7 @@ export default function AuthModal() {
   };
 
   return (
-    <Modal disclosure={disclosure} size='lg'>
+    <Modal disclosure={disclosure} size='lg' classNames={{ base: 'full-mobile-modal max-sm:justify-center' }}>
       <ModalHeader className='flex flex-col gap-2 p-4'>
         <motion.div
           className='text-center'
@@ -101,7 +101,7 @@ export default function AuthModal() {
         </motion.div>
       </ModalHeader>
 
-      <ModalBody className='relative space-y-4'>
+      <ModalBody className='relative space-y-4 max-sm:flex-none'>
         <motion.div
           className='pointer-events-none absolute inset-0 opacity-5'
           animate={{
@@ -158,7 +158,7 @@ export default function AuthModal() {
           className='w-full bg-white font-medium text-black hover:bg-white/90'
           isLoading={isSigningInWithGoogle}
           isDisabled={isLoading}
-          startContent={!isSigningInWithGoogle && GOOGLE_ICON}
+          startContent={!isSigningInWithGoogle && <GoogleIcon />}
           onPress={handleGoogleSignIn}
         >
           Continue with Google

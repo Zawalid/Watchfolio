@@ -8,21 +8,23 @@ import MediaAndCelebritiesCardsList from '@/components/Media&CelebritiesCardsLis
 export default function TrendingSection() {
   return (
     <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-4'>
-          <div className='from-Success-500 to-Secondary-500 shadow-Primary-500/25 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg'>
-            <TrendingUp className='h-6 w-6 text-white drop-shadow-sm' />
+      <div className='xs:flex-row flex flex-col xs:items-center xs:justify-between gap-3'>
+        <div className='flex min-w-0 flex-1 items-center gap-3'>
+          <div className='from-Success-500 to-Secondary-500 shadow-Primary-500/25 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg sm:h-12 sm:w-12'>
+            <TrendingUp className='h-5 w-5 text-white drop-shadow-sm sm:h-6 sm:w-6' />
           </div>
 
-          <div>
-            <div className='flex items-center gap-3'>
-              <h2 className='text-2xl font-bold text-white'>Trending This Week</h2>
-              <div className='border-Error-500/30 bg-Error-500/10 text-Error-300 flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-sm'>
+          <div className='min-w-0 flex-1'>
+            <div className='flex flex-wrap items-center gap-2'>
+              <h2 className='truncate text-lg font-bold text-white sm:text-2xl'>Trending This Week</h2>
+              <div className='border-Error-500/30 bg-Error-500/10 text-Error-300 flex flex-shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium backdrop-blur-sm'>
                 <Flame className='h-3 w-3 fill-current' />
-                <span>Hot</span>
+                <span className='hidden sm:inline'>Hot</span>
               </div>
             </div>
-            <p className='text-Grey-400 mt-1 text-sm'>The most popular movies and shows everyone's talking about</p>
+            <p className='text-Grey-400 mt-1 truncate text-xs sm:text-sm'>
+              The most popular movies and shows everyone's talking about
+            </p>
           </div>
         </div>
 
@@ -30,8 +32,8 @@ export default function TrendingSection() {
           as={Link}
           to='/movies?category=popular'
           size='sm'
-          className='button-secondary! text-xs!'
-          endContent={<ArrowRight className='h-4 w-4' />}
+          className='button-secondary! flex-shrink-0 text-xs!'
+          endContent={<ArrowRight className='h-3 w-3 sm:h-4 sm:w-4' />}
         >
           View All
         </Button>

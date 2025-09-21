@@ -56,7 +56,7 @@ export default function MediaCardsListSkeleton({ length = 20, asSlider }: { leng
       </Slider>
     );
   return (
-    <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
+    <div className='mobile:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] items-start gap-5'>
       {Array.from({ length }).map((_, i) => (
         <MediaCardSkeleton key={i} />
       ))}
