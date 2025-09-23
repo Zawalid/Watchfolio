@@ -156,20 +156,20 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                   />
 
                   {/* Input Actions */}
-                  <div className='flex items-center justify-between'>
-                    <div className='text-Grey-500 flex items-center gap-4 text-xs'>
-                      <div className='flex items-center gap-2'>
+                  <div className='flex items-center justify-between gap-3'>
+                    <div className='text-Grey-500 flex items-center gap-2 text-xs sm:gap-4'>
+                      <div className='flex items-center gap-1 sm:gap-2'>
                         <ShortcutKey
                           shortcut='Ctrl Enter'
-                          className='rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-xs'
+                          className='kbd-sm'
                         />
-                        <span>to search</span>
+                        <span className='hidden sm:inline'>to search</span>
                       </div>
                       {requestHistory.length > 0 && (
-                        <div className='flex items-center gap-2'>
+                        <div className='hidden sm:flex items-center gap-2'>
                           <ShortcutKey
                             shortcut='Ctrl ↑ ↓'
-                            className='rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-xs'
+                            className='kbd-sm'
                           />
                           <span>history ({requestHistory.length}/10)</span>
                           {historyIndex !== -1 && (

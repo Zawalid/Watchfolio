@@ -36,7 +36,7 @@ export function AiAnalysisBadge({ aiAnalysis }: AiAnalysisBadgeProps) {
               <Info className='h-4 w-4' />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className='bg-Grey-900/95 max-w-lg border border-white/10 p-6 backdrop-blur-md'>
+          <PopoverContent className='bg-Grey-900/95 blur-bg max-w-lg border border-white/10 p-6 backdrop-blur-md'>
             <div className='space-y-4'>
               <div className='flex items-center gap-2'>
                 <Sparkles className='text-Secondary-400 h-5 w-5' />

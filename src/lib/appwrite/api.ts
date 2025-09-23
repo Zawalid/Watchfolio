@@ -516,6 +516,45 @@ export class AIRecommendationsAPI {
       throw new Error('Failed to get AI recommendations. Please try again.');
     }
   }
+
+  async getRecommendationsBatch(
+    description: string,
+    userLibrary: LibraryMedia[],
+    preferences: { contentType?: string; decade?: string; duration?: string } = {},
+    userProfile?: {
+      favoriteGenres: number[];
+      contentPreferences: string[];
+      favoriteNetworks: number[];
+      favoriteContentType: string;
+    },
+    batchNumber: number = 1,
+    excludeTitles: string[] = []
+  ) {
+    try {
+      const response = await functions.createExecution({
+        functionId: 'mood-recommendations',
+        body: JSON.stringify({
+          description: description.trim(),
+          userLibrary,
+          preferences,
+          userProfile,
+          batchNumber,
+          excludeTitles,
+        }),
+      });
+
+      const result = JSON.parse(response.responseBody);
+
+      if (result.status !== 200) {
+        throw new Error(result.message || 'Failed to get recommendations');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('Error getting AI recommendations batch:', error);
+      throw new Error('Failed to get AI recommendations. Please try again.');
+    }
+  }
 }
 
 /**

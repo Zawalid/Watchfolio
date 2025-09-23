@@ -137,7 +137,7 @@ const analyzeUserLibrary = (libraryItems) => {
 };
 
 // Generate AI prompt
-const generatePrompt = (description, userAnalysis, preferences = {}, userProfile = {}) => {
+const generatePrompt = (description, userAnalysis, preferences = {}, userProfile = {}, batchNumber = 1, excludeTitles = []) => {
   const profileGenres = userProfile.favoriteGenres || [];
   const profileContentPrefs = userProfile.contentPreferences || [];
   const profileNetworks = userProfile.favoriteNetworks || [];
@@ -163,8 +163,12 @@ FILTERING PREFERENCES:
 - Era preference: ${preferences.decade || 'any time period'}
 - Runtime preference: ${preferences.duration || 'any length'}
 
+BATCH CONTEXT:
+- This is batch ${batchNumber} of recommendations
+- Previous recommendations to AVOID: ${excludeTitles.length > 0 ? excludeTitles.join(', ') : 'None yet'}
+
 TASK:
-Provide exactly 15 highly curated recommendations that match "${description}". For each recommendation, provide:
+Provide exactly 5 highly curated recommendations that match "${description}". For each recommendation, provide:
 
 1. Exact movie/TV show title (as it appears in TMDB)
 2. Release year
@@ -221,7 +225,7 @@ export default async ({ req, res, log, error }) => {
     }
 
     // Validate required fields
-    const { description, userLibrary = [], preferences = {}, userProfile = {} } = body;
+    const { description, userLibrary = [], preferences = {}, userProfile = {}, batchNumber = 1, excludeTitles = [] } = body;
 
     if (!description || typeof description !== 'string' || description.trim().length === 0) {
       return res.json(createErrorResponse(400, 'Description is required and must be a non-empty string'), 400);
@@ -255,7 +259,7 @@ export default async ({ req, res, log, error }) => {
     });
 
     // Generate prompt and get AI recommendations
-    const prompt = generatePrompt(description, userAnalysis, preferences, userProfile);
+    const prompt = generatePrompt(description, userAnalysis, preferences, userProfile, batchNumber, excludeTitles);
 
     log('Requesting recommendations for description:', description);
     const result = await model.generateContent(prompt);
