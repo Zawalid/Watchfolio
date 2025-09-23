@@ -3,6 +3,7 @@ import { usePageTitle } from '@/hooks/usePageTitle';
 import { MoodSelector } from '@/components/recommendations/MoodSelector';
 import { RecommendationsList } from '@/components/recommendations/RecommendationsList';
 import { useInfiniteLibraryItems } from '@/hooks/library/useLibraryQueries';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 interface Preferences {
   contentType: string;
@@ -17,6 +18,8 @@ export default function MoodRecommendations() {
     decade: '',
     duration: ''
   });
+
+  const { user } = useAuthStore();
 
   const { data: libraryPages } = useInfiniteLibraryItems(
     { status: 'all' },
@@ -48,6 +51,7 @@ export default function MoodRecommendations() {
           description={selectedDescription}
           userLibrary={allLibraryItems}
           preferences={preferences}
+          userProfile={user?.profile}
           onBack={handleBackToInput}
         />
       )}

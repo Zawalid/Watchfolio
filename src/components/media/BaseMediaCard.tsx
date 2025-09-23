@@ -15,6 +15,7 @@ import { generateMediaId } from '@/utils/library';
 import { MobileActionsDrawer, QuickActions } from './QuickActions';
 import { PersonRoleBadges } from './PersonRoleBadges';
 import { MediaCardOverlays } from './MediaCardOverlays';
+import { AiAnalysisBadge } from './AiAnalysisBadge';
 
 interface BaseMediaCardProps {
   id: number;
@@ -30,6 +31,10 @@ interface BaseMediaCardProps {
   isOwnProfile?: boolean;
   celebrityRoles?: string[];
   primaryRole?: 'acting' | 'voice' | 'guest' | 'production';
+  aiAnalysis?: {
+    detailed_analysis: string;
+    mood_alignment: string;
+  };
 }
 
 export default function BaseMediaCard({
@@ -45,6 +50,7 @@ export default function BaseMediaCard({
   tabIndex = 0,
   celebrityRoles,
   primaryRole,
+  aiAnalysis,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -181,6 +187,9 @@ export default function BaseMediaCard({
           )}
         </AnimatePresence>
 
+        {/* AI Badge and Analysis Button */}
+        {aiAnalysis && <AiAnalysisBadge aiAnalysis={aiAnalysis} />}
+
         {/* All Overlays */}
         <MediaCardOverlays
           mediaType={mediaType}
@@ -268,3 +277,4 @@ export default function BaseMediaCard({
     </>
   );
 }
+

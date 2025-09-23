@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@heroui/react';
-import { ArrowLeft, RefreshCw, AlertTriangle, Brain, Sparkles } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Brain, Sparkles, Coffee, Lightbulb } from 'lucide-react';
 import { appwriteService } from '@/lib/appwrite/api';
 import { RecommendationCard } from './RecommendationCard';
 import { AnimatedRing } from '@/components/ui/AnimatedRing';
@@ -17,6 +17,12 @@ interface RecommendationsListProps {
   description: string;
   userLibrary: LibraryMedia[];
   preferences: Preferences;
+  userProfile?: {
+    favoriteGenres: number[];
+    contentPreferences: string[];
+    favoriteNetworks: number[];
+    favoriteContentType: string;
+  };
   onBack: () => void;
 }
 
@@ -30,7 +36,7 @@ interface Recommendation {
   type: 'movie' | 'tv';
 }
 
-export function RecommendationsList({ description, userLibrary, preferences, onBack }: RecommendationsListProps) {
+export function RecommendationsList({ description, userLibrary, preferences, userProfile, onBack }: RecommendationsListProps) {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const {
@@ -43,7 +49,8 @@ export function RecommendationsList({ description, userLibrary, preferences, onB
       const response = await appwriteService.aiRecommendations.getRecommendations(
         description,
         userLibrary,
-        preferences
+        preferences,
+        userProfile
       );
       return response;
     },
@@ -168,8 +175,8 @@ export function RecommendationsList({ description, userLibrary, preferences, onB
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 100, damping: 25, delay: 0.1 }}
           >
-            <div className="rounded-full bg-gradient-to-br from-red-500/20 to-orange-500/20 p-8 border border-red-500/30">
-              <AlertTriangle className="h-16 w-16 text-red-400" />
+            <div className="rounded-full bg-gradient-to-br from-orange-500/20 to-yellow-500/20 p-8 border border-orange-500/30">
+              <Coffee className="h-16 w-16 text-orange-400" />
             </div>
           </motion.div>
 
@@ -179,10 +186,14 @@ export function RecommendationsList({ description, userLibrary, preferences, onB
             transition={{ type: 'spring', stiffness: 100, damping: 25, delay: 0.2 }}
             className="space-y-3"
           >
-            <h3 className="text-white text-2xl font-bold">Search failed</h3>
-            <p className="text-Grey-400 max-w-lg">
-              We couldn't process your request right now. Please try again.
+            <h3 className="text-white text-2xl font-bold">AI needs a coffee break</h3>
+            <p className="text-Grey-400 max-w-lg text-base leading-relaxed">
+              Our recommendation engine is taking a quick breather. Even the smartest AI needs a moment to recharge sometimes!
             </p>
+            <div className="flex items-center justify-center gap-2 text-Grey-500 mt-3">
+              <Lightbulb className="h-4 w-4" />
+              <span className="text-sm italic">Try rephrasing your request or come back in a moment</span>
+            </div>
           </motion.div>
 
           <motion.div
@@ -196,7 +207,7 @@ export function RecommendationsList({ description, userLibrary, preferences, onB
               className="from-Primary-500 to-Secondary-500 bg-gradient-to-r text-white rounded-full px-6"
               startContent={<RefreshCw className="h-4 w-4" />}
             >
-              Try Again
+              Wake up AI
             </Button>
             <Button
               onPress={onBack}

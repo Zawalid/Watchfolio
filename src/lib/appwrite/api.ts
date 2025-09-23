@@ -485,7 +485,13 @@ export class AIRecommendationsAPI {
   async getRecommendations(
     description: string,
     userLibrary: LibraryMedia[],
-    preferences: { contentType?: string; decade?: string; duration?: string } = {}
+    preferences: { contentType?: string; decade?: string; duration?: string } = {},
+    userProfile?: {
+      favoriteGenres: number[];
+      contentPreferences: string[];
+      favoriteNetworks: number[];
+      favoriteContentType: string;
+    }
   ) {
     try {
       const response = await functions.createExecution({
@@ -494,6 +500,7 @@ export class AIRecommendationsAPI {
           description: description.trim(),
           userLibrary,
           preferences,
+          userProfile,
         }),
       });
 

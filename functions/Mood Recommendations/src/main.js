@@ -137,16 +137,25 @@ const analyzeUserLibrary = (libraryItems) => {
 };
 
 // Generate AI prompt
-const generatePrompt = (description, userAnalysis, preferences = {}) => {
+const generatePrompt = (description, userAnalysis, preferences = {}, userProfile = {}) => {
+  const profileGenres = userProfile.favoriteGenres || [];
+  const profileContentPrefs = userProfile.contentPreferences || [];
+  const profileNetworks = userProfile.favoriteNetworks || [];
+  const profileContentType = userProfile.favoriteContentType || '';
+
   return `You are an expert movie and TV show curator with access to The Movie Database (TMDB). Your goal is to provide highly personalized recommendations with detailed analysis.
 
 USER'S REQUEST: "${description}"
 
 USER'S VIEWING PROFILE:
 - Library size: ${userAnalysis.totalItems} titles
-- Favorite genres: ${userAnalysis.favoriteGenres.join(', ')} (TMDB genre IDs)
+- Favorite genres (from library): ${userAnalysis.favoriteGenres.join(', ')} (TMDB genre IDs)
+- Profile favorite genres: ${profileGenres.join(', ')} (TMDB genre IDs)
+- Content preferences: ${profileContentPrefs.join(', ')}
+- Favorite networks: ${profileNetworks.join(', ')} (TMDB network IDs)
+- Preferred content type: ${profileContentType}
 - Average rating: ${userAnalysis.averageRating}/10 (shows taste preference)
-- Content preferences: ${userAnalysis.preferredTypes.join(', ')}
+- Recent activity: ${userAnalysis.preferredTypes.join(', ')}
 - Recent favorites: ${userAnalysis.recentWatches.slice(0, 3).map(item => item.title).join(', ')}
 
 FILTERING PREFERENCES:
@@ -155,37 +164,41 @@ FILTERING PREFERENCES:
 - Runtime preference: ${preferences.duration || 'any length'}
 
 TASK:
-Provide exactly 10 highly curated recommendations that match "${description}". Each recommendation must include:
+Provide exactly 15 highly curated recommendations that match "${description}". For each recommendation, provide:
 
-1. TMDB ID (critical - must be correct TMDB database ID)
-2. IMDB ID (if available, for additional verification)
-3. Exact TMDB title
-4. Release year
-5. Detailed analysis (3-4 sentences explaining the match)
-6. Specific mood alignment explanation
-7. Content type (movie/tv)
+1. Exact movie/TV show title (as it appears in TMDB)
+2. Release year
+3. Content type (movie or tv)
+4. Detailed analysis (3-4 sentences explaining the match)
+5. Specific mood alignment explanation
 
-FORMAT (JSON array):
+CRITICAL OUTPUT REQUIREMENTS:
+- MUST respond with ONLY a valid JSON array
+- NO explanatory text before or after the JSON
+- NO markdown code blocks or formatting
+- JUST the raw JSON array
+
+FORMAT (respond with exactly this structure):
 [
   {
-    "tmdb_id": 12345,
-    "imdb_id": "tt1234567",
-    "title": "Exact TMDB Title",
+    "title": "Exact Title as in TMDB",
     "year": 2023,
+    "type": "movie",
     "detailed_analysis": "Comprehensive 3-4 sentence explanation covering: why this matches their request, how it aligns with their viewing history, what specific elements make it perfect for their current mood, and what they can expect from the experience.",
-    "mood_alignment": "Specific explanation of how this title delivers exactly what they're looking for based on '${description}'",
-    "type": "movie" or "tv"
+    "mood_alignment": "Specific explanation of how this title delivers exactly what they're looking for based on '${description}'"
   }
 ]
 
 CRITICAL REQUIREMENTS:
-- ONLY use real TMDB IDs that exist in the database
-- Provide IMDB IDs when possible (format: tt1234567)
+- Use EXACT titles as they appear in The Movie Database (TMDB)
+- Provide accurate release years
 - Make detailed_analysis substantive and personalized
 - Consider their viewing history patterns
 - Balance popular titles with hidden gems
 - Ensure variety in genres, eras, and styles
 - Match the specific mood/request: "${description}"
+- DO NOT include TMDB IDs or IMDB IDs (we will look these up separately)
+- RESPOND WITH ONLY THE JSON ARRAY - NO OTHER TEXT
 
 Remember: Quality over quantity. Each recommendation should feel hand-picked for this specific user and request.`;
 };
@@ -208,7 +221,7 @@ export default async ({ req, res, log, error }) => {
     }
 
     // Validate required fields
-    const { description, userLibrary = [], preferences = {} } = body;
+    const { description, userLibrary = [], preferences = {}, userProfile = {} } = body;
 
     if (!description || typeof description !== 'string' || description.trim().length === 0) {
       return res.json(createErrorResponse(400, 'Description is required and must be a non-empty string'), 400);
@@ -226,10 +239,10 @@ export default async ({ req, res, log, error }) => {
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash',
       generationConfig: {
-        temperature: 0.8,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 2048,
+        temperature: 0.7,
+        topK: 32,
+        topP: 0.9,
+        maxOutputTokens: 4096,
       }
     });
 
@@ -242,7 +255,7 @@ export default async ({ req, res, log, error }) => {
     });
 
     // Generate prompt and get AI recommendations
-    const prompt = generatePrompt(description, userAnalysis, preferences);
+    const prompt = generatePrompt(description, userAnalysis, preferences, userProfile);
 
     log('Requesting recommendations for description:', description);
     const result = await model.generateContent(prompt);
@@ -253,25 +266,67 @@ export default async ({ req, res, log, error }) => {
       // Extract JSON from the response
       const text = response.text();
       log('AI response received, length:', text.length);
+      log('AI response preview:', text.substring(0, 500) + '...');
 
-      // Try to extract JSON from the response
-      const jsonMatch = text.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) {
-        throw new Error('No JSON array found in AI response');
+      // Multiple strategies to extract JSON
+      let jsonString = null;
+
+      // Strategy 1: Look for JSON array with enhanced regex
+      let jsonMatch = text.match(/\[[\s\S]*?\]/);
+      if (jsonMatch) {
+        jsonString = jsonMatch[0];
+        log('Found JSON using strategy 1 (basic array match)');
       }
 
-      recommendations = JSON.parse(jsonMatch[0]);
+      // Strategy 2: Look for JSON between ```json blocks
+      if (!jsonString) {
+        jsonMatch = text.match(/```json\s*([\s\S]*?)\s*```/);
+        if (jsonMatch) {
+          jsonString = jsonMatch[1].trim();
+          log('Found JSON using strategy 2 (code block)');
+        }
+      }
+
+      // Strategy 3: Look for JSON between ``` blocks (without json)
+      if (!jsonString) {
+        jsonMatch = text.match(/```\s*([\s\S]*?)\s*```/);
+        if (jsonMatch) {
+          const content = jsonMatch[1].trim();
+          if (content.startsWith('[') && content.endsWith(']')) {
+            jsonString = content;
+            log('Found JSON using strategy 3 (generic code block)');
+          }
+        }
+      }
+
+      // Strategy 4: Look for anything that starts with [ and ends with ]
+      if (!jsonString) {
+        const startIndex = text.indexOf('[');
+        const endIndex = text.lastIndexOf(']');
+        if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+          jsonString = text.substring(startIndex, endIndex + 1);
+          log('Found JSON using strategy 4 (manual extraction)');
+        }
+      }
+
+      if (!jsonString) {
+        log('Full AI response:', text);
+        throw new Error('No JSON array found in AI response using any strategy');
+      }
+
+      log('Attempting to parse JSON:', jsonString.substring(0, 200) + '...');
+      recommendations = JSON.parse(jsonString);
 
       if (!Array.isArray(recommendations)) {
         throw new Error('AI response is not an array');
       }
 
-      // Validate recommendation structure
+      // Validate recommendation structure (no tmdb_id expected)
       recommendations = recommendations.filter(rec =>
         rec &&
         typeof rec === 'object' &&
-        rec.tmdb_id &&
         rec.title &&
+        rec.year &&
         rec.detailed_analysis &&
         rec.mood_alignment &&
         rec.type
@@ -284,28 +339,7 @@ export default async ({ req, res, log, error }) => {
     } catch (parseError) {
       log('Error parsing AI response:', parseError);
       error('Failed to parse AI recommendations:', parseError);
-
-      // Fallback recommendations with real TMDB IDs
-      recommendations = [
-        {
-          tmdb_id: 120467,
-          imdb_id: "tt2278388",
-          title: "The Grand Budapest Hotel",
-          year: 2014,
-          detailed_analysis: "A visually stunning and whimsical film that offers engaging storytelling with Wes Anderson's distinctive style. The movie balances comedy and drama beautifully, creating a unique cinematic experience that appeals to viewers seeking something both entertaining and artistically satisfying. Its meticulous attention to detail and charming characters create an immersive world that feels both nostalgic and timeless.",
-          mood_alignment: "Perfect for when you want something visually captivating and emotionally engaging without being too heavy or intense.",
-          type: "movie"
-        },
-        {
-          tmdb_id: 97546,
-          imdb_id: "tt10986410",
-          title: "Ted Lasso",
-          year: 2020,
-          detailed_analysis: "An uplifting series that masterfully balances humor with genuinely heartfelt moments, creating a show that's both funny and emotionally resonant. The series excels at character development and explores themes of kindness, resilience, and personal growth in a way that feels authentic and inspiring. Jason Sudeikis delivers a career-defining performance that anchors the show's optimistic yet realistic tone.",
-          mood_alignment: "Ideal for when you need something that will lift your spirits and restore faith in human goodness while still providing substantial storytelling.",
-          type: "tv"
-        }
-      ];
+      throw new Error('Failed to parse AI response');
     }
 
     // Add metadata
