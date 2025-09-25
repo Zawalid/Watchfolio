@@ -241,13 +241,13 @@ export default async ({ req, res, log, error }) => {
     // Initialize Gemini AI
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       generationConfig: {
         temperature: 0.7,
         topK: 32,
         topP: 0.9,
         maxOutputTokens: 4096,
-      }
+      },
     });
 
     // Analyze user's library

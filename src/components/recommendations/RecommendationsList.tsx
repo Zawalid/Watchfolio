@@ -188,9 +188,9 @@ export function RecommendationsList({
             transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.1 }}
             className='space-y-4'
           >
-            <h3 className='mb-3 text-2xl font-bold text-white'>Curating your recommendations...</h3>
+            <h3 className='mb-3 text-2xl font-bold text-white'>Finding your perfect matches...</h3>
             <p className='text-Grey-400 max-w-lg text-base leading-relaxed'>
-              Analyzing your taste profile and finding the perfect matches for:{' '}
+              Our AI is analyzing your watchlist and taste profile to curate personalized recommendations for:{' '}
               <span className='text-Grey-300 italic'>"{description}"</span>
             </p>
           </motion.div>
@@ -235,12 +235,11 @@ export function RecommendationsList({
           >
             <h3 className='text-2xl font-bold text-white'>AI needs a coffee break</h3>
             <p className='text-Grey-400 max-w-lg text-base leading-relaxed'>
-              Our recommendation engine is taking a quick breather. Even the smartest AI needs a moment to recharge
-              sometimes!
+              Our AI curator couldn't find suitable recommendations for your request. Try rephrasing your mood or adjusting the filters above.
             </p>
             <div className='text-Grey-500 mt-3 flex items-center justify-center gap-2'>
               <Lightbulb className='h-4 w-4' />
-              <span className='text-sm italic'>Try rephrasing your request or come back in a moment</span>
+              <span className='text-sm italic'>Try different keywords or broader descriptions</span>
             </div>
           </motion.div>
 
@@ -255,7 +254,7 @@ export function RecommendationsList({
               className='from-Primary-500 to-Secondary-500 rounded-full bg-gradient-to-r px-6 text-white'
               startContent={<RefreshCw className='h-4 w-4' />}
             >
-              Wake up AI
+              Try Again
             </Button>
             <Button
               onPress={onBack}
@@ -301,14 +300,14 @@ export function RecommendationsList({
         transition={{ duration: 0.5 }}
         className='space-y-3 py-8 text-center'
       >
-        <h1 className='heading gradient max-mobile:text-3xl max-xs:text-2xl'>Your Recommendations</h1>
+        <h1 className='heading gradient max-mobile:text-3xl max-xs:text-2xl'>Your Perfect Matches</h1>
         <p className='text-Grey-400 mx-auto max-w-2xl text-lg'>
-          For: <span className='text-Grey-300 italic'>"{requestInfo.description}"</span>
+          Based on: <span className='text-Grey-300 italic'>"{requestInfo.description}"</span>
         </p>
         {allRecommendations.length > 0 && (
           <div className='bg-Primary-500/10 border-Primary-500/20 text-Primary-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm'>
             <span className='bg-Primary-400 h-2 w-2 animate-pulse rounded-full'></span>
-            {allRecommendations.length} recommendations found
+            {allRecommendations.length} perfect matches
           </div>
         )}
       </motion.div>
@@ -317,10 +316,10 @@ export function RecommendationsList({
       {allRecommendations.length > 0 && (
         <div className='space-y-8'>
           <div className='space-y-2 text-center'>
-            <h2 className='text-2xl font-bold text-white'>Curated for you</h2>
+            <h2 className='text-2xl font-bold text-white'>Handpicked Just for You</h2>
             <p className='text-Grey-400 mx-auto max-w-lg text-base'>
-              Each recommendation includes detailed AI analysis.{' '}
-              {hasNextPage && <span className='text-Primary-300'>More coming soon...</span>}
+              Each recommendation comes with AI-powered insights explaining why it matches your vibe.{' '}
+              {hasNextPage && <span className='text-Primary-300'>More matches loading...</span>}
             </p>
           </div>
 
@@ -385,10 +384,10 @@ export function RecommendationsList({
                 </div>
                 <span className='text-sm'>
                   {isFetchingNextPage
-                    ? 'Loading more...'
+                    ? 'Finding more matches...'
                     : hasNextPage
-                      ? `${allRecommendations.length}/20 recommendations`
-                      : `${allRecommendations.length} recommendations found`}
+                      ? `${allRecommendations.length}/20 perfect matches`
+                      : `${allRecommendations.length} matches found`}
                 </span>
               </div>
             </div>

@@ -4,7 +4,7 @@ import { Avatar, Button, addToast, closeToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { AVATAR_CLASSNAMES } from '@/styles/heroui';
 import { UserPlus, SignInIcon } from '../ui/Icons';
-import { Home, Film, Tv, Search, Layers, Users, Tv2Icon, CollectionsIcon, SettingsIcon } from '@/components/ui/Icons';
+import { Home, Film, Tv, Search, Brain, Users, Tv2Icon, CollectionsIcon, SettingsIcon } from '@/components/ui/Icons';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { UserWithProfile } from '@/lib/appwrite/types';
@@ -44,12 +44,12 @@ const links = [
     description: 'Find your favorites',
   },
   {
-    id: 'collections',
-    label: 'Collections',
-    icon: Layers,
-    href: '/collections',
-    matches: ['/collections'],
-    description: 'Curated lists',
+    id: 'mood-match',
+    label: 'Mood Match',
+    icon: Brain,
+    href: '/mood-match',
+    matches: ['/mood-match'],
+    description: 'AI-powered recommendations for your mood',
   },
   {
     id: 'celebrities',

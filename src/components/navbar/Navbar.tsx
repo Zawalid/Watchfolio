@@ -103,14 +103,14 @@ export default function Navbar() {
           </Link>
 
           <div className='hidden items-center space-x-2 md:flex'>
-            {getLinks(['home', 'movies', 'tv', 'collections', 'search']).map((item) => (
+            {getLinks(['home', 'movies', 'tv', 'mood-match', 'search']).map((item) => (
               <NavItem
                 key={item.href}
                 label={item.label}
                 icon={item.icon}
                 href={item.href}
                 matches={item.matches}
-                className={item.href === '/collections' ? 'md:hidden lg:flex' : ''}
+                className={item.href === '/mood-match' ? 'md:hidden lg:flex' : ''}
               />
             ))}
           </div>

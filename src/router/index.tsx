@@ -107,7 +107,7 @@ export const router = createBrowserRouter([
         Component: Search,
       },
       {
-        path: 'recommendations',
+        path: 'mood-match',
         Component: MoodRecommendations,
       },
       {

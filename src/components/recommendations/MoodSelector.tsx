@@ -41,12 +41,12 @@ const CONTENT_TYPES = [
 ];
 
 const EXAMPLE_PROMPTS = [
-  'I want something funny and light-hearted',
-  'Looking for a thrilling action movie',
-  'Need something relaxing to watch before bed',
-  'Want a mind-bending sci-fi series',
-  'Looking for a romantic comedy',
-  'Need something dark and mysterious',
+  'Something cozy for a rainy Sunday afternoon',
+  'Adrenaline-pumping action that keeps me on edge',
+  'Mind-bending thriller that makes me question reality',
+  'Feel-good comedy to lift my spirits',
+  'Dark and atmospheric mystery series',
+  'Epic fantasy adventure to escape into',
 ];
 
 export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }: MoodSelectorProps) {
@@ -124,9 +124,9 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
     <div className='space-y-8'>
       {/* Main Heading Section */}
       <div className='space-y-4 text-center'>
-        <h1 className='heading gradient max-mobile:text-3xl max-xs:text-2xl'>What do you want to watch?</h1>
+        <h1 className='heading gradient max-mobile:text-3xl max-xs:text-2xl'>Discover Your Next Obsession</h1>
         <p className='text-Grey-400 mx-auto max-w-2xl text-base sm:text-lg'>
-          Describe what you're in the mood for and our AI will find perfect recommendations tailored to your taste
+          Tell us your vibe, and we'll curate personalized recommendations from your watchlist and beyond
         </p>
       </div>
 
@@ -150,7 +150,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     onKeyDown={handleKeyPress}
-                    placeholder="Tell me what you're in the mood for... Use Ctrl+↑/↓ to browse search history"
+                    placeholder="Describe your mood, genre preferences, or the vibe you're going for... Use Ctrl+↑/↓ to browse previous searches"
                     rows={3}
                     className='placeholder:text-Grey-400 w-full resize-none border-0 bg-transparent text-base leading-relaxed text-white focus:ring-0 focus:outline-none'
                   />
@@ -188,7 +188,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                       className='from-Primary-500 to-Secondary-500 rounded-full bg-gradient-to-r px-6 text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100'
                       startContent={!isLoading && <Search className='h-4 w-4' />}
                     >
-                      {isLoading ? 'Searching...' : 'Get Recommendations'}
+                      {isLoading ? 'Finding matches...' : 'Find My Matches'}
                     </Button>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
 
         {/* Example Prompts */}
         <div className='space-y-4'>
-          <p className='text-Grey-400 text-center text-sm font-medium'>Try these examples:</p>
+          <p className='text-Grey-400 text-center text-sm font-medium'>Not sure what to describe? Try these vibes:</p>
           <div className='flex flex-wrap justify-center gap-2'>
             {EXAMPLE_PROMPTS.map((prompt, index) => (
               <button
@@ -233,8 +233,8 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
         {/* Preferences - Moved Below and Simplified */}
         <div className='rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.01] to-white/[0.03] p-6 shadow-lg'>
           <div className='mb-4 text-center'>
-            <h3 className='mb-2 text-lg font-semibold text-white'>Refine Your Search</h3>
-            <p className='text-Grey-400 text-sm'>Optional preferences to narrow down results</p>
+            <h3 className='mb-2 text-lg font-semibold text-white'>Fine-tune Your Results</h3>
+            <p className='text-Grey-400 text-sm'>Optional filters to personalize your recommendations</p>
           </div>
 
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
