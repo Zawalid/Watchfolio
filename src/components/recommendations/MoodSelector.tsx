@@ -121,77 +121,57 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
   };
 
   return (
-    <div className='space-y-8'>
+    <div className='space-y-8 pt-14'>
       {/* Main Heading Section */}
       <div className='space-y-4 text-center'>
-        <h1 className='heading gradient max-mobile:text-3xl max-xs:text-2xl'>Discover Your Next Obsession</h1>
-        <p className='text-Grey-400 mx-auto max-w-2xl text-base sm:text-lg'>
-          Tell us your vibe, and we'll curate personalized recommendations from your watchlist and beyond
-        </p>
+        <h1 className='heading gradient xs:text-2xl text-xl sm:text-3xl lg:text-4xl'>Discover Your Next Obsession</h1>
+        <p className='text-Grey-400 md:text-lg xs:text-sm text-xs'>Tell us your vibe, and we'll curate personalized recommendations from your watchlist and beyond</p>
       </div>
 
       {/* AI Chat Input Section */}
-      <div className='mx-auto max-w-4xl space-y-6'>
+      <div className='mx-auto max-w-4xl space-y-6 px-4 sm:px-0'>
         {/* Chat-style Input Container */}
         <div className='relative'>
-          <div className='rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] p-1 shadow-2xl backdrop-blur-md'>
-            <div className='rounded-3xl bg-gradient-to-b from-white/[0.01] to-white/[0.05] p-5'>
-              <div className='flex gap-4'>
-                {/* Avatar/Icon */}
-                <div className='flex-shrink-0 pt-1'>
-                  <div className='from-Primary-500 to-Secondary-500 shadow-Primary-500/25 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br shadow-lg'>
-                    <Search className='h-5 w-5 text-white' />
+          <div className='rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] backdrop-blur-md sm:rounded-3xl'>
+            <div className='p-5 sm:p-6'>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Describe your mood, genre preferences, or the vibe you're going for... Use Ctrl+↑/↓ to browse previous searches"
+                rows={2}
+                className='placeholder:text-Grey-400 w-full resize-none border-0 bg-transparent text-xs xs:text-sm md:text-base leading-relaxed text-white focus:outline-none focus:ring-0'
+              />
+
+              {/* Bottom Bar with Shortcuts and Button */}
+              <div className='mt-4 flex flex-col gap-3 border-t border-white/5 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4'>
+                <div className='text-Grey-500 hidden items-center gap-4 text-xs sm:flex'>
+                  <div className='flex items-center gap-1.5'>
+                    <ShortcutKey shortcut='Ctrl Enter' className='kbd-sm' />
+                    <span>to search</span>
                   </div>
-                </div>
-
-                {/* Input Area */}
-                <div className='flex-1 space-y-4'>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    placeholder="Describe your mood, genre preferences, or the vibe you're going for... Use Ctrl+↑/↓ to browse previous searches"
-                    rows={3}
-                    className='placeholder:text-Grey-400 w-full resize-none border-0 bg-transparent text-base leading-relaxed text-white focus:ring-0 focus:outline-none'
-                  />
-
-                  {/* Input Actions */}
-                  <div className='flex items-center justify-between gap-3'>
-                    <div className='text-Grey-500 flex items-center gap-2 text-xs sm:gap-4'>
-                      <div className='flex items-center gap-1 sm:gap-2'>
-                        <ShortcutKey
-                          shortcut='Ctrl Enter'
-                          className='kbd-sm'
-                        />
-                        <span className='hidden sm:inline'>to search</span>
-                      </div>
-                      {requestHistory.length > 0 && (
-                        <div className='hidden sm:flex items-center gap-2'>
-                          <ShortcutKey
-                            shortcut='Ctrl ↑ ↓'
-                            className='kbd-sm'
-                          />
-                          <span>history ({requestHistory.length}/10)</span>
-                          {historyIndex !== -1 && (
-                            <span className="text-Primary-400 text-xs font-medium">
-                              [{historyIndex + 1}/{requestHistory.length}]
-                            </span>
-                          )}
-                        </div>
+                  {requestHistory.length > 0 && (
+                    <div className='flex items-center gap-1.5'>
+                      <ShortcutKey shortcut='Ctrl ↑ ↓' className='kbd-sm' />
+                      <span>history ({requestHistory.length}/10)</span>
+                      {historyIndex !== -1 && (
+                        <span className='text-Primary-400 font-medium'>
+                          [{historyIndex + 1}/{requestHistory.length}]
+                        </span>
                       )}
                     </div>
-                    <Button
-                      onPress={handleSubmit}
-                      isLoading={isLoading}
-                      isDisabled={!description.trim()}
-                      size='sm'
-                      className='from-Primary-500 to-Secondary-500 rounded-full bg-gradient-to-r px-6 text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100'
-                      startContent={!isLoading && <Search className='h-4 w-4' />}
-                    >
-                      {isLoading ? 'Finding matches...' : 'Find My Matches'}
-                    </Button>
-                  </div>
+                  )}
                 </div>
+
+                <Button
+                  onPress={handleSubmit}
+                  isLoading={isLoading}
+                  isDisabled={!description.trim()}
+                  className='button-primary h-9 w-full text-sm sm:ml-auto sm:h-10 sm:w-auto'
+                  startContent={!isLoading && <Search className='h-4 w-4' />}
+                >
+                  {isLoading ? 'Searching...' : 'Find My Matches'}
+                </Button>
               </div>
             </div>
           </div>
@@ -209,9 +189,13 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
 
                   // Add to history using consistent logic
                   if (requestHistory[0] !== prompt) {
-                    const newHistory = [prompt, ...requestHistory.filter(item => item !== prompt)].slice(0, 10);
+                    const newHistory = [prompt, ...requestHistory.filter((item) => item !== prompt)].slice(0, 10);
                     setRequestHistory(newHistory);
-                    console.log('Added example to history:', { example: prompt, historyLength: newHistory.length, history: newHistory });
+                    console.log('Added example to history:', {
+                      example: prompt,
+                      historyLength: newHistory.length,
+                      history: newHistory,
+                    });
                   }
                   setHistoryIndex(-1);
 
@@ -222,7 +206,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                     setIsLoading(false);
                   }
                 }}
-                className='text-Grey-300 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm transition-all hover:scale-105 hover:border-white/30 hover:bg-white/10 hover:text-white'
+                className='pill-bg text-Grey-300 hover:text-Grey-100 mobile:w-fit w-full rounded-full px-3 py-1.5 text-xs hover:bg-white/10 lg:px-4 lg:py-2 lg:text-sm'
               >
                 {prompt}
               </button>
@@ -231,15 +215,15 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
         </div>
 
         {/* Preferences - Moved Below and Simplified */}
-        <div className='rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.01] to-white/[0.03] p-6 shadow-lg'>
+        <div className='rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.01] to-white/[0.03] p-4 shadow-lg sm:p-6'>
           <div className='mb-4 text-center'>
-            <h3 className='mb-2 text-lg font-semibold text-white'>Fine-tune Your Results</h3>
-            <p className='text-Grey-400 text-sm'>Optional filters to personalize your recommendations</p>
+            <h3 className='mb-2 text-base font-semibold text-white sm:text-lg'>Fine-tune Your Results</h3>
+            <p className='text-Grey-400 text-xs sm:text-sm'>Optional filters to personalize your recommendations</p>
           </div>
 
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-            <div className='space-y-2'>
-              <label htmlFor='content-type' className='text-Grey-400 text-sm font-medium'>
+          <div className='grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3'>
+            <div>
+              <label htmlFor='content-type' className='text-Grey-400 text-xs font-medium sm:text-sm'>
                 Content Type
               </label>
               <Select
@@ -248,6 +232,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                 selectedKeys={[preferences.contentType]}
                 onSelectionChange={(keys) => handlePreferenceChange('contentType', Array.from(keys)[0] as string)}
                 classNames={SELECT_CLASSNAMES}
+                size='sm'
               >
                 {CONTENT_TYPES.map((type) => (
                   <SelectItem key={type.value}>{type.label}</SelectItem>
@@ -255,8 +240,8 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
               </Select>
             </div>
 
-            <div className='space-y-2'>
-              <label htmlFor='decade' className='text-Grey-400 text-sm font-medium'>
+            <div>
+              <label htmlFor='decade' className='text-Grey-400 text-xs font-medium sm:text-sm'>
                 Decade
               </label>
               <Select
@@ -265,6 +250,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                 selectedKeys={[preferences.decade]}
                 onSelectionChange={(keys) => handlePreferenceChange('decade', Array.from(keys)[0] as string)}
                 classNames={SELECT_CLASSNAMES}
+                size='sm'
               >
                 {DECADES.map((decade) => (
                   <SelectItem key={decade.value}>{decade.label}</SelectItem>
@@ -272,8 +258,8 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
               </Select>
             </div>
 
-            <div className='space-y-2'>
-              <label htmlFor='duration' className='text-Grey-400 text-sm font-medium'>
+            <div>
+              <label htmlFor='duration' className='text-Grey-400 text-xs font-medium sm:text-sm'>
                 Duration
               </label>
               <Select
@@ -282,6 +268,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                 selectedKeys={[preferences.duration]}
                 onSelectionChange={(keys) => handlePreferenceChange('duration', Array.from(keys)[0] as string)}
                 classNames={SELECT_CLASSNAMES}
+                size='sm'
               >
                 {DURATIONS.map((duration) => (
                   <SelectItem key={duration.value}>{duration.label}</SelectItem>

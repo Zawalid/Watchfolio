@@ -4,6 +4,8 @@ import { queryKeys } from '@/lib/react-query';
 import { generateMediaId } from '@/utils/library';
 import { useLibraryItem } from '@/hooks/library/useLibraryQueries';
 import BaseMediaCard from '@/components/media/BaseMediaCard';
+import { MediaCardSkeleton } from '../media/MediaCardsListSkeleton';
+import { Sparkles } from 'lucide-react';
 
 interface Recommendation {
   title: string;
@@ -31,9 +33,10 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
 
       // Find exact match by year
       const exactMatch = results.results.find((item: Movie | TvShow) => {
-        const itemYear = type === 'movie'
-          ? (item as Movie).release_date?.substring(0, 4)
-          : (item as TvShow).first_air_date?.substring(0, 4);
+        const itemYear =
+          type === 'movie'
+            ? (item as Movie).release_date?.substring(0, 4)
+            : (item as TvShow).first_air_date?.substring(0, 4);
         return itemYear === year.toString();
       });
 
@@ -46,7 +49,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   // If we found a match, fetch full details
   const { data: mediaDetails } = useQuery({
     queryKey: searchResults ? queryKeys.details(type, searchResults.id) : ['disabled'],
-    queryFn: () => searchResults ? getDetails(type, searchResults.id) : Promise.resolve(null),
+    queryFn: () => (searchResults ? getDetails(type, searchResults.id) : Promise.resolve(null)),
     enabled: !!searchResults,
     staleTime: Infinity,
   });
@@ -56,28 +59,38 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   const { data: libraryItem } = useLibraryItem(mediaId);
 
   // Show loading state
-  if (isSearching || (searchResults && !mediaDetails)) {
-    return (
-      <div className="aspect-[2/3] rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] animate-pulse">
-        <div className="h-full w-full bg-Grey-800/50 rounded-2xl" />
-      </div>
-    );
-  }
+  if (isSearching || (searchResults && !mediaDetails)) return <MediaCardSkeleton />;
 
   // If no search results found, show fallback card
-  if (!searchResults) {
+  if (!searchResults || !mediaDetails) {
     return (
-      <div className="aspect-[2/3] rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] p-4 flex flex-col justify-between">
-        <div className="space-y-3">
-          <div className="border-Secondary-500/40 bg-Secondary-500/20 text-Secondary-300 flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs font-medium backdrop-blur-sm w-fit">
+      <div className='relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08]'>
+        <div className='absolute top-3 right-3 z-30'>
+          <div className='border-Secondary-500/40 bg-Secondary-500/20 text-Secondary-300 flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs font-medium backdrop-blur-sm'>
+            <Sparkles className='h-3 w-3' />
             <span>AI Pick</span>
           </div>
-          <h3 className="text-white font-bold text-lg leading-tight">{title}</h3>
-          <p className="text-Grey-400 text-sm">{year} • {type === 'movie' ? 'Movie' : 'TV Show'}</p>
         </div>
-        <div className="space-y-2">
-          <p className="text-Grey-300 text-xs">{detailed_analysis}</p>
-          <p className="text-Secondary-300 text-xs italic">{mood_alignment}</p>
+
+        <div className='rounded-2xl bg-gradient-to-br from-Grey-900/98 to-Grey-800/98 p-5 backdrop-blur-xl h-full'>
+          <div className='flex h-full flex-col space-y-4'>
+            <div className='flex items-center gap-2'>
+              <Sparkles className='text-Secondary-400 h-5 w-5' />
+              <span className='text-Secondary-300 text-base font-semibold'>AI Analysis</span>
+            </div>
+
+            <div className='flex-1 space-y-4 overflow-y-auto'>
+              <div>
+                <h4 className='text-Primary-300 mb-2 text-sm font-medium'>Why this matches</h4>
+                <p className='text-Grey-300 text-sm leading-relaxed'>{mood_alignment}</p>
+              </div>
+
+              <div className='border-t border-white/10 pt-3'>
+                <h4 className='text-Primary-300 mb-2 text-sm font-medium'>Detailed analysis</h4>
+                <p className='text-Grey-300 text-sm leading-relaxed'>{detailed_analysis}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -86,8 +99,8 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   // This should only render if we have both searchResults and mediaDetails
   if (!mediaDetails) {
     return (
-      <div className="aspect-[2/3] rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] animate-pulse">
-        <div className="h-full w-full bg-Grey-800/50 rounded-2xl" />
+      <div className='aspect-[2/3] animate-pulse rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08]'>
+        <div className='bg-Grey-800/50 h-full w-full rounded-2xl' />
       </div>
     );
   }
@@ -109,7 +122,7 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
       media={mediaDetails}
       aiAnalysis={{
         detailed_analysis,
-        mood_alignment
+        mood_alignment,
       }}
     />
   );

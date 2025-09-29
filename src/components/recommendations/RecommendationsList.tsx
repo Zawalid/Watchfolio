@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useQueryClient, useInfiniteQuery, InfiniteData } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { Button } from '@heroui/react';
 import { ArrowLeft, RefreshCw, Brain, Sparkles, Coffee, Lightbulb } from 'lucide-react';
 import { appwriteService } from '@/lib/appwrite/api';
@@ -36,12 +35,6 @@ interface Recommendation {
   type: 'movie' | 'tv';
 }
 
-interface BatchResponse {
-  recommendations: Recommendation[];
-  description: string;
-  total: number;
-}
-
 export function RecommendationsList({
   description,
   userLibrary,
@@ -51,58 +44,21 @@ export function RecommendationsList({
 }: RecommendationsListProps) {
   const queryClient = useQueryClient();
 
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery<BatchResponse, Error, InfiniteData<BatchResponse>, string[], number>({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['ai-recommendations', description],
-    initialPageParam: 1,
-    queryFn: async ({ pageParam }) => {
-      // Get all previous recommendations from cache to exclude
-      const excludeTitles: string[] = [];
-      if (data?.pages) {
-        for (const page of data.pages) {
-          excludeTitles.push(...page.recommendations.map((rec: Recommendation) => rec.title));
-        }
-      }
-
-      const response = await appwriteService.aiRecommendations.getRecommendationsBatch(
+    queryFn: async () => {
+      return await appwriteService.aiRecommendations.getRecommendations(
         description,
         userLibrary,
         preferences,
-        userProfile,
-        pageParam,
-        excludeTitles
+        userProfile
       );
-
-      return response;
-    },
-    getNextPageParam: (lastPage: BatchResponse, pages: BatchResponse[]) => {
-      const maxBatches = 4;
-      if (pages.length >= maxBatches || !lastPage?.recommendations?.length) {
-        return undefined;
-      }
-      return pages.length + 1;
     },
     staleTime: 1000 * 60 * 30,
     retry: 2,
   });
 
-  // Auto-fetch next page after delay
-  useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage && (data?.pages?.length ?? 0) > 0) {
-      const timer = setTimeout(() => {
-        fetchNextPage();
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [hasNextPage, isFetchingNextPage, data?.pages?.length, fetchNextPage]);
-
-  const allRecommendations = data?.pages?.flatMap(page => page.recommendations) || [];
+  const allRecommendations = data?.recommendations || [];
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ['ai-recommendations', description] });
@@ -235,7 +191,8 @@ export function RecommendationsList({
           >
             <h3 className='text-2xl font-bold text-white'>AI needs a coffee break</h3>
             <p className='text-Grey-400 max-w-lg text-base leading-relaxed'>
-              Our AI curator couldn't find suitable recommendations for your request. Try rephrasing your mood or adjusting the filters above.
+              Our AI curator couldn't find suitable recommendations for your request. Try rephrasing your mood or
+              adjusting the filters above.
             </p>
             <div className='text-Grey-500 mt-3 flex items-center justify-center gap-2'>
               <Lightbulb className='h-4 w-4' />
@@ -300,12 +257,12 @@ export function RecommendationsList({
         transition={{ duration: 0.5 }}
         className='space-y-3 py-8 text-center'
       >
-        <h1 className='heading gradient max-mobile:text-3xl max-xs:text-2xl'>Your Perfect Matches</h1>
-        <p className='text-Grey-400 mx-auto max-w-2xl text-lg'>
+        <h1 className='heading gradient xs:text-2xl text-xl sm:text-3xl lg:text-4xl'>Your Perfect Matches</h1>
+        <p className='text-Grey-400 xs:text-sm text-xs md:text-lg'>
           Based on: <span className='text-Grey-300 italic'>"{requestInfo.description}"</span>
         </p>
         {allRecommendations.length > 0 && (
-          <div className='bg-Primary-500/10 border-Primary-500/20 text-Primary-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm'>
+          <div className='bg-Primary-500/10 border-Primary-500/20 text-Primary-300 inline-flex items-center gap-2 rounded-full border px-3 py-1 mobile:px-4 mobile:py-2 text-xs mobile:text-sm'>
             <span className='bg-Primary-400 h-2 w-2 animate-pulse rounded-full'></span>
             {allRecommendations.length} perfect matches
           </div>
@@ -316,15 +273,14 @@ export function RecommendationsList({
       {allRecommendations.length > 0 && (
         <div className='space-y-8'>
           <div className='space-y-2 text-center'>
-            <h2 className='text-2xl font-bold text-white'>Handpicked Just for You</h2>
-            <p className='text-Grey-400 mx-auto max-w-lg text-base'>
-              Each recommendation comes with AI-powered insights explaining why it matches your vibe.{' '}
-              {hasNextPage && <span className='text-Primary-300'>More matches loading...</span>}
+            <h2 className='text-xl sm:text-2xl font-bold text-white'>Handpicked Just for You</h2>
+            <p className='text-Grey-400 mx-auto max-w-lg text-sm sm:text-base'>
+              Each recommendation comes with AI-powered insights explaining why it matches your vibe.
             </p>
           </div>
 
           <motion.div variants={containerVariants} initial='hidden' animate='visible' className='mx-auto max-w-7xl'>
-            <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'>
+            <div className='mobile:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] items-start gap-5'>
               {allRecommendations.map((recommendation: Recommendation, index: number) => (
                 <motion.div
                   key={`${recommendation.title}-${recommendation.year}-${index}`}
@@ -332,66 +288,13 @@ export function RecommendationsList({
                   initial='hidden'
                   animate='visible'
                   transition={{ delay: index * 0.1 }}
-                  className='flex justify-center'
+                  className='flex'
                 >
                   <RecommendationCard recommendation={recommendation} />
                 </motion.div>
               ))}
-
-              {/* Loading placeholders for incoming recommendations */}
-              {isFetchingNextPage && (
-                <>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <motion.div
-                      key={`loading-${index}`}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.1 }}
-                      className='flex justify-center'
-                    >
-                      <div className='aspect-[2/3] w-full max-w-sm animate-pulse rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08]'>
-                        <div className='bg-Grey-800/50 flex h-full w-full items-center justify-center rounded-2xl'>
-                          <div className='text-Grey-500 flex items-center gap-2'>
-                            <Brain className='h-5 w-5 animate-pulse' />
-                            <span className='text-sm'>Thinking...</span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </>
-              )}
             </div>
           </motion.div>
-
-          {/* Progress indicator */}
-          {(hasNextPage || isFetchingNextPage) && (
-            <div className='text-center'>
-              <div className='text-Grey-400 flex items-center justify-center gap-3'>
-                <div className='flex gap-1'>
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <div
-                      key={index}
-                      className={`h-2 w-8 rounded-full transition-all duration-300 ${
-                        index < (data?.pages?.length ?? 0)
-                          ? 'bg-Primary-500'
-                          : index === (data?.pages?.length ?? 0) && isFetchingNextPage
-                            ? 'bg-Primary-500/50 animate-pulse'
-                            : 'bg-white/10'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className='text-sm'>
-                  {isFetchingNextPage
-                    ? 'Finding more matches...'
-                    : hasNextPage
-                      ? `${allRecommendations.length}/20 perfect matches`
-                      : `${allRecommendations.length} matches found`}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>

@@ -16,15 +16,12 @@ export default function MoodRecommendations() {
   const [preferences, setPreferences] = useState<Preferences>({
     contentType: 'both',
     decade: '',
-    duration: ''
+    duration: '',
   });
 
   const { user } = useAuthStore();
 
-  const { data: libraryPages } = useInfiniteLibraryItems(
-    { status: 'all' },
-    { enabled: true }
-  );
+  const { data: libraryPages } = useInfiniteLibraryItems({ status: 'all' }, { enabled: true });
 
   const allLibraryItems = libraryPages?.pages.flat() || [];
 
@@ -37,24 +34,22 @@ export default function MoodRecommendations() {
   const handleBackToInput = () => {
     setSelectedDescription(null);
   };
-
+  if (!selectedDescription) {
+    return (
+      <MoodSelector
+        onMoodSelect={handleDescriptionSubmit}
+        preferences={preferences}
+        onPreferencesChange={setPreferences}
+      />
+    );
+  }
   return (
-    <div className="space-y-6 py-8 px-4 sm:py-12 sm:px-6 lg:py-16">
-      {!selectedDescription ? (
-        <MoodSelector
-          onMoodSelect={handleDescriptionSubmit}
-          preferences={preferences}
-          onPreferencesChange={setPreferences}
-        />
-      ) : (
-        <RecommendationsList
-          description={selectedDescription}
-          userLibrary={allLibraryItems}
-          preferences={preferences}
-          userProfile={user?.profile}
-          onBack={handleBackToInput}
-        />
-      )}
-    </div>
+    <RecommendationsList
+      description={selectedDescription}
+      userLibrary={allLibraryItems}
+      preferences={preferences}
+      userProfile={user?.profile}
+      onBack={handleBackToInput}
+    />
   );
 }

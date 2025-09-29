@@ -3,10 +3,10 @@
     "allow": [
       "WebSearch",
       "WebFetch(domain:www.heroui.com)",
-      "Bash(git checkout:*)",
       "Bash(npm run typecheck:*)",
       "Bash(cat:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Read(//c/Users/walid/Downloads/Screenshots/**)"
     ],
     "deny": [],
     "ask": []

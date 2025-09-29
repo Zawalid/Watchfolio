@@ -3,7 +3,7 @@ import { Slider } from '@/components/ui/Slider';
 
 export function MediaCardSkeleton() {
   return (
-    <div className='group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] shadow-lg backdrop-blur-sm'>
+    <div className='group relative size-full overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.02] to-white/[0.08] shadow-lg backdrop-blur-sm'>
       {/* Top left badges */}
       <div className='absolute top-3 left-3 z-20 flex flex-col items-start gap-2'>
         <div className='animate-pulse rounded-full border border-white/25 bg-white/10 px-2.5 py-1 backdrop-blur-md'>

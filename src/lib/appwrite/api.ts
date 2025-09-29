@@ -11,6 +11,7 @@ import type {
 import type { UserPreferences, CreateUserPreferencesInput, UpdateUserPreferencesInput } from './types';
 import type { Library, CreateLibraryInput, UpdateLibraryInput } from './types';
 import type { AppwriteLibraryMedia, CreateAppwriteLibraryMediaInput, UpdateAppwriteLibraryMediaInput } from './types';
+import { GENRES } from '@/utils/constants/TMDB';
 
 function setPermissions(userId: string): string[] {
   return [
@@ -498,9 +499,19 @@ export class AIRecommendationsAPI {
         functionId: 'mood-recommendations',
         body: JSON.stringify({
           description: description.trim(),
-          userLibrary,
           preferences,
-          userProfile,
+          userProfile: {
+            recentWatches: userLibrary
+              .slice(0, 5)
+              .map((i) => i.title)
+              .join(', '),
+            favoriteGenres: (userProfile?.favoriteGenres || [])
+              .map((id) => GENRES.find((g) => g.id === id)?.label)
+              .filter(Boolean)
+              .join(', '),
+            contentPreferences: userProfile?.contentPreferences?.join(', ') || '',
+            favoriteContentType: userProfile?.favoriteContentType || '',
+          },
         }),
       });
 
@@ -513,45 +524,6 @@ export class AIRecommendationsAPI {
       return result.data;
     } catch (error) {
       console.error('Error getting AI recommendations:', error);
-      throw new Error('Failed to get AI recommendations. Please try again.');
-    }
-  }
-
-  async getRecommendationsBatch(
-    description: string,
-    userLibrary: LibraryMedia[],
-    preferences: { contentType?: string; decade?: string; duration?: string } = {},
-    userProfile?: {
-      favoriteGenres: number[];
-      contentPreferences: string[];
-      favoriteNetworks: number[];
-      favoriteContentType: string;
-    },
-    batchNumber: number = 1,
-    excludeTitles: string[] = []
-  ) {
-    try {
-      const response = await functions.createExecution({
-        functionId: 'mood-recommendations',
-        body: JSON.stringify({
-          description: description.trim(),
-          userLibrary,
-          preferences,
-          userProfile,
-          batchNumber,
-          excludeTitles,
-        }),
-      });
-
-      const result = JSON.parse(response.responseBody);
-
-      if (result.status !== 200) {
-        throw new Error(result.message || 'Failed to get recommendations');
-      }
-
-      return result.data;
-    } catch (error) {
-      console.error('Error getting AI recommendations batch:', error);
       throw new Error('Failed to get AI recommendations. Please try again.');
     }
   }

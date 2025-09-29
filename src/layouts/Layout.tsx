@@ -24,7 +24,7 @@ export default function Layout() {
       <div className='flex h-full min-h-dvh flex-col pb-21 md:pb-0'>
         <Navbar />
         <main
-          className='container mx-auto max-lg:max-w-screen min-h-screen flex-1 px-6 pt-28 pb-10'
+          className='container mx-auto max-lg:max-w-screen min-h-screen flex-1 px-3 xs:px-6 pt-22 pb-10'
           role='main'
           aria-label='Main content'
         >
