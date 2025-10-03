@@ -96,7 +96,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           >
             <h3 className='text-Grey-400 mb-4 px-2 text-xs font-semibold tracking-wider uppercase'>Discover</h3>
             <div className='space-y-1'>
-              {getLinks(['home', 'movies', 'tv', 'search']).map((link, index) => {
+              {getLinks(['home', 'movies', 'tv', 'mood-match', 'search']).map((link, index) => {
                 const isActive = isLinkActive(link.href, undefined, link.matches);
 
                 return (
@@ -148,7 +148,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
           >
             <h3 className='text-Grey-400 mb-3 px-2 text-xs font-semibold tracking-wider uppercase'>More</h3>
             <div className='space-y-1'>
-              {getLinks(['collections', 'celebrities', 'networks']).map((link, index) => {
+              {getLinks(['celebrities', 'networks']).map((link, index) => {
                 const isActive = isLinkActive(link.href, undefined, link.matches);
 
                 return (

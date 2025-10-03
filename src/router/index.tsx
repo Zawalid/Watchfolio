@@ -27,6 +27,7 @@ import {
   UserLibrary,
   StatsInsights,
   ViewingTaste,
+  MoodRecommendations,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -104,6 +105,10 @@ export const router = createBrowserRouter([
       {
         path: 'search',
         Component: Search,
+      },
+      {
+        path: 'mood-match',
+        Component: MoodRecommendations,
       },
       {
         path: 'celebrities',

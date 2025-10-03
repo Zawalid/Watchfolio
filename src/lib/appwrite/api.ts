@@ -1,5 +1,5 @@
 import { ID, ImageFormat, ImageGravity, Permission, Query, Role, OAuthProvider, type Models } from 'appwrite';
-import { tablesDB, account, storage, locale, DATABASE_ID, TABLES, BUCKETS } from '@/lib/appwrite';
+import { tablesDB, account, storage, locale, functions, DATABASE_ID, TABLES, BUCKETS } from '@/lib/appwrite';
 import type {
   Profile,
   CreateProfileInput,
@@ -11,6 +11,7 @@ import type {
 import type { UserPreferences, CreateUserPreferencesInput, UpdateUserPreferencesInput } from './types';
 import type { Library, CreateLibraryInput, UpdateLibraryInput } from './types';
 import type { AppwriteLibraryMedia, CreateAppwriteLibraryMediaInput, UpdateAppwriteLibraryMediaInput } from './types';
+import { GENRES } from '@/utils/constants/TMDB';
 
 function setPermissions(userId: string): string[] {
   return [
@@ -479,6 +480,56 @@ export class LocaleAPI {
 }
 
 /**
+ * AI Recommendations API - handles natural language AI recommendations
+ */
+export class AIRecommendationsAPI {
+  async getRecommendations(
+    description: string,
+    userLibrary: LibraryMedia[],
+    preferences: { contentType?: string; decade?: string; duration?: string } = {},
+    userProfile?: {
+      favoriteGenres: number[];
+      contentPreferences: string[];
+      favoriteNetworks: number[];
+      favoriteContentType: string;
+    }
+  ) {
+    try {
+      const response = await functions.createExecution({
+        functionId: 'mood-recommendations',
+        body: JSON.stringify({
+          description: description.trim(),
+          preferences,
+          userProfile: {
+            recentWatches: userLibrary
+              .slice(0, 5)
+              .map((i) => i.title)
+              .join(', '),
+            favoriteGenres: (userProfile?.favoriteGenres || [])
+              .map((id) => GENRES.find((g) => g.id === id)?.label)
+              .filter(Boolean)
+              .join(', '),
+            contentPreferences: userProfile?.contentPreferences?.join(', ') || '',
+            favoriteContentType: userProfile?.favoriteContentType || '',
+          },
+        }),
+      });
+
+      const result = JSON.parse(response.responseBody);
+
+      if (result.status !== 200) {
+        throw new Error(result.message || 'Failed to get recommendations');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('Error getting AI recommendations:', error);
+      throw new Error('Failed to get AI recommendations. Please try again.');
+    }
+  }
+}
+
+/**
  * Main API service that combines all sub-services
  */
 export class AppwriteService {
@@ -489,6 +540,7 @@ export class AppwriteService {
   public auth = new AuthAPI();
   public storage = new StorageAPI();
   public locale = new LocaleAPI();
+  public aiRecommendations = new AIRecommendationsAPI();
 
   /**
    * Health check - test if Appwrite is accessible

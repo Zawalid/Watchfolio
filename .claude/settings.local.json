@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:www.heroui.com)"
+      "WebFetch(domain:www.heroui.com)",
+      "Bash(npm run typecheck:*)",
+      "Bash(cat:*)",
+      "Bash(npm run lint)",
+      "Read(//c/Users/walid/Downloads/Screenshots/**)"
     ],
     "deny": [],
     "ask": []

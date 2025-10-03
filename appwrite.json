@@ -603,6 +603,21 @@
       "entrypoint": "src/main.js",
       "commands": "npm install",
       "path": "functions/Cleanup Deleted Media"
+    },
+    {
+      "$id": "mood-recommendations",
+      "name": "Mood Recommendations",
+      "runtime": "node-22",
+      "execute": ["users"],
+      "events": [],
+      "scopes": [],
+      "schedule": "",
+      "timeout": 60,
+      "enabled": true,
+      "logging": true,
+      "entrypoint": "src/main.js",
+      "commands": "npm install",
+      "path": "functions/Mood Recommendations"
     }
   ]
 }

@@ -91,7 +91,7 @@ export default function Navbar() {
         scrolled ? 'bg-Grey-900/40 shadow-2xl shadow-black/20 backdrop-blur-xl' : 'bg-transparent'
       }`}
     >
-      <div className='container mx-auto px-4 lg:px-6'>
+      <div className='xs:px-6 container mx-auto px-3'>
         <div className='flex h-16 items-center justify-between'>
           <Link to={homeLink} className='group flex items-center space-x-2'>
             <motion.img
@@ -103,14 +103,14 @@ export default function Navbar() {
           </Link>
 
           <div className='hidden items-center space-x-2 md:flex'>
-            {getLinks(['home', 'movies', 'tv', 'collections', 'search']).map((item) => (
+            {getLinks(['home', 'movies', 'tv', 'mood-match', 'search']).map((item) => (
               <NavItem
                 key={item.href}
                 label={item.label}
                 icon={item.icon}
                 href={item.href}
                 matches={item.matches}
-                className={item.href === '/collections' ? 'md:hidden lg:flex' : ''}
+                className={item.href === '/mood-match' ? 'md:hidden lg:flex' : ''}
               />
             ))}
           </div>
