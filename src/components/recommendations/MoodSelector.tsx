@@ -69,9 +69,11 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
 
     // Add to history if it's not already the most recent
     if (requestHistory[0] !== trimmedDescription) {
-      const newHistory = [trimmedDescription, ...requestHistory.filter(item => item !== trimmedDescription)].slice(0, 10);
+      const newHistory = [trimmedDescription, ...requestHistory.filter((item) => item !== trimmedDescription)].slice(
+        0,
+        10
+      );
       setRequestHistory(newHistory);
-      console.log('Added to history:', { newRequest: trimmedDescription, historyLength: newHistory.length, history: newHistory });
     }
     setHistoryIndex(-1);
 
@@ -98,24 +100,17 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
 
     setHistoryIndex(newIndex);
     setDescription(newIndex === -1 ? '' : requestHistory[newIndex]);
-
-    console.log('History navigation:', { direction, newIndex, historyLength: requestHistory.length, newDescription: newIndex === -1 ? '' : requestHistory[newIndex] });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    console.log('Key pressed:', { key: e.key, ctrl: e.ctrlKey, meta: e.metaKey });
-
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      console.log('Submitting via keyboard shortcut');
       handleSubmit();
     } else if (e.key === 'ArrowUp' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      console.log('Navigating history up');
       navigateHistory('up');
     } else if (e.key === 'ArrowDown' && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
-      console.log('Navigating history down');
       navigateHistory('down');
     }
   };
@@ -125,7 +120,9 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
       {/* Main Heading Section */}
       <div className='space-y-4 text-center'>
         <h1 className='heading gradient xs:text-2xl text-xl sm:text-3xl lg:text-4xl'>Discover Your Next Obsession</h1>
-        <p className='text-Grey-400 md:text-lg xs:text-sm text-xs'>Tell us your vibe, and we'll curate personalized recommendations from your watchlist and beyond</p>
+        <p className='text-Grey-400 xs:text-sm text-xs md:text-lg'>
+          Tell us your vibe, and we'll curate personalized recommendations from your watchlist and beyond
+        </p>
       </div>
 
       {/* AI Chat Input Section */}
@@ -140,7 +137,7 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                 onKeyDown={handleKeyPress}
                 placeholder="Describe your mood, genre preferences, or the vibe you're going for... Use Ctrl+↑/↓ to browse previous searches"
                 rows={2}
-                className='placeholder:text-Grey-400 w-full resize-none border-0 bg-transparent text-xs xs:text-sm md:text-base leading-relaxed text-white focus:outline-none focus:ring-0'
+                className='placeholder:text-Grey-400 xs:text-sm w-full resize-none border-0 bg-transparent text-xs leading-relaxed text-white focus:ring-0 focus:outline-none md:text-base'
               />
 
               {/* Bottom Bar with Shortcuts and Button */}
@@ -191,11 +188,6 @@ export function MoodSelector({ onMoodSelect, preferences, onPreferencesChange }:
                   if (requestHistory[0] !== prompt) {
                     const newHistory = [prompt, ...requestHistory.filter((item) => item !== prompt)].slice(0, 10);
                     setRequestHistory(newHistory);
-                    console.log('Added example to history:', {
-                      example: prompt,
-                      historyLength: newHistory.length,
-                      history: newHistory,
-                    });
                   }
                   setHistoryIndex(-1);
 

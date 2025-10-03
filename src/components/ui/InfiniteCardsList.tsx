@@ -165,7 +165,10 @@ export function InfiniteCardsList<T>({
 
   return (
     <>
-      <div ref={containerRef || navRef} className='grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] mobile:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'>
+      <div
+        ref={containerRef || navRef}
+        className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] items-start gap-5'
+      >
         {results.map((item, idx) => (
           <CardComponent key={getItemKey(item)} item={item} tabIndex={currentIndex === idx ? 0 : -1} />
         ))}

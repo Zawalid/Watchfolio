@@ -144,8 +144,8 @@ export function RecommendationsList({
             transition={{ type: 'spring', stiffness: 120, damping: 20, delay: 0.1 }}
             className='space-y-4'
           >
-            <h3 className='mb-3 text-2xl font-bold text-white'>Finding your perfect matches...</h3>
-            <p className='text-Grey-400 max-w-lg text-base leading-relaxed'>
+            <h3 className='mb-3 text-xl sm:text-2xl font-bold text-white'>Finding your perfect matches...</h3>
+            <p className='text-Grey-400 max-w-lg text-sm sm:text-base leading-relaxed'>
               Our AI is analyzing your watchlist and taste profile to curate personalized recommendations for:{' '}
               <span className='text-Grey-300 italic'>"{description}"</span>
             </p>
@@ -189,8 +189,8 @@ export function RecommendationsList({
             transition={{ type: 'spring', stiffness: 100, damping: 25, delay: 0.2 }}
             className='space-y-3'
           >
-            <h3 className='text-2xl font-bold text-white'>AI needs a coffee break</h3>
-            <p className='text-Grey-400 max-w-lg text-base leading-relaxed'>
+            <h3 className='text-xl sm:text-2xl font-bold text-white'>AI needs a coffee break</h3>
+            <p className='text-Grey-400 max-w-lg text-sm sm:text-base leading-relaxed'>
               Our AI curator couldn't find suitable recommendations for your request. Try rephrasing your mood or
               adjusting the filters above.
             </p>

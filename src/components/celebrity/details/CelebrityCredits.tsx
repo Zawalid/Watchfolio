@@ -22,7 +22,8 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
     () =>
       libraryItems.reduce(
         (acc, item) => {
-          acc[item.id] = item;
+          const compositeId = `${item.media_type}-${item.tmdbId}`;
+          acc[compositeId] = item;
           return acc;
         },
         {} as Record<string, LibraryMedia>
@@ -86,8 +87,8 @@ export default function CelebrityCredits({ currentContent, category, isDeceased 
                 genres={getGenres(item.genre_ids)}
                 media={item as Media}
                 item={libraryItemsMap[generateMediaId(item)]}
-                celebrityRoles={item.roles}
                 primaryRole={item.primaryRole}
+                roleName={item.character || item.job}
               />
             ))}
           </div>

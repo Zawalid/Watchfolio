@@ -13,9 +13,8 @@ import { useViewportSize } from '@/hooks/useViewportSize';
 import { useAddOrUpdateLibraryItem } from '@/hooks/library/useLibraryMutations';
 import { generateMediaId } from '@/utils/library';
 import { MobileActionsDrawer, QuickActions } from './QuickActions';
-import { PersonRoleBadges } from './PersonRoleBadges';
 import { MediaCardOverlays } from './MediaCardOverlays';
-import { AiAnalysisBadge } from './AiAnalysisBadge';
+import { AiAndOverview } from './AIAndOverview';
 
 interface BaseMediaCardProps {
   id: number;
@@ -29,8 +28,8 @@ interface BaseMediaCardProps {
   media?: Media;
   tabIndex?: number;
   isOwnProfile?: boolean;
-  celebrityRoles?: string[];
   primaryRole?: 'acting' | 'voice' | 'guest' | 'production';
+  roleName?: string;
   aiAnalysis?: {
     detailed_analysis: string;
     mood_alignment: string;
@@ -48,8 +47,8 @@ export default function BaseMediaCard({
   item,
   media,
   tabIndex = 0,
-  celebrityRoles,
   primaryRole,
+  roleName,
   aiAnalysis,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -74,7 +73,6 @@ export default function BaseMediaCard({
   });
 
   const isInteractive = isHovered || isFocused;
-  const isPersonContext = !!celebrityRoles && celebrityRoles.length > 0;
 
   const handleFavorite = useCallback(() => {
     const mediaId = generateMediaId(item || (media && { ...media, media_type: mediaType }));
@@ -129,7 +127,6 @@ export default function BaseMediaCard({
   return (
     <>
       <motion.div
-        // {...(isMobile ? { ...longPressProps, onClick: handleClick } : { onClick: handleClick })}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onFocus={() => setIsFocused(true)}
@@ -174,21 +171,21 @@ export default function BaseMediaCard({
           )}
         </AnimatePresence>
 
-        {/* Quick Actions - Desktop Only */}
+        {/* Quick Actions & Info Toggle - Desktop Only */}
         <AnimatePresence>
           {isInteractive && (
-            <QuickActions
-              key='quick-actions'
-              mediaType={mediaType}
-              media={mediaDetails || media}
-              item={item}
-              isFocused={isFocused}
-            />
+            <>
+              <QuickActions
+                key='quick-actions'
+                mediaType={mediaType}
+                media={mediaDetails || media}
+                item={item}
+                isFocused={isFocused}
+              />
+              <AiAndOverview aiAnalysis={aiAnalysis} overview={mediaDetails?.overview || media?.overview} />
+            </>
           )}
         </AnimatePresence>
-
-        {/* AI Badge and Analysis Button */}
-        {aiAnalysis && <AiAnalysisBadge aiAnalysis={aiAnalysis} />}
 
         {/* All Overlays */}
         <MediaCardOverlays
@@ -196,13 +193,9 @@ export default function BaseMediaCard({
           item={item}
           rating={rating}
           isInteractive={isInteractive}
-          isPersonContext={isPersonContext}
+          primaryRole={primaryRole}
+          roleName={roleName}
         />
-
-        {/* Person Role Badges */}
-        <AnimatePresence>
-          {isPersonContext && <PersonRoleBadges roles={celebrityRoles!} primaryRole={primaryRole} maxVisible={2} />}
-        </AnimatePresence>
 
         <div className='from-Grey-800 to-Grey-900 relative block aspect-[2/3] overflow-hidden bg-gradient-to-br'>
           <motion.div
@@ -218,9 +211,6 @@ export default function BaseMediaCard({
           </motion.div>
           <div className='absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent' />
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isInteractive ? 0 : 1 }}
-            transition={{ duration: 0.3 }}
             className='absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent'
           />
           <div className='absolute inset-x-0 bottom-0 space-y-2 p-4'>
@@ -230,7 +220,7 @@ export default function BaseMediaCard({
             <motion.div
               animate={{ y: isInteractive ? -2 : 0, opacity: isInteractive ? 1 : 0.9 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className='text-Grey-200 flex items-center gap-2.5 text-sm'
+              className='text-Grey-200 flex items-center gapp-2.5 text-sm'
             >
               {releaseDate && (
                 <div className='flex items-center gap-1'>
@@ -277,4 +267,3 @@ export default function BaseMediaCard({
     </>
   );
 }
-

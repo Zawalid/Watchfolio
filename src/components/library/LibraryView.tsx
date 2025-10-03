@@ -121,7 +121,7 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
       </div>
       <div
         ref={containerRef}
-        className='mobile:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-5'
+        className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'
       >
         {items.map((item, index) => {
           if (isOwnProfile)

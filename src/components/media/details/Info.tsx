@@ -28,7 +28,7 @@ export default function Info({ media }: InfoProps) {
   return (
     <div className='flex-1'>
       {/* Cinematic backdrop hero - Mobile only */}
-      <div className='relative -mx-4 -mt-15 h-[65vh] min-h-[400px] w-screen overflow-hidden sm:hidden'>
+      <div className='relative -mx-4 -mt-25 h-[70vh] min-h-[400px] w-screen overflow-hidden sm:hidden'>
         <motion.div
           className='absolute inset-0 w-full'
           initial={{ scale: 1.1, opacity: 0 }}

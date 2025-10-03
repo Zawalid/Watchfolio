@@ -31,11 +31,11 @@ export default function CelebrityProfile({ person, appearances }: CelebrityProfi
   const ageInfo = getAgeInfo(person);
 
   return (
-    <div className='flex flex-col gap-6 lg:flex-row lg:gap-8'>
+    <div className='flex flex-col gap-6 sm:flex-row lg:gap-8'>
       {/* Left Column - Photo */}
       <motion.div
         className={cn(
-          'group relative aspect-[2/3] max-h-[500px] w-full max-w-[300px] overflow-hidden rounded-xl shadow-2xl ring-1',
+          'group relative max-sm:self-center aspect-[2/3] max-h-[500px] w-full max-w-[300px] overflow-hidden rounded-xl shadow-2xl ring-1',
           isDeceased ? 'ring-Grey-500/30' : 'ring-Primary-500/20'
         )}
         initial={{ opacity: 0, scale: 0.9 }}
@@ -61,8 +61,9 @@ export default function CelebrityProfile({ person, appearances }: CelebrityProfi
 
         {/* Memorial indicator */}
         {isDeceased && (
-          <div className='absolute top-3 right-3 rounded-full border border-white/30 bg-black/60 p-2 backdrop-blur-sm'>
+          <div className='absolute top-3 right-3 rounded-xl border border-white/30 bg-black/60 py-2 backdrop-blur-sm flex items-center gap-1.5 px-3'>
             <Heart className='h-4 w-4 text-white/80' />
+            <span className='text-xs text-white/80'>In Our Hearts</span>
           </div>
         )}
       </motion.div>
@@ -75,8 +76,8 @@ export default function CelebrityProfile({ person, appearances }: CelebrityProfi
         transition={{ duration: 0.3, delay: 0.2 }}
       >
         {/* Title & Meta */}
-        <div className='mb-6'>
-          <div className='mb-3 flex flex-wrap items-center gap-3'>
+        <div className='mb-6 max-sm:text-center'>
+          <div className='mb-3 flex flex-wrap items-center max-sm:justify-center gap-3'>
             {person.known_for_department && (
               <motion.span className='bg-Secondary-900/80 text-Secondary-300 ring-Secondary-500/30 flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ring-1 backdrop-blur-md'>
                 <Award className='size-4' />
