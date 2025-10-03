@@ -1,6 +1,5 @@
 import { Button, Progress } from '@heroui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAnimationPreference } from '@/contexts/providers/AnimationProvider';
 
 interface UpdateNotificationProps {
   updater: {
@@ -20,8 +19,6 @@ interface UpdateNotificationProps {
 }
 
 export function UpdateNotification({ updater }: UpdateNotificationProps) {
-  const { isAnimationEnabled } = useAnimationPreference();
-
   const {
     updateAvailable,
     updateInfo,
@@ -37,9 +34,9 @@ export function UpdateNotification({ updater }: UpdateNotificationProps) {
   return (
     <AnimatePresence>
       <motion.div
-        initial={isAnimationEnabled ? { y: -100, opacity: 0 } : undefined}
-        animate={isAnimationEnabled ? { y: 0, opacity: 1 } : undefined}
-        exit={isAnimationEnabled ? { y: -100, opacity: 0 } : undefined}
+        initial={{ y: -100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -100, opacity: 0 }}
         transition={{ duration: 0.3 }}
         className="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-full max-w-md"
       >

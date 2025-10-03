@@ -3,7 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { isDesktop } from '@/lib/platform';
-import { toast } from '@heroui/toast';
+import { addToast } from '@heroui/react';
 
 interface UpdateInfo {
   version: string;
@@ -36,12 +36,11 @@ export function useUpdater() {
           setUpdateAvailable(true);
           setUpdateInfo(event.payload);
           setChecking(false);
-          toast.success(
-            `Update available: v${event.payload.version}`,
-            {
-              description: 'A new version is ready to download',
-            }
-          );
+          addToast({
+            title: `Update available: v${event.payload.version}`,
+            description: 'A new version is ready to download',
+            color: 'success',
+          });
         }
       );
 
@@ -70,14 +69,20 @@ export function useUpdater() {
         console.log('Update ready to install');
         setDownloading(false);
         setReadyToInstall(true);
-        toast.success('Update downloaded successfully', {
+        addToast({
+          title: 'Update downloaded successfully',
           description: 'The app will restart to complete installation',
+          color: 'success',
         });
       });
 
       const unlistenInstalled = await listen('update-installed', () => {
         console.log('Update installed');
-        toast.success('Update installed! Restarting app...');
+        addToast({
+          title: 'Update installed!',
+          description: 'Restarting app...',
+          color: 'success',
+        });
       });
 
       return () => {
@@ -96,7 +101,10 @@ export function useUpdater() {
     async (showToast = true) => {
       if (!isDesktop()) {
         if (showToast) {
-          toast.error('Updates are only available in desktop app');
+          addToast({
+            title: 'Updates are only available in desktop app',
+            color: 'danger',
+          });
         }
         return;
       }
@@ -108,15 +116,20 @@ export function useUpdater() {
 
         setTimeout(() => {
           if (!updateAvailable && showToast) {
-            toast.success("You're on the latest version!");
+            addToast({
+              title: "You're on the latest version!",
+              color: 'success',
+            });
           }
         }, 1000);
       } catch (error) {
         console.error('Failed to check for updates:', error);
         setChecking(false);
         if (showToast) {
-          toast.error('Failed to check for updates', {
+          addToast({
+            title: 'Failed to check for updates',
             description: error instanceof Error ? error.message : 'Unknown error',
+            color: 'danger',
           });
         }
       }
@@ -126,7 +139,10 @@ export function useUpdater() {
 
   const downloadAndInstall = useCallback(async () => {
     if (!isDesktop()) {
-      toast.error('Updates are only available in desktop app');
+      addToast({
+        title: 'Updates are only available in desktop app',
+        color: 'danger',
+      });
       return;
     }
 
@@ -142,8 +158,10 @@ export function useUpdater() {
     } catch (error) {
       console.error('Failed to download/install update:', error);
       setDownloading(false);
-      toast.error('Failed to install update', {
+      addToast({
+        title: 'Failed to install update',
         description: error instanceof Error ? error.message : 'Unknown error',
+        color: 'danger',
       });
     }
   }, []);

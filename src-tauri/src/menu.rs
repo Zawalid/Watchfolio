@@ -199,11 +199,10 @@ pub fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
             let _ = window.emit("menu:keyboard-shortcuts", ());
         }
         "report_issue" => {
-            let app_clone = app.clone();
-            let _ = tauri::async_runtime::spawn(async move {
-                let _ = tauri_plugin_shell::ShellExt::shell(&app_clone)
-                    .open("https://github.com/yourusername/watchfolio/issues", None);
-            });
+            let _ = tauri_plugin_opener::open_url(
+                "https://github.com/yourusername/watchfolio/issues",
+                None::<&str>
+            );
         }
         "check_updates" => {
             let _ = window.emit("menu:check-updates", ());
