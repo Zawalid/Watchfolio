@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Manager, menu::*};
+use tauri::{AppHandle, Manager, Emitter, menu::*};
 
 pub fn create_menu(app: &AppHandle) -> Result<Menu<tauri::Wry>, tauri::Error> {
     // File Menu
@@ -199,8 +199,9 @@ pub fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
             let _ = window.emit("menu:keyboard-shortcuts", ());
         }
         "report_issue" => {
-            let _ = tauri::async_runtime::spawn(async {
-                let _ = tauri_plugin_shell::ShellExt::shell(&app)
+            let app_clone = app.clone();
+            let _ = tauri::async_runtime::spawn(async move {
+                let _ = tauri_plugin_shell::ShellExt::shell(&app_clone)
                     .open("https://github.com/yourusername/watchfolio/issues", None);
             });
         }

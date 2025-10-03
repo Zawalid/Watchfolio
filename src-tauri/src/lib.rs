@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use tauri::Manager;
 
 mod menu;
 mod tray;
@@ -77,7 +76,8 @@ pub fn run() {
       .plugin(tauri_plugin_notification::init())
       .plugin(tauri_plugin_deep_link::init())
       .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-      .plugin(tauri_plugin_updater::Builder::new().build());
+      .plugin(tauri_plugin_updater::Builder::new().build())
+      .plugin(tauri_plugin_process::init());
   }
 
   builder
@@ -106,7 +106,7 @@ pub fn run() {
         }
 
         // Start background updater (checks every 24 hours)
-        updater::start_background_updater(app.handle());
+        updater::start_background_updater(app.handle().clone());
       }
 
       Ok(())

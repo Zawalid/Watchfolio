@@ -38,7 +38,7 @@ pub async fn check_for_updates(
                 UpdateAvailable {
                     version: new_version.clone(),
                     current_version,
-                    date: update.date.clone(),
+                    date: update.date.map(|d| d.to_string()),
                     body: update.body.clone(),
                 },
             );
@@ -100,19 +100,18 @@ pub async fn download_and_install(
 }
 
 pub fn start_background_updater(app: AppHandle) {
-    tauri::async_runtime::spawn(async move {
-        let mut interval = tokio::time::interval(tokio::time::Duration::from_secs(
-            86400,
-        ));
+    std::thread::spawn(move || {
+        tauri::async_runtime::block_on(async move {
+            loop {
+                // Sleep for 24 hours (86400 seconds)
+                std::thread::sleep(std::time::Duration::from_secs(86400));
+                println!("Running scheduled update check...");
 
-        loop {
-            interval.tick().await;
-            println!("Running scheduled update check...");
-
-            if let Err(e) = check_for_updates(app.clone(), true).await {
-                eprintln!("Background update check failed: {}", e);
+                if let Err(e) = check_for_updates(app.clone(), true).await {
+                    eprintln!("Background update check failed: {}", e);
+                }
             }
-        }
+        })
     });
 
     println!("Background updater started (checks every 24 hours)");

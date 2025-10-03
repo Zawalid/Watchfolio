@@ -1,4 +1,4 @@
-use tauri::{AppHandle, Manager, tray::*};
+use tauri::{AppHandle, Manager, Emitter, tray::*, menu::*};
 
 pub fn create_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     // Create tray menu
@@ -195,7 +195,7 @@ pub fn handle_tray_event(app: &AppHandle, event: MenuEvent) {
 
 // Update tray menu dynamically
 #[tauri::command]
-pub async fn update_tray_tooltip(app: AppHandle, tooltip: String) -> Result<(), String> {
+pub async fn update_tray_tooltip(_app: AppHandle, _tooltip: String) -> Result<(), String> {
     // This would update the tray tooltip with current status
     // e.g., "Watchfolio - 5 items syncing"
     Ok(())

@@ -1,5 +1,5 @@
-use tauri::{AppHandle, Manager};
-use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut, ShortcutState};
+use tauri::{AppHandle, Manager, Emitter};
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
 
 pub fn register_shortcuts(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
     // Quick Add - Ctrl+Shift+W
