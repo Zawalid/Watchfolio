@@ -1,4 +1,9 @@
 use serde::{Deserialize, Serialize};
+use tauri::Manager;
+
+mod menu;
+mod tray;
+mod shortcuts;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExportOptions {
@@ -39,6 +44,11 @@ pub fn run() {
       export_data,
       get_platform_info,
       is_tauri,
+      shortcuts::register_custom_shortcut,
+      shortcuts::unregister_shortcut,
+      shortcuts::is_shortcut_registered,
+      tray::update_tray_tooltip,
+      tray::show_tray_notification,
     ]);
 
   #[cfg(not(any(target_os = "android", target_os = "ios")))]
@@ -60,6 +70,23 @@ pub fn run() {
             .build(),
         )?;
       }
+
+      #[cfg(not(any(target_os = "android", target_os = "ios")))]
+      {
+        // Create native menu
+        let menu = menu::create_menu(&app.handle())?;
+        app.set_menu(menu)?;
+        app.on_menu_event(menu::handle_menu_event);
+
+        // Create system tray
+        tray::create_tray(&app.handle())?;
+
+        // Register global shortcuts
+        if let Err(e) = shortcuts::register_shortcuts(&app.handle()) {
+          log::warn!("Failed to register some shortcuts: {}", e);
+        }
+      }
+
       Ok(())
     })
     .run(tauri::generate_context!())

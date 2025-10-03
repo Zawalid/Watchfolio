@@ -8,6 +8,8 @@ import {
   ConfirmationModalProvider,
   NavigationProvider,
   AnimationProvider,
+  DesktopProvider,
+  DesktopActionsProvider,
 } from '@/contexts/providers';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useHref, useNavigate } from 'react-router';
@@ -33,11 +35,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 }}
               />
               <ReactQueryDevtools initialIsOpen={false} />
-              <NavigationProvider>
-                <MediaStatusModalProvider>
-                  <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
-                </MediaStatusModalProvider>
-              </NavigationProvider>
+              <DesktopActionsProvider>
+                <DesktopProvider>
+                  <NavigationProvider>
+                    <MediaStatusModalProvider>
+                      <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
+                    </MediaStatusModalProvider>
+                  </NavigationProvider>
+                </DesktopProvider>
+              </DesktopActionsProvider>
             </NuqsAdapter>
           </QueryClientProvider>
         </ErrorBoundary>

@@ -6,7 +6,7 @@ export interface KeyboardShortcut {
 }
 
 export type ShortcutName = keyof typeof KEYBOARD_SHORTCUTS;
-export type ShortcutCategory = 'general' | 'library' | 'cardFocus' | 'modal' | 'filters';
+export type ShortcutCategory = 'general' | 'library' | 'cardFocus' | 'modal' | 'filters' | 'mediaStatus';
 
 export const KEYBOARD_SHORTCUTS = {
   // General shortcuts
