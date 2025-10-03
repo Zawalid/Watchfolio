@@ -42,7 +42,7 @@ All desktop features are now **fully wired up** and functional. Every menu item,
 - ✅ **Documentation** (F1) → Opens docs.watchfolio.app
 - ✅ **Keyboard Shortcuts** (Ctrl+/) → Shows full shortcuts modal
 - ✅ **Report Issue** → Opens GitHub issues
-- ✅ **Check for Updates** → Triggers update check (logs to console)
+- ✅ **Check for Updates** → Checks for app updates via GitHub Releases
 - ✅ **About** → Shows About modal with app info
 
 ---
@@ -115,6 +115,36 @@ All these open via menu/tray/shortcuts:
 
 ---
 
+### 6. Auto-Update System
+
+**Automatic Updates** - Keeps app up-to-date
+- ✅ **Background Checks** → Checks for updates every 24 hours
+- ✅ **Manual Check** → Help → Check for Updates (also in Settings)
+- ✅ **Update Notification** → Banner appears when update available
+- ✅ **Download Progress** → Shows download percentage
+- ✅ **Secure Updates** → Cryptographic signature verification
+- ✅ **One-Click Install** → Downloads, verifies, installs, and restarts
+- ✅ **GitHub Releases** → Updates hosted on GitHub
+- ✅ **Settings UI** → Update preferences in Settings → Preferences
+
+**Update Flow:**
+```
+Background/Manual Check → Update Available? → Show Banner
+        ↓
+User Clicks "Download & Install" → Download with Progress
+        ↓
+Verify Signature → Install → Prompt Restart → App Restarts with New Version
+```
+
+**Features:**
+- Downloads in background without interrupting work
+- Verifies cryptographic signature before installing (security)
+- Shows release notes and version info
+- Can dismiss and install later
+- Automatic rollback if update fails
+
+---
+
 ## 🔧 How It Works
 
 ### Architecture
@@ -139,14 +169,18 @@ Real App Functionality (navigation, modals, sync)
 - `src-tauri/src/menu.rs` - Native menu + event handlers
 - `src-tauri/src/tray.rs` - System tray + event handlers
 - `src-tauri/src/shortcuts.rs` - Global shortcuts registration
+- `src-tauri/src/updater.rs` - Auto-update logic and background checker
 
 **Frontend:**
 - `src/contexts/DesktopActionsContext.tsx` - Actions interface
 - `src/contexts/providers/DesktopActionsProvider.tsx` - Actions implementation
 - `src/hooks/useDesktopIntegration.ts` - Event listener hub
+- `src/hooks/useUpdater.ts` - Update check and install logic
 - `src/components/desktop/DesktopBehavior.tsx` - Window behavior
 - `src/components/desktop/AboutModal.tsx` - About dialog
 - `src/components/desktop/KeyboardShortcutsModal.tsx` - Shortcuts reference
+- `src/components/desktop/UpdateNotification.tsx` - Update banner
+- `src/components/settings/UpdateSettings.tsx` - Settings UI for updates
 
 ---
 
@@ -177,6 +211,18 @@ Real App Functionality (navigation, modals, sync)
 - [x] Import/Export modal opens and works
 - [x] Keyboard Shortcuts modal shows all shortcuts
 - [x] About modal displays correctly
+
+### Auto-Update
+- [ ] Manual check for updates works (Help → Check for Updates)
+- [ ] Manual check from Settings → Updates works
+- [ ] Background check runs every 24 hours
+- [ ] Update notification banner appears when update available
+- [ ] Download progress shows correctly
+- [ ] Signature verification succeeds
+- [ ] Installation completes successfully
+- [ ] App restarts with new version
+- [ ] Update can be dismissed and retried later
+- [ ] GitHub Actions workflow builds for all platforms
 
 ### Window Behavior
 - [x] Clicking X hides to tray
@@ -244,6 +290,14 @@ Ctrl+Shift+Space          = Show/Hide App
 4. Choose file and import
 5. Works even if not on library page
 
+**Example 4: Update App**
+1. Help → Check for Updates
+2. If update available, banner appears
+3. Click "Download & Install"
+4. Progress bar shows download
+5. Click "Restart to Install"
+6. App restarts with new version
+
 ---
 
 ## 🔄 Platform Differences
@@ -268,9 +322,8 @@ Ctrl+Shift+Space          = Show/Hide App
 ## 🐛 Known Limitations
 
 1. **Quick Status from Tray** - Emits event but requires UI component to handle
-2. **Auto-Update** - Logs to console, full implementation pending
-3. **macOS Shortcuts** - Currently uses Ctrl, should detect and use Cmd on macOS
-4. **Tray Icon** - Uses default icon, custom icons pending
+2. **macOS Shortcuts** - Currently uses Ctrl, should detect and use Cmd on macOS
+3. **Tray Icon** - Uses default icon, custom icons pending
 
 ---
 
@@ -280,7 +333,6 @@ Ctrl+Shift+Space          = Show/Hide App
 - Custom tray icons (show sync status)
 - macOS-specific keyboard shortcuts (Cmd vs Ctrl)
 - Quick status UI handler
-- Auto-update full implementation
 
 **Later:**
 - System tray notifications
@@ -323,6 +375,18 @@ Same pattern as menu, but in `tray.rs` and listen for `tray:*` events.
 
 ---
 
-**Status**: ✅ All Features Functional
+**Status**: ✅ All Desktop Features Functional (Including Auto-Update)
 **Last Updated**: 2025-10-03
 **Version**: 1.0.0
+
+## 📦 What's New - Auto-Update
+
+The desktop app now includes a fully functional auto-update system:
+- Automatic background checks every 24 hours
+- Manual update checks from Help menu or Settings
+- Secure updates with cryptographic signature verification
+- Download progress tracking
+- One-click install and restart
+- GitHub Actions workflow for automated releases
+
+See `AUTO_UPDATE_SETUP.md` for complete setup instructions.

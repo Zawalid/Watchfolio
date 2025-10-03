@@ -5,6 +5,9 @@ mod menu;
 mod tray;
 mod shortcuts;
 
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
+mod updater;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExportOptions {
   pub path: String,
@@ -39,8 +42,11 @@ fn is_tauri() -> bool {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let mut builder = tauri::Builder::default()
-    .plugin(tauri_plugin_shell::init())
-    .invoke_handler(tauri::generate_handler![
+    .plugin(tauri_plugin_shell::init());
+
+  #[cfg(not(any(target_os = "android", target_os = "ios")))]
+  {
+    builder = builder.invoke_handler(tauri::generate_handler![
       export_data,
       get_platform_info,
       is_tauri,
@@ -49,7 +55,19 @@ pub fn run() {
       shortcuts::is_shortcut_registered,
       tray::update_tray_tooltip,
       tray::show_tray_notification,
+      updater::manual_check_updates,
+      updater::install_update,
     ]);
+  }
+
+  #[cfg(any(target_os = "android", target_os = "ios"))]
+  {
+    builder = builder.invoke_handler(tauri::generate_handler![
+      export_data,
+      get_platform_info,
+      is_tauri,
+    ]);
+  }
 
   #[cfg(not(any(target_os = "android", target_os = "ios")))]
   {
@@ -58,7 +76,8 @@ pub fn run() {
       .plugin(tauri_plugin_dialog::init())
       .plugin(tauri_plugin_notification::init())
       .plugin(tauri_plugin_deep_link::init())
-      .plugin(tauri_plugin_global_shortcut::Builder::new().build());
+      .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+      .plugin(tauri_plugin_updater::Builder::new().build());
   }
 
   builder
@@ -85,6 +104,9 @@ pub fn run() {
         if let Err(e) = shortcuts::register_shortcuts(&app.handle()) {
           log::warn!("Failed to register some shortcuts: {}", e);
         }
+
+        // Start background updater (checks every 24 hours)
+        updater::start_background_updater(app.handle());
       }
 
       Ok(())

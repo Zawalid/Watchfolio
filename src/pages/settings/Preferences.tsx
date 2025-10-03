@@ -4,6 +4,8 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
 import { UserPreferences } from '@/lib/appwrite/types';
+import { UpdateSettings } from '@/components/settings/UpdateSettings';
+import { isDesktop } from '@/lib/platform';
 
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading, userPreferences } = useAuthStore();
@@ -98,6 +100,9 @@ export default function Preferences() {
           </div>
         </SettingItem>
       </SettingSection>
+
+      {/* Updates (Desktop only) */}
+      {isDesktop() && <UpdateSettings />}
     </div>
   );
 }
