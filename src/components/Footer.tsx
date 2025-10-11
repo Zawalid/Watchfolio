@@ -15,6 +15,9 @@ import {
   Users,
   Tv2Icon,
 } from 'lucide-react';
+import { isTauri } from '@/lib/platform';
+
+console.log(isTauri())
 
 const footerLinks = [
   {
@@ -53,6 +56,8 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  if(isTauri()) return null;
+
   return (
     <footer className='mt-auto border-t border-white/10 bg-black/30 backdrop-blur-lg'>
       <div className='container mx-auto px-6 py-12'>

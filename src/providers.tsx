@@ -14,6 +14,7 @@ import {
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useHref, useNavigate } from 'react-router';
 import { queryClient } from '@/lib/react-query';
+import { CustomTitlebar } from '@/components/desktop/CustomTitlebar';
 
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               />
               <ReactQueryDevtools initialIsOpen={false} />
               <DesktopActionsProvider>
+                <CustomTitlebar />
                 <DesktopProvider>
                   <NavigationProvider>
                     <MediaStatusModalProvider>

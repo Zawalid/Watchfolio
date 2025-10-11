@@ -200,7 +200,7 @@ pub fn handle_menu_event(app: &AppHandle, event: tauri::menu::MenuEvent) {
         }
         "report_issue" => {
             let _ = tauri_plugin_opener::open_url(
-                "https://github.com/yourusername/watchfolio/issues",
+                "https://github.com/zawalid/watchfolio/issues",
                 None::<&str>
             );
         }

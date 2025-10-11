@@ -1,13 +1,13 @@
-import { useState, useCallback } from 'react';
+import {  useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useDisclosure } from '@heroui/react';
 import { DesktopActionsContext } from '../DesktopActionsContext';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { AboutModal } from '@/components/desktop/AboutModal';
-import { KeyboardShortcutsModal } from '@/components/desktop/KeyboardShortcutsModal';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useUpdater } from '@/hooks/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
+import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 
 /**
  * Provider for desktop actions
@@ -86,7 +86,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
       {/* Global modals */}
       <ImportExportModal disclosure={importExportDisclosure} />
       <AboutModal disclosure={aboutDisclosure} />
-      <KeyboardShortcutsModal disclosure={keyboardShortcutsDisclosure} />
+      <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
 
       {/* Update notification */}
       <UpdateNotification updater={updater} />

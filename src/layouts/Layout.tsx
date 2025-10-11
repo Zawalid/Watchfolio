@@ -9,10 +9,12 @@ import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import BottomNavBar from '@/components/navbar/BottomNavBar';
+import { isDesktop } from '@/lib/platform';
+import { cn } from '@/utils';
 
 export default function Layout() {
   const location = useLocation();
-
+  
   useInitialAuth();
 
   useLayoutEffect(() => {
@@ -21,10 +23,10 @@ export default function Layout() {
 
   return (
     <Providers>
-      <div className='flex h-full min-h-dvh flex-col pb-21 md:pb-0'>
+      <div className={cn('flex h-full min-h-dvh flex-col pb-21 md:pb-0', isDesktop() && 'pt-14')}>
         <Navbar />
         <main
-          className='container mx-auto max-lg:max-w-screen min-h-screen flex-1 px-3 xs:px-6 pt-22 pb-10'
+          className='xs:px-6 container mx-auto min-h-screen flex-1 px-3 pt-22 pb-10 max-lg:max-w-screen'
           role='main'
           aria-label='Main content'
         >

@@ -9,7 +9,10 @@ export type Platform = 'web' | 'desktop' | 'mobile';
  * Check if the app is running in Tauri environment
  */
 export function isTauri(): boolean {
-  return typeof window !== 'undefined' && '__TAURI__' in window;
+  if (typeof window === 'undefined') return false;
+
+  // Tauri v2 uses __TAURI_INTERNALS__
+  return '__TAURI_INTERNALS__' in window || '__TAURI__' in window;
 }
 
 /**

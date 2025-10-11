@@ -21,27 +21,27 @@ export function AboutModal({ disclosure }: AboutModalProps) {
         </div>
 
         {/* Logo and Title */}
-        <div className='text-center space-y-2'>
-          <h1 className='text-2xl font-bold gradient'>Watchfolio</h1>
+        <div className='space-y-2 text-center'>
+          <h1 className='gradient text-2xl font-bold'>Watchfolio</h1>
           <p className='text-Primary-300 text-sm'>AI-Powered Media Library Manager</p>
           <p className='text-Primary-400 text-xs'>Version {version}</p>
         </div>
 
         {/* Description */}
-        <div className='bg-Primary-500/10 border-Primary-500/20 rounded-lg border p-4 space-y-2'>
+        <div className='bg-Primary-500/10 border-Primary-500/20 space-y-2 rounded-lg border p-4'>
           <p className='text-Primary-200 text-sm'>
             Track movies and TV shows with real-time cloud sync, powered by AI recommendations.
           </p>
           <p className='text-Primary-300 text-xs'>
             Built with React, TypeScript, Tauri, and lots of{' '}
-            <Heart className='inline size-3 text-Error-400 fill-current' />
+            <Heart className='text-Error-400 inline size-3 fill-current' />
           </p>
         </div>
 
         {/* Links */}
         <div className='space-y-2'>
           <a
-            href='https://github.com/yourusername/watchfolio'
+            href='https://github.com/zawalid/watchfolio'
             target='_blank'
             rel='noopener noreferrer'
             className='bg-Primary-500/5 hover:bg-Primary-500/10 border-Primary-500/20 flex items-center gap-3 rounded-lg border p-3 transition-colors'
@@ -69,9 +69,14 @@ export function AboutModal({ disclosure }: AboutModalProps) {
 
         {/* Credits */}
         <div className='border-Primary-500/20 bg-Primary-500/5 rounded-lg border p-3'>
-          <p className='text-Primary-300 text-xs text-center'>
+          <p className='text-Primary-300 text-center text-xs'>
             Movie & TV data provided by{' '}
-            <a href='https://www.themoviedb.org' target='_blank' rel='noopener noreferrer' className='text-Primary-200 hover:text-Primary-100 underline'>
+            <a
+              href='https://www.themoviedb.org'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-Primary-200 hover:text-Primary-100 underline'
+            >
               TMDB
             </a>
           </p>

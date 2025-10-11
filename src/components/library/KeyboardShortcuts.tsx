@@ -5,18 +5,17 @@ import { Modal } from '@/components/ui/Modal';
 import { getShortcut, getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 
-
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
-  library: 'Library',
   cardFocus: 'Media Actions (When focused)',
-  modal: 'Media Status',
+  library: 'Library',
+  mediaStatus: 'Media Status',
   filters: 'Filters',
 };
 
-const CATEGORY_ORDER: ShortcutCategory[] = ['general', 'library', 'cardFocus', 'filters', 'modal'];
+const CATEGORY_ORDER = Object.keys(CATEGORY_TITLES) as ShortcutCategory[];
 
-export default function KeyboardShortcuts(  ) {
+export default function KeyboardShortcuts() {
   const disclosure = useDisclosure();
   const { isOpen, onOpen, onClose } = disclosure;
 

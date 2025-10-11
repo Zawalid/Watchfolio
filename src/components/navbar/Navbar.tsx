@@ -8,6 +8,8 @@ import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
 import { MobileDrawerTrigger } from './MobileDrawer';
 import { getLinks } from './Shared';
+import { cn } from '@/utils';
+import { isDesktop } from '@/lib/platform';
 
 function QuickActions() {
   const navigate = useNavigate();
@@ -87,40 +89,42 @@ export default function Navbar() {
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-Grey-900/40 shadow-2xl shadow-black/20 backdrop-blur-xl' : 'bg-transparent'
-      }`}
+      className={cn(
+      'fixed top-0 right-0 left-0 z-50 transition-all duration-300',
+      scrolled ? 'bg-Grey-900/40 shadow-2xl shadow-black/20 backdrop-blur-xl' : 'bg-transparent',
+      isDesktop() && 'top-9'
+      )}
     >
       <div className='xs:px-6 container mx-auto px-3'>
-        <div className='flex h-16 items-center justify-between'>
-          <Link to={homeLink} className='group flex items-center space-x-2'>
-            <motion.img
-              whileHover={{ scale: 1.05 }}
-              src='/images/logo.svg'
-              alt='Watchfolio'
-              className='h-8 w-auto transition-transform'
-            />
-          </Link>
+      <div className='flex h-16 items-center justify-between'>
+        <Link to={homeLink} className='group flex items-center space-x-2'>
+        <motion.img
+          whileHover={{ scale: 1.05 }}
+          src='/images/logo.svg'
+          alt='Watchfolio'
+          className='h-8 w-auto transition-transform'
+        />
+        </Link>
 
-          <div className='hidden items-center space-x-2 md:flex'>
-            {getLinks(['home', 'movies', 'tv', 'mood-match', 'search']).map((item) => (
-              <NavItem
-                key={item.href}
-                label={item.label}
-                icon={item.icon}
-                href={item.href}
-                matches={item.matches}
-                className={item.href === '/mood-match' ? 'md:hidden lg:flex' : ''}
-              />
-            ))}
-          </div>
-
-          <div className='flex items-center gap-3'>
-            <QuickActions />
-            <UserDropdown />
-            <MobileDrawerTrigger />
-          </div>
+        <div className='hidden items-center space-x-2 md:flex'>
+        {getLinks(['home', 'movies', 'tv', 'mood-match', 'search']).map((item) => (
+          <NavItem
+          key={item.href}
+          label={item.label}
+          icon={item.icon}
+          href={item.href}
+          matches={item.matches}
+          className={item.href === '/mood-match' ? 'md:hidden lg:flex' : ''}
+          />
+        ))}
         </div>
+
+        <div className='flex items-center gap-3'>
+        <QuickActions />
+        <UserDropdown />
+        <MobileDrawerTrigger />
+        </div>
+      </div>
       </div>
     </motion.nav>
   );

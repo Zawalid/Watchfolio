@@ -6,7 +6,7 @@ export interface KeyboardShortcut {
 }
 
 export type ShortcutName = keyof typeof KEYBOARD_SHORTCUTS;
-export type ShortcutCategory = 'general' | 'library' | 'cardFocus' | 'modal' | 'filters' | 'mediaStatus';
+export type ShortcutCategory = 'general' | 'library' | 'cardFocus' | 'filters' | 'mediaStatus';
 
 export const KEYBOARD_SHORTCUTS = {
   // General shortcuts
@@ -125,7 +125,7 @@ export const KEYBOARD_SHORTCUTS = {
     category: 'mediaStatus',
   },
   rateMedia10: { hotkey: '1+0', label: null, description: null, category: null },
-  clearRating: { hotkey: 'x', label: 'X', description: 'Clear rating', category: 'modal' },
+  clearRating: { hotkey: 'x', label: 'X', description: 'Clear rating', category: 'mediaStatus' },
 } as const;
 
 export const getAllShortcuts = () => {
