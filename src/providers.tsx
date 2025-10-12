@@ -1,4 +1,4 @@
-import {  QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NuqsAdapter } from 'nuqs/adapters/react';
 import { HeroUIProvider } from '@heroui/react';
@@ -14,7 +14,6 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { useHref, useNavigate } from 'react-router';
 import { queryClient } from '@/lib/react-query';
 import { CustomTitlebar } from '@/components/desktop/CustomTitlebar';
-
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -35,14 +34,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 }}
               />
               <ReactQueryDevtools initialIsOpen={false} />
-              <DesktopActionsProvider>
-                <CustomTitlebar />
-                  <NavigationProvider>
-                    <MediaStatusModalProvider>
-                      <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
-                    </MediaStatusModalProvider>
-                  </NavigationProvider>
-              </DesktopActionsProvider>
+              <NavigationProvider>
+                <ConfirmationModalProvider>
+                  <MediaStatusModalProvider>
+                    <DesktopActionsProvider>
+                      <CustomTitlebar />
+                      {children}
+                    </DesktopActionsProvider>
+                  </MediaStatusModalProvider>
+                </ConfirmationModalProvider>
+              </NavigationProvider>
             </NuqsAdapter>
           </QueryClientProvider>
         </ErrorBoundary>

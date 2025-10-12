@@ -1,13 +1,16 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useDisclosure } from '@heroui/react';
 import { DesktopActionsContext } from '../DesktopActionsContext';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { AboutModal } from '@/components/desktop/AboutModal';
+import QuickAddModal from '@/components/desktop/QuickAddModal';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useUpdater } from '@/hooks/desktop/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { isDesktop } from '@/lib/platform';
 
 /**
  * Provider for desktop actions
@@ -18,6 +21,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   const importExportDisclosure = useDisclosure();
   const aboutDisclosure = useDisclosure();
   const keyboardShortcutsDisclosure = useDisclosure();
+  const quickAddDisclosure = useDisclosure();
 
   const { startSync } = useSyncStore();
   const updater = useUpdater();
@@ -39,16 +43,8 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   }, [keyboardShortcutsDisclosure]);
 
   const quickAdd = useCallback(() => {
-    // Navigate to discover/search page for quick add
-    navigate('/movies');
-    // Focus search after navigation
-    setTimeout(() => {
-      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
-      if (searchInput) {
-        searchInput.focus();
-      }
-    }, 100);
-  }, [navigate]);
+    quickAddDisclosure.onOpen();
+  }, [quickAddDisclosure]);
 
   const quickSearch = useCallback(() => {
     // Navigate to search and focus input
@@ -69,6 +65,37 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
     updater.checkForUpdates();
   }, [updater]);
 
+  // Keyboard shortcuts
+  useHotkeys('ctrl+n', (e) => {
+    e.preventDefault();
+    quickAdd();
+  }, { enabled: isDesktop() });
+
+  // Listen to Tauri menu events
+  useEffect(() => {
+    if (!isDesktop()) return;
+
+    const setupTauriListeners = async () => {
+      const { listen } = await import('@tauri-apps/api/event');
+
+      const unlisten = await Promise.all([
+        listen('menu:quick-add', () => quickAdd()),
+        listen('menu:import', () => openImportExport()),
+        listen('menu:export', () => openImportExport()),
+        listen('menu:preferences', () => navigate('/settings/preferences')),
+        listen('menu:keyboard-shortcuts', () => openKeyboardShortcuts()),
+        listen('menu:check-updates', () => checkForUpdates()),
+        listen('shortcut:quick-add', () => quickAdd()),
+      ]);
+
+      return () => {
+        unlisten.forEach(fn => fn());
+      };
+    };
+
+    setupTauriListeners();
+  }, [quickAdd, openImportExport, navigate, openKeyboardShortcuts, checkForUpdates]);
+
   return (
     <DesktopActionsContext.Provider
       value={{
@@ -84,9 +111,10 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
       {children}
 
       {/* Global modals */}
+      <QuickAddModal disclosure={quickAddDisclosure} />
       <ImportExportModal disclosure={importExportDisclosure} />
       <AboutModal disclosure={aboutDisclosure} />
-      <KeyboardShortcuts disclosure={keyboardShortcutsDisclosure} />
+      <KeyboardShortcuts extDisclosure={keyboardShortcutsDisclosure} />
 
       {/* Update notification */}
       <UpdateNotification updater={updater} />

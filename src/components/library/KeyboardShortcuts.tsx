@@ -15,9 +15,9 @@ const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
 
 const CATEGORY_ORDER = Object.keys(CATEGORY_TITLES) as ShortcutCategory[];
 
-export default function KeyboardShortcuts() {
+export default function KeyboardShortcuts({extDisclosure} : {extDisclosure?:Disclosure}) {
   const disclosure = useDisclosure();
-  const { isOpen, onOpen, onClose } = disclosure;
+  const { isOpen, onOpen, onClose } = extDisclosure || disclosure;
 
   useHotkeys(getShortcut('toggleShortcutsHelp')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen], {
     useKey: true,
@@ -25,7 +25,7 @@ export default function KeyboardShortcuts() {
   useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
 
   return (
-    <Modal disclosure={disclosure} classNames={{ base: 'full-mobile-modal' }}>
+    <Modal disclosure={extDisclosure || disclosure} classNames={{ base: 'full-mobile-modal' }}>
       <ModalBody className='space-y-6 p-6'>
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>
