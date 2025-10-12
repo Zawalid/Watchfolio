@@ -8,7 +8,6 @@ import {
   ConfirmationModalProvider,
   NavigationProvider,
   AnimationProvider,
-  DesktopProvider,
   DesktopActionsProvider,
 } from '@/contexts/providers';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -38,13 +37,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
               <ReactQueryDevtools initialIsOpen={false} />
               <DesktopActionsProvider>
                 <CustomTitlebar />
-                <DesktopProvider>
                   <NavigationProvider>
                     <MediaStatusModalProvider>
                       <ConfirmationModalProvider>{children}</ConfirmationModalProvider>
                     </MediaStatusModalProvider>
                   </NavigationProvider>
-                </DesktopProvider>
               </DesktopActionsProvider>
             </NuqsAdapter>
           </QueryClientProvider>

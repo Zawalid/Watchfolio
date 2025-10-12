@@ -1,11 +1,11 @@
-import {  useCallback } from 'react';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router';
 import { useDisclosure } from '@heroui/react';
 import { DesktopActionsContext } from '../DesktopActionsContext';
 import ImportExportModal from '@/components/library/ImportExportModal';
 import { AboutModal } from '@/components/desktop/AboutModal';
 import { useSyncStore } from '@/stores/useSyncStore';
-import { useUpdater } from '@/hooks/useUpdater';
+import { useUpdater } from '@/hooks/desktop/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 
