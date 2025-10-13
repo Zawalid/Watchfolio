@@ -5,7 +5,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, ModalHeader, useDisclosure } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { GoogleIcon } from '@/components/ui/Icons';
-import AuthForm from './AuthForm';
+import AuthForm from '@/components/auth/AuthForm';
 import { addToast } from '@heroui/react';
 import { Link } from 'react-router';
 

@@ -7,7 +7,7 @@ import { AVATAR_CLASSNAMES } from '@/styles/heroui';
 import { cn, formatDate } from '@/utils';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Profile } from '@/lib/appwrite/types';
-import CustomizeProfileModal from './CustomizeProfileModal';
+import CustomizeProfileModal from '@/components/modals/CustomizeProfileModal';
 
 interface ProfileHeaderProps {
   profile: Profile;

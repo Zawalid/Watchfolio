@@ -4,8 +4,8 @@ import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { Tab, Tabs } from '@heroui/react';
 import { getShortcut } from '@/utils/keyboardShortcuts';
-import Import from './Import';
-import Export from './Export';
+import Import from '@/components/library/Import';
+import Export from '@/components/library/Export';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
 

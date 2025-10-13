@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useDisclosure } from '@heroui/react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { LucideIcon } from 'lucide-react';
-import FiltersModal, { FilterOption } from '@/components/FiltersModal';
+import FiltersModal, { FilterOption } from '@/components/modals/FiltersModal';
 import { getShortcut } from '@/utils/keyboardShortcuts';
 import SortBy from '@/components/SortBy';
 import { cn } from '@/utils';

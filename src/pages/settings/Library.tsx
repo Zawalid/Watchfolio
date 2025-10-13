@@ -3,7 +3,7 @@ import { addToast } from '@heroui/react';
 import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import ImportExportModal from '@/components/library/ImportExportModal';
+import ImportExportModal from '@/components/modals/ImportExportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';

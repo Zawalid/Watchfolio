@@ -20,6 +20,7 @@ import {
   Zap,
   GalleryVerticalEnd,
   BarChart3,
+  Info,
 } from 'lucide-react';
 
 const libraryMenuItems = [
@@ -234,7 +235,7 @@ function LibraryMenu() {
 
 // Help Menu Component
 function HelpMenu() {
-  const { checkForUpdates, openKeyboardShortcuts } = useDesktopActions();
+  const { checkForUpdates, openKeyboardShortcuts, openAbout } = useDesktopActions();
 
   return (
     <DropdownMenu
@@ -276,6 +277,9 @@ function HelpMenu() {
       <DropdownSection title='About'>
         <DropdownItem key='updates' startContent={<RotateCw className='size-4' />} onPress={checkForUpdates}>
           Check for Updates
+        </DropdownItem>
+        <DropdownItem key='about' startContent={<Info className='size-4' />} onPress={openAbout}>
+          About Watchfolio
         </DropdownItem>
       </DropdownSection>
     </DropdownMenu>

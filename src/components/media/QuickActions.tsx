@@ -8,7 +8,6 @@ import { getShortcut, ShortcutName } from '@/utils/keyboardShortcuts';
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@/components/ui/Drawer';
 import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
-import { useAuthStore } from '@/stores/useAuthStore';
 import { useAddOrUpdateLibraryItem, useRemoveLibraryItem } from '@/hooks/library/useLibraryMutations';
 import { generateMediaId } from '@/utils/library';
 
@@ -32,7 +31,6 @@ interface MobileActionsDrawerProps {
 function useMediaActions(mediaType: MediaType, item?: LibraryMedia, media?: Media) {
   const { openModal } = useMediaStatusModal();
   const { confirm } = useConfirmationModal();
-  const defaultMediaStatus = useAuthStore((state) => state.userPreferences.defaultMediaStatus);
 
   const id = generateMediaId(item || (media && { ...media, media_type: mediaType }));
   const { mutate: addOrUpdateItem } = useAddOrUpdateLibraryItem();
@@ -44,14 +42,8 @@ function useMediaActions(mediaType: MediaType, item?: LibraryMedia, media?: Medi
     const target = media || item;
     if (!target) return;
 
-    if (defaultMediaStatus !== 'none' && !inLibrary) {
-      addOrUpdateItem({
-        item: { id, status: defaultMediaStatus },
-        media: media ? { ...media, media_type: mediaType } : undefined,
-      });
-    } else {
-      openModal({ ...target, media_type: mediaType });
-    }
+    // Just call openModal - it handles the smart logic internally
+    openModal({ ...target, media_type: mediaType }, item);
   };
 
   const handleToggleFavorite = () => {

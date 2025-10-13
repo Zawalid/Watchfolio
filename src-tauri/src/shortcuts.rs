@@ -14,17 +14,17 @@ pub fn register_shortcuts(app: &AppHandle) -> Result<(), Box<dyn std::error::Err
         }
     })?;
 
-    // Global Search - Ctrl+Shift+F
-    app.global_shortcut().on_shortcut("Ctrl+Shift+F", {
-        let app = app.clone();
-        move |_app, _shortcut, _event| {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.set_focus();
-                let _ = window.emit("shortcut:search", ());
-            }
-        }
-    })?;
+    // // Global Search - Ctrl+Shift+F
+    // app.global_shortcut().on_shortcut("Ctrl+Shift+F", {
+    //     let app = app.clone();
+    //     move |_app, _shortcut, _event| {
+    //         if let Some(window) = app.get_webview_window("main") {
+    //             let _ = window.show();
+    //             let _ = window.set_focus();
+    //             let _ = window.emit("shortcut:search", ());
+    //         }
+    //     }
+    // })?;
 
     // Show/Hide App - Ctrl+Shift+Space
     app.global_shortcut().on_shortcut("Ctrl+Shift+Space", {

@@ -12,7 +12,7 @@ import {
 } from '@heroui/react';
 import { AnimatePresence } from 'framer-motion';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
-import ImportExportModal from '@/components/library/ImportExportModal';
+import ImportExportModal from '@/components/modals/ImportExportModal';
 import LibraryViewLayout from '@/components/library/LibraryViewLayout';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';

@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useDisclosure } from '@heroui/react';
-import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { ConfirmationModalContext, type ConfirmationOptions } from '../ConfirmationModalContext';
 import { useAuthStore } from '@/stores/useAuthStore';
 

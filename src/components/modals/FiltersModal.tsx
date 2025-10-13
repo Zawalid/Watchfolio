@@ -25,7 +25,7 @@ import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { Input } from '@/components/ui/Input';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { useFiltersParams } from '@/hooks/useFiltersParams';
-import { Slider } from './ui/Slider';
+import { Slider } from '@/components/ui/Slider';
 import NetworkCard from '@/pages/networks/NetworkCard';
 
 export type FilterOption = 'genres' | 'networks' | 'types' | 'language' | 'ratingRange' | 'releaseYear';

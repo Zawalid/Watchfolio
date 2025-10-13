@@ -2,9 +2,9 @@ import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useDisclosure } from '@heroui/react';
 import { DesktopActionsContext } from '../DesktopActionsContext';
-import ImportExportModal from '@/components/library/ImportExportModal';
-import { AboutModal } from '@/components/desktop/AboutModal';
-import QuickAddModal from '@/components/desktop/QuickAddModal';
+import ImportExportModal from '@/components/modals/ImportExportModal';
+import { AboutModal } from '@/components/modals/AboutModal';
+import QuickAddModal from '@/components/modals/QuickAddModal';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useUpdater } from '@/hooks/desktop/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
@@ -65,11 +65,11 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
     updater.checkForUpdates();
   }, [updater]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts - Available on all platforms
   useHotkeys('ctrl+n', (e) => {
     e.preventDefault();
     quickAdd();
-  }, { enabled: isDesktop() });
+  });
 
   // Listen to Tauri menu events
   useEffect(() => {
@@ -85,7 +85,6 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
         listen('menu:preferences', () => navigate('/settings/preferences')),
         listen('menu:keyboard-shortcuts', () => openKeyboardShortcuts()),
         listen('menu:check-updates', () => checkForUpdates()),
-        listen('shortcut:quick-add', () => quickAdd()),
       ]);
 
       return () => {

@@ -5,7 +5,7 @@ import { PanelLeftClose } from 'lucide-react';
 import { Button, Tooltip, useDisclosure } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import FiltersModal from '../FiltersModal';
+import FiltersModal from '@/components/modals/FiltersModal';
 import SortBy from '../SortBy';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { cn } from '@/utils';
