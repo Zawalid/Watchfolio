@@ -1,4 +1,4 @@
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection } from '@heroui/react';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSection, Tooltip } from '@heroui/react';
 import { useDesktopActions } from '@/contexts/DesktopActionsContext';
 import { useNavigate, useLocation } from 'react-router';
 import { isDesktop } from '@/lib/platform';
@@ -21,7 +21,12 @@ import {
   GalleryVerticalEnd,
   BarChart3,
   Info,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { ShortcutTooltip } from '../ui/ShortcutKey';
+import { useEffect, useState, useRef } from 'react';
 
 const libraryMenuItems = [
   {
@@ -286,6 +291,81 @@ function HelpMenu() {
   );
 }
 
+function Navigation() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [navState, setNavState] = useState({ canGoBack: false, canGoForward: false });
+
+  const historyRef = useRef({ stack: [] as string[], index: -1, lastIdx: 0 });
+
+  useEffect(() => {
+    const path = location.pathname + location.search;
+    const history = historyRef.current;
+    const currentIdx = window.history.state?.idx ?? 0;
+
+    if (history.stack.length === 0) {
+      history.stack = [path];
+      history.index = 0;
+      history.lastIdx = currentIdx;
+      return;
+    }
+
+    const isBack = currentIdx < history.lastIdx;
+    const isForward = currentIdx > history.lastIdx;
+
+    if (isBack && history.index > 0) {
+      history.index--;
+    } else if (isForward && history.index < history.stack.length - 1) {
+      history.index++;
+    } else if (history.stack[history.index] !== path) {
+      history.stack = [...history.stack.slice(0, history.index + 1), path];
+      history.index++;
+    }
+
+    history.lastIdx = currentIdx;
+    setNavState({
+      canGoBack: history.index > 0,
+      canGoForward: history.index < history.stack.length - 1,
+    });
+  }, [location]);
+
+  useHotkeys('alt+left', () => (navState.canGoBack ? navigate(-1) : null));
+  useHotkeys('alt+right', () => (navState.canGoForward ? navigate(1) : null));
+
+  const NavButton = ({ direction, icon: Icon }: { direction: 'back' | 'forward'; icon: typeof ChevronLeft }) => {
+    const isBack = direction === 'back';
+    const isEnabled = isBack ? navState.canGoBack : navState.canGoForward;
+
+    return (
+      <Tooltip
+        content={<ShortcutTooltip shortcutName={isBack ? 'goBack' : 'goForward'} />}
+        className='tooltip-secondary!'
+        isDisabled={!isEnabled}
+      >
+        <button
+          onClick={() => navigate(isBack ? -1 : 1)}
+          className={`pointer-events-auto flex h-8 items-center justify-center px-2 transition-colors ${
+            isEnabled
+              ? 'text-Grey-400 hover:bg-white/5 hover:text-white'
+              : 'text-Grey-600 cursor-not-allowed opacity-50'
+          }`}
+          aria-label={`Go ${direction}`}
+          disabled={!isEnabled}
+        >
+          <Icon className='size-4' />
+        </button>
+      </Tooltip>
+    );
+  };
+
+  return (
+    <div className='flex items-center'>
+      <NavButton direction='back' icon={ChevronLeft} />
+      <NavButton direction='forward' icon={ChevronRight} />
+    </div>
+  );
+}
+
 export function TitlebarMenu() {
   if (!isDesktop()) return null;
 
@@ -297,6 +377,9 @@ export function TitlebarMenu() {
       className='pointer-events-none flex h-8 items-center'
       style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
     >
+      {/* NAVIGATION BUTTONS */}
+      <Navigation />
+
       {/* FILE MENU */}
       <Dropdown
         classNames={{

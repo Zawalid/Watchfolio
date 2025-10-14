@@ -27,6 +27,8 @@ export const KEYBOARD_SHORTCUTS = {
     description: 'Navigate between library cards',
     category: 'general',
   },
+  goBack: { hotkey: 'alt+left', label: 'Alt ←', description: 'Go back', category: 'general' },
+  goForward: { hotkey: 'alt+right', label: 'Alt →', description: 'Go forward', category: 'general' },
 
   // library
   toggleImportExport: {
