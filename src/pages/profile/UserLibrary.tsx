@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { GalleryVerticalEnd } from 'lucide-react';
 import LibraryViewLayout from '@/components/library/LibraryViewLayout';
 import LibraryView from '@/components/library/LibraryView';
@@ -12,7 +12,12 @@ export default function UserLibrary() {
 
   const { checkIsOwnProfile } = useAuthStore();
   const [status, setStatus] = useState<LibraryFilterStatus>('all');
+  const [isSearching, setIsSearching] = useState(false);
   const isOwnProfile = checkIsOwnProfile(profile.username);
+
+  const handleSearchingChange = useCallback((searching: boolean) => {
+    setIsSearching(searching);
+  }, []);
 
   const hiddenProfileSections = profile?.hiddenProfileSections || [];
   const visibleStatuses = LIBRARY_MEDIA_STATUS.filter(
@@ -41,8 +46,9 @@ export default function UserLibrary() {
       onTabChange={(val) => setStatus(val as LibraryFilterStatus)}
       searchLabel={`Search ${profile.name.split(' ')[0]}'s Library`}
       isOwnProfile={isOwnProfile}
+      onSearchingChange={handleSearchingChange}
     >
-      <LibraryView profile={profile} status={status} />
+      <LibraryView profile={profile} status={status} isSearching={isSearching} />
     </LibraryViewLayout>
   );
 }

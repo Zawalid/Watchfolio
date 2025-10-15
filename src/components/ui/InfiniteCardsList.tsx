@@ -15,7 +15,7 @@ export type InfiniteCardsListProps<T> = {
     | ((ctx: QueryFunctionContext<readonly unknown[], number>) => Promise<TMDBResponse<T>>)
     | (() => Promise<TMDBResponse<T>>);
   CardComponent: React.ComponentType<{ item: T; tabIndex?: number }>;
-  SkeletonComponent: React.ComponentType<{ length?: number; asSlider?: boolean }>;
+  SkeletonComponent: React.ComponentType<{ length?: number; asSlider?: boolean; noContainer?: boolean }>;
   getItemKey: (item: T) => string | number;
   asSlider?: boolean;
   slideClassName?: string;
@@ -172,14 +172,12 @@ export function InfiniteCardsList<T>({
         {results.map((item, idx) => (
           <CardComponent key={getItemKey(item)} item={item} tabIndex={currentIndex === idx ? 0 : -1} />
         ))}
+        {useInfinite && infiniteQuery.isFetchingNextPage && <SkeletonComponent length={10} asSlider={asSlider} noContainer />}
         {useInfinite && (
           <div
-            className='col-span-full w-full'
             ref={sentinelRef}
-            style={{ height: infiniteQuery.isFetchingNextPage ? 'auto' : 1 }}
-          >
-            {infiniteQuery.isFetchingNextPage && <SkeletonComponent length={10} asSlider={asSlider} />}
-          </div>
+            style={{ height: 1, gridColumn: '1 / -1' }}
+          />
         )}
       </div>
       {!useInfinite && totalPages > 1 && (

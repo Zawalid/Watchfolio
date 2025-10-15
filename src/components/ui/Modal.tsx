@@ -1,5 +1,6 @@
 import { Modal as M, ModalContent, ModalProps } from '@heroui/react';
 import { cn } from '@/utils';
+import { isDesktop } from '@/lib/platform';
 
 interface Props extends ModalProps {
   children: React.ReactNode;
@@ -10,7 +11,7 @@ const defaultClassNames = {
   wrapper: 'overflow-hidden',
   body: 'overflow-auto  py-6',
   backdrop: 'bg-black/50 backdrop-blur-[3px]',
-  base: 'border-border backdrop-blur-xl bg-blur blur-bg text-[#a8b0d3] max-h-[90vh]',
+  base: `border-border backdrop-blur-xl bg-blur blur-bg text-[#a8b0d3] max-h-[90vh] ${isDesktop()  ? 'mb-9!' : ''}`,
   header: 'border-b-[1px] border-border',
   footer: 'border-t-[1px] border-border',
   closeButton: 'z-20 border border-transparent hover:border-white/10 hover:bg-white/5',

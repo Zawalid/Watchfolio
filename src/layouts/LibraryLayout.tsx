@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router';
 import { FileJson, GalleryVerticalEnd, HelpCircle, MoreVertical, Star, Trash2, TrendingUp } from 'lucide-react';
 import {
@@ -32,6 +32,11 @@ export default function LibraryLayout() {
 
   const location = useLocation();
   const [onboardingMessage, setOnboardingMessage] = useState({ show: false, action: null });
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearchingChange = useCallback((searching: boolean) => {
+    setIsSearching(searching);
+  }, []);
 
   useEffect(() => {
     const onboardingAction = location.state?.action;
@@ -116,6 +121,7 @@ export default function LibraryLayout() {
       searchLabel='Search Your Library'
       renderActions={renderActions}
       isOwnProfile={true}
+      onSearchingChange={handleSearchingChange}
     >
       <AnimatePresence>
         <WelcomeBanner
@@ -139,7 +145,7 @@ export default function LibraryLayout() {
           show={onboardingMessage.show}
         />
       </AnimatePresence>
-      <Outlet />
+      <Outlet context={{ isSearching }} />
       <ImportExportModal disclosure={importExportDisclosure} />
     </LibraryViewLayout>
   );

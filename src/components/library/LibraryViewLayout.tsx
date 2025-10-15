@@ -1,12 +1,13 @@
-import { useRef, ReactNode } from 'react';
+import { useRef, ReactNode, useState, useEffect } from 'react';
 import { useQueryState } from 'nuqs';
-import { PanelLeftClose } from 'lucide-react';
+import { PanelLeftClose, Loader2 } from 'lucide-react';
 import { Button, Tooltip, useDisclosure } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import FiltersModal from '@/components/modals/FiltersModal';
 import SortBy from '../SortBy';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/utils';
 import { useShortcuts } from '@/hooks/useShortcut';
 import LibrarySidebar from './LibrarySidebar';
@@ -28,6 +29,7 @@ interface LibraryViewLayoutProps {
   renderActions?: () => ReactNode;
   children: ReactNode;
   isOwnProfile: boolean;
+  onSearchingChange?: (isSearching: boolean) => void;
 }
 
 export default function LibraryViewLayout({
@@ -39,12 +41,34 @@ export default function LibraryViewLayout({
   renderActions,
   children,
   isOwnProfile,
+  onSearchingChange,
 }: LibraryViewLayoutProps) {
   const [query, setQuery] = useQueryState('query', { defaultValue: '', shallow: false });
+  const [localQuery, setLocalQuery] = useState(query);
+  const debouncedLocalQuery = useDebounce(localQuery, 150);
   const [showSidebar, setShowSidebar] = useLocalStorageState(`show-sidebar-${sidebarTitle}`, true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const filtersDisclosure = useDisclosure();
   const { isAbove } = useViewportSize();
+
+  const isSearching = localQuery !== debouncedLocalQuery;
+
+  useEffect(() => {
+    onSearchingChange?.(isSearching);
+  }, [isSearching, onSearchingChange]);
+
+  useEffect(() => {
+    setQuery(debouncedLocalQuery);
+  }, [debouncedLocalQuery, setQuery]);
+
+  useEffect(() => {
+    setLocalQuery(query);
+  }, [query]);
+
+  const handleClearSearch = () => {
+    setLocalQuery('');
+    setQuery(null);
+  };
 
   useShortcuts([
     {
@@ -53,7 +77,7 @@ export default function LibraryViewLayout({
     },
     {
       name: 'clearSearch',
-      handler: () => setQuery(null),
+      handler: handleClearSearch,
     },
   ]);
 
@@ -84,12 +108,18 @@ export default function LibraryViewLayout({
               icon='search'
               parentClassname='w-full md:w-80'
               name='search'
-              value={query}
+              value={localQuery}
               label={searchLabel}
               placeholder='Search by title...'
               ref={searchInputRef}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+              onChange={(e) => setLocalQuery(e.target.value)}
+            >
+              {isSearching && (
+                <span className='text-Primary-400 absolute top-1/2 right-4 z-10 -translate-y-1/2'>
+                  <Loader2 className='size-4 animate-spin' />
+                </span>
+              )}
+            </Input>
             {!showSidebar && (
               <Tooltip
                 content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}

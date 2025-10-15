@@ -44,6 +44,7 @@ export const useInfiniteLibraryItems = (filters: LibraryFilters, options: { enab
     },
     initialPageParam: 0,
     enabled: options.enabled,
+    placeholderData: (previousData) => previousData,
   });
 
   if (query.isError) log(query.error);
@@ -135,5 +136,6 @@ export const useInfinitePublicLibraryItems = (
     },
     initialPageParam: 0,
     enabled: options.enabled,
+    placeholderData: (previousData) => previousData,
   });
 };

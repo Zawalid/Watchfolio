@@ -22,7 +22,8 @@ import {
   Play,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -322,7 +323,14 @@ const features = [
 ];
 
 export default function LandingPage() {
-  const { openAuthModal } = useAuthStore();
+  const { openAuthModal, isAuthenticated, isLoading } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate('/library/all', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <div className='relative overflow-hidden'>
