@@ -20,8 +20,7 @@ import { useLibraryTotalCount } from '@/hooks/library/useLibraryQueries';
 import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcut } from '@/hooks/useShortcut';
 
 export default function LibraryLayout() {
   const { status } = useParams<{ status: LibraryFilterStatus }>();
@@ -44,7 +43,7 @@ export default function LibraryLayout() {
     }
   }, [location.state]);
 
-  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', clearLibrary, { useKey: true });
+  useShortcut('clearLibrary', clearLibrary);
 
   const renderActions = () => (
     <>

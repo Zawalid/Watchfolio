@@ -29,7 +29,7 @@ import {
   ViewingTaste,
   MoodRecommendations,
 } from '@/pages';
-import { moviesLoader, tvShowsLoader } from './loaders';
+import { moviesLoader, tvShowsLoader, rootLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { slugify } from '@/utils';
 
@@ -41,6 +41,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Landing,
+        loader: rootLoader,
       },
       {
         path: 'home',

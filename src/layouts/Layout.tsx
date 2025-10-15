@@ -7,7 +7,6 @@ import AuthModal from '@/components/modals/AuthModal';
 import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
-import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import BottomNavBar from '@/components/navbar/BottomNavBar';
 import { isDesktop } from '@/lib/platform';
 import { cn } from '@/utils';
@@ -37,7 +36,6 @@ export default function Layout() {
         <OnboardingModal />
         <AuthModal />
         <ScrollToTopButton />
-        <KeyboardShortcuts />
       </div>
     </Providers>
   );

@@ -89,11 +89,17 @@ export default function BaseMediaCard({
     }
   }, [item, media, mediaType, addOrUpdateItem]);
 
-  const handleLongPress = useLongPress(() => setShowMobileDrawer(true), {
-    threshold: 500,
-    captureEvent: true,
-    cancelOnMovement: true,
-  });
+  const handleLongPress = useLongPress(
+    () => {
+      if(!isMobile) return;
+      setShowMobileDrawer(true);
+    },
+    {
+      threshold: 500,
+      captureEvent: true,
+      cancelOnMovement: true,
+    }
+  );
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
@@ -210,9 +216,7 @@ export default function BaseMediaCard({
             />
           </motion.div>
           <div className='absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent' />
-          <motion.div
-            className='absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent'
-          />
+          <motion.div className='absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent' />
           <div className='absolute inset-x-0 bottom-0 space-y-2 p-4'>
             <motion.div animate={{ y: isInteractive ? -4 : 0 }} transition={{ duration: 0.3, ease: 'easeOut' }}>
               <h3 className='line-clamp-2 text-lg leading-tight font-bold text-white drop-shadow-lg'>{title}</h3>
@@ -220,7 +224,7 @@ export default function BaseMediaCard({
             <motion.div
               animate={{ y: isInteractive ? -2 : 0, opacity: isInteractive ? 1 : 0.9 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
-              className='text-Grey-200 flex items-center gapp-2.5 text-sm'
+              className='text-Grey-200 gapp-2.5 flex items-center text-sm'
             >
               {releaseDate && (
                 <div className='flex items-center gap-1'>

@@ -10,7 +10,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ModalBody, ModalFooter, useDisclosure } from '@heroui/react';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { addToast } from '@heroui/react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useShortcuts } from '@/hooks/useShortcut';
 
 const steps = [
   { id: 'welcome', component: WelcomeStep },
@@ -46,10 +46,6 @@ export default function OnboardingModal() {
   const CurrentStepComponent = steps[currentStep]?.component;
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === totalSteps - 1;
-
-  useHotkeys('left', () => (!isFirstStep ? prevStep() : null), { enabled: showOnboardingModal });
-  useHotkeys('right', () => (!isLastStep ? nextStep() : null), { enabled: showOnboardingModal });
-  useHotkeys('enter', () => (isLastStep ? handleComplete() : nextStep()), { enabled: showOnboardingModal });
 
   const nextStep = () => {
     setDirection(1);
@@ -88,6 +84,12 @@ export default function OnboardingModal() {
       nextStep();
     }
   };
+  
+useShortcuts([
+    { name: 'goBack', handler: prevStep, enabled: showOnboardingModal && !isFirstStep },
+    { name: 'goForward', handler: nextStep, enabled: showOnboardingModal && !isLastStep },
+    { name: 'openDetails', handler: () => (isLastStep ? handleComplete() : nextStep()), enabled: showOnboardingModal },
+]);
 
   if (!CurrentStepComponent) return null;
 
@@ -98,7 +100,7 @@ export default function OnboardingModal() {
       size='5xl'
       classNames={{ base: 'full-mobile-modal', closeButton: 'hidden' }}
     >
-      <ModalHeader className='border-none p- relative'>
+      <ModalHeader className='p- relative border-none'>
         {!isLastStep && (
           <Button size='sm' className='button-secondary! absolute top-4 right-4' onPress={closeOnboardingModal}>
             <ChevronLast className='h-4 w-4' />
@@ -130,7 +132,7 @@ export default function OnboardingModal() {
                 x: { type: 'spring', stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 },
               }}
-              className='mobile:p-4 sm:p-8 pt-8'
+              className='mobile:p-4 pt-8 sm:p-8'
             >
               <CurrentStepComponent />
             </motion.div>

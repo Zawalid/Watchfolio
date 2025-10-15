@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs } from 'react-router';
+import { type LoaderFunctionArgs, redirect } from 'react-router';
 import {
   getTvShows,
   getMovies,
@@ -8,6 +8,7 @@ import {
 } from '@/lib/api/TMDB';
 import { prefetchQuery, queryKeys } from '@/lib/react-query';
 import { TMDB_MOVIE_CATEGORIES, TMDB_TV_CATEGORIES } from '@/utils/constants';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const createListLoader = (type: MediaType) => {
   return async ({ request }: LoaderFunctionArgs) => {
@@ -45,6 +46,14 @@ const createListLoader = (type: MediaType) => {
 //     return data.data;
 //   };
 // };
+
+export const rootLoader = () => {
+  const { isAuthenticated } = useAuthStore.getState();
+  if (isAuthenticated) {
+    return redirect('/library/all');
+  }
+  return null;
+};
 
 export const moviesLoader = createListLoader('movie');
 // export const movieDetailsLoader = createDetailsLoader('movie');

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useShortcuts } from '@/hooks/useShortcut';
 import {
   FunnelX,
   Filter as FilterIcon,
@@ -19,7 +19,7 @@ import { Tooltip } from '@heroui/react';
 import { Select, SelectItem } from '@heroui/react';
 import { GENRES, NETWORKS } from '@/utils/constants/TMDB';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
+import { type ShortcutName } from '@/utils/keyboardShortcuts';
 import { cn } from '@/utils';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { Input } from '@/components/ui/Input';
@@ -34,7 +34,7 @@ interface FiltersModalProps {
   disclosure: Disclosure;
   filterOptions?: FilterOption[];
   title?: string;
-  className?:string
+  className?: string;
 }
 
 const MEDIA_TYPES = [
@@ -61,7 +61,7 @@ export default function FiltersModal({
   disclosure,
   filterOptions = ['genres', 'networks', 'types'],
   title = 'Apply Filters',
-  className
+  className,
 }: FiltersModalProps) {
   const { isOpen, onClose, onOpen } = disclosure;
   const { registerNavigation, unregisterNavigation } = useNavigation();
@@ -132,30 +132,37 @@ export default function FiltersModal({
     }
   }, [isOpen, selectedTypes, selectedGenres, selectedNetworks, language, minRating, maxRating, minYear, maxYear]);
 
-  useHotkeys(getShortcut('toggleFilters')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
-  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
-  useHotkeys(getShortcut('filterMovies')?.hotkey || '', () => toggleMediaType('movie'), [pendingTypes]);
-  useHotkeys(getShortcut('filterTvShows')?.hotkey || '', () => toggleMediaType('tv'), [pendingTypes]);
-  useHotkeys(
-    getShortcut('clearFilters')?.hotkey || '',
-    () => {
-      if (hasFilters) clearAllPendingFilters();
-    },
-    [hasFilters]
-  );
+
+  const applyMovieFilter = () => {
+    const current = selectedTypes || [];
+    if (current.length && current.length === MEDIA_TYPES.length - 1) {
+      setSelectedTypes(null);
+    } else {
+      setSelectedTypes(current.includes('movie') ? current.filter((t) => t !== 'movie') : [...current, 'movie']);
+    }
+  };
+
+  const applyTvFilter = () => {
+    const current = selectedTypes || [];
+    if (current.length && current.length === MEDIA_TYPES.length - 1) {
+      setSelectedTypes(null);
+    } else {
+      setSelectedTypes(current.includes('tv') ? current.filter((t) => t !== 'tv') : [...current, 'tv']);
+    }
+  };
+
+  useShortcuts([
+    { name: 'toggleFilters', handler: () => (isOpen ? onClose() : onOpen()) },
+    { name: 'escape', handler: () => onClose(), enabled: isOpen },
+    { name: 'filterMovies', handler: applyMovieFilter },
+    { name: 'filterTvShows', handler: applyTvFilter },
+    { name: 'clearFilters', handler: () => clearAllPendingFilters(), enabled: hasFilters },
+  ]);
 
   useEffect(() => {
     if (isOpen) registerNavigation('filter-modal');
     return () => unregisterNavigation('filter-modal');
   }, [isOpen, registerNavigation, unregisterNavigation]);
-
-  const toggleMediaType = (typeId: string) => {
-    setPendingTypes((types) => {
-      const current = types || [];
-      if (current.length && current.length === MEDIA_TYPES.length - 1) return null;
-      return current.includes(typeId) ? current.filter((t) => t !== typeId) : [...current, typeId];
-    });
-  };
 
   const applyFilters = () => {
     setSelectedTypes(pendingTypes);
@@ -236,7 +243,8 @@ export default function FiltersModal({
           isIconOnly
           className={cn(
             'button-secondary! relative overflow-visible',
-            hasFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20',className
+            hasFilters && 'border-amber-500/50 shadow-sm shadow-amber-500/20',
+            className
           )}
           onPress={onOpen}
           aria-label='Show filters'

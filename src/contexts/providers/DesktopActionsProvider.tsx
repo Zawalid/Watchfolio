@@ -9,8 +9,8 @@ import { useSyncStore } from '@/stores/useSyncStore';
 import { useUpdater } from '@/hooks/desktop/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
 import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { isDesktop } from '@/lib/platform';
+import { useShortcut } from '@/hooks/useShortcut';
 
 /**
  * Provider for desktop actions
@@ -66,10 +66,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   }, [updater]);
 
   // Keyboard shortcuts - Available on all platforms
-  useHotkeys('ctrl+n', (e) => {
-    e.preventDefault();
-    quickAdd();
-  });
+  useShortcut('toggleCommandPalette', quickSearch);
 
   // Listen to Tauri menu events
   useEffect(() => {

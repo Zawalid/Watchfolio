@@ -49,47 +49,49 @@ export function CustomTitlebar() {
   return (
     <div
       data-tauri-drag-region
-      className="fixed top-0 left-0 right-0 h-9 z-[9999] flex items-center bg-Grey-900 border-b border-white/5"
+      className=' bg-Grey-900/40 fixed top-0 right-0 left-0 z-[9999] flex h-9 items-center border-b border-white/5 shadow-2xl shadow-black/20 backdrop-blur-xl'
       style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
-
       <TitlebarMenu />
-      
-      <div className="flex flex-1 justify-center items-center gap-2 px-3 pointer-events-none">
-        <img src="/images/logo.svg" alt="Watchfolio" className="size-5" />
-        <span className="text-Primary-50 text-sm font-medium select-none  pointer-events-none">Watchfolio</span>
+
+      <div className='pointer-events-none flex flex-1 items-center justify-center gap-2 px-3'>
+        <img src='/images/logo.svg' alt='Watchfolio' className='size-5' />
+        <span className='text-Primary-50 pointer-events-none text-sm font-medium select-none'>Watchfolio</span>
       </div>
 
-      <div className="ml-auto flex items-center">
+      <div className='ml-auto flex items-center'>
         <SyncStatusIndicator />
-        <div className="flex items-center pointer-events-auto" style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+        <div
+          className='pointer-events-auto flex items-center'
+          style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+        >
           <button
             onClick={handleMinimize}
-            className="h-8 w-12 flex items-center justify-center hover:bg-white/5 transition-colors"
-            aria-label="Minimize"
+            className='flex h-8 w-12 items-center justify-center transition-colors hover:bg-white/5'
+            aria-label='Minimize'
           >
-            <Minus className="size-3.5 text-Grey-400 group-hover:text-white" />
+            <Minus className='text-Grey-400 size-3.5 group-hover:text-white' />
           </button>
           <button
             onClick={handleMaximize}
-            className="h-8 w-12 flex items-center justify-center hover:bg-white/5 transition-colors"
+            className='flex h-8 w-12 items-center justify-center transition-colors hover:bg-white/5'
             aria-label={isMaximized ? 'Restore' : 'Maximize'}
           >
             {isMaximized ? (
-              <Square className="size-3 text-Grey-400 group-hover:text-white" />
+              <Square className='text-Grey-400 size-3 group-hover:text-white' />
             ) : (
-              <Maximize2 className="size-3 text-Grey-400 group-hover:text-white" />
+              <Maximize2 className='text-Grey-400 size-3 group-hover:text-white' />
             )}
           </button>
           <button
             onClick={handleClose}
-            className="h-8 w-12 flex items-center justify-center hover:bg-red-500 transition-colors group"
-            aria-label="Close"
+            className='group flex h-8 w-12 items-center justify-center transition-colors hover:bg-red-500'
+            aria-label='Close'
           >
-            <X className="size-3.5 text-Grey-400 group-hover:text-white" />
+            <X className='text-Grey-400 size-3.5 group-hover:text-white' />
           </button>
         </div>
       </div>
-    </div>  
+    </div>
   );
 }

@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { isTauri } from '@/lib/platform';
 
-console.log(isTauri())
 
 const footerLinks = [
   {

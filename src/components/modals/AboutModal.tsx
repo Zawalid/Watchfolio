@@ -1,6 +1,6 @@
 import { ModalBody, ModalHeader } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { Info, Github, Globe, Heart, Database, Cloud, Sparkles, Shield, Monitor } from 'lucide-react';
+import {  Github, Globe, Heart, Database, Cloud, Sparkles, Shield, Monitor } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface AboutModalProps {
@@ -8,7 +8,7 @@ interface AboutModalProps {
 }
 
 export function AboutModal({ disclosure }: AboutModalProps) {
-  const version = '0.0.0';
+  const version = '1.0.0';
 
   const features = [
     { icon: Cloud, label: 'Sync Everywhere', description: 'Access your library on any device' },
@@ -26,7 +26,7 @@ export function AboutModal({ disclosure }: AboutModalProps) {
             animate={{ rotate: [0, 5, -5, 0] }}
             transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
           >
-            <Info className='text-Primary-400 size-6' />
+            <img src='/images/logo.svg' alt='Watchfolio' className='size-7' />
           </motion.div>
           <div>
             <h2 className='gradient text-2xl font-bold'>Watchfolio</h2>
@@ -82,9 +82,7 @@ export function AboutModal({ disclosure }: AboutModalProps) {
             <h3 className='text-Grey-200 text-sm font-semibold'>Available On</h3>
           </div>
           <div className='flex flex-wrap justify-center gap-2'>
-            <span className='bg-Primary-500/20 text-Primary-200 rounded-full px-3 py-1 text-xs font-medium'>
-              Web
-            </span>
+            <span className='bg-Primary-500/20 text-Primary-200 rounded-full px-3 py-1 text-xs font-medium'>Web</span>
             <span className='bg-Primary-500/20 text-Primary-200 rounded-full px-3 py-1 text-xs font-medium'>
               Windows
             </span>

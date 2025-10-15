@@ -1,11 +1,10 @@
 import { Outlet } from 'react-router';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { motion } from 'framer-motion';
 import { useDisclosure } from '@heroui/react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { LucideIcon } from 'lucide-react';
 import FiltersModal, { FilterOption } from '@/components/modals/FiltersModal';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcuts } from '@/hooks/useShortcut';
 import SortBy from '@/components/SortBy';
 import { cn } from '@/utils';
 import PageLayout from './PageLayout';
@@ -70,38 +69,36 @@ export default function MediaLayout({
   };
 
   // Sorting hotkeys
-  useHotkeys(
-    getShortcut('sortByPopularity')?.hotkey || '',
-    () => {
-      setSortBy('popularity');
-      setSortDir('desc');
+  useShortcuts([
+    {
+      name: 'sortByPopularity',
+      handler: () => {
+        setSortBy('popularity');
+        setSortDir('desc');
+      },
     },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByRating')?.hotkey || '',
-    () => {
-      setSortBy('vote_average');
-      setSortDir('desc');
+    {
+      name: 'sortByRating',
+      handler: () => {
+        setSortBy('vote_average');
+        setSortDir('desc');
+      },
     },
-    []
-  );
-  useHotkeys(
-    getShortcut('sortByDate')?.hotkey || '',
-    () => {
-      setSortBy(title === 'Movies' ? 'release_date' : 'first_air_date');
-      setSortDir('desc');
+    {
+      name: 'sortByDate',
+      handler: () => {
+        setSortBy(title === 'Movies' ? 'release_date' : 'first_air_date');
+        setSortDir('desc');
+      },
     },
-    [title]
-  );
-  useHotkeys(
-    getShortcut('sortByTitle')?.hotkey || '',
-    () => {
-      setSortBy(title === 'Movies' ? 'title' : 'name');
-      setSortDir('asc');
+    {
+      name: 'sortByTitle',
+      handler: () => {
+        setSortBy(title === 'Movies' ? 'title' : 'name');
+        setSortDir('asc');
+      },
     },
-    [title]
-  );
+  ]);
 
   return (
     <PageLayout

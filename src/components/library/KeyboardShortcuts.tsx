@@ -1,9 +1,9 @@
 import { Keyboard } from 'lucide-react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { ModalBody, useDisclosure } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { getShortcut, getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
+import { getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
+import { useShortcuts } from '@/hooks/useShortcut';
 
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
@@ -19,10 +19,10 @@ export default function KeyboardShortcuts({extDisclosure} : {extDisclosure?:Disc
   const disclosure = useDisclosure();
   const { isOpen, onOpen, onClose } = extDisclosure || disclosure;
 
-  useHotkeys(getShortcut('toggleShortcutsHelp')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen], {
-    useKey: true,
-  });
-  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
+  useShortcuts([
+    { name: 'toggleShortcutsHelp', handler: () => (isOpen ? onClose() : onOpen()) },
+    { name: 'escape', handler: () => onClose(), enabled: isOpen },
+  ]);
 
   return (
     <Modal disclosure={extDisclosure || disclosure} classNames={{ base: 'full-mobile-modal' }}>

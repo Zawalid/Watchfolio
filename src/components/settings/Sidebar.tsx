@@ -1,11 +1,10 @@
 import { Link, useLocation } from 'react-router';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { PanelLeftClose, Info } from 'lucide-react';
 import { User, Lock, Sliders, LibraryBig, Monitor } from 'lucide-react';
 import { Button, Tooltip, useDisclosure, Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@heroui/react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { useViewportSize } from '@/hooks/useViewportSize';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcut } from '@/hooks/useShortcut';
 import { DRAWER_CLASSNAMES } from '@/styles/heroui';
 import { useDesktopActions } from '@/contexts/DesktopActionsContext';
 
@@ -22,7 +21,7 @@ export default function Sidebar() {
   const { isBelow } = useViewportSize();
   const { openAbout } = useDesktopActions();
 
-  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useShortcut('toggleSidebar', () => (isOpen ? onClose() : onOpen()));
 
   if (isBelow('lg'))
     return (

@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import { Heart, Trash2, Edit3, Plus } from 'lucide-react';
 import { Button, Tooltip } from '@heroui/react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { cn } from '@/utils';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import { getShortcut, ShortcutName } from '@/utils/keyboardShortcuts';
+import { ShortcutName } from '@/utils/keyboardShortcuts';
+import { useShortcut } from '@/hooks/useShortcut';
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@/components/ui/Drawer';
 import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
@@ -82,11 +82,9 @@ function useMediaActions(mediaType: MediaType, item?: LibraryMedia, media?: Medi
 export function QuickActions({ mediaType, item, media, isFocused }: QuickActionsProps) {
   const { inLibrary, handleEditStatus, handleToggleFavorite, handleRemove } = useMediaActions(mediaType, item, media);
 
-  useHotkeys(getShortcut(inLibrary ? 'editStatus' : 'addToLibrary')?.hotkey || '', handleEditStatus, {
-    enabled: isFocused,
-  });
-  useHotkeys(getShortcut('toggleFavorite')?.hotkey || '', handleToggleFavorite, { enabled: isFocused });
-  useHotkeys(getShortcut('removeFromLibrary')?.hotkey || '', handleRemove, { enabled: isFocused });
+  useShortcut(inLibrary ? 'editStatus' : 'addToLibrary', handleEditStatus, { enabled: isFocused });
+  useShortcut('toggleFavorite', handleToggleFavorite, { enabled: isFocused });
+  useShortcut('removeFromLibrary', handleRemove, { enabled: isFocused });
 
   return (
     <motion.div

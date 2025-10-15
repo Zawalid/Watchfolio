@@ -1,5 +1,4 @@
 import { useRef, ReactNode } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useQueryState } from 'nuqs';
 import { PanelLeftClose } from 'lucide-react';
 import { Button, Tooltip, useDisclosure } from '@heroui/react';
@@ -9,7 +8,7 @@ import FiltersModal from '@/components/modals/FiltersModal';
 import SortBy from '../SortBy';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { cn } from '@/utils';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcuts } from '@/hooks/useShortcut';
 import LibrarySidebar from './LibrarySidebar';
 import { useViewportSize } from '@/hooks/useViewportSize';
 
@@ -47,11 +46,16 @@ export default function LibraryViewLayout({
   const filtersDisclosure = useDisclosure();
   const { isAbove } = useViewportSize();
 
-  useHotkeys(getShortcut('focusSearch')?.hotkey || '', (e) => {
-    e.preventDefault();
-    searchInputRef.current?.focus();
-  });
-  useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null));
+  useShortcuts([
+    {
+      name: 'focusSearch',
+      handler: () => {searchInputRef.current?.focus()},
+    },
+    {
+      name: 'clearSearch',
+      handler: () => setQuery(null),
+    },
+  ]);
 
   return (
     <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>

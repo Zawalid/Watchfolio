@@ -1,11 +1,10 @@
 import { ReactNode } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { PanelLeftClose } from 'lucide-react';
 import { Button, Tooltip, useDisclosure, Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@heroui/react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tabs } from '@/components/ui/Tabs';
 import { cn } from '@/utils';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcut } from '@/hooks/useShortcut';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { DRAWER_CLASSNAMES } from '@/styles/heroui';
@@ -43,11 +42,7 @@ export default function LibrarySidebar({
   });
   const { isBelow } = useViewportSize();
 
-  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => setShowSidebar(!showSidebar), [
-    showSidebar,
-    setShowSidebar,
-    drawerDisclosure,
-  ]);
+  useShortcut('toggleSidebar', () => setShowSidebar(!showSidebar));
 
   if (isBelow('lg'))
     return (

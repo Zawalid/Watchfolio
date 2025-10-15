@@ -1,9 +1,8 @@
-import { useHotkeys } from 'react-hotkeys-hook';
 import { Upload, Download, FileJson } from 'lucide-react';
 import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { Tab, Tabs } from '@heroui/react';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcuts } from '@/hooks/useShortcut';
 import Import from '@/components/library/Import';
 import Export from '@/components/library/Export';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
@@ -17,8 +16,10 @@ export default function ImportExportModal({ disclosure }: ImportExportModalProps
   const { isOpen, onClose, onOpen } = disclosure;
 
   // Keyboard shortcuts for modal
-  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
-  useHotkeys(getShortcut('toggleImportExport')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useShortcuts([
+    { name: 'escape', handler: onClose, enabled: isOpen },
+    { name: 'toggleImportExport', handler: () => (isOpen ? onClose() : onOpen()) },
+  ]);
 
   return (
     <Modal disclosure={disclosure} size='xl' classNames={{ base: 'full-mobile-modal' }}>

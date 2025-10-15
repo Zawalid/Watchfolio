@@ -24,9 +24,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { ShortcutTooltip } from '../ui/ShortcutKey';
 import { useEffect, useState, useRef } from 'react';
+import { useShortcut } from '@/hooks/useShortcut';
 
 const libraryMenuItems = [
   {
@@ -296,45 +296,41 @@ function Navigation() {
   const location = useLocation();
   const [navState, setNavState] = useState({ canGoBack: false, canGoForward: false });
 
-  const historyRef = useRef({ stack: [] as string[], index: -1, lastIdx: 0 });
+  const historyIndexRef = useRef(window.history.state?.idx ?? 0);
+  const historyLengthRef = useRef(window.history.length);
 
   useEffect(() => {
-    const path = location.pathname + location.search;
-    const history = historyRef.current;
     const currentIdx = window.history.state?.idx ?? 0;
+    const historyLength = window.history.length;
 
-    if (history.stack.length === 0) {
-      history.stack = [path];
-      history.index = 0;
-      history.lastIdx = currentIdx;
-      return;
-    }
+    historyIndexRef.current = currentIdx;
+    historyLengthRef.current = historyLength;
 
-    const isBack = currentIdx < history.lastIdx;
-    const isForward = currentIdx > history.lastIdx;
-
-    if (isBack && history.index > 0) {
-      history.index--;
-    } else if (isForward && history.index < history.stack.length - 1) {
-      history.index++;
-    } else if (history.stack[history.index] !== path) {
-      history.stack = [...history.stack.slice(0, history.index + 1), path];
-      history.index++;
-    }
-
-    history.lastIdx = currentIdx;
     setNavState({
-      canGoBack: history.index > 0,
-      canGoForward: history.index < history.stack.length - 1,
+      canGoBack: currentIdx > 0,
+      canGoForward: currentIdx < historyLength - 1,
     });
   }, [location]);
 
-  useHotkeys('alt+left', () => (navState.canGoBack ? navigate(-1) : null));
-  useHotkeys('alt+right', () => (navState.canGoForward ? navigate(1) : null));
+  const handleBack = () => {
+    if (navState.canGoBack) {
+      navigate(-1);
+    }
+  };
+
+  const handleForward = () => {
+    if (navState.canGoForward) {
+      navigate(1);
+    }
+  };
+
+  useShortcut('goBack', handleBack, { enabled: navState.canGoBack });
+  useShortcut('goForward', handleForward, { enabled: navState.canGoForward });
 
   const NavButton = ({ direction, icon: Icon }: { direction: 'back' | 'forward'; icon: typeof ChevronLeft }) => {
     const isBack = direction === 'back';
     const isEnabled = isBack ? navState.canGoBack : navState.canGoForward;
+    const handleClick = isBack ? handleBack : handleForward;
 
     return (
       <Tooltip
@@ -343,7 +339,7 @@ function Navigation() {
         isDisabled={!isEnabled}
       >
         <button
-          onClick={() => navigate(isBack ? -1 : 1)}
+          onClick={handleClick}
           className={`pointer-events-auto flex h-8 items-center justify-center px-2 transition-colors ${
             isEnabled
               ? 'text-Grey-400 hover:bg-white/5 hover:text-white'
