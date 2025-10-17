@@ -8,9 +8,18 @@ import { Home, Film, Tv, Search, Brain, Users, Tv2Icon, CollectionsIcon, Setting
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
 import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { UserWithProfile } from '@/lib/appwrite/types';
+import { ShortcutName } from '@/config/shortcuts';
 
 // Navigation utilities
-const links = [
+const links: {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; size?: number | string }>;
+  href: string;
+  matches?: string[];
+  description: string;
+  shortcutName: ShortcutName | null;
+}[] = [
   {
     id: 'home',
     label: 'Home',
@@ -18,6 +27,7 @@ const links = [
     href: '/home',
     matches: ['/home'],
     description: 'Discover trending content',
+    shortcutName: 'goToHome',
   },
   {
     id: 'movies',
@@ -26,6 +36,7 @@ const links = [
     href: '/movies',
     matches: ['/movies'],
     description: 'Browse movies',
+    shortcutName: 'goToMovies',
   },
   {
     id: 'tv',
@@ -34,6 +45,7 @@ const links = [
     href: '/tv',
     matches: ['/tv'],
     description: 'Explore TV series',
+    shortcutName: 'goToTvShows',
   },
   {
     id: 'search',
@@ -42,6 +54,7 @@ const links = [
     href: '/search',
     matches: ['/search'],
     description: 'Find your favorites',
+    shortcutName: 'goToSearch',
   },
   {
     id: 'mood-match',
@@ -50,6 +63,7 @@ const links = [
     href: '/mood-match',
     matches: ['/mood-match'],
     description: 'AI-powered recommendations for your mood',
+    shortcutName: null,
   },
   {
     id: 'collections',
@@ -58,6 +72,7 @@ const links = [
     href: '/collections',
     matches: ['/collections'],
     description: 'Curated lists',
+    shortcutName: null,
   },
   {
     id: 'celebrities',
@@ -66,6 +81,7 @@ const links = [
     href: '/celebrities',
     matches: ['/celebrities'],
     description: 'Actors & creators',
+    shortcutName: null,
   },
   {
     id: 'networks',
@@ -74,6 +90,7 @@ const links = [
     href: '/networks',
     matches: ['/networks'],
     description: 'Streaming platforms',
+    shortcutName: null,
   },
   {
     id: 'library',
@@ -82,6 +99,7 @@ const links = [
     href: '/library',
     matches: ['/library'],
     description: 'Your saved content',
+    shortcutName: 'goToLibrary',
   },
   {
     id: 'settings',
@@ -90,6 +108,7 @@ const links = [
     href: '/settings/profile',
     matches: ['/settings'],
     description: 'Account preferences',
+    shortcutName: 'goToSettings',
   },
 ] as const;
 
@@ -103,10 +122,9 @@ export const isLinkActive = (path: string, username?: string, matches?: readonly
   if (path === '/library')
     return location.pathname.startsWith('/library') && location.pathname !== '/library/favorites';
   if (path === '/library/favorites') return location.pathname === '/library/favorites';
-  if(matches) return matches.some((match) =>
-    match === '/' ? location.pathname === match : location.pathname.startsWith(match)
-  );
-  return location.pathname === path
+  if (matches)
+    return matches.some((match) => (match === '/' ? location.pathname === match : location.pathname.startsWith(match)));
+  return location.pathname === path;
 };
 
 export const getAvatarUrl = (user: UserWithProfile | null, isAuthenticated: boolean) => {

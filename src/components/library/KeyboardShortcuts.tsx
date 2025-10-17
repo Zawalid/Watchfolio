@@ -1,9 +1,9 @@
 import { Keyboard } from 'lucide-react';
-import { ModalBody, useDisclosure } from '@heroui/react';
+import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import { getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
-import { useShortcuts } from '@/hooks/useShortcut';
+import { useShortcutsDisclosure } from '@/stores/useUIStore';
 
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
@@ -15,17 +15,11 @@ const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
 
 const CATEGORY_ORDER = Object.keys(CATEGORY_TITLES) as ShortcutCategory[];
 
-export default function KeyboardShortcuts({extDisclosure} : {extDisclosure?:Disclosure}) {
-  const disclosure = useDisclosure();
-  const { isOpen, onOpen, onClose } = extDisclosure || disclosure;
-
-  useShortcuts([
-    { name: 'toggleShortcutsHelp', handler: () => (isOpen ? onClose() : onOpen()) },
-    { name: 'escape', handler: () => onClose(), enabled: isOpen },
-  ]);
+export default function KeyboardShortcuts() {
+  const disclosure = useShortcutsDisclosure();
 
   return (
-    <Modal disclosure={extDisclosure || disclosure} classNames={{ base: 'full-mobile-modal' }}>
+    <Modal disclosure={disclosure} classNames={{ base: 'full-mobile-modal' }}>
       <ModalBody className='space-y-6 p-6'>
         <div className='flex items-center gap-3'>
           <div className='bg-Primary-500/20 rounded-lg p-2'>

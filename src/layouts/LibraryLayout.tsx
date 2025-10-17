@@ -8,11 +8,9 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownSection,
-  useDisclosure,
 } from '@heroui/react';
 import { AnimatePresence } from 'framer-motion';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
-import ImportExportModal from '@/components/modals/ImportExportModal';
 import LibraryViewLayout from '@/components/library/LibraryViewLayout';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
@@ -20,14 +18,14 @@ import { useLibraryTotalCount } from '@/hooks/library/useLibraryQueries';
 import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { useShortcut } from '@/hooks/useShortcut';
+import { useUIStore } from '@/stores/useUIStore';
 
 export default function LibraryLayout() {
   const { status } = useParams<{ status: LibraryFilterStatus }>();
   const activeTab = status || 'all';
 
   const libraryCount = useLibraryTotalCount();
-  const importExportDisclosure = useDisclosure();
+  const openImportExport = useUIStore((state) => state.openImportExport);
   const { clearLibrary } = useClearLibrary();
 
   const location = useLocation();
@@ -48,8 +46,6 @@ export default function LibraryLayout() {
     }
   }, [location.state]);
 
-  useShortcut('clearLibrary', clearLibrary);
-
   const renderActions = () => (
     <>
       <Dropdown placement='bottom-end' backdrop='opaque' classNames={DROPDOWN_CLASSNAMES}>
@@ -63,7 +59,7 @@ export default function LibraryLayout() {
             <DropdownItem
               key='import-export'
               startContent={<FileJson className='size-4 shrink-0' />}
-              onPress={() => importExportDisclosure.onOpen()}
+              onPress={openImportExport}
               description='Import or export your library'
             >
               Import / Export
@@ -146,7 +142,6 @@ export default function LibraryLayout() {
         />
       </AnimatePresence>
       <Outlet context={{ isSearching }} />
-      <ImportExportModal disclosure={importExportDisclosure} />
     </LibraryViewLayout>
   );
 }

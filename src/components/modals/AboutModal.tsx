@@ -2,12 +2,10 @@ import { ModalBody, ModalHeader } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
 import {  Github, Globe, Heart, Database, Cloud, Sparkles, Shield, Monitor } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAboutDisclosure } from '@/stores/useUIStore';
 
-interface AboutModalProps {
-  disclosure: Disclosure;
-}
-
-export function AboutModal({ disclosure }: AboutModalProps) {
+export function AboutModal() {
+  const disclosure = useAboutDisclosure();
   const version = '1.0.0';
 
   const features = [

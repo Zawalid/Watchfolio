@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useMemo } from 'react';
 
 // ============================================================================
 // Types
@@ -47,7 +48,6 @@ interface UIState {
   // UI Elements
   sidebar: boolean;
   commandPalette: boolean;
-  searchFocused: boolean;
 }
 
 // ============================================================================
@@ -97,8 +97,6 @@ interface UIActions {
   closeCommandPalette: () => void;
   toggleCommandPalette: () => void;
 
-  focusSearch: () => void;
-  blurSearch: () => void;
 }
 
 // ============================================================================
@@ -129,7 +127,6 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
   sidebar: true,
   commandPalette: false,
-  searchFocused: false,
 
   // Simple modal actions
   openFilters: () => set({ filters: true }),
@@ -209,7 +206,38 @@ export const useUIStore = create<UIStore>((set, get) => ({
   openCommandPalette: () => set({ commandPalette: true }),
   closeCommandPalette: () => set({ commandPalette: false }),
   toggleCommandPalette: () => set((state) => ({ commandPalette: !state.commandPalette })),
-
-  focusSearch: () => set({ searchFocused: true }),
-  blurSearch: () => set({ searchFocused: false }),
 }));
+
+// ============================================================================
+// Disclosure Hooks
+// ============================================================================
+
+// Generic disclosure hook factory to eliminate duplication
+const createDisclosure = (
+  stateKey: keyof Pick<UIState, 'filters' | 'importExport' | 'shortcuts' | 'about' | 'onboarding' | 'quickAdd'>,
+  openKey: keyof Pick<UIActions, 'openFilters' | 'openImportExport' | 'openShortcuts' | 'openAbout' | 'openOnboarding' | 'openQuickAdd'>,
+  closeKey: keyof Pick<UIActions, 'closeFilters' | 'closeImportExport' | 'closeShortcuts' | 'closeAbout' | 'closeOnboarding' | 'closeQuickAdd'>
+) => {
+  return (): Disclosure => {
+    const isOpen = useUIStore((state) => state[stateKey] as boolean);
+    const onOpen = useUIStore((state) => state[openKey] as () => void);
+    const onClose = useUIStore((state) => state[closeKey] as () => void);
+
+    return useMemo(
+      () => ({
+        isOpen,
+        onOpen,
+        onClose,
+        onOpenChange: (open: boolean) => (open ? onOpen() : onClose()),
+      }),
+      [isOpen, onOpen, onClose]
+    );
+  };
+};
+
+export const useFiltersDisclosure = createDisclosure('filters', 'openFilters', 'closeFilters');
+export const useImportExportDisclosure = createDisclosure('importExport', 'openImportExport', 'closeImportExport');
+export const useShortcutsDisclosure = createDisclosure('shortcuts', 'openShortcuts', 'closeShortcuts');
+export const useAboutDisclosure = createDisclosure('about', 'openAbout', 'closeAbout');
+export const useOnboardingDisclosure = createDisclosure('onboarding', 'openOnboarding', 'closeOnboarding');
+export const useQuickAddDisclosure = createDisclosure('quickAdd', 'openQuickAdd', 'closeQuickAdd');

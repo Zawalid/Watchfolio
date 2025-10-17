@@ -1,21 +1,20 @@
 import { Button, closeToast } from '@heroui/react';
 import { addToast } from '@heroui/react';
-import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import ImportExportModal from '@/components/modals/ImportExportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 import { useViewportSize } from '@/hooks/useViewportSize';
+import { useUIStore } from '@/stores/useUIStore';
 
 export default function Library() {
   const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
   const { syncStatus, lastSyncTime, manualSync, toggleAutoSync } = useSyncStore();
   const { clearLibrary } = useClearLibrary();
-  const importExportDisclosure = useDisclosure();
+  const openImportExport = useUIStore((state) => state.openImportExport);
   const {isBelow} = useViewportSize()
 
   const isSyncing = syncStatus === 'syncing' || syncStatus === 'connecting';
@@ -140,7 +139,7 @@ export default function Library() {
               <Button
                 startContent={<Database className='size-4' />}
                 className='button-secondary! w-full mobile:w-auto'
-                onPress={importExportDisclosure.onOpen}
+                onPress={openImportExport}
                 size={isBelow('sm') ? 'sm' : 'md'}
               >
                 Import / Export
@@ -214,8 +213,6 @@ export default function Library() {
           </div>
         </div>
       </SettingSection>
-
-      <ImportExportModal disclosure={importExportDisclosure} />
     </div>
   );
 }

@@ -27,6 +27,7 @@ import {
 import { ShortcutTooltip } from '../ui/ShortcutKey';
 import { useEffect, useState, useRef } from 'react';
 import { useShortcut } from '@/hooks/useShortcut';
+import { getShortcut } from '@/config/shortcuts';
 
 const libraryMenuItems = [
   {
@@ -63,7 +64,7 @@ function FileMenu() {
           key='quick-add'
           startContent={<Plus className='size-4' />}
           onPress={quickAdd}
-          endContent={<span className='text-Grey-500 text-xs'>Ctrl+N</span>}
+          endContent={<span className='text-Grey-500 kbd-sm'>Ctrl+N</span>}
         >
           Add Media
         </DropdownItem>
@@ -110,7 +111,7 @@ function EditMenu() {
           key='quick-search'
           startContent={<Zap className='size-4' />}
           onPress={quickSearch}
-          endContent={<span className='text-Grey-500 text-xs'>Ctrl+K</span>}
+          endContent={<span className='text-Grey-500 kbd-sm'>Ctrl+K</span>}
         >
           Quick Search
         </DropdownItem>
@@ -120,14 +121,14 @@ function EditMenu() {
         <DropdownItem
           key='toggle-favorite'
           startContent={<Heart className='size-4' />}
-          endContent={<span className='text-Grey-500 text-xs'>Alt+F</span>}
+          endContent={<span className='text-Grey-500 kbd-sm'>Alt+F</span>}
         >
           Toggle Favorite
         </DropdownItem>
         <DropdownItem
           key='rate-media'
           startContent={<Star className='size-4' />}
-          endContent={<span className='text-Grey-500 text-xs'>Alt+R</span>}
+          endContent={<span className='text-Grey-500 kbd-sm'>Alt+R</span>}
         >
           Rate Media
         </DropdownItem>
@@ -153,7 +154,7 @@ function ViewMenu() {
       }}
     >
       <DropdownSection title='Navigation' showDivider>
-        {mainLinks.map((link, index) => {
+        {mainLinks.map((link) => {
           const IconComponent = link.icon;
           return (
             <DropdownItem
@@ -163,7 +164,11 @@ function ViewMenu() {
               className={
                 isActive(link.href) ? 'text-Primary-400! bg-Primary-500/20!' : 'text-Grey-200 hover:text-Primary-50'
               }
-              endContent={<span className='text-Grey-500 text-xs'>Ctrl+{index + 1}</span>}
+              endContent={
+                <span className='text-Grey-500 kbd-sm'>
+                  {link.shortcutName ? getShortcut(link.shortcutName)?.hotkey : null}
+                </span>
+              }
             >
               {link.label}
             </DropdownItem>
@@ -254,7 +259,7 @@ function HelpMenu() {
           key='shortcuts'
           startContent={<Keyboard className='size-4' />}
           onPress={openKeyboardShortcuts}
-          endContent={<span className='text-Grey-500 text-xs'>?</span>}
+          endContent={<span className='text-Grey-500 kbd-sm'>?</span>}
         >
           Keyboard Shortcuts
         </DropdownItem>

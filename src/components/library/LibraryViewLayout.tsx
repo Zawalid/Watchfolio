@@ -1,7 +1,7 @@
 import { useRef, ReactNode, useState, useEffect } from 'react';
 import { useQueryState } from 'nuqs';
 import { PanelLeftClose, Loader2 } from 'lucide-react';
-import { Button, Tooltip, useDisclosure } from '@heroui/react';
+import { Button, Tooltip } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import FiltersModal from '@/components/modals/FiltersModal';
@@ -9,9 +9,9 @@ import SortBy from '../SortBy';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/utils';
-import { useShortcuts } from '@/hooks/useShortcut';
 import LibrarySidebar from './LibrarySidebar';
 import { useViewportSize } from '@/hooks/useViewportSize';
+import { useShortcuts } from '@/hooks/useShortcut';
 
 interface TabItem {
   label: string;
@@ -48,7 +48,6 @@ export default function LibraryViewLayout({
   const debouncedLocalQuery = useDebounce(localQuery, 150);
   const [showSidebar, setShowSidebar] = useLocalStorageState(`show-sidebar-${sidebarTitle}`, true);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const filtersDisclosure = useDisclosure();
   const { isAbove } = useViewportSize();
 
   const isSearching = localQuery !== debouncedLocalQuery;
@@ -70,10 +69,11 @@ export default function LibraryViewLayout({
     setQuery(null);
   };
 
+  // Local shortcuts (need access to component state/refs)
   useShortcuts([
     {
       name: 'focusSearch',
-      handler: () => {searchInputRef.current?.focus()},
+      handler: () => searchInputRef.current?.focus(),
     },
     {
       name: 'clearSearch',
@@ -149,7 +149,6 @@ export default function LibraryViewLayout({
               defaultSort='recent'
             />
             <FiltersModal
-              disclosure={filtersDisclosure}
               title='Library Filters'
               filterOptions={['genres', 'networks', 'types']}
             />

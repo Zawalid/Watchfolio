@@ -36,6 +36,7 @@ export function useShortcut(
     shortcut?.hotkey || '',
     (e) => {
       e.preventDefault();
+      console.log(shortcut?.hotkey)
       handler();
     },
     {

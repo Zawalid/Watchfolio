@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router';
 import { motion } from 'framer-motion';
-import { useDisclosure } from '@heroui/react';
 import { parseAsString, useQueryState } from 'nuqs';
 import { LucideIcon } from 'lucide-react';
 import FiltersModal, { FilterOption } from '@/components/modals/FiltersModal';
@@ -41,7 +40,6 @@ export default function MediaLayout({
   filterTitle,
   specialCategoryHandling,
 }: MediaLayoutProps) {
-  const filtersDisclosure = useDisclosure();
   const [category, setCategory] = useQueryState('category', parseAsString);
   const [, setSortBy] = useQueryState('sort_by', parseAsString.withDefault('popularity'));
   const [, setSortDir] = useQueryState('sort_dir', parseAsString.withDefault('desc'));
@@ -109,7 +107,7 @@ export default function MediaLayout({
       headerChildren={
         <div className='flex items-center gap-3'>
           {!category && <SortBy options={sortOptions} defaultSort='popularity' />}
-          <FiltersModal disclosure={filtersDisclosure} title={filterTitle} filterOptions={filterOptions} />
+          <FiltersModal title={filterTitle} filterOptions={filterOptions} />
         </div>
       }
       headerClassName={cn(

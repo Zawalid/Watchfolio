@@ -15,12 +15,10 @@ import { generateMediaId } from '@/utils/library';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { GENRES } from '@/utils/constants/TMDB';
 import { cn } from '@/utils';
+import { useQuickAddDisclosure } from '@/stores/useUIStore';
 
-interface QuickAddModalProps {
-  disclosure: Disclosure;
-}
-
-export default function QuickAddModal({ disclosure }: QuickAddModalProps) {
+export default function QuickAddModal() {
+  const disclosure = useQuickAddDisclosure();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 

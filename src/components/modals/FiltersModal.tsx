@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useShortcuts } from '@/hooks/useShortcut';
 import {
   FunnelX,
   Filter as FilterIcon,
@@ -27,11 +26,11 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { useFiltersParams } from '@/hooks/useFiltersParams';
 import { Slider } from '@/components/ui/Slider';
 import NetworkCard from '@/pages/networks/NetworkCard';
+import { useFiltersDisclosure } from '@/stores/useUIStore';
 
 export type FilterOption = 'genres' | 'networks' | 'types' | 'language' | 'ratingRange' | 'releaseYear';
 
 interface FiltersModalProps {
-  disclosure: Disclosure;
   filterOptions?: FilterOption[];
   title?: string;
   className?: string;
@@ -58,11 +57,11 @@ const POPULAR_LANGUAGES = [
 ];
 
 export default function FiltersModal({
-  disclosure,
   filterOptions = ['genres', 'networks', 'types'],
   title = 'Apply Filters',
   className,
 }: FiltersModalProps) {
+  const disclosure = useFiltersDisclosure();
   const { isOpen, onClose, onOpen } = disclosure;
   const { registerNavigation, unregisterNavigation } = useNavigation();
 
@@ -133,31 +132,6 @@ export default function FiltersModal({
   }, [isOpen, selectedTypes, selectedGenres, selectedNetworks, language, minRating, maxRating, minYear, maxYear]);
 
 
-  const applyMovieFilter = () => {
-    const current = selectedTypes || [];
-    if (current.length && current.length === MEDIA_TYPES.length - 1) {
-      setSelectedTypes(null);
-    } else {
-      setSelectedTypes(current.includes('movie') ? current.filter((t) => t !== 'movie') : [...current, 'movie']);
-    }
-  };
-
-  const applyTvFilter = () => {
-    const current = selectedTypes || [];
-    if (current.length && current.length === MEDIA_TYPES.length - 1) {
-      setSelectedTypes(null);
-    } else {
-      setSelectedTypes(current.includes('tv') ? current.filter((t) => t !== 'tv') : [...current, 'tv']);
-    }
-  };
-
-  useShortcuts([
-    { name: 'toggleFilters', handler: () => (isOpen ? onClose() : onOpen()) },
-    { name: 'escape', handler: () => onClose(), enabled: isOpen },
-    { name: 'filterMovies', handler: applyMovieFilter },
-    { name: 'filterTvShows', handler: applyTvFilter },
-    { name: 'clearFilters', handler: () => clearAllPendingFilters(), enabled: hasFilters },
-  ]);
 
   useEffect(() => {
     if (isOpen) registerNavigation('filter-modal');

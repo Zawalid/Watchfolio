@@ -1,16 +1,11 @@
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { useDisclosure } from '@heroui/react';
 import { DesktopActionsContext } from '../DesktopActionsContext';
-import ImportExportModal from '@/components/modals/ImportExportModal';
-import { AboutModal } from '@/components/modals/AboutModal';
-import QuickAddModal from '@/components/modals/QuickAddModal';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useUpdater } from '@/hooks/desktop/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
-import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
 import { isDesktop } from '@/lib/platform';
-import { useShortcut } from '@/hooks/useShortcut';
+import { useUIStore } from '@/stores/useUIStore';
 
 /**
  * Provider for desktop actions
@@ -18,33 +13,33 @@ import { useShortcut } from '@/hooks/useShortcut';
  */
 export function DesktopActionsProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
-  const importExportDisclosure = useDisclosure();
-  const aboutDisclosure = useDisclosure();
-  const keyboardShortcutsDisclosure = useDisclosure();
-  const quickAddDisclosure = useDisclosure();
 
   const { startSync } = useSyncStore();
   const updater = useUpdater();
+  const openImportExportModal = useUIStore((state) => state.openImportExport);
+  const openAboutModal = useUIStore((state) => state.openAbout);
+  const openShortcutsModal = useUIStore((state) => state.openShortcuts);
+  const openQuickAddModal = useUIStore((state) => state.openQuickAdd);
 
   const openImportExport = useCallback(() => {
     // Navigate to library if not there
     if (!window.location.pathname.startsWith('/library')) {
       navigate('/library');
     }
-    importExportDisclosure.onOpen();
-  }, [navigate, importExportDisclosure]);
+    openImportExportModal();
+  }, [navigate, openImportExportModal]);
 
   const openAbout = useCallback(() => {
-    aboutDisclosure.onOpen();
-  }, [aboutDisclosure]);
+    openAboutModal();
+  }, [openAboutModal]);
 
   const openKeyboardShortcuts = useCallback(() => {
-    keyboardShortcutsDisclosure.onOpen();
-  }, [keyboardShortcutsDisclosure]);
+    openShortcutsModal();
+  }, [openShortcutsModal]);
 
   const quickAdd = useCallback(() => {
-    quickAddDisclosure.onOpen();
-  }, [quickAddDisclosure]);
+    openQuickAddModal();
+  }, [openQuickAddModal]);
 
   const quickSearch = useCallback(() => {
     // Navigate to search and focus input
@@ -64,9 +59,6 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   const checkForUpdates = useCallback(() => {
     updater.checkForUpdates();
   }, [updater]);
-
-  // Keyboard shortcuts - Available on all platforms
-  useShortcut('toggleCommandPalette', quickSearch);
 
   // Listen to Tauri menu events
   useEffect(() => {
@@ -105,12 +97,6 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
       }}
     >
       {children}
-
-      {/* Global modals */}
-      <QuickAddModal disclosure={quickAddDisclosure} />
-      <ImportExportModal disclosure={importExportDisclosure} />
-      <AboutModal disclosure={aboutDisclosure} />
-      <KeyboardShortcuts extDisclosure={keyboardShortcutsDisclosure} />
 
       {/* Update notification */}
       <UpdateNotification updater={updater} />

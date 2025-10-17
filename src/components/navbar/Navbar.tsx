@@ -95,7 +95,7 @@ export default function Navbar() {
       isDesktop() && 'top-9'
       )}
     >
-      <div className='xs:px-6 container mx-auto px-3'>
+      <div className={cn('xs:px-6 mx-auto px-3', !isDesktop() && 'container')}>
       <div className='flex h-16 items-center justify-between'>
         <Link to={homeLink} className='group flex items-center space-x-2'>
         <motion.img

@@ -33,12 +33,12 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   const { data: libraryItem } = useLibraryItem(id);
   const { mutate: addOrUpdateItem } = useAddOrUpdateLibraryItem();
 
-  const handleStatusOrRatingChange = (status?: WatchStatus, userRating?: number | undefined) => {
+  const handleStatusOrRatingChange = (status?: WatchStatus, userRating?: number | undefined | null) => {
     addOrUpdateItem({
       item: {
         id: libraryItem?.id || id,
         ...(status && { status }),
-        ...(userRating && { userRating }),
+        ...(userRating !== null && { userRating }),
       },
       media: isMedia(media) ? media : undefined,
     });
@@ -48,10 +48,10 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
 
   return (
     <Modal disclosure={disclosure} size='lg' classNames={{ base: 'full-mobile-modal' }}>
-      <ModalBody className='space-y-8 py-8 px-4 mobile:px-8'>
+      <ModalBody className='mobile:px-8 space-y-8 px-4 py-8'>
         <StatusSection
           selectedStatus={libraryItem?.status || 'none'}
-          setSelectedStatus={handleStatusOrRatingChange}
+          setSelectedStatus={(status) => handleStatusOrRatingChange(status, null)}
           onClose={disclosure.onClose}
         />
         <RatingSection
@@ -137,7 +137,7 @@ function StatusButton({
   return (
     <Button
       className={cn(
-        'group relative h-auto w-full justify-start gap-4 px-3 mobile:px-6 py-3 text-left transition-all',
+        'group mobile:px-6 relative h-auto w-full justify-start gap-4 px-3 py-3 text-left transition-all',
         isSelected
           ? 'border border-gray-600 bg-gray-700 text-white'
           : 'border border-gray-700/50 bg-gray-800/40 text-gray-300 hover:border-gray-600/70 hover:bg-gray-700/60 hover:text-white'
@@ -198,7 +198,7 @@ function RatingSection({
         )}
       </div>
       <div className='flex flex-col items-center gap-4'>
-        <div className='flex max-xs:flex-wrap mobile:flex-wrap justify-center gap-1'>
+        <div className='max-xs:flex-wrap mobile:flex-wrap flex justify-center gap-1'>
           {[...Array(10)].map((_, i) => {
             const rateValue = i + 1;
             return (

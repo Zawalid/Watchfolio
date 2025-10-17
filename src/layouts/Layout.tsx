@@ -13,7 +13,7 @@ import { cn } from '@/utils';
 
 export default function Layout() {
   const location = useLocation();
-  
+
   useInitialAuth();
 
   useLayoutEffect(() => {
@@ -25,7 +25,10 @@ export default function Layout() {
       <div className={cn('flex h-full min-h-dvh flex-col pb-21 md:pb-0', isDesktop() && 'pt-14')}>
         <Navbar />
         <main
-          className='xs:px-6 container mx-auto min-h-screen flex-1 px-3 pt-22 pb-10 max-lg:max-w-screen'
+          className={cn(
+            'xs:px-6 min-h-screen flex-1 px-3 pt-22 pb-10 ',
+            !isDesktop() && 'container mx-auto'
+          )}
           role='main'
           aria-label='Main content'
         >

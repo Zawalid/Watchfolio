@@ -7,12 +7,10 @@ import Import from '@/components/library/Import';
 import Export from '@/components/library/Export';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { TABS_CLASSNAMES } from '@/styles/heroui';
+import { useImportExportDisclosure } from '@/stores/useUIStore';
 
-interface ImportExportModalProps {
-  disclosure: Disclosure;
-}
-
-export default function ImportExportModal({ disclosure }: ImportExportModalProps) {
+export default function ImportExportModal() {
+  const disclosure = useImportExportDisclosure();
   const { isOpen, onClose, onOpen } = disclosure;
 
   // Keyboard shortcuts for modal

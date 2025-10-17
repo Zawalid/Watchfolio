@@ -15,6 +15,10 @@ import { useHref, useNavigate } from 'react-router';
 import { queryClient } from '@/lib/react-query';
 import { CustomTitlebar } from '@/components/desktop/CustomTitlebar';
 import { GlobalShortcuts } from '@/components/GlobalShortcuts';
+import ImportExportModal from '@/components/modals/ImportExportModal';
+import { AboutModal } from '@/components/modals/AboutModal';
+import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
+import QuickAddModal from '@/components/modals/QuickAddModal';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -25,21 +29,28 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <ErrorBoundary>
           <QueryClientProvider client={queryClient}>
             <NuqsAdapter>
-              <ToastProvider
-                placement='top-right'
-                toastOffset={60}
-                toastProps={{
-                  classNames: { base: 'bg-blur backdrop-blur-sm border border-white/10', closeButton: 'hidden' },
-                  timeout: 3000,
-                  shouldShowTimeoutProgress: true,
-                }}
-              />
-              <ReactQueryDevtools initialIsOpen={false} />
-              <GlobalShortcuts />
               <NavigationProvider>
                 <ConfirmationModalProvider>
                   <MediaStatusModalProvider>
                     <DesktopActionsProvider>
+                      <ToastProvider
+                        placement='top-right'
+                        toastOffset={60}
+                        toastProps={{
+                          classNames: {
+                            base: 'bg-blur backdrop-blur-sm border border-white/10',
+                            closeButton: 'hidden',
+                          },
+                          timeout: 3000,
+                          shouldShowTimeoutProgress: true,
+                        }}
+                      />
+                      <ReactQueryDevtools initialIsOpen={false} />
+                      <ImportExportModal />
+                      <AboutModal />
+                      <KeyboardShortcuts />
+                      <QuickAddModal />
+                      <GlobalShortcuts />
                       <CustomTitlebar />
                       {children}
                     </DesktopActionsProvider>
