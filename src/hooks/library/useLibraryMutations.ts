@@ -63,7 +63,6 @@ export const useAddOrUpdateLibraryItem = () => {
         (!mergedItem.status || mergedItem.status === 'none') && !mergedItem.isFavorite && !mergedItem.userRating;
 
       if (shouldRemove) {
-        log('Removing library item (no status, not favorite, not rated):', item.id);
         return deleteLibraryItem(item.id);
       }
 
