@@ -7,6 +7,9 @@ export { default as Library } from './library/Library';
 export { default as Collections } from './collection/Collections';
 export { default as CollectionDetails } from './collection/CollectionDetails';
 
+// Quick Add (Standalone Window)
+export { default as QuickAdd } from './QuickAdd';
+
 // Media (Movies & TV)
 export { default as Movies } from './media/Movies';
 export { default as TV } from './media/TV';

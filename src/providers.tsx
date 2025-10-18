@@ -13,12 +13,6 @@ import {
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { useHref, useNavigate } from 'react-router';
 import { queryClient } from '@/lib/react-query';
-import { CustomTitlebar } from '@/components/desktop/CustomTitlebar';
-import { GlobalShortcuts } from '@/components/GlobalShortcuts';
-import ImportExportModal from '@/components/modals/ImportExportModal';
-import { AboutModal } from '@/components/modals/AboutModal';
-import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
-import QuickAddModal from '@/components/modals/QuickAddModal';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -46,12 +40,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
                         }}
                       />
                       <ReactQueryDevtools initialIsOpen={false} />
-                      <ImportExportModal />
-                      <AboutModal />
-                      <KeyboardShortcuts />
-                      <QuickAddModal />
-                      <GlobalShortcuts />
-                      <CustomTitlebar />
                       {children}
                     </DesktopActionsProvider>
                   </MediaStatusModalProvider>

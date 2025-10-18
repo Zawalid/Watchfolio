@@ -2,6 +2,12 @@ import { useLayoutEffect } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { Providers } from '@/providers';
 import { useInitialAuth } from '@/hooks/useInitialAuth';
+import { CustomTitlebar } from '@/components/desktop/CustomTitlebar';
+import { GlobalShortcuts } from '@/components/GlobalShortcuts';
+import ImportExportModal from '@/components/modals/ImportExportModal';
+import { AboutModal } from '@/components/modals/AboutModal';
+import KeyboardShortcuts from '@/components/library/KeyboardShortcuts';
+import QuickAddModal from '@/components/modals/QuickAddModal';
 import OnboardingModal from '@/components/modals/OnboardingModal';
 import AuthModal from '@/components/modals/AuthModal';
 import Navbar from '@/components/navbar/Navbar';
@@ -22,6 +28,12 @@ export default function Layout() {
 
   return (
     <Providers>
+      <ImportExportModal />
+      <AboutModal />
+      <KeyboardShortcuts />
+      <QuickAddModal />
+      <GlobalShortcuts />
+      <CustomTitlebar />
       <div className={cn('flex h-full min-h-dvh flex-col pb-21 md:pb-0', isDesktop() && 'pt-14')}>
         <Navbar />
         <main

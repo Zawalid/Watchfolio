@@ -8,18 +8,6 @@ import '@/styles/index.css';
 import { useAuthStore } from './stores/useAuthStore';
 import { useSyncStore } from './stores/useSyncStore';
 import { useUIStore } from './stores/useUIStore';
-import { isTauri, isDesktop, isMobile } from '@/lib/platform';
-import { initDesktopFeatures } from '@/lib/tauri/desktop';
-import { initMobileFeatures } from '@/lib/tauri/mobile';
-
-// Initialize Tauri platform-specific features
-if (isTauri()) {
-  if (isDesktop()) {
-    initDesktopFeatures();
-  } else if (isMobile()) {
-    initMobileFeatures();
-  }
-}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

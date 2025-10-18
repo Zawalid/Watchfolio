@@ -28,6 +28,7 @@ import {
   StatsInsights,
   ViewingTaste,
   MoodRecommendations,
+  QuickAdd,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -219,6 +220,10 @@ export const router = createBrowserRouter([
   {
     path: '/verify-email',
     Component: EmailVerification,
+  },
+  {
+    path: '/quick-add',
+        Component: QuickAdd,
   },
   {
     path: '*',

@@ -98,9 +98,12 @@ export function useShortcuts(shortcuts: ShortcutHandler[]) {
       if (handler.alt) modifiers.push('alt');
       if (handler.shift) modifiers.push('shift');
       if (handler.meta) modifiers.push('meta');
-
+      
+      log(handler)
       const keys = handler.keys?.join('+') || '';
       const pressedKey = modifiers.length > 0 ? [...modifiers, keys].join('+').toLowerCase() : keys.toLowerCase();
+
+      log(pressedKey)
 
       // Find matching handler by comparing normalized hotkeys
       for (const [hotkey, entry] of handlersMap.entries()) {

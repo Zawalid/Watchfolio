@@ -231,19 +231,19 @@ const createDisclosure = (
   openKey: keyof Pick<UIActions, 'openFilters' | 'openShortcuts' | 'openAbout' | 'openOnboarding' | 'openQuickAdd'>,
   closeKey: keyof Pick<UIActions, 'closeFilters' | 'closeShortcuts' | 'closeAbout' | 'closeOnboarding' | 'closeQuickAdd'>
 ) => {
-  return (): Disclosure => {
+  return (isOpenDefault = false): Disclosure => {
     const isOpen = useUIStore((state) => state[stateKey] as boolean);
     const onOpen = useUIStore((state) => state[openKey] as () => void);
     const onClose = useUIStore((state) => state[closeKey] as () => void);
 
     return useMemo(
       () => ({
-        isOpen,
+        isOpen: isOpenDefault || isOpen,
         onOpen,
         onClose,
         onOpenChange: (open: boolean) => (open ? onOpen() : onClose()),
       }),
-      [isOpen, onOpen, onClose]
+      [isOpenDefault, isOpen, onOpen, onClose]
     );
   };
 };

@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "Watchfolio",
         "width": 1280,
         "height": 800,
@@ -20,6 +21,22 @@
         "center": true,
         "decorations": false,
         "transparent": false
+      },
+      {
+        "label": "quick-add",
+        "title": "Quick Add - Watchfolio",
+        "width": 700,
+        "height": 700,
+        "center": true,
+        "resizable": false,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "focus": true,
+        "url": "/quick-add"
       }
     ],
     "security": {

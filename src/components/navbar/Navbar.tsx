@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router';
 import { motion } from 'framer-motion';
 import { Tooltip } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { Heart, LibraryBig, SettingsIcon } from '@/components/ui/Icons';
+import { Zap, LibraryBig, SettingsIcon } from '@/components/ui/Icons';
+import { useUIStore } from '@/stores/useUIStore';
 import UserDropdown from './UserDropdown';
 import NavItem from './NavItem';
 import { MobileDrawerTrigger } from './MobileDrawer';
@@ -14,9 +15,9 @@ import { isDesktop } from '@/lib/platform';
 function QuickActions() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { openQuickAdd } = useUIStore();
 
   const isLibraryActive = location.pathname.startsWith('/library');
-  const isFavoritesActive = location.pathname === '/library/favorites';
   const isSettingsActive = location.pathname.startsWith('/settings');
 
   return (
@@ -27,7 +28,7 @@ function QuickActions() {
           whileTap={{ scale: 0.95 }}
           onClick={() => navigate('/library')}
           className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
-            isLibraryActive && !isFavoritesActive
+            isLibraryActive
               ? 'text-Primary-400 bg-Primary-500/20'
               : 'text-Grey-400 hover:text-Primary-400'
           }`}
@@ -37,17 +38,15 @@ function QuickActions() {
         </motion.button>
       </Tooltip>
 
-      <Tooltip content='Favorites' className='tooltip-secondary!'>
+      <Tooltip content='Quick Add' className='tooltip-secondary!'>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => navigate('/library/favorites')}
-          className={`flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5 ${
-            isFavoritesActive ? 'text-Primary-400 bg-Primary-500/20' : 'text-Grey-400 hover:text-Primary-400'
-          }`}
-          aria-label='Favorites'
+          onClick={openQuickAdd}
+          className='text-Grey-400 hover:text-Primary-400 flex size-10 items-center justify-center rounded-lg transition-colors hover:bg-white/5'
+          aria-label='Quick Add'
         >
-          <Heart className='size-5' />
+          <Zap className='size-5' />
         </motion.button>
       </Tooltip>
 

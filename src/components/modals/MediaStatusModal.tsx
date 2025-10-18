@@ -13,6 +13,7 @@ import { isMedia } from '@/utils/media';
 import { generateMediaId } from '@/utils/library';
 import { useLibraryItem } from '@/hooks/library/useLibraryQueries';
 import { useAddOrUpdateLibraryItem } from '@/hooks/library/useLibraryMutations';
+import { getWindowLabel } from '@/lib/platform';
 
 interface MediaStatusModalProps {
   disclosure: Disclosure;
@@ -47,7 +48,11 @@ export default function MediaStatusModal({ disclosure, media }: MediaStatusModal
   const getRatingLabel = (rating: number) => RATING_LABELS[rating as keyof typeof RATING_LABELS] || 'Good';
 
   return (
-    <Modal disclosure={disclosure} size='lg' classNames={{ base: 'full-mobile-modal' }}>
+    <Modal
+      disclosure={disclosure}
+      size={getWindowLabel() === 'quick-add' ? 'full' : 'lg'}
+      classNames={{ base: 'full-mobile-modal' }}
+    >
       <ModalBody className='mobile:px-8 space-y-8 px-4 py-8'>
         <StatusSection
           selectedStatus={libraryItem?.status || 'none'}

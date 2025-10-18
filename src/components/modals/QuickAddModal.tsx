@@ -17,8 +17,8 @@ import { GENRES } from '@/utils/constants/TMDB';
 import { cn } from '@/utils';
 import { useQuickAddDisclosure } from '@/stores/useUIStore';
 
-export default function QuickAddModal() {
-  const disclosure = useQuickAddDisclosure();
+export default function QuickAddModal({ standalone }: { standalone?: boolean }) {
+  const disclosure = useQuickAddDisclosure(standalone ? true : false);
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -59,32 +59,38 @@ export default function QuickAddModal() {
     setSelectedIndex(0);
   }, [results.length]);
 
-  const handleSelectMedia = useCallback((media: Media, libraryItem?: LibraryMedia) => {
-    openModal(media, libraryItem);
-    disclosure.onClose();
-  }, [openModal, disclosure]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+  const handleSelectMedia = useCallback(
+    (media: Media, libraryItem?: LibraryMedia) => {
+      openModal(media, libraryItem);
       disclosure.onClose();
-      return;
-    }
+    },
+    [openModal, disclosure]
+  );
 
-    if (!results.length) return;
-
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : 0));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex(prev => (prev > 0 ? prev - 1 : results.length - 1));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (results[selectedIndex]) {
-        handleSelectMedia(results[selectedIndex]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        disclosure.onClose();
+        return;
       }
-    }
-  }, [results, selectedIndex, disclosure, handleSelectMedia]);
+
+      if (!results.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : 0));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : results.length - 1));
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (results[selectedIndex]) {
+          handleSelectMedia(results[selectedIndex]);
+        }
+      }
+    },
+    [results, selectedIndex, disclosure, handleSelectMedia]
+  );
 
   const handleClearInput = useCallback(() => {
     setQuery('');
@@ -109,18 +115,19 @@ export default function QuickAddModal() {
   return (
     <Modal
       disclosure={disclosure}
-      size='3xl'
+      size={standalone ? 'full' : '3xl'}
       classNames={{
         base: 'max-h-[700px]',
         body: 'p-0',
+        closeButton: standalone ? 'hidden' : '',
       }}
     >
-      <div className='flex flex-col h-full min-h-[550px]'>
+      <div className='flex h-full min-h-[550px] flex-col'>
         {/* Header */}
         <div className='border-b border-white/10 px-6 py-5'>
           <div className='mb-4'>
-            <h2 className='text-xl font-bold text-Primary-50'>Quick Add Media</h2>
-            <p className='text-Grey-400 text-sm mt-1'>Search and add movies or TV shows to your library</p>
+            <h2 className='text-Primary-50 text-2xl font-bold'>What's Next?</h2>
+            <p className='text-Grey-400 mt-1 text-sm'>Type a title and save it to your library</p>
           </div>
 
           {/* Search Input */}
@@ -177,8 +184,8 @@ export default function QuickAddModal() {
         </div>
 
         {/* Footer */}
-        <div className='border-t border-white/10 px-6 py-3 bg-Grey-900/50'>
-          <div className='flex items-center justify-center gap-4 text-xs text-Grey-400'>
+        <div className='bg-Grey-900/50 border-t border-white/10 px-6 py-3'>
+          <div className='text-Grey-400 flex items-center justify-center gap-4 text-xs'>
             <div className='flex items-center gap-1.5'>
               <kbd className='kbd kbd-sm'>↑</kbd>
               <kbd className='kbd kbd-sm'>↓</kbd>
@@ -202,20 +209,16 @@ export default function QuickAddModal() {
 function EmptyState() {
   return (
     <motion.div
-      className='flex flex-col items-center justify-center py-12 text-center px-4'
+      className='flex h-full flex-col items-center justify-center px-4 py-12 text-center'
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className='bg-Primary-500/10 rounded-full p-4 mb-4'>
+      <div className='bg-Primary-500/10 mb-4 rounded-full p-4'>
         <SearchIcon className='text-Primary-400 h-8 w-8' />
       </div>
-      <h3 className='text-base font-semibold text-Grey-200 mb-1'>
-        Quick Add Media
-      </h3>
-      <p className='text-Grey-400 text-sm'>
-        Type to search and quickly add to your library
-      </p>
+      <h3 className='text-Grey-200 mb-1 text-base font-semibold'>Let's Find Something</h3>
+      <p className='text-Grey-400 text-sm'>Ready to find something amazing?</p>
     </motion.div>
   );
 }
@@ -224,10 +227,7 @@ function LoadingState() {
   return (
     <div className='space-y-2 px-2'>
       {Array.from({ length: 5 }).map((_, i) => (
-        <div
-          key={i}
-          className='h-24 rounded-lg bg-white/5 animate-pulse'
-        />
+        <div key={i} className='h-24 animate-pulse rounded-lg bg-white/5' />
       ))}
     </div>
   );
@@ -236,17 +236,15 @@ function LoadingState() {
 function NoResults({ query }: { query: string }) {
   return (
     <motion.div
-      className='flex flex-col items-center justify-center py-12 text-center px-4'
+      className='flex h-full flex-col items-center justify-center px-4 py-12 text-center'
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <div className='bg-Grey-800/50 rounded-full p-4 mb-4'>
+      <div className='bg-Grey-800/50 mb-4 rounded-full p-4'>
         <SearchIcon className='text-Grey-400 h-8 w-8' />
       </div>
-      <h3 className='text-base font-semibold text-Grey-200 mb-1'>
-        No results
-      </h3>
+      <h3 className='text-Grey-200 mb-1 text-base font-semibold'>No results</h3>
       <p className='text-Grey-400 text-sm'>
         No matches for <span className='text-Primary-300'>"{query}"</span>
       </p>
@@ -264,7 +262,15 @@ interface ResultItemProps {
   getMediaYear: (media: Media) => number | null;
 }
 
-function ResultItem({ media, index, isSelected, onSelect, getMediaIcon, getMediaTitle, getMediaYear }: ResultItemProps) {
+function ResultItem({
+  media,
+  index,
+  isSelected,
+  onSelect,
+  getMediaIcon,
+  getMediaTitle,
+  getMediaYear,
+}: ResultItemProps) {
   const mediaType = 'title' in media ? 'movie' : 'tv';
   const mediaId = generateMediaId({ ...media, media_type: mediaType });
   const { data: libraryItem } = useLibraryItem(mediaId);
@@ -289,28 +295,22 @@ function ResultItem({ media, index, isSelected, onSelect, getMediaIcon, getMedia
       transition={{ duration: 0.2, delay: index * 0.03 }}
       onClick={() => onSelect(media, libraryItem || undefined)}
       className={cn(
-        'w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200',
+        'flex w-full items-center gap-3 rounded-lg p-3 transition-all duration-200',
         'hover:bg-white/5',
-        isSelected && 'bg-Primary-500/20 ring-2 ring-Primary-500/50',
-        inLibrary && 'border border-Secondary-500/20 bg-Secondary-500/5'
+        isSelected && 'bg-Primary-500/20 ring-Primary-500/50 ring-2',
+        inLibrary && 'border-Secondary-500/20 bg-Secondary-500/5 border'
       )}
     >
       {/* Poster */}
-      <img
-        src={getTmdbImage(media, 'w200')}
-        alt={title}
-        className='w-14 h-20 rounded object-cover flex-shrink-0'
-      />
+      <img src={getTmdbImage(media, 'w200')} alt={title} className='h-20 w-14 flex-shrink-0 rounded object-cover' />
 
       {/* Info */}
-      <div className='flex-1 min-w-0 text-left'>
-        <div className='flex items-center gap-2 mb-1'>
-          <Icon className='h-3.5 w-3.5 text-Grey-400 flex-shrink-0' />
-          <h3 className='text-sm font-semibold text-Grey-50 truncate'>
-            {title}
-          </h3>
+      <div className='min-w-0 flex-1 text-left'>
+        <div className='mb-1 flex items-center gap-2'>
+          <Icon className='text-Grey-400 h-3.5 w-3.5 flex-shrink-0' />
+          <h3 className='text-Grey-50 truncate text-sm font-semibold'>{title}</h3>
         </div>
-        <div className='flex items-center gap-3 text-xs text-Grey-400 mb-1.5'>
+        <div className='text-Grey-400 mb-1.5 flex items-center gap-3 text-xs'>
           {year && (
             <div className='flex items-center gap-1'>
               <Calendar className='h-3 w-3' />
@@ -319,20 +319,20 @@ function ResultItem({ media, index, isSelected, onSelect, getMediaIcon, getMedia
           )}
           {rating && rating > 0 && (
             <div className='flex items-center gap-1'>
-              <Star className='h-3 w-3 text-Warning-400 fill-current' />
+              <Star className='text-Warning-400 h-3 w-3 fill-current' />
               <span>{rating.toFixed(1)}</span>
             </div>
           )}
         </div>
         {/* Genre Pills */}
         {media.genre_ids && media.genre_ids.length > 0 && (
-          <div className='flex items-center gap-1.5 flex-wrap'>
+          <div className='flex flex-wrap items-center gap-1.5'>
             {media.genre_ids.slice(0, 2).map((genreId: number) => {
               const genre = GENRES.find((g: { id: number; label: string; slug: string }) => g.id === genreId);
               return genre ? (
                 <span
                   key={genreId}
-                  className='px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-medium text-Grey-300'
+                  className='text-Grey-300 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium'
                 >
                   {genre.label}
                 </span>
@@ -343,13 +343,12 @@ function ResultItem({ media, index, isSelected, onSelect, getMediaIcon, getMedia
       </div>
 
       {/* Library Status & Indicators */}
-      <div className='flex items-center gap-2 flex-shrink-0'>
-       
+      <div className='flex flex-shrink-0 items-center gap-2'>
         {/* User Rating */}
         {libraryItem?.userRating && (
-          <div className='flex items-center gap-1 px-2 py-0.5 rounded-full bg-Primary-500/15 border border-Primary-400/30'>
-            <Heart className='h-3 w-3 text-Primary-300 fill-current' />
-            <span className='text-xs font-semibold text-Primary-200'>{libraryItem.userRating}</span>
+          <div className='bg-Primary-500/15 border-Primary-400/30 flex items-center gap-1 rounded-full border px-2 py-0.5'>
+            <Heart className='text-Primary-300 h-3 w-3 fill-current' />
+            <span className='text-Primary-200 text-xs font-semibold'>{libraryItem.userRating}</span>
           </div>
         )}
 
