@@ -80,10 +80,18 @@ export const KEYBOARD_SHORTCUTS = {
   },
 
   // Library shortcuts
-  toggleImportExport: {
+  openImport: {
     hotkey: 'ctrl+i',
     label: 'Ctrl+I',
-    description: 'Open Import/Export modal',
+    description: 'Open Import modal',
+    category: 'library',
+    scope: 'app',
+    platform: 'both',
+  },
+  openExport: {
+    hotkey: 'ctrl+e',
+    label: 'Ctrl+E',
+    description: 'Open Export modal',
     category: 'library',
     scope: 'app',
     platform: 'both',
@@ -372,26 +380,18 @@ export const KEYBOARD_SHORTCUTS = {
   },
 
   // Global shortcuts (system-wide, desktop only)
-  quickAddGlobal: {
-    hotkey: 'ctrl+shift+w',
-    label: 'Ctrl+Shift+W',
+  toggleQuickAdd: {
+    hotkey: 'ctrl+shift+a',
+    label: 'Ctrl+Shift+A',
     description: 'Quick Add (works anywhere)',
     category: 'general',
-    scope: 'global',
+    scope: 'both',
     platform: 'desktop',
   },
   showHideApp: {
-    hotkey: 'ctrl+shift+space',
-    label: 'Ctrl+Shift+Space',
+    hotkey: 'ctrl+shift+w',
+    label: 'Ctrl+Shift+W',
     description: 'Show/Hide app window',
-    category: 'general',
-    scope: 'global',
-    platform: 'desktop',
-  },
-  globalSearch: {
-    hotkey: 'ctrl+shift+f',
-    label: 'Ctrl+Shift+F',
-    description: 'Global search',
     category: 'general',
     scope: 'global',
     platform: 'desktop',
@@ -430,4 +430,9 @@ export const getGlobalShortcuts = () => {
     const scope = s.scope as 'app' | 'global' | 'both';
     return scope === 'global' || scope === 'both';
   });
+};
+
+// Platform-aware shortcut getter
+export const getPlatformShortcut = (name: ShortcutName) => {
+  return getShortcut(name);
 };

@@ -3,7 +3,7 @@ import { Heart, Trash2, Edit3, Plus } from 'lucide-react';
 import { Button, Tooltip } from '@heroui/react';
 import { cn } from '@/utils';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import { ShortcutName } from '@/utils/keyboardShortcuts';
+import { ShortcutName } from '@/config/shortcuts';
 import { useShortcut } from '@/hooks/useShortcut';
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@/components/ui/Drawer';
 import { useMediaStatusModal } from '@/contexts/MediaStatusModalContext';

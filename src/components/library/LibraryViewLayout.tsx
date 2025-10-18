@@ -6,12 +6,12 @@ import { Input } from '@/components/ui/Input';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import FiltersModal from '@/components/modals/FiltersModal';
 import SortBy from '../SortBy';
-import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/utils';
 import LibrarySidebar from './LibrarySidebar';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useShortcuts } from '@/hooks/useShortcut';
+import { useUIStore } from '@/stores/useUIStore';
 
 interface TabItem {
   label: string;
@@ -46,7 +46,8 @@ export default function LibraryViewLayout({
   const [query, setQuery] = useQueryState('query', { defaultValue: '', shallow: false });
   const [localQuery, setLocalQuery] = useState(query);
   const debouncedLocalQuery = useDebounce(localQuery, 150);
-  const [showSidebar, setShowSidebar] = useLocalStorageState(`show-sidebar-${sidebarTitle}`, true);
+  const showSidebar = useUIStore((state) => state.sidebar);
+  const openSidebar = useUIStore((state) => state.openSidebar);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { isAbove } = useViewportSize();
 
@@ -89,8 +90,6 @@ export default function LibraryViewLayout({
         activeTab={activeTab}
         onTabChange={onTabChange}
         isOwnProfile={isOwnProfile}
-        showSidebar={showSidebar}
-        setShowSidebar={setShowSidebar}
       />
 
       {/* Main Content */}
@@ -128,7 +127,7 @@ export default function LibraryViewLayout({
                 <Button
                   isIconOnly
                   className='button-secondary! max-sm:order-1'
-                  onPress={() => setShowSidebar(true)}
+                  onPress={openSidebar}
                   aria-label='Show sidebar'
                 >
                   <PanelLeftClose className='size-4 rotate-180' />

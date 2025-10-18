@@ -4,13 +4,6 @@ import { useUIStore } from '@/stores/useUIStore';
 import { useFiltersParams } from '@/hooks/useFiltersParams';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 
-/**
- * Global keyboard shortcuts registration
- * Centralized location for all app-wide keyboard shortcuts
- *
- * Note: Some shortcuts like focusSearch/clearSearch remain in local components
- * when they need direct access to component state/refs
- */
 export function GlobalShortcuts() {
   const navigate = useNavigate();
   const { selectedTypes, setSelectedTypes, clearAllFilters } = useFiltersParams();
@@ -18,9 +11,10 @@ export function GlobalShortcuts() {
 
   // UI Store actions
   const toggleFilters = useUIStore((state) => state.toggleFilters);
-  const toggleImportExport = useUIStore((state) => state.toggleImportExport);
+  const openImportExport = useUIStore((state) => state.openImportExport);
   const toggleShortcuts = useUIStore((state) => state.toggleShortcuts);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const toggleQuickAdd = useUIStore((state) => state.toggleQuickAdd);
   const toggleCommandPalette = useUIStore((state) => state.toggleCommandPalette);
   const closeAllModals = useUIStore((state) => state.closeAllModals);
 
@@ -38,11 +32,13 @@ export function GlobalShortcuts() {
   useShortcuts([
     // Modals
     { name: 'toggleShortcutsHelp', handler: toggleShortcuts },
-    { name: 'toggleImportExport', handler: toggleImportExport },
+    { name: 'openImport', handler: () => openImportExport('import') },
+    { name: 'openExport', handler: () => openImportExport('export') },
     { name: 'toggleFilters', handler: toggleFilters },
 
     // Sidebar & Command Palette
     { name: 'toggleSidebar', handler: toggleSidebar },
+    { name: 'toggleQuickAdd', handler: toggleQuickAdd },
     { name: 'toggleCommandPalette', handler: toggleCommandPalette },
 
     // Filters

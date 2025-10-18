@@ -139,7 +139,7 @@ export default function Library() {
               <Button
                 startContent={<Database className='size-4' />}
                 className='button-secondary! w-full mobile:w-auto'
-                onPress={openImportExport}
+                onPress={() => openImportExport()}
                 size={isBelow('sm') ? 'sm' : 'md'}
               >
                 Import / Export

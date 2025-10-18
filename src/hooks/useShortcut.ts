@@ -1,5 +1,5 @@
 import { useHotkeys } from 'react-hotkeys-hook';
-import { getShortcut, type ShortcutName } from '@/config/shortcuts';
+import { getPlatformShortcut, type ShortcutName } from '@/config/shortcuts';
 
 /**
  * Simple wrapper around useHotkeys that uses centralized shortcuts config
@@ -17,7 +17,7 @@ export function useShortcut(
     enabled?: boolean;
   }
 ) {
-  const shortcut = getShortcut(shortcutName);
+  const shortcut = getPlatformShortcut(shortcutName);
   const isGlobal = shortcut?.scope === 'global';
 
   // Warn about issues but don't early return - hooks must be called unconditionally
@@ -36,7 +36,6 @@ export function useShortcut(
     shortcut?.hotkey || '',
     (e) => {
       e.preventDefault();
-      console.log(shortcut?.hotkey)
       handler();
     },
     {
@@ -68,7 +67,7 @@ export function useShortcuts(shortcuts: ShortcutHandler[]) {
   const handlersMap = new Map<string, { handler: () => void; enabled: boolean }>();
 
   shortcuts.forEach(({ name, handler, enabled = true }) => {
-    const shortcut = getShortcut(name);
+    const shortcut = getPlatformShortcut(name);
     const isGlobal = shortcut?.scope === 'global';
 
     if (!shortcut) {
@@ -102,8 +101,6 @@ export function useShortcuts(shortcuts: ShortcutHandler[]) {
 
       const keys = handler.keys?.join('+') || '';
       const pressedKey = modifiers.length > 0 ? [...modifiers, keys].join('+').toLowerCase() : keys.toLowerCase();
-
-      console.log(pressedKey)
 
       // Find matching handler by comparing normalized hotkeys
       for (const [hotkey, entry] of handlersMap.entries()) {

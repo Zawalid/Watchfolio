@@ -27,13 +27,17 @@ export interface MediaStatusModalData {
 interface UIState {
   // Simple modals (no data needed)
   filters: boolean;
-  importExport: boolean;
   shortcuts: boolean;
   about: boolean;
   onboarding: boolean;
   quickAdd: boolean;
 
   // Complex modals (with data)
+  importExport: {
+    isOpen: boolean;
+    activeTab: 'import' | 'export';
+  };
+
   mediaStatus: {
     isOpen: boolean;
     data: MediaStatusModalData | null;
@@ -60,7 +64,7 @@ interface UIActions {
   closeFilters: () => void;
   toggleFilters: () => void;
 
-  openImportExport: () => void;
+  openImportExport: (tab?: 'import' | 'export') => void;
   closeImportExport: () => void;
   toggleImportExport: () => void;
 
@@ -77,6 +81,7 @@ interface UIActions {
 
   openQuickAdd: () => void;
   closeQuickAdd: () => void;
+  toggleQuickAdd: () => void;
 
   // Complex modals
   openMediaStatus: (data: MediaStatusModalData) => void;
@@ -108,11 +113,15 @@ type UIStore = UIState & UIActions;
 export const useUIStore = create<UIStore>((set, get) => ({
   // State
   filters: false,
-  importExport: false,
   shortcuts: false,
   about: false,
   onboarding: false,
   quickAdd: false,
+
+  importExport: {
+    isOpen: false,
+    activeTab: 'import',
+  },
 
   mediaStatus: {
     isOpen: false,
@@ -133,9 +142,9 @@ export const useUIStore = create<UIStore>((set, get) => ({
   closeFilters: () => set({ filters: false }),
   toggleFilters: () => set((state) => ({ filters: !state.filters })),
 
-  openImportExport: () => set({ importExport: true }),
-  closeImportExport: () => set({ importExport: false }),
-  toggleImportExport: () => set((state) => ({ importExport: !state.importExport })),
+  openImportExport: (tab = 'import') => set({ importExport: { isOpen: true, activeTab: tab } }),
+  closeImportExport: () => set((state) => ({ importExport: { ...state.importExport, isOpen: false } })),
+  toggleImportExport: () => set((state) => ({ importExport: { ...state.importExport, isOpen: !state.importExport.isOpen } })),
 
   openShortcuts: () => set({ shortcuts: true }),
   closeShortcuts: () => set({ shortcuts: false }),
@@ -150,6 +159,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
   openQuickAdd: () => set({ quickAdd: true }),
   closeQuickAdd: () => set({ quickAdd: false }),
+  toggleQuickAdd: () => set((state) => ({ quickAdd: !state.quickAdd })),
 
   // Complex modal actions
   openMediaStatus: (data) =>
@@ -189,7 +199,10 @@ export const useUIStore = create<UIStore>((set, get) => ({
   closeAllModals: () =>
     set({
       filters: false,
-      importExport: false,
+      importExport: {
+        isOpen: false,
+        activeTab: 'import',
+      },
       shortcuts: false,
       about: false,
       onboarding: false,
@@ -214,9 +227,9 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
 // Generic disclosure hook factory to eliminate duplication
 const createDisclosure = (
-  stateKey: keyof Pick<UIState, 'filters' | 'importExport' | 'shortcuts' | 'about' | 'onboarding' | 'quickAdd'>,
-  openKey: keyof Pick<UIActions, 'openFilters' | 'openImportExport' | 'openShortcuts' | 'openAbout' | 'openOnboarding' | 'openQuickAdd'>,
-  closeKey: keyof Pick<UIActions, 'closeFilters' | 'closeImportExport' | 'closeShortcuts' | 'closeAbout' | 'closeOnboarding' | 'closeQuickAdd'>
+  stateKey: keyof Pick<UIState, 'filters' | 'shortcuts' | 'about' | 'onboarding' | 'quickAdd'>,
+  openKey: keyof Pick<UIActions, 'openFilters' | 'openShortcuts' | 'openAbout' | 'openOnboarding' | 'openQuickAdd'>,
+  closeKey: keyof Pick<UIActions, 'closeFilters' | 'closeShortcuts' | 'closeAbout' | 'closeOnboarding' | 'closeQuickAdd'>
 ) => {
   return (): Disclosure => {
     const isOpen = useUIStore((state) => state[stateKey] as boolean);
@@ -236,7 +249,25 @@ const createDisclosure = (
 };
 
 export const useFiltersDisclosure = createDisclosure('filters', 'openFilters', 'closeFilters');
-export const useImportExportDisclosure = createDisclosure('importExport', 'openImportExport', 'closeImportExport');
+
+// Custom disclosure for importExport with activeTab
+export const useImportExportDisclosure = () => {
+  const isOpen = useUIStore((state) => state.importExport.isOpen);
+  const activeTab = useUIStore((state) => state.importExport.activeTab);
+  const onOpen = useUIStore((state) => state.openImportExport);
+  const onClose = useUIStore((state) => state.closeImportExport);
+
+  return useMemo(
+    () => ({
+      isOpen,
+      activeTab,
+      onOpen,
+      onClose,
+      onOpenChange: (open: boolean) => (open ? onOpen() : onClose()),
+    }),
+    [isOpen, activeTab, onOpen, onClose]
+  );
+};
 export const useShortcutsDisclosure = createDisclosure('shortcuts', 'openShortcuts', 'closeShortcuts');
 export const useAboutDisclosure = createDisclosure('about', 'openAbout', 'closeAbout');
 export const useOnboardingDisclosure = createDisclosure('onboarding', 'openOnboarding', 'closeOnboarding');

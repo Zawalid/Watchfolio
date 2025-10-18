@@ -18,7 +18,7 @@ import { Tooltip } from '@heroui/react';
 import { Select, SelectItem } from '@heroui/react';
 import { GENRES, NETWORKS } from '@/utils/constants/TMDB';
 import { ShortcutKey, ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import { type ShortcutName } from '@/utils/keyboardShortcuts';
+import { type ShortcutName } from '@/config/shortcuts';
 import { cn } from '@/utils';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { Input } from '@/components/ui/Input';

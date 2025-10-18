@@ -10,6 +10,13 @@ export interface DesktopActionsContextType {
   quickAdd: () => void;
   quickSearch: () => void;
 
+  // UI Toggles
+  toggleSidebar: () => void;
+  toggleFilters: () => void;
+
+  // Library
+  clearLibrary: () => void;
+
   // Sync
   triggerSync: () => void;
 

@@ -59,7 +59,7 @@ export default function LibraryLayout() {
             <DropdownItem
               key='import-export'
               startContent={<FileJson className='size-4 shrink-0' />}
-              onPress={openImportExport}
+              onPress={() => openImportExport()}
               description='Import or export your library'
             >
               Import / Export

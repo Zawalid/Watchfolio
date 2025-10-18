@@ -6,9 +6,9 @@ use tauri_plugin_global_shortcut::{GlobalShortcutExt, Shortcut};
 ///
 /// Note: All other shortcuts are handled by React (useHotkeys) when the app is focused
 pub fn register_shortcuts(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
-    // Global Shortcut 1: Quick Add (Ctrl+Shift+W)
+    // Global Shortcut 1: Quick Add (Ctrl+Shift+A)
     // Works anywhere - brings app to foreground and opens Quick Add modal
-    app.global_shortcut().on_shortcut("Ctrl+Shift+W", {
+    app.global_shortcut().on_shortcut("Ctrl+Shift+A", {
         let app = app.clone();
         move |_app, _shortcut, _event| {
             if let Some(window) = app.get_webview_window("main") {
@@ -19,9 +19,9 @@ pub fn register_shortcuts(app: &AppHandle) -> Result<(), Box<dyn std::error::Err
         }
     })?;
 
-    // Global Shortcut 2: Show/Hide App (Ctrl+Shift+Space)
+    // Global Shortcut 2: Show/Hide App (Ctrl+Shift+W)
     // Toggles app window visibility from anywhere
-    app.global_shortcut().on_shortcut("Ctrl+Shift+Space", {
+    app.global_shortcut().on_shortcut("Ctrl+Shift+W", {
         let app = app.clone();
         move |_app, _shortcut, _event| {
             if let Some(window) = app.get_webview_window("main") {
@@ -35,24 +35,9 @@ pub fn register_shortcuts(app: &AppHandle) -> Result<(), Box<dyn std::error::Err
         }
     })?;
 
-    // Optional Global Shortcut 3: Global Search (Ctrl+Shift+F)
-    // Uncomment to enable system-wide search
-    // app.global_shortcut().on_shortcut("Ctrl+Shift+F", {
-    //     let app = app.clone();
-    //     move |_app, _shortcut, _event| {
-    //         if let Some(window) = app.get_webview_window("main") {
-    //             let _ = window.show();
-    //             let _ = window.set_focus();
-    //             let _ = window.emit("shortcut:global-search", ());
-    //         }
-    //     }
-    // })?;
-
     // Register the shortcuts (2 active shortcuts)
+    app.global_shortcut().register("Ctrl+Shift+A")?;
     app.global_shortcut().register("Ctrl+Shift+W")?;
-    app.global_shortcut().register("Ctrl+Shift+Space")?;
-    // Uncomment if enabling global search:
-    // app.global_shortcut().register("Ctrl+Shift+F")?;
 
     Ok(())
 }

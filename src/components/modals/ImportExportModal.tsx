@@ -11,13 +11,10 @@ import { useImportExportDisclosure } from '@/stores/useUIStore';
 
 export default function ImportExportModal() {
   const disclosure = useImportExportDisclosure();
-  const { isOpen, onClose, onOpen } = disclosure;
+  const { isOpen, activeTab, onClose } = disclosure;
 
   // Keyboard shortcuts for modal
-  useShortcuts([
-    { name: 'escape', handler: onClose, enabled: isOpen },
-    { name: 'toggleImportExport', handler: () => (isOpen ? onClose() : onOpen()) },
-  ]);
+  useShortcuts([{ name: 'escape', handler: onClose, enabled: isOpen }]);
 
   return (
     <Modal disclosure={disclosure} size='xl' classNames={{ base: 'full-mobile-modal' }}>
@@ -29,7 +26,7 @@ export default function ImportExportModal() {
           <h2 className='text-Primary-50 text-xl font-semibold'>Import / Export Library</h2>
         </div>
 
-        <Tabs classNames={{ ...TABS_CLASSNAMES, tabList: `${TABS_CLASSNAMES.tabList} w-full` }}>
+        <Tabs selectedKey={activeTab} classNames={{ ...TABS_CLASSNAMES, tabList: `${TABS_CLASSNAMES.tabList} w-full` }}>
           <Tab
             key='import'
             title={
@@ -56,8 +53,8 @@ export default function ImportExportModal() {
 
         <div className='border-Primary-500/20 mt-auto bg-Primary-500/10 rounded-lg border p-3'>
           <p className='text-Primary-300 text-xs'>
-            <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='toggleImportExport' /> to toggle
-            this panel
+            <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='openImport' /> to open Import or{' '}
+            <ShortcutKey shortcutName='openExport' /> to open Export
           </p>
         </div>
       </ModalBody>

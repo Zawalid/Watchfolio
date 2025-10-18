@@ -1,16 +1,17 @@
 import { Keyboard } from 'lucide-react';
 import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
+import { getShortcutsByCategory, type ShortcutCategory } from '@/config/shortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { useShortcutsDisclosure } from '@/stores/useUIStore';
 
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
-  cardFocus: 'Media Actions (When focused)',
+  navigation: 'Navigation',
   library: 'Library',
-  mediaStatus: 'Media Status',
+  cardFocus: 'Media Actions (When focused)',
   filters: 'Filters',
+  mediaStatus: 'Media Status',
 };
 
 const CATEGORY_ORDER = Object.keys(CATEGORY_TITLES) as ShortcutCategory[];

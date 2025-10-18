@@ -6,24 +6,14 @@ pub fn create_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     let separator1 = PredefinedMenuItem::separator(app)?;
 
     // Quick actions
-    let quick_add = MenuItemBuilder::with_id("quick_add", "Quick Add...")
-        .accelerator("Ctrl+Shift+A")
-        .build(app)?;
-    let search = MenuItemBuilder::with_id("search", "Search...")
-        .accelerator("Ctrl+Shift+F")
-        .build(app)?;
+    let quick_add = MenuItemBuilder::with_id("quick_add", "Quick Add").build(app)?;
+    let search = MenuItemBuilder::with_id("search", "Search").build(app)?;
     let separator2 = PredefinedMenuItem::separator(app)?;
 
     // Navigation
-    let library = MenuItemBuilder::with_id("library", "Library")
-        .accelerator("Ctrl+1")
-        .build(app)?;
-    let discover = MenuItemBuilder::with_id("discover", "Discover")
-        .accelerator("Ctrl+2")
-        .build(app)?;
-    let statistics = MenuItemBuilder::with_id("statistics", "Statistics")
-        .accelerator("Ctrl+3")
-        .build(app)?;
+    let library = MenuItemBuilder::with_id("library", "Library").build(app)?;
+    let discover = MenuItemBuilder::with_id("discover", "Discover").build(app)?;
+    let statistics = MenuItemBuilder::with_id("statistics", "Statistics").build(app)?;
     let separator3 = PredefinedMenuItem::separator(app)?;
 
     // Status actions submenu
@@ -48,13 +38,9 @@ pub fn create_tray(app: &AppHandle) -> Result<(), tauri::Error> {
     let separator5 = PredefinedMenuItem::separator(app)?;
 
     // Settings and quit
-    let preferences = MenuItemBuilder::with_id("preferences", "Preferences...")
-        .accelerator("Ctrl+,")
-        .build(app)?;
+    let preferences = MenuItemBuilder::with_id("preferences", "Preferences").build(app)?;
     let separator6 = PredefinedMenuItem::separator(app)?;
-    let quit = MenuItemBuilder::with_id("quit", "Quit Watchfolio")
-        .accelerator("Ctrl+Q")
-        .build(app)?;
+    let quit = MenuItemBuilder::with_id("quit", "Quit Watchfolio").build(app)?;
 
     // Build the tray menu
     let menu = MenuBuilder::new(app)

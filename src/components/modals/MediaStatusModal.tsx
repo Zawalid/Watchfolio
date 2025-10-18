@@ -6,7 +6,7 @@ import { RATING_LABELS, LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { cn } from '@/utils';
 import { useListNavigator } from '@/hooks/useListNavigator';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
-import { getShortcut, type ShortcutName } from '@/utils/keyboardShortcuts';
+import { getShortcut, type ShortcutName } from '@/config/shortcuts';
 import { useShortcut } from '@/hooks/useShortcut';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { isMedia } from '@/utils/media';

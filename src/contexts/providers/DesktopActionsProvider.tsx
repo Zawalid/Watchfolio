@@ -6,6 +6,7 @@ import { useUpdater } from '@/hooks/desktop/useUpdater';
 import { UpdateNotification } from '@/components/desktop/UpdateNotification';
 import { isDesktop } from '@/lib/platform';
 import { useUIStore } from '@/stores/useUIStore';
+import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 
 /**
  * Provider for desktop actions
@@ -14,32 +15,25 @@ import { useUIStore } from '@/stores/useUIStore';
 export function DesktopActionsProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
+  // Direct store/hook access
   const { startSync } = useSyncStore();
   const updater = useUpdater();
+  const { clearLibrary } = useClearLibrary();
+  const openQuickAdd = useUIStore((state) => state.openQuickAdd);
+  const openShortcuts = useUIStore((state) => state.openShortcuts);
+  const openAbout = useUIStore((state) => state.openAbout);
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const toggleFilters = useUIStore((state) => state.toggleFilters);
   const openImportExportModal = useUIStore((state) => state.openImportExport);
-  const openAboutModal = useUIStore((state) => state.openAbout);
-  const openShortcutsModal = useUIStore((state) => state.openShortcuts);
-  const openQuickAddModal = useUIStore((state) => state.openQuickAdd);
 
-  const openImportExport = useCallback(() => {
+  // Only create wrappers when there's actual additional logic
+  const openImportExport = useCallback((tab?: 'import' | 'export') => {
     // Navigate to library if not there
     if (!window.location.pathname.startsWith('/library')) {
       navigate('/library');
     }
-    openImportExportModal();
+    openImportExportModal(tab);
   }, [navigate, openImportExportModal]);
-
-  const openAbout = useCallback(() => {
-    openAboutModal();
-  }, [openAboutModal]);
-
-  const openKeyboardShortcuts = useCallback(() => {
-    openShortcutsModal();
-  }, [openShortcutsModal]);
-
-  const quickAdd = useCallback(() => {
-    openQuickAddModal();
-  }, [openQuickAddModal]);
 
   const quickSearch = useCallback(() => {
     // Navigate to search and focus input
@@ -52,10 +46,6 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
     }, 100);
   }, [navigate]);
 
-  const triggerSync = useCallback(() => {
-    startSync();
-  }, [startSync]);
-
   const checkForUpdates = useCallback(() => {
     updater.checkForUpdates();
   }, [updater]);
@@ -66,14 +56,44 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
 
     const setupTauriListeners = async () => {
       const { listen } = await import('@tauri-apps/api/event');
+      type Event<T> = { payload: T };
 
       const unlisten = await Promise.all([
-        listen('menu:quick-add', () => quickAdd()),
-        listen('menu:import', () => openImportExport()),
-        listen('menu:export', () => openImportExport()),
+        // File menu
+        listen('menu:quick-add', openQuickAdd),
+        listen<string>('menu:import-export', (event: Event<string>) =>
+          openImportExport(event.payload as 'import' | 'export')
+        ),
+        listen('menu:sync', startSync),
         listen('menu:preferences', () => navigate('/settings/preferences')),
-        listen('menu:keyboard-shortcuts', () => openKeyboardShortcuts()),
-        listen('menu:check-updates', () => checkForUpdates()),
+
+        // View menu
+        listen('menu:toggle-sidebar', toggleSidebar),
+        listen('menu:toggle-filters', toggleFilters),
+
+        // Library menu
+        listen<string>('menu:navigate', (event: Event<string>) => navigate(event.payload)),
+        listen('menu:library-stats', () => navigate('/u/stats')),
+        listen('menu:library-clear', clearLibrary),
+
+        // Go menu
+        listen('menu:go-back', () => navigate(-1)),
+        listen('menu:go-forward', () => navigate(1)),
+
+        // Help menu
+        listen('menu:keyboard-shortcuts', openShortcuts),
+        listen('menu:check-updates', checkForUpdates),
+        listen('menu:about', openAbout),
+
+        // Tray menu events
+        listen('tray:quick-add', openQuickAdd),
+        listen('tray:search', quickSearch),
+        listen<string>('tray:navigate', (event: Event<string>) => navigate(event.payload)),
+        listen('tray:sync-now', startSync),
+        // Note: tray:quick-status is not handled yet - would need media selection context
+
+        // Global keyboard shortcuts (from shortcuts.rs)
+        listen('shortcut:quick-add', openQuickAdd),
       ]);
 
       return () => {
@@ -82,17 +102,32 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
     };
 
     setupTauriListeners();
-  }, [quickAdd, openImportExport, navigate, openKeyboardShortcuts, checkForUpdates]);
+  }, [
+    openQuickAdd,
+    openImportExport,
+    startSync,
+    navigate,
+    openShortcuts,
+    checkForUpdates,
+    openAbout,
+    toggleSidebar,
+    toggleFilters,
+    clearLibrary,
+    quickSearch,
+  ]);
 
   return (
     <DesktopActionsContext.Provider
       value={{
         openImportExport,
         openAbout,
-        openKeyboardShortcuts,
-        quickAdd,
+        openKeyboardShortcuts: openShortcuts,
+        quickAdd: openQuickAdd,
         quickSearch,
-        triggerSync,
+        toggleSidebar,
+        toggleFilters,
+        clearLibrary,
+        triggerSync: startSync,
         checkForUpdates,
       }}
     >
