@@ -7,8 +7,12 @@ import { getWatchfolioDB } from './database';
 import { useSyncStore, SyncStatus } from '@/stores/useSyncStore';
 
 let replicationState: RxReplicationState<LibraryMedia, AppwriteCheckpointType> | null = null;
-let receivedSubscription: Subscription | null = null; // To hold the subscription
+let receivedSubscription: Subscription | null = null;
 let currentUserId: string | null = null;
+let forcePushFlush: (() => Promise<void>) | null = null;
+let cleanupPushHandler: (() => void) | null = null;
+let flushReadyListener: ((event: Event) => void) | null = null;
+let syncTimeout: NodeJS.Timeout | null = null;
 
 const setSyncStatus = (status: SyncStatus) => useSyncStore.getState().setSyncStatus(status);
 
@@ -29,6 +33,22 @@ export const startReplication = async (userId: string, library: string | null) =
   log('Starting replication for user:', userId);
   setSyncStatus('connecting');
   currentUserId = userId;
+
+  // Remove old listener if exists
+  if (flushReadyListener && typeof window !== 'undefined') {
+    window.removeEventListener('sync-flush-ready', flushReadyListener);
+  }
+
+  // Listen for flush function from debounced push handler
+  flushReadyListener = (event: Event) => {
+    const detail = (event as CustomEvent<{ flush: () => Promise<void>; cleanup: () => void }>).detail;
+    forcePushFlush = detail.flush;
+    cleanupPushHandler = detail.cleanup;
+  };
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('sync-flush-ready', flushReadyListener);
+  }
 
   try {
     const db = await getWatchfolioDB();
@@ -57,6 +77,7 @@ export const startReplication = async (userId: string, library: string | null) =
       },
       push: {
         batchSize: 25,
+        debounceMs: 15000, // Batch rapid changes with 15 second debounce
         modifier: (doc) => {
           const cleanDoc = {
             ...doc,
@@ -92,17 +113,31 @@ export const startReplication = async (userId: string, library: string | null) =
       setSyncStatus('error');
     });
 
-    replicationState.active$.subscribe((active) => {
-      setSyncStatus(active ? 'syncing' : 'online');
-      log('Replication', active ? 'active' : 'inactive');
-    });
-
+    // Track actual network sync activity, not just pending changes
     replicationState.received$.subscribe((received) => {
       log('Received from server:', received);
+      setSyncStatus('syncing');
+
+      // Reset to online after brief delay
+      if (syncTimeout) clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        if (useSyncStore.getState().pendingChanges === 0) {
+          setSyncStatus('online');
+        }
+      }, 500);
     });
 
     replicationState.sent$.subscribe((sent) => {
       log('Sent to server:', sent);
+      setSyncStatus('syncing');
+
+      // Reset to online after brief delay
+      if (syncTimeout) clearTimeout(syncTimeout);
+      syncTimeout = setTimeout(() => {
+        if (useSyncStore.getState().pendingChanges === 0) {
+          setSyncStatus('online');
+        }
+      }, 500);
     });
 
     setSyncStatus('online');
@@ -119,13 +154,35 @@ export const startReplication = async (userId: string, library: string | null) =
 };
 
 export const stopReplication = async (): Promise<void> => {
+  // Clean up subscriptions
   if (receivedSubscription) {
     receivedSubscription.unsubscribe();
     receivedSubscription = null;
   }
 
+  // Clean up timers
+  if (syncTimeout) {
+    clearTimeout(syncTimeout);
+    syncTimeout = null;
+  }
+
+  // Clean up event listeners
+  if (flushReadyListener && typeof window !== 'undefined') {
+    window.removeEventListener('sync-flush-ready', flushReadyListener);
+    flushReadyListener = null;
+  }
+
+  // Clean up push handler (flush pending changes and clear timer)
+  if (cleanupPushHandler) {
+    cleanupPushHandler();
+    cleanupPushHandler = null;
+  }
+
   if (!replicationState) {
     log('No replication to stop');
+    forcePushFlush = null;
+    currentUserId = null;
+    setSyncStatus('offline');
     return;
   }
 
@@ -137,6 +194,7 @@ export const stopReplication = async (): Promise<void> => {
   } finally {
     replicationState = null;
     currentUserId = null;
+    forcePushFlush = null;
     setSyncStatus('offline');
     log('Replication stopped');
   }
@@ -146,6 +204,16 @@ export const triggerSync = async (): Promise<void> => {
   if (!replicationState) throw new Error('Replication not initialized');
   log('Triggering re-sync on active replication');
   await replicationState.reSync();
+};
+
+export const forcePushPendingChanges = async (): Promise<void> => {
+  if (!forcePushFlush) {
+    log('No pending changes to force push');
+    return;
+  }
+  log('Force pushing pending changes...');
+  await forcePushFlush();
+  log('Force push completed');
 };
 
 export const isReplicationActive = (): boolean => Boolean(replicationState);

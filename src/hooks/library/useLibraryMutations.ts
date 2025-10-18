@@ -41,7 +41,7 @@ export const useAddOrUpdateLibraryItem = () => {
   const { userId, library } = useInfo();
 
   return useMutation({
-    mutationFn: async ({
+    mutationFn: ({
       item,
       media,
     }: {
@@ -51,17 +51,6 @@ export const useAddOrUpdateLibraryItem = () => {
     }) => {
       const metadata = media ? getMediaMetadata(media) : {};
       const updatedItem = { ...item, ...metadata, userId };
-
-      // Check if the updated item would be "empty" (no meaningful data)
-      const isEmpty =
-        (!updatedItem.status || updatedItem.status === 'none') &&
-        !updatedItem.userRating &&
-        !updatedItem.isFavorite;
-
-      // If empty, remove the item instead of updating
-      if (isEmpty) {
-        return deleteLibraryItem(updatedItem.id);
-      }
 
       return addOrUpdateLibraryItem(updatedItem, { library, userId });
     },
