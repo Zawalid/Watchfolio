@@ -1,5 +1,5 @@
 import { Models } from 'appwrite';
-import { HIDDEN_PROFILE_SECTIONS } from '@/utils/constants';
+import { HIDDEN_PROFILE_SECTIONS } from '@/config/app';
 
 // Meta fields for Appwrite documents
 export const META_FIELDS = ['$createdAt', '$permissions', '$collectionId', '$databaseId', '$sequence'] as const;

@@ -1,4 +1,4 @@
-import { HIDDEN_PROFILE_SECTIONS } from '@/utils/constants';
+import { HIDDEN_PROFILE_SECTIONS } from '@/config/app';
 import { z } from 'zod';
 
 export const common = {

@@ -2,7 +2,7 @@ import { Models } from 'appwrite';
 import { create } from 'zustand';
 import { authService } from '@/lib/auth';
 import { persistAndSync } from '@/utils/persistAndSync';
-import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/config/app';
 import { deepEqual } from '@/utils';
 import {
   CreateUserPreferencesInput,

@@ -5,6 +5,7 @@ import client, { DATABASE_ID, TABLES } from '@/lib/appwrite';
 import { AppwriteCheckpointType, replicateAppwrite } from '@/lib/appwrite/appwrite-replication';
 import { getWatchfolioDB } from './database';
 import { useSyncStore, SyncStatus } from '@/stores/useSyncStore';
+import { LIBRARY_SYNC_DEBOUNCE_MS, LIBRARY_SYNC_SAFETY_FLUSH_INTERVAL_MS } from '@/config/app';
 
 let replicationState: RxReplicationState<LibraryMedia, AppwriteCheckpointType> | null = null;
 let receivedSubscription: Subscription | null = null;
@@ -13,6 +14,9 @@ let forcePushFlush: (() => Promise<void>) | null = null;
 let cleanupPushHandler: (() => void) | null = null;
 let flushReadyListener: ((event: Event) => void) | null = null;
 let syncTimeout: NodeJS.Timeout | null = null;
+let beforeUnloadHandler: (() => void) | null = null;
+let visibilityChangeHandler: (() => void) | null = null;
+let safetyFlushInterval: NodeJS.Timeout | null = null;
 
 const setSyncStatus = (status: SyncStatus) => useSyncStore.getState().setSyncStatus(status);
 
@@ -48,6 +52,45 @@ export const startReplication = async (userId: string, library: string | null) =
 
   if (typeof window !== 'undefined') {
     window.addEventListener('sync-flush-ready', flushReadyListener);
+
+    // Clean up old lifecycle handlers if they exist
+    if (beforeUnloadHandler) {
+      window.removeEventListener('beforeunload', beforeUnloadHandler);
+    }
+    if (visibilityChangeHandler) {
+      document.removeEventListener('visibilitychange', visibilityChangeHandler);
+    }
+
+    // Force flush on page unload to prevent data loss
+    beforeUnloadHandler = () => {
+      if (forcePushFlush) {
+        forcePushFlush();
+      }
+    };
+
+    // Force flush when tab becomes hidden (user switches tabs/apps)
+    visibilityChangeHandler = () => {
+      if (document.hidden && forcePushFlush) {
+        forcePushFlush();
+      }
+    };
+
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+    document.addEventListener('visibilitychange', visibilityChangeHandler);
+
+    // Periodic safety flush - flushes pending changes every interval
+    // This ensures data is synced even if user keeps the app open for extended periods
+    if (safetyFlushInterval) {
+      clearInterval(safetyFlushInterval);
+    }
+
+    safetyFlushInterval = setInterval(() => {
+      const pendingCount = useSyncStore.getState().pendingChanges;
+      if (forcePushFlush && pendingCount > 0) {
+        log(`⏰ Safety flush triggered (${pendingCount} pending change${pendingCount > 1 ? 's' : ''})`);
+        forcePushFlush();
+      }
+    }, LIBRARY_SYNC_SAFETY_FLUSH_INTERVAL_MS);
   }
 
   try {
@@ -77,7 +120,7 @@ export const startReplication = async (userId: string, library: string | null) =
       },
       push: {
         batchSize: 25,
-        debounceMs: 15000, // Batch rapid changes with 15 second debounce
+        debounceMs: LIBRARY_SYNC_DEBOUNCE_MS,
         modifier: (doc) => {
           const cleanDoc = {
             ...doc,
@@ -166,10 +209,28 @@ export const stopReplication = async (): Promise<void> => {
     syncTimeout = null;
   }
 
+  // Clean up safety flush interval
+  if (safetyFlushInterval) {
+    clearInterval(safetyFlushInterval);
+    safetyFlushInterval = null;
+  }
+
   // Clean up event listeners
   if (flushReadyListener && typeof window !== 'undefined') {
     window.removeEventListener('sync-flush-ready', flushReadyListener);
     flushReadyListener = null;
+  }
+
+  // Clean up lifecycle event listeners
+  if (typeof window !== 'undefined') {
+    if (beforeUnloadHandler) {
+      window.removeEventListener('beforeunload', beforeUnloadHandler);
+      beforeUnloadHandler = null;
+    }
+    if (visibilityChangeHandler) {
+      document.removeEventListener('visibilitychange', visibilityChangeHandler);
+      visibilityChangeHandler = null;
+    }
   }
 
   // Clean up push handler (flush pending changes and clear timer)

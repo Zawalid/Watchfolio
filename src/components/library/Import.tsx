@@ -4,7 +4,7 @@ import { Button, addToast, Select, SelectItem, SelectSection, Switch, closeToast
 import { FileDropper } from '@/components/ui/FileDropper';
 import { SELECT_CLASSNAMES } from '@/styles/heroui';
 import { useWorker } from '@/hooks/useWorker';
-import { LIBRARY_IMPORT_MAX_SIZE } from '@/utils/constants';
+import { LIBRARY_IMPORT_MAX_SIZE } from '@/config/app';
 import { useImportLibrary } from '@/hooks/library/useLibraryMutations';
 import { getAllLibraryItemIds } from '@/lib/rxdb';
 import { useAuthStore } from '@/stores/useAuthStore';
