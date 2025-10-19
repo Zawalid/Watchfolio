@@ -23,18 +23,8 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   const openAbout = useUIStore((state) => state.openAbout);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const toggleFilters = useUIStore((state) => state.toggleFilters);
-  const openImportExportModal = useUIStore((state) => state.openImportExport);
+  const openImportExport = useUIStore((state) => state.openImportExport);
   const updater = useUpdater();
-
-  // Only create wrappers when there's actual additional logic
-  const openImportExport = useCallback(
-    (tab?: 'import' | 'export') => {
-      if (!window.location.pathname.startsWith('/library')) navigate('/library');
-      openImportExportModal(tab);
-    },
-    [navigate, openImportExportModal]
-  );
-
 
   const checkForUpdates = useCallback(() => {
     updater.checkForUpdates();
