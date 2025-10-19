@@ -8,7 +8,6 @@ export interface DesktopActionsContextType {
 
   // Quick actions
   quickAdd: () => void;
-  quickSearch: () => void;
 
   // UI Toggles
   toggleSidebar: () => void;

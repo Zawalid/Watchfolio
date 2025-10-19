@@ -11,7 +11,7 @@ export function FileMenu() {
   const navigate = useNavigate();
   const openQuickAdd = useUIStore((state) => state.openQuickAdd);
   const openImportExport = useUIStore((state) => state.openImportExport);
-  const { syncStatus, manualSync } = useSyncStore();
+  const { syncStatus, triggerSync } = useSyncStore();
   const { confirm } = useConfirmationModal();
 
   const handleImport = () => openImportExport('import');
@@ -54,7 +54,7 @@ export function FileMenu() {
       </DropdownSection>
 
       <DropdownSection title='Library' showDivider>
-        <DropdownItem key='sync' startContent={<RotateCw className='size-4' />} onPress={manualSync}>
+        <DropdownItem key='sync' startContent={<RotateCw className='size-4' />} onPress={triggerSync}>
           {syncStatus === 'syncing' ? 'Syncing...' : 'Sync Library'}
         </DropdownItem>
         <DropdownItem
@@ -84,7 +84,11 @@ export function FileMenu() {
       </DropdownSection>
 
       <DropdownSection title='Settings' showDivider>
-        <DropdownItem key='profile' startContent={<User className='size-4' />} onPress={() => navigate('/settings/profile')}>
+        <DropdownItem
+          key='profile'
+          startContent={<User className='size-4' />}
+          onPress={() => navigate('/settings/profile')}
+        >
           Profile
         </DropdownItem>
         <DropdownItem
@@ -106,7 +110,7 @@ export function FileMenu() {
           key='quit'
           startContent={<X className='size-4' />}
           onPress={handleQuit}
-          className='text-red-400! hover:text-red-300! hover:bg-red-500/10!'
+          className='text-red-400! hover:bg-red-500/10! hover:text-red-300!'
         >
           Quit Watchfolio
         </DropdownItem>

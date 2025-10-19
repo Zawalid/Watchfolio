@@ -16,8 +16,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   const navigate = useNavigate();
 
   // Direct store/hook access
-  const { startSync } = useSyncStore();
-  const updater = useUpdater();
+  const triggerSync = useSyncStore((state) => state.triggerSync);
   const { clearLibrary } = useClearLibrary();
   const openQuickAdd = useUIStore((state) => state.openQuickAdd);
   const openShortcuts = useUIStore((state) => state.openShortcuts);
@@ -25,26 +24,17 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const toggleFilters = useUIStore((state) => state.toggleFilters);
   const openImportExportModal = useUIStore((state) => state.openImportExport);
+  const updater = useUpdater();
 
   // Only create wrappers when there's actual additional logic
-  const openImportExport = useCallback((tab?: 'import' | 'export') => {
-    // Navigate to library if not there
-    if (!window.location.pathname.startsWith('/library')) {
-      navigate('/library');
-    }
-    openImportExportModal(tab);
-  }, [navigate, openImportExportModal]);
+  const openImportExport = useCallback(
+    (tab?: 'import' | 'export') => {
+      if (!window.location.pathname.startsWith('/library')) navigate('/library');
+      openImportExportModal(tab);
+    },
+    [navigate, openImportExportModal]
+  );
 
-  const quickSearch = useCallback(() => {
-    // Navigate to search and focus input
-    navigate('/movies');
-    setTimeout(() => {
-      const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
-      if (searchInput) {
-        searchInput.focus();
-      }
-    }, 100);
-  }, [navigate]);
 
   const checkForUpdates = useCallback(() => {
     updater.checkForUpdates();
@@ -64,7 +54,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
         listen<string>('menu:import-export', (event: Event<string>) =>
           openImportExport(event.payload as 'import' | 'export')
         ),
-        listen('menu:sync', startSync),
+        listen('menu:sync', triggerSync),
         listen('menu:preferences', () => navigate('/settings/preferences')),
 
         // View menu
@@ -87,17 +77,15 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
 
         // Tray menu events
         listen('tray:quick-add', openQuickAdd),
-        listen('tray:search', quickSearch),
         listen<string>('tray:navigate', (event: Event<string>) => navigate(event.payload)),
-        listen('tray:sync-now', startSync),
-        // Note: tray:quick-status is not handled yet - would need media selection context
+        listen('tray:sync-now', triggerSync),
 
         // Global keyboard shortcuts (from shortcuts.rs)
         listen('shortcut:quick-add', openQuickAdd),
       ]);
 
       return () => {
-        unlisten.forEach(fn => fn());
+        unlisten.forEach((fn) => fn());
       };
     };
 
@@ -105,7 +93,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
   }, [
     openQuickAdd,
     openImportExport,
-    startSync,
+    triggerSync,
     navigate,
     openShortcuts,
     checkForUpdates,
@@ -113,7 +101,6 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
     toggleSidebar,
     toggleFilters,
     clearLibrary,
-    quickSearch,
   ]);
 
   return (
@@ -123,11 +110,10 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
         openAbout,
         openKeyboardShortcuts: openShortcuts,
         quickAdd: openQuickAdd,
-        quickSearch,
         toggleSidebar,
         toggleFilters,
         clearLibrary,
-        triggerSync: startSync,
+        triggerSync,
         checkForUpdates,
       }}
     >

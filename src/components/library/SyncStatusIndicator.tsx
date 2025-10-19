@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export function SyncStatusIndicator({ className, asPill }: { className?: string; asPill?: boolean }) {
   const { isAuthenticated, openAuthModal } = useAuthStore();
-  const { syncStatus, lastSyncTime, manualSync } = useSyncStore();
+  const { syncStatus, lastSyncTime, triggerSync } = useSyncStore();
   const queryClient = useQueryClient();
   const isOnline = navigator.onLine;
 
@@ -39,7 +39,7 @@ export function SyncStatusIndicator({ className, asPill }: { className?: string;
           icon: <AlertCircle className='size-4' />,
           text: 'Sync Error',
           tooltip: 'Sync error occurred. Click to retry.',
-          onClick: () => manualSync(),
+          onClick: () => triggerSync(),
         };
       case 'connecting':
         return {
@@ -63,7 +63,7 @@ export function SyncStatusIndicator({ className, asPill }: { className?: string;
           tooltip: lastSyncTime
             ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}`
             : 'Your library is up to date.',
-          onClick: () => manualSync(),
+          onClick: () => triggerSync(),
         };
       case 'offline':
       default:
@@ -72,7 +72,7 @@ export function SyncStatusIndicator({ className, asPill }: { className?: string;
           icon: <CloudOff className='size-4' />,
           text: 'Sync Offline',
           tooltip: 'Sync is currently offline. Click to sync.',
-          onClick: () => manualSync(),
+          onClick: () => triggerSync(),
         };
     }
   };
@@ -107,7 +107,7 @@ export function SyncStatusIndicator({ className, asPill }: { className?: string;
         'group flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5',
         className
       )}
-      onClick={manualSync}
+      onClick={triggerSync}
       disabled={syncStatus === 'syncing'}
     >
       <div className='flex items-center gap-3'>

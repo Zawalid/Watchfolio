@@ -239,7 +239,7 @@ export const useAuthStore = create<AuthState>()(
       openOnboardingModal: () => set({ showOnboardingModal: true }),
       closeOnboardingModal: () => {
         set({ showOnboardingModal: false });
-        useSyncStore.getState().manualSync();
+        useSyncStore.getState().triggerSync();
       },
       setPendingOnboarding: (value) => {
         set({ pendingOnboarding: value });

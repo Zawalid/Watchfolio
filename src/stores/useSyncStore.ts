@@ -12,7 +12,7 @@ interface SyncState {
   setPendingChanges: (count: number) => void;
   startSync: () => Promise<void>;
   stopSync: () => Promise<void>;
-  manualSync: () => Promise<void>;
+  triggerSync: () => Promise<void>;
   forcePush: () => Promise<void>;
   toggleAutoSync: (enabled: boolean) => Promise<void>;
 }
@@ -50,8 +50,8 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
     await stopReplication();
   },
 
-  manualSync: async () => {
-    const user  = useAuthStore.getState().user;
+  triggerSync: async () => {
+    const user = useAuthStore.getState().user;
     if (!user) throw new Error('User not authenticated');
 
     if (isReplicationActive()) {
@@ -59,7 +59,7 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
       await triggerSync();
       return;
     }
-  
+
     try {
       const tempReplication = await startReplication(user.$id, user.profile.library || null);
       if (tempReplication) {

@@ -111,7 +111,7 @@ pub fn handle_tray_event(app: &AppHandle, event: MenuEvent) {
             if let Some(window) = window {
                 let _ = window.show();
                 let _ = window.set_focus();
-                let _ = window.emit("tray:search", ());
+                let _ = window.emit("tray:navigate", "/search");
             }
         }
         "library" => {
@@ -125,39 +125,47 @@ pub fn handle_tray_event(app: &AppHandle, event: MenuEvent) {
             if let Some(window) = window {
                 let _ = window.show();
                 let _ = window.set_focus();
-                let _ = window.emit("tray:navigate", "/discover");
+                let _ = window.emit("tray:navigate", "/home");
             }
         }
         "statistics" => {
             if let Some(window) = window {
-                let _ = window.show();
-                let _ = window.set_focus();
-                let _ = window.emit("tray:navigate", "/statistics");
+                let _ = window.emit("tray:statistics", ());
             }
         }
         "mark_watching" => {
             if let Some(window) = window {
-                let _ = window.emit("tray:quick-status", "watching");
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.emit("tray:navigate", "/library/watching");
             }
         }
         "mark_completed" => {
             if let Some(window) = window {
-                let _ = window.emit("tray:quick-status", "completed");
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.emit("tray:navigate", "/library/completed");
             }
         }
         "mark_plan" => {
             if let Some(window) = window {
-                let _ = window.emit("tray:quick-status", "plan_to_watch");
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.emit("tray:navigate", "/library/will-watch");
             }
         }
         "mark_on_hold" => {
             if let Some(window) = window {
-                let _ = window.emit("tray:quick-status", "on_hold");
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.emit("tray:navigate", "/library/on-hold");
             }
         }
         "mark_dropped" => {
             if let Some(window) = window {
-                let _ = window.emit("tray:quick-status", "dropped");
+                let _ = window.show();
+                let _ = window.set_focus();
+                let _ = window.emit("tray:navigate", "/library/dropped");
             }
         }
         "sync_now" => {
@@ -169,7 +177,7 @@ pub fn handle_tray_event(app: &AppHandle, event: MenuEvent) {
             if let Some(window) = window {
                 let _ = window.show();
                 let _ = window.set_focus();
-                let _ = window.emit("tray:navigate", "/settings");
+                let _ = window.emit("tray:navigate", "/settings/preferences");
             }
         }
         "quit" => {
