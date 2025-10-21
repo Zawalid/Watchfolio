@@ -1,4 +1,4 @@
-import { Settings, Palette, Globe } from 'lucide-react';
+import { Settings, Palette, Globe, Monitor } from 'lucide-react';
 import { addToast } from '@heroui/react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { usePageTitle } from '@/hooks/usePageTitle';
@@ -6,9 +6,19 @@ import { SettingItem, SettingSection } from '@/components/settings/SettingSectio
 import { UserPreferences } from '@/lib/appwrite/types';
 import { UpdateSettings } from '@/components/settings/UpdateSettings';
 import { isDesktop } from '@/lib/platform';
+import { useSystemSettings } from '@/hooks/useSystemSettings';
 
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading, userPreferences } = useAuthStore();
+
+  // Desktop-only system settings
+  const {
+    settings: systemSettings,
+    isLoading: isSystemSettingsLoading,
+    updateLaunchOnStartup,
+    updateStartMinimized,
+    updateKeepRunningInBackground,
+  } = useSystemSettings();
 
   usePageTitle('Preferences - Settings');
 
@@ -32,6 +42,38 @@ export default function Preferences() {
 
   return (
     <div className='flex flex-col gap-6 sm:gap-8'>
+      {/* System (Desktop only) */}
+      {isDesktop() && (
+        <SettingSection Icon={Monitor} title='System'>
+          <SettingItem
+            title='Launch Watchfolio on startup'
+            description='Automatically start Watchfolio when you log in to your computer'
+            isChecked={systemSettings.launchOnStartup}
+            onChange={updateLaunchOnStartup}
+            isDisabled={isSystemSettingsLoading}
+            isSwitchDisabled={isSystemSettingsLoading}
+          />
+
+          <SettingItem
+            title='Start minimized to tray'
+            description='Launch Watchfolio in the background without opening the main window'
+            isChecked={systemSettings.startMinimized}
+            onChange={updateStartMinimized}
+            isDisabled={isSystemSettingsLoading || !systemSettings.launchOnStartup}
+            isSwitchDisabled={isSystemSettingsLoading || !systemSettings.launchOnStartup}
+          />
+
+          <SettingItem
+            title='Keep running in background when window is closed'
+            description='Keep Watchfolio running in the system tray when you close the window'
+            isChecked={systemSettings.keepRunningInBackground}
+            onChange={updateKeepRunningInBackground}
+            isDisabled={isSystemSettingsLoading}
+            isSwitchDisabled={isSystemSettingsLoading}
+          />
+        </SettingSection>
+      )}
+
       <SettingSection Icon={Settings} title='Preferences'>
         <SettingItem
           title='Remove from library confirmation'

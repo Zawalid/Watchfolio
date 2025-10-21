@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Watchfolio",
   "version": "0.1.0",
-  "identifier": "com.watchfolio.app",
+  "identifier": "com.watchfolio",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -20,7 +20,8 @@
         "fullscreen": false,
         "center": true,
         "decorations": false,
-        "transparent": false
+        "transparent": false,
+        "devtools": true
       },
       {
         "label": "quick-add",
@@ -41,19 +42,20 @@
     ],
     "security": {
       "csp": {
-        "default-src": "'self'",
-        "connect-src": "'self' https://api.themoviedb.org https://cloud.appwrite.io wss://cloud.appwrite.io https://generativelanguage.googleapis.com",
-        "img-src": "'self' https://image.tmdb.org data: blob: asset: https://tauri.localhost",
+        "default-src": "'self' ipc: http://ipc.localhost https://tauri.localhost http://tauri.localhost",
+        "connect-src": "'self' ipc: http://ipc.localhost https://api.themoviedb.org https://*.appwrite.io wss://*.appwrite.io https://generativelanguage.googleapis.com https://tauri.localhost http://tauri.localhost",
+        "img-src": "'self' https://image.tmdb.org https://img.youtube.com https://api.dicebear.com https://*.appwrite.io data: blob: asset: https://tauri.localhost http://tauri.localhost",
         "style-src": "'self' 'unsafe-inline'",
         "script-src": "'self' 'unsafe-inline' 'wasm-unsafe-eval'",
         "font-src": "'self' data:",
-        "media-src": "'self' asset: https://tauri.localhost"
+        "media-src": "'self' asset: https://tauri.localhost http://tauri.localhost"
       }
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "category": "Entertainment",
     "shortDescription": "AI-powered media library manager",
     "longDescription": "Watchfolio is an offline-first, AI-powered media library manager for tracking movies and TV shows with real-time cloud sync.",
@@ -61,6 +63,7 @@
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
+      "icons/icon.png",
       "icons/icon.icns",
       "icons/icon.ico"
     ]
@@ -68,9 +71,7 @@
   "plugins": {
     "updater": {
       "active": true,
-      "endpoints": [
-        "https://github.com/zawalid/watchfolio/releases/latest/download/latest.json"
-      ],
+      "endpoints": ["https://github.com/zawalid/watchfolio/releases/latest/download/latest.json"],
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNzNBNjc0RDM5QjM1MEUKUldRT05adlRkS1p6WGpYd2MyOHM3VStvVWlrWEhxd2NJQmk2M25PVFZicm9ZOVZBdjV2NHd6MUsK"
     }

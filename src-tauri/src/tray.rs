@@ -72,10 +72,16 @@ pub fn create_tray(app: &AppHandle) -> Result<(), tauri::Error> {
             if let TrayIconEvent::Click { button: MouseButton::Left, .. } = event {
                 let app = tray.app_handle();
                 if let Some(window) = app.get_webview_window("main") {
-                    if window.is_visible().unwrap_or(false) {
+                    let is_visible = window.is_visible().unwrap_or(false);
+                    let is_focused = window.is_focused().unwrap_or(false);
+
+                    if is_visible && is_focused {
+                        // Window is visible and focused, hide it
                         let _ = window.hide();
                     } else {
+                        // Window is hidden, minimized, or not focused - show and focus it
                         let _ = window.show();
+                        let _ = window.unminimize();
                         let _ = window.set_focus();
                     }
                 }

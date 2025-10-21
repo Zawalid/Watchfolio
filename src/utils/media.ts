@@ -33,15 +33,15 @@ export const getTmdbImage = (
   if (!item) return '/images/placeholder.png';
 
   if (backdrop) {
-    if ('backdrop_path' in item && item.backdrop_path) return `http://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
+    if ('backdrop_path' in item && item.backdrop_path) return `https://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
   }
 
-  if ('poster_path' in item && item.poster_path) return `http://image.tmdb.org/t/p/${size}${item.poster_path}`;
-  if ('backdrop_path' in item && item.backdrop_path) return `http://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
-  if ('profile_path' in item && item.profile_path) return `http://image.tmdb.org/t/p/${size}${item.profile_path}`;
-  if ('still_path' in item && item.still_path) return `http://image.tmdb.org/t/p/${size}${item.still_path}`;
-  if ('file_path' in item && item.file_path) return `http://image.tmdb.org/t/p/${size}${item.file_path}`;
-  if ('logo_path' in item && item.logo_path) return `http://image.tmdb.org/t/p/${size}${item.logo_path}`;
+  if ('poster_path' in item && item.poster_path) return `https://image.tmdb.org/t/p/${size}${item.poster_path}`;
+  if ('backdrop_path' in item && item.backdrop_path) return `https://image.tmdb.org/t/p/${size}${item.backdrop_path}`;
+  if ('profile_path' in item && item.profile_path) return `https://image.tmdb.org/t/p/${size}${item.profile_path}`;
+  if ('still_path' in item && item.still_path) return `https://image.tmdb.org/t/p/${size}${item.still_path}`;
+  if ('file_path' in item && item.file_path) return `https://image.tmdb.org/t/p/${size}${item.file_path}`;
+  if ('logo_path' in item && item.logo_path) return `https://image.tmdb.org/t/p/${size}${item.logo_path}`;
   return '/images/placeholder.png';
 };
 

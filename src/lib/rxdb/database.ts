@@ -36,11 +36,14 @@ export const getWatchfolioDB = async (): Promise<WatchfolioDatabase> => {
 
   log('Creating Watchfolio database...');
 
+  // Use validation only in dev mode to avoid CSP issues in production
+  const storage = import.meta.env.DEV
+    ? wrappedValidateAjvStorage({ storage: getRxStorageDexie() })
+    : getRxStorageDexie();
+
   dbPromise = createRxDatabase({
     name: 'watchfolio',
-    storage: wrappedValidateAjvStorage({
-      storage: getRxStorageDexie(),
-    }),
+    storage,
     multiInstance: false,
   }).then(async (db) => {
     await db

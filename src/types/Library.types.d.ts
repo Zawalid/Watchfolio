@@ -6,8 +6,8 @@ interface LibraryMedia {
   id: string;
   status: WatchStatus;
   isFavorite: boolean;
-  userRating?: number;
-  notes?: string;
+  userRating: number | null;
+  notes: string | null;
   addedAt: string;
   lastUpdatedAt: string;
 
@@ -15,16 +15,16 @@ interface LibraryMedia {
   tmdbId: number;
   media_type: MediaType;
   title: string;
-  overview?: string | null;
-  posterPath?: string | null;
-  releaseDate?: string | null;
-  genres?: number[] | null;
-  rating?: number | null;
-  totalMinutesRuntime?: number | null;
-  networks?: number[] | null;
+  overview: string | null;
+  posterPath: string | null;
+  releaseDate: string | null;
+  genres: number[];
+  rating: number | null;
+  totalMinutesRuntime: number | null;
+  networks: number[];
 
   library: string | null;
-  userId?: string | null;
+  userId: string;
 
   // Future fields
   // watchDates?: string[]; // Array of ISO date strings

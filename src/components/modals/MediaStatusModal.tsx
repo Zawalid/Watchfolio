@@ -175,7 +175,7 @@ function RatingSection({
   setHoverRating,
   getRatingLabel,
 }: {
-  currentRating: number | undefined;
+  currentRating: number | null | undefined;
   hoverRating: number | undefined;
   setCurrentRating: (rating: number | undefined) => void;
   setHoverRating: (rating: number | undefined) => void;

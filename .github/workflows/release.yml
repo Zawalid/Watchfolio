@@ -69,6 +69,7 @@ jobs:
           releaseBody: 'See the assets below to download this version and install.'
           releaseDraft: true
           prerelease: false
+          includeUpdaterJson: true
           args: ${{ matrix.args }}
 
   publish-release:

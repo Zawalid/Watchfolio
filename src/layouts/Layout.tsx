@@ -38,7 +38,7 @@ export default function Layout() {
         <Navbar />
         <main
           className={cn(
-            'xs:px-6 min-h-screen flex-1 px-3 pt-22 pb-10 ',
+            'xs:px-6 min-h-screen max-w-screen flex-1 px-3 pt-22 pb-10 ',
             !isDesktop() && 'container mx-auto'
           )}
           role='main'

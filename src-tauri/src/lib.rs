@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
+use tauri::Manager;
 
 mod menu;
 mod tray;
 mod shortcuts;
+mod system_settings;
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 mod updater;
@@ -38,6 +40,13 @@ fn is_tauri() -> bool {
   true
 }
 
+/// Check if app was autostarted
+#[tauri::command]
+fn was_autostarted() -> bool {
+  let args: Vec<String> = std::env::args().collect();
+  args.contains(&"--autostarted".to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let mut builder = tauri::Builder::default()
@@ -49,6 +58,7 @@ pub fn run() {
       export_data,
       get_platform_info,
       is_tauri,
+      was_autostarted,
       shortcuts::register_custom_shortcut,
       shortcuts::unregister_shortcut,
       shortcuts::is_shortcut_registered,
@@ -56,6 +66,8 @@ pub fn run() {
       tray::show_tray_notification,
       updater::manual_check_updates,
       updater::install_update,
+      system_settings::set_keep_running_in_background,
+      system_settings::get_keep_running_in_background,
     ]);
   }
 
@@ -78,7 +90,11 @@ pub fn run() {
       .plugin(tauri_plugin_global_shortcut::Builder::new().build())
       .plugin(tauri_plugin_updater::Builder::new().build())
       .plugin(tauri_plugin_process::init())
-      .plugin(tauri_plugin_opener::init());
+      .plugin(tauri_plugin_opener::init())
+      .plugin(tauri_plugin_autostart::init(
+        tauri_plugin_autostart::MacosLauncher::LaunchAgent,
+        Some(vec!["--autostarted"]),
+      ));
   }
 
   builder
@@ -93,6 +109,10 @@ pub fn run() {
 
       #[cfg(not(any(target_os = "android", target_os = "ios")))]
       {
+        // Initialize system settings state
+        app.manage(system_settings::SystemSettings {
+          keep_running_in_background: std::sync::Mutex::new(true),
+        });
         // Create native menu
         let menu = menu::create_menu(&app.handle())?;
         app.set_menu(menu)?;
@@ -108,6 +128,32 @@ pub fn run() {
 
         // Start background updater (checks every 24 hours)
         updater::start_background_updater(app.handle().clone());
+
+        // Handle --autostarted flag for startup behavior
+        // Hide window on autostart - frontend will show it if startMinimized is false
+        let args: Vec<String> = std::env::args().collect();
+        if args.contains(&"--autostarted".to_string()) {
+          if let Some(window) = app.get_webview_window("main") {
+            let _ = window.hide();
+          }
+        }
+
+        // Handle window close event based on keep_running_in_background setting
+        if let Some(window) = app.get_webview_window("main") {
+          let app_handle = app.handle().clone();
+          window.on_window_event(move |event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+              if let Some(window) = app_handle.get_webview_window("main") {
+                let should_keep_running = system_settings::should_keep_running(&app_handle);
+
+                if should_keep_running {
+                  api.prevent_close();
+                  let _ = window.hide();
+                }
+              }
+            }
+          });
+        }
       }
 
       Ok(())
