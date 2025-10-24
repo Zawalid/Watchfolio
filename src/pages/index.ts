@@ -1,5 +1,6 @@
 // Landing & Home
 export { default as Landing } from './Landing';
+export { default as Download } from './Download';
 export { default as Home } from './Home';
 
 // Library & Collections

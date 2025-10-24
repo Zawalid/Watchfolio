@@ -10,7 +10,8 @@
       "WebFetch(domain:v2.tauri.app)",
       "Bash(pnpm typecheck)",
       "WebFetch(domain:docs.dndkit.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Read(//c/Users/walid/Downloads/**)"
     ],
     "deny": [],
     "ask": []

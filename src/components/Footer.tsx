@@ -14,11 +14,14 @@ import {
   Home,
   Users,
   Tv2Icon,
+  Download,
+  Info,
 } from 'lucide-react';
 import { isTauri } from '@/lib/platform';
+import { useAboutDisclosure } from '@/stores/useUIStore';
 
 
-const footerLinks = [
+const getFooterLinks = (openAbout: () => void) => [
   {
     title: 'Discover',
     links: [
@@ -39,6 +42,13 @@ const footerLinks = [
     ],
   },
   {
+    title: 'Apps',
+    links: [
+      { label: 'Download', href: '/download', icon: <Download className='size-4' /> },
+      { label: 'About', onClick: openAbout, icon: <Info className='size-4' /> },
+    ],
+  },
+  {
     title: 'Legal',
     links: [
       { label: 'Terms of Service', href: '/legal/terms', icon: null },
@@ -55,7 +65,11 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const disclosure = useAboutDisclosure();
+
   if(isTauri()) return null;
+
+  const footerLinks = getFooterLinks(disclosure.onOpen);
 
   return (
     <footer className='mt-auto border-t border-white/10 bg-black/30 backdrop-blur-lg'>
@@ -74,7 +88,7 @@ export default function Footer() {
           </div>
 
           {/* Links */}
-          <div className='grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-3'>
+          <div className='grid grid-cols-2 gap-8 md:col-span-8 md:grid-cols-4'>
             {footerLinks.map((section) => (
               <div key={section.title}>
                 <h3 className='text-sm font-semibold tracking-wider text-white uppercase'>{section.title}</h3>
@@ -82,13 +96,23 @@ export default function Footer() {
                   {section.links.map((link) => (
                     <li key={link.label} className='group relative w-fit'>
                       <motion.div whileHover={{ x: 4 }}>
-                        <Link
-                          to={link.href}
-                          className='text-Grey-400 hover:text-Primary-300 flex items-center gap-2 transition-colors duration-300'
-                        >
-                          {link.icon && <span className='opacity-60'>{link.icon}</span>}
-                          {link.label}
-                        </Link>
+                        {('onClick' in link) ? (
+                          <button
+                            onClick={link.onClick}
+                            className='text-Grey-400 hover:text-Primary-300 flex items-center gap-2 transition-colors duration-300'
+                          >
+                            {link.icon && <span className='opacity-60'>{link.icon}</span>}
+                            {link.label}
+                          </button>
+                        ) : (
+                          <Link
+                            to={link.href!}
+                            className='text-Grey-400 hover:text-Primary-300 flex items-center gap-2 transition-colors duration-300'
+                          >
+                            {link.icon && <span className='opacity-60'>{link.icon}</span>}
+                            {link.label}
+                          </Link>
+                        )}
                         <span className='bg-Primary-400 absolute -bottom-0.5 left-0 h-0.5 w-0 transition-all duration-300 group-hover:w-full'></span>
                       </motion.div>
                     </li>

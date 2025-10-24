@@ -14,6 +14,7 @@ import {
   Preferences,
   LibrarySettings,
   Landing,
+  Download,
   CelebrityDetails,
   Celebrities,
   Collections,
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Landing,
+      },
+      {
+        path: 'download',
+        Component: Download,
       },
       {
         path: 'home',
