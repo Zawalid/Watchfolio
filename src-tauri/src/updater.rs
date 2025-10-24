@@ -3,7 +3,7 @@ use tauri_plugin_updater::UpdaterExt;
 
 #[derive(Clone, serde::Serialize)]
 struct UpdateProgress {
-    chunk_length: usize,
+    downloaded: usize,
     content_length: Option<u64>,
 }
 
@@ -78,7 +78,7 @@ pub async fn download_and_install(
                     let _ = app.emit(
                         "update-download-progress",
                         UpdateProgress {
-                            chunk_length,
+                            downloaded,
                             content_length,
                         },
                     );

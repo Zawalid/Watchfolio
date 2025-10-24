@@ -71,11 +71,12 @@
   "plugins": {
     "updater": {
       "active": true,
-      "endpoints": [
-        "https://github.com/zawalid/watchfolio/releases/latest/download/latest.json"
-      ],
+      "endpoints": ["https://github.com/zawalid/watchfolio/releases/latest/download/latest.json"],
       "dialog": false,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNzNBNjc0RDM5QjM1MEUKUldRT05adlRkS1p6WGpYd2MyOHM3VStvVWlrWEhxd2NJQmk2M25PVFZicm9ZOVZBdjV2NHd6MUsK"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVFNzNBNjc0RDM5QjM1MEUKUldRT05adlRkS1p6WGpYd2MyOHM3VStvVWlrWEhxd2NJQmk2M25PVFZicm9ZOVZBdjV2NHd6MUsK",
+      "windows": {
+        "installMode": "passive"
+      }
     }
   }
 }

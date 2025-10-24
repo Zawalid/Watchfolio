@@ -13,7 +13,7 @@ interface UpdateInfo {
 }
 
 interface UpdateProgress {
-  chunkLength: number;
+  downloaded: number;
   contentLength?: number;
 }
 
@@ -51,15 +51,19 @@ export function useUpdater() {
           setUpdateAvailable(false);
           setUpdateInfo(null);
           setChecking(false);
+          addToast({
+            title: "You're on the latest version!",
+            color: 'success',
+          });
         }
       );
 
       const unlistenProgress = await listen<UpdateProgress>(
         'update-download-progress',
         (event) => {
-          const { chunkLength, contentLength } = event.payload;
+          const { downloaded, contentLength } = event.payload;
           if (contentLength) {
-            const progress = (chunkLength / contentLength) * 100;
+            const progress = (downloaded / contentLength) * 100;
             setDownloadProgress(progress);
           }
         }
@@ -113,15 +117,6 @@ export function useUpdater() {
 
       try {
         await invoke('manual_check_updates');
-
-        setTimeout(() => {
-          if (!updateAvailable && showToast) {
-            addToast({
-              title: "You're on the latest version!",
-              color: 'success',
-            });
-          }
-        }, 1000);
       } catch (error) {
         console.error('Failed to check for updates:', error);
         setChecking(false);
@@ -134,7 +129,7 @@ export function useUpdater() {
         }
       }
     },
-    [updateAvailable]
+    []
   );
 
   const downloadAndInstall = useCallback(async () => {

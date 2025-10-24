@@ -34,11 +34,11 @@ export function UpdateNotification({ updater }: UpdateNotificationProps) {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -100, opacity: 0 }}
+        initial={{ x: 400, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 400, opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-full max-w-md"
+        className="fixed top-20 right-4 z-50 w-full max-w-md"
       >
         <div className="mx-4 bg-blur backdrop-blur-xl border border-white/10 rounded-lg shadow-lg p-4">
           <div className="flex items-start justify-between gap-3">
