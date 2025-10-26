@@ -4,9 +4,11 @@ import { Minus, Square, X, Maximize2 } from 'lucide-react';
 import { isDesktop } from '@/lib/platform';
 import { TitlebarMenu } from './TitlebarMenu';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export function CustomTitlebar() {
   const [isMaximized, setIsMaximized] = useState(false);
+  const isOnline = useNetworkStatus();
 
   useEffect(() => {
     if (!isDesktop()) return;
@@ -49,14 +51,22 @@ export function CustomTitlebar() {
   return (
     <div
       data-tauri-drag-region
-      className=' bg-Grey-900/40 fixed top-0 right-0 left-0 z-[9999] flex h-9 items-center border-b border-white/5 shadow-2xl shadow-black/20 backdrop-blur-xl'
+      className={`fixed top-0 right-0 left-0 z-[9999] flex h-9 items-center border-b shadow-2xl shadow-black/20 backdrop-blur-xl transition-colors ${
+        isOnline
+          ? 'bg-Grey-900/40 border-white/5'
+          : 'bg-warning/5 border-warning/10'
+      }`}
       style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
       <TitlebarMenu />
 
       <div className='pointer-events-none flex flex-1 items-center justify-center gap-2 px-3'>
         <img src='/images/logo.svg' alt='Watchfolio' className='size-5' />
-        <span className='text-Primary-50 pointer-events-none text-sm font-medium select-none'>Watchfolio</span>
+        <span className={`pointer-events-none text-sm font-medium select-none transition-colors ${
+          isOnline ? 'text-Primary-50' : 'text-warning'
+        }`}>
+          Watchfolio{!isOnline && ' (Offline)'}
+        </span>
       </div>
 
       <div className='ml-auto flex items-center'>

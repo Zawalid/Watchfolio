@@ -14,6 +14,7 @@ import Navbar from '@/components/navbar/Navbar';
 import Footer from '@/components/Footer';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 import BottomNavBar from '@/components/navbar/BottomNavBar';
+import { OfflineBanner, OnlineToast } from '@/components/ui/OfflineBanner';
 import { isDesktop } from '@/lib/platform';
 import { cn } from '@/utils';
 
@@ -28,6 +29,8 @@ export default function Layout() {
 
   return (
     <Providers>
+      <OfflineBanner />
+      <OnlineToast />
       <ImportExportModal />
       <AboutModal />
       <KeyboardShortcuts />

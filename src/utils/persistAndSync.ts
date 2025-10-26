@@ -116,13 +116,18 @@ export const persistAndSync: PersistAndSync = (f, options) => (set, get, api) =>
         const parsedState = JSON.parse(stored);
         set((currentState) => ({ ...currentState, ...parsedState }));
       }
-      // Always call onRehydrate callback if provided (for both cached and fresh states)
-      if (onRehydrate) {
-        const currentStore = get();
-        await onRehydrate(currentStore, currentStore, set);
-      }
     } catch (error) {
       console.warn('Failed to load from storage:', error);
+    } finally {
+      // Always call onRehydrate callback if provided (even on error)
+      if (onRehydrate) {
+        try {
+          const currentStore = get();
+          await onRehydrate(currentStore, currentStore, set);
+        } catch (error) {
+          console.warn('Failed to run onRehydrate callback:', error);
+        }
+      }
     }
   };
   // Handle storage events (cross-tab sync) - only works with localStorage
