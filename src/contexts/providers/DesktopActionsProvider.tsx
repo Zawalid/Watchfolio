@@ -105,6 +105,7 @@ export function DesktopActionsProvider({ children }: { children: React.ReactNode
         clearLibrary,
         triggerSync,
         checkForUpdates,
+        updater,
       }}
     >
       {children}

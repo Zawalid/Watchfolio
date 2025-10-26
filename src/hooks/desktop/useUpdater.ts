@@ -28,11 +28,13 @@ export function useUpdater() {
   useEffect(() => {
     if (!isDesktop()) return;
 
+    log("CHEKING")
+
     const setupListeners = async () => {
       const unlistenAvailable = await listen<UpdateInfo>(
         'update-available',
         (event) => {
-          console.log('Update available:', event.payload);
+          log('Update available:', event.payload);
           setUpdateAvailable(true);
           setUpdateInfo(event.payload);
           setChecking(false);
@@ -47,7 +49,7 @@ export function useUpdater() {
       const unlistenNotAvailable = await listen(
         'update-not-available',
         () => {
-          console.log('No update available');
+          log('No update available');
           setUpdateAvailable(false);
           setUpdateInfo(null);
           setChecking(false);
@@ -70,7 +72,7 @@ export function useUpdater() {
       );
 
       const unlistenReady = await listen('update-ready-to-install', () => {
-        console.log('Update ready to install');
+        log('Update ready to install');
         setDownloading(false);
         setReadyToInstall(true);
         addToast({
@@ -81,7 +83,7 @@ export function useUpdater() {
       });
 
       const unlistenInstalled = await listen('update-installed', () => {
-        console.log('Update installed');
+        log('Update installed');
         addToast({
           title: 'Update installed!',
           description: 'Restarting app...',

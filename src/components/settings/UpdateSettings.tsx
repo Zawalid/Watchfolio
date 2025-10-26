@@ -1,11 +1,13 @@
 import { Download } from 'lucide-react';
 import { Button } from '@heroui/react';
 import { SettingSection } from './SettingSection';
-import { useUpdater } from '@/hooks/desktop/useUpdater';
+import { useDesktopActions } from '@/contexts/DesktopActionsContext';
 import { isDesktop } from '@/lib/platform';
+import { APP_VERSION } from '@/config/downloads';
 
 export function UpdateSettings() {
-  const { checking, updateAvailable, updateInfo, checkForUpdates } = useUpdater();
+  const { updater } = useDesktopActions();
+  const { checking, updateAvailable, updateInfo, checkForUpdates } = updater;
 
   if (!isDesktop()) {
     return null;
@@ -17,13 +19,13 @@ export function UpdateSettings() {
         <div className='flex items-center justify-between'>
           <div className='flex-1'>
             <h3 className='text-sm font-medium text-white'>App Version</h3>
-            <p className='mt-1 text-xs text-white/60'>Current version: 0.1.0</p>
+            <p className='mt-1 text-xs text-white/60'>Current version: {APP_VERSION}</p>
             {updateAvailable && updateInfo && (
               <p className='text-success mt-1 text-xs'>Update available: v{updateInfo.version}</p>
             )}
           </div>
           <Button
-            onClick={() => checkForUpdates(true)}
+            onPress={() => checkForUpdates(true)}
             isLoading={checking}
             isDisabled={checking}
             size='sm'

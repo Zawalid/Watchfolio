@@ -1,5 +1,22 @@
 import { createContext, useContext } from 'react';
 
+export interface UpdaterState {
+  checking: boolean;
+  updateAvailable: boolean;
+  updateInfo: {
+    version: string;
+    currentVersion: string;
+    date?: string;
+    body?: string;
+  } | null;
+  downloading: boolean;
+  downloadProgress: number;
+  readyToInstall: boolean;
+  checkForUpdates: (showToast?: boolean) => Promise<void>;
+  downloadAndInstall: () => Promise<void>;
+  dismissUpdate: () => void;
+}
+
 export interface DesktopActionsContextType {
   // Modals
   openImportExport: () => void;
@@ -21,6 +38,7 @@ export interface DesktopActionsContextType {
 
   // Updates
   checkForUpdates: () => void;
+  updater: UpdaterState;
 }
 
 export const DesktopActionsContext = createContext<DesktopActionsContextType | null>(null);
