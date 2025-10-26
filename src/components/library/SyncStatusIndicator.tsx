@@ -12,8 +12,6 @@ export function SyncStatusIndicator({ className, asPill }: { className?: string;
   const queryClient = useQueryClient();
   const isOnline = useNetworkStatus();
 
-  log(syncStatus)
-
   const getStatusInfo = () => {
     if (!isAuthenticated) {
       return {

@@ -7,9 +7,11 @@ import { UserPreferences } from '@/lib/appwrite/types';
 import { UpdateSettings } from '@/components/settings/UpdateSettings';
 import { isDesktop } from '@/lib/platform';
 import { useSystemSettings } from '@/hooks/useSystemSettings';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export default function Preferences() {
   const { user, isAuthenticated, updateUserPreferences, isLoading, userPreferences } = useAuthStore();
+  const isOnline = useNetworkStatus();
 
   // Desktop-only system settings
   const {
@@ -25,11 +27,21 @@ export default function Preferences() {
   const handleConfirmationToggle = async (setting: keyof UserPreferences, enabled: boolean) => {
     try {
       await updateUserPreferences({ [setting]: enabled ? 'enabled' : 'disabled' });
-      addToast({
-        title: 'Preferences updated',
-        description: 'Your preferences have been saved successfully.',
-        color: 'success',
-      });
+
+      // Show appropriate message based on online status
+      if (!isOnline) {
+        addToast({
+          title: 'Saved locally',
+          description: 'Your preferences will sync when you reconnect to the internet.',
+          color: 'warning',
+        });
+      } else {
+        addToast({
+          title: 'Preferences updated',
+          description: 'Your preferences have been saved successfully.',
+          color: 'success',
+        });
+      }
     } catch (error) {
       log('ERR', 'Failed to update preferences:', error);
       addToast({

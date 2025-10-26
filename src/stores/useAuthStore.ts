@@ -218,11 +218,25 @@ export const useAuthStore = create<AuthState>()(
         const updatedPreferences = { ...userPreferences, ...preferencesData };
         set({ userPreferences: updatedPreferences });
         if (!user) return;
+
+        // Check if online before attempting to sync
+        const isOnline = await isActuallyOnline();
+        if (!isOnline) {
+          // Offline: preferences updated locally, will sync when online
+          return;
+        }
+
         set({ isLoading: true });
         try {
           const updatedUser = await authService.updateUserPreferences(user.$id, updatedPreferences);
           set({ user: updatedUser, isLoading: false });
         } catch (error) {
+          // Check if this is a network error
+          if (isNetworkError(error)) {
+            set({ isLoading: false });
+            // Silently fail on network error - local state already updated
+            return;
+          }
           set({ isLoading: false, syncError: 'Failed to update preferences' });
           throw error;
         }

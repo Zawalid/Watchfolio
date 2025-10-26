@@ -9,6 +9,7 @@ import { useSyncStore } from '@/stores/useSyncStore';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useUIStore } from '@/stores/useUIStore';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export default function Library() {
   const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
@@ -16,6 +17,7 @@ export default function Library() {
   const { clearLibrary } = useClearLibrary();
   const openImportExport = useUIStore((state) => state.openImportExport);
   const { isBelow } = useViewportSize();
+  const isOnline = useNetworkStatus();
 
   const isSyncing = syncStatus === 'syncing' || syncStatus === 'connecting';
 
@@ -61,13 +63,25 @@ export default function Library() {
     try {
       const shouldReset = userPreferences.defaultMediaStatus === status;
       await updateUserPreferences({ defaultMediaStatus: shouldReset ? 'none' : status });
-      addToast({
-        title: 'Default status updated',
-        description: shouldReset
-          ? 'No default status will be set when adding items to your library.'
-          : `Items will now be added with "${LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label}" status by default.`,
-        color: 'success',
-      });
+
+      const description = shouldReset
+        ? 'No default status will be set when adding items to your library.'
+        : `Items will now be added with "${LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label}" status by default.`;
+
+      // Show appropriate message based on online status
+      if (!isOnline) {
+        addToast({
+          title: 'Saved locally',
+          description: `${description} Changes will sync when you reconnect to the internet.`,
+          color: 'warning',
+        });
+      } else {
+        addToast({
+          title: 'Default status updated',
+          description,
+          color: 'success',
+        });
+      }
     } catch (error) {
       log('ERR', 'Failed to update default status:', error);
       addToast({

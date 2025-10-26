@@ -186,16 +186,19 @@ export function Error({
   // Check if this is an offline/network error
   const isOfflineError = !isOnline || (error && isNetworkError(error));
 
+  // Always call usePageTitle at the top (hooks must be unconditional)
+  usePageTitle(isOfflineError ? 'No Internet Connection' : title);
+
   // If offline, show offline status instead
   if (isOfflineError) {
     return (
       <Offline
+        title='No Internet Connection'
         message={message || 'This page requires an internet connection. Connect to the internet to continue.'}
       />
     );
   }
 
-  usePageTitle(title);
   return (
     <StatusContainer>
       <motion.div variants={itemVariants}>
@@ -332,8 +335,6 @@ function NotFound({
 }
 
 function Offline({ title = 'No Internet Connection', message, children }: { title?: string; message?: string; children?: ReactNode }) {
-  usePageTitle(title);
-
   return (
     <StatusContainer>
       <motion.div variants={itemVariants}>
