@@ -96,9 +96,16 @@ const downloadOptions: DownloadOption[] = [
       },
       {
         name: 'Windows',
-        label: 'Windows',
-        downloadUrl: PLATFORM_DOWNLOADS.windows.url,
+        label: 'Windows (Setup)',
+        downloadUrl: PLATFORM_DOWNLOADS.windows.setup.url,
         fileType: 'EXE',
+        icon: WindowsIcon,
+      },
+      {
+        name: 'Windows',
+        label: 'Windows (MSI)',
+        downloadUrl: PLATFORM_DOWNLOADS.windows.msi.url,
+        fileType: 'MSI',
         icon: WindowsIcon,
       },
       {
@@ -178,7 +185,7 @@ export default function Download() {
           '#'
         );
       case 'windows':
-        return desktopOption.platforms.find((p) => p.name === 'Windows')?.downloadUrl || '#';
+        return desktopOption.platforms.find((p) => p.name === 'Windows' && p.label.includes('Setup'))?.downloadUrl || '#';
       case 'linux':
         return desktopOption.platforms.find((p) => p.name === 'Linux' && p.fileType === 'DEB')?.downloadUrl || '#';
       default:

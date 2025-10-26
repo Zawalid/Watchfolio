@@ -38,9 +38,17 @@ export const PLATFORM_DOWNLOADS = {
     },
   },
   windows: {
-    filename: getVersionedFilename('x64-setup.exe'),
-    get url() {
-      return getDownloadUrl(this.filename);
+    setup: {
+      filename: getVersionedFilename('x64-setup.exe'),
+      get url() {
+        return getDownloadUrl(this.filename);
+      },
+    },
+    msi: {
+      filename: getVersionedFilename('x64_en-US.msi'),
+      get url() {
+        return getDownloadUrl(this.filename);
+      },
     },
   },
   linux: {
@@ -51,7 +59,7 @@ export const PLATFORM_DOWNLOADS = {
       },
     },
     appImage: {
-      filename: getVersionedFilename('x86_64.AppImage'),
+      filename: getVersionedFilename('amd64.AppImage'),
       get url() {
         return getDownloadUrl(this.filename);
       },
