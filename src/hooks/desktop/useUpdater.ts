@@ -28,8 +28,6 @@ export function useUpdater() {
   useEffect(() => {
     if (!isDesktop()) return;
 
-    log("CHEKING")
-
     const setupListeners = async () => {
       const unlistenAvailable = await listen<UpdateInfo>(
         'update-available',

@@ -2,8 +2,6 @@ import { motion } from 'framer-motion';
 import { Button } from '@heroui/react';
 import {
   Download as DownloadIcon,
-  Monitor,
-  Smartphone,
   Github,
   CheckCircle,
   Sparkles,
@@ -64,7 +62,6 @@ function detectPlatform(): Platform {
 interface DownloadOption {
   title: string;
   description: string;
-  icon: typeof Monitor;
   platforms: {
     name: string;
     label: string;
@@ -80,7 +77,6 @@ const downloadOptions: DownloadOption[] = [
   {
     title: 'Desktop App',
     description: 'Native desktop application with system integration and offline support',
-    icon: Monitor,
     color: 'from-Primary-500 to-Secondary-500',
     available: true,
     platforms: [
@@ -124,7 +120,6 @@ const downloadOptions: DownloadOption[] = [
   {
     title: 'Mobile App',
     description: 'Native mobile experience with push notifications and quick actions',
-    icon: Smartphone,
     color: 'from-Tertiary-500 to-Warning-500',
     available: false,
     platforms: [
@@ -324,9 +319,6 @@ export default function Download() {
                   <div className='p-6 sm:p-8'>
                     <div className='mb-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between'>
                       <div className='flex items-center gap-4'>
-                        <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${option.color} sm:h-16 sm:w-16`}>
-                          <option.icon className='h-6 w-6 text-white sm:h-8 sm:w-8' />
-                        </div>
                         <div>
                           <h3 className='text-lg font-bold text-white sm:text-xl'>{option.title}</h3>
                           <p className='text-Grey-400 text-sm sm:text-base'>{option.description}</p>
