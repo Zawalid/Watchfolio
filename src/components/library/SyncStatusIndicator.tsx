@@ -4,12 +4,15 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { cn, formatTimeAgo } from '@/utils';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export function SyncStatusIndicator({ className, asPill }: { className?: string; asPill?: boolean }) {
   const { isAuthenticated, openAuthModal } = useAuthStore();
   const { syncStatus, lastSyncTime, triggerSync } = useSyncStore();
   const queryClient = useQueryClient();
-  const isOnline = navigator.onLine;
+  const isOnline = useNetworkStatus();
+
+  log(syncStatus)
 
   const getStatusInfo = () => {
     if (!isAuthenticated) {
@@ -107,7 +110,13 @@ export function SyncStatusIndicator({ className, asPill }: { className?: string;
         'group flex w-full items-center justify-between gap-3 rounded-xl px-4 py-2 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5',
         className
       )}
-      onClick={triggerSync}
+      onClick={() => {
+        if (statusInfo.onClick) {
+          statusInfo.onClick();
+        } else {
+          triggerSync();
+        }
+      }}
       disabled={syncStatus === 'syncing'}
     >
       <div className='flex items-center gap-3'>

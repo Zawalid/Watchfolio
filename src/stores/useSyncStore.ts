@@ -54,20 +54,26 @@ export const useSyncStore = create<SyncState>()((set, get) => ({
     const user = useAuthStore.getState().user;
     if (!user) throw new Error('User not authenticated');
 
-    if (isReplicationActive()) {
-      await forcePushPendingChanges();
-      await triggerSync();
-      return;
-    }
+    // Set status to syncing to show loading state
+    get().setSyncStatus('syncing');
 
     try {
-      const tempReplication = await startReplication(user.$id, user.profile.library || null);
-      if (tempReplication) {
-        await tempReplication.awaitInitialReplication();
-        await stopReplication();
+      if (isReplicationActive()) {
+        await forcePushPendingChanges();
+        await triggerSync();
+      } else {
+        const tempReplication = await startReplication(user.$id, user.profile.library || null);
+        if (tempReplication) {
+          await tempReplication.awaitInitialReplication();
+          await stopReplication();
+        }
       }
+
+      // Set status back to online after successful sync
+      get().setSyncStatus('online');
     } catch (error) {
       log("ERR", 'Manual sync failed:', error);
+      get().setSyncStatus('error');
       if (isReplicationActive()) {
         await stopReplication();
       }
