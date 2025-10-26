@@ -16,11 +16,14 @@ import {
   UsersIcon,
   Home,
   ArrowLeft,
+  WifiOff,
 } from 'lucide-react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { AnimatedRing, AnimatedRingProps } from '@/components/ui/AnimatedRing';
 import { useFiltersParams } from '@/hooks/useFiltersParams';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { isNetworkError } from '@/utils/connectivity';
 import { cn } from '@/utils';
 
 const containerVariants = {
@@ -170,12 +173,28 @@ export function Error({
   message,
   children,
   onRetry,
+  error,
 }: {
   title?: string;
   message?: string;
   children?: ReactNode;
   onRetry?: () => void;
+  error?: unknown;
 }) {
+  const isOnline = useNetworkStatus();
+
+  // Check if this is an offline/network error
+  const isOfflineError = !isOnline || (error && isNetworkError(error));
+
+  // If offline, show offline status instead
+  if (isOfflineError) {
+    return (
+      <Offline
+        message={message || 'This page requires an internet connection. Connect to the internet to continue.'}
+      />
+    );
+  }
+
   usePageTitle(title);
   return (
     <StatusContainer>
@@ -312,9 +331,56 @@ function NotFound({
   );
 }
 
+function Offline({ title = 'No Internet Connection', message, children }: { title?: string; message?: string; children?: ReactNode }) {
+  usePageTitle(title);
+
+  return (
+    <StatusContainer>
+      <motion.div variants={itemVariants}>
+        <AnimatedRing
+          color='warning'
+          size='md'
+          ringCount={3}
+          animationSpeed='slow'
+          glowEffect={true}
+          floatingIcons={[
+            {
+              icon: <WifiOff className='h-4 w-4' />,
+              position: 'top-center',
+              color: 'warning',
+              delay: 0,
+            },
+          ]}
+        >
+          <WifiOff className='h-12 w-12 text-warning' />
+        </AnimatedRing>
+      </motion.div>
+
+      <motion.div variants={itemVariants} className='space-y-4'>
+        <h3 className='text-Grey-50 mb-2 text-xl font-semibold'>{title}</h3>
+        <p className='text-Grey-400 max-w-md'>
+          {message || 'You are currently offline. Please check your internet connection and try again.'}
+        </p>
+      </motion.div>
+
+      <motion.div variants={itemVariants} className='flex gap-3'>
+        <Button as={Link} to='/library' className='button-secondary!'>
+          View Library
+        </Button>
+        <Button as={Link} to='/' className='button-secondary!'>
+          Go Home
+        </Button>
+      </motion.div>
+
+      {children && <motion.div variants={itemVariants}>{children}</motion.div>}
+    </StatusContainer>
+  );
+}
+
 export const Status = () => <></>;
 
 Status.NoResults = NoResults;
 Status.Empty = Empty;
 Status.Error = Error;
 Status.NotFound = NotFound;
+Status.Offline = Offline;

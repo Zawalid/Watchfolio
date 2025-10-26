@@ -95,6 +95,7 @@ export function InfiniteCardsList<T>({
   // Data extraction
   const isLoading = useInfinite ? infiniteQuery.isLoading : normalQuery.isLoading;
   const isError = useInfinite ? infiniteQuery.isError : normalQuery.isError;
+  const error = useInfinite ? infiniteQuery.error : normalQuery.error;
   const refetch = useInfinite ? infiniteQuery.refetch : normalQuery.refetch;
 
   function isInfiniteData(data: unknown): data is InfiniteData<TMDBResponse<T>, number> {
@@ -147,7 +148,7 @@ export function InfiniteCardsList<T>({
   }, [query]);
 
   if (isLoading) return <SkeletonComponent asSlider={asSlider} />;
-  if (isError) return <Status.Error message={errorMessage} onRetry={() => refetch()} />;
+  if (isError) return <Status.Error message={errorMessage} error={error} onRetry={() => refetch()} />;
   if (!results.length && (hasFilters || !!query)) return <Status.NoResults message={noResultsMessage} />;
   if (totalResults === 0) return <Status.Empty Icon={emptyIcon} title={emptyTitle} message={emptyMessage} />;
 

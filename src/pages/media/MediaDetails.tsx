@@ -20,6 +20,7 @@ export default function MediaDetails({ type }: { type: MediaType }) {
     data: media,
     isLoading,
     isError,
+    error,
   } = useQuery({ queryKey: queryKeys.details(type, id), queryFn: async () => await getDetails(type, id) });
 
   usePageTitle(isLoading ? 'Loading...' : (media as Movie)?.title || (media as TvShow)?.name || '');
@@ -32,7 +33,7 @@ export default function MediaDetails({ type }: { type: MediaType }) {
         message='The media you are looking for does not exist. Please try again with a different media.'
       />
     );
-  if (isError) return <Status.Error message='There was an error loading the media details. Please try again.' />;
+  if (isError) return <Status.Error message='There was an error loading the media details. Please try again.' error={error} />;
 
   const mediaTitle = type === 'movie' ? (media as Movie).title : (media as TvShow).name;
 

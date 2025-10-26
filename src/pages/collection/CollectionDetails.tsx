@@ -22,6 +22,7 @@ export default function CollectionDetails() {
     data: collection,
     isLoading,
     isError,
+    error,
   } = useQuery({
     queryKey: queryKeys.collection(collectionId),
     queryFn: () => getCollection(collectionId),
@@ -31,7 +32,7 @@ export default function CollectionDetails() {
   usePageTitle(isLoading ? 'Loading...' : collection?.name || '');
 
   if (isLoading) return <CollectionDetailsSkeleton />;
-  if (isError) return <Status.Error message='There was an error loading the collection details. Please try again.' />;
+  if (isError) return <Status.Error message='There was an error loading the collection details. Please try again.' error={error} />;
   if (!collection)
     return (
       <Status.NotFound
