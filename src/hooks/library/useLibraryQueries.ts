@@ -8,6 +8,7 @@ import {
 } from '@/lib/rxdb';
 import { queryKeys } from '@/lib/react-query';
 import { appwriteService } from '@/lib/appwrite/api';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { useInfo } from './useLibraryMutations';
 
 const PAGE_SIZE = 20;
@@ -29,6 +30,7 @@ const mapSortBy = (sortBy: string) => {
 
 export const useInfiniteLibraryItems = (filters: LibraryFilters, options: { enabled?: boolean }) => {
   const { userId } = useInfo();
+  const isHydrated = useAuthStore((state) => state.isHydrated);
 
   const query = useInfiniteQuery({
     queryKey: queryKeys.library({ userId, ...filters }),
@@ -43,7 +45,9 @@ export const useInfiniteLibraryItems = (filters: LibraryFilters, options: { enab
       return lastPage.length === PAGE_SIZE ? allPages.length : undefined;
     },
     initialPageParam: 0,
-    enabled: options.enabled,
+    // Wait for auth state to rehydrate before querying
+    enabled: options.enabled && isHydrated,
+    placeholderData: (previousData) => previousData,
   });
 
   if (query.isError) log(query.error);
@@ -80,7 +84,8 @@ export const useLibraryItemsByIds = (ids: string[]) => {
 const status: LibraryFilterStatus[] = ['all', 'watching', 'willWatch', 'onHold', 'dropped', 'completed', 'favorites'];
 
 export const useLibraryTotalCount = () => {
-  const { userId } = useInfo()
+  const { userId } = useInfo();
+  const isHydrated = useAuthStore((state) => state.isHydrated);
 
   const { data } = useQuery({
     queryKey: queryKeys.libraryCount(userId),
@@ -94,6 +99,7 @@ export const useLibraryTotalCount = () => {
         {} as Record<string, number>
       );
     },
+    enabled: isHydrated,
   });
 
   return (
@@ -135,5 +141,6 @@ export const useInfinitePublicLibraryItems = (
     },
     initialPageParam: 0,
     enabled: options.enabled,
+    placeholderData: (previousData) => previousData,
   });
 };

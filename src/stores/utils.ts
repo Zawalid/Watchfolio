@@ -1,5 +1,5 @@
 import { Profile, UserPreferences, UserWithProfile } from '@/lib/appwrite/types';
-import { DEFAULT_USER_PREFERENCES } from '@/utils/constants';
+import { DEFAULT_USER_PREFERENCES } from '@/config/app';
 import { AuthState } from './useAuthStore';
 
 function pick<T extends object, K extends keyof T>(obj: T | undefined | null, keys: K[]): Partial<Pick<T, K>> {

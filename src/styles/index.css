@@ -152,8 +152,13 @@ body[data-animations='false'] *::after {
   @apply box-border;
 }
 
+html {
+  @apply bg-blur scroll-smooth;
+  scroll-padding-top: 4rem;
+}
+
 #root {
-  @apply grid min-h-dvh;
+  @apply grid min-h-dvh ;
 }
 
 ::-webkit-scrollbar {

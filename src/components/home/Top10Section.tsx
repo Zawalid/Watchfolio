@@ -8,6 +8,9 @@ import { TABS_CLASSNAMES } from '@/styles/heroui';
 import MediaCard from '@/components/media/MediaCard';
 import { Slider } from '@/components/ui/Slider';
 import { cn } from '@/utils';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { isNetworkError } from '@/utils/connectivity';
+import { WifiOff } from 'lucide-react';
 
 const movieQuery = {
   queryKey: queryKeys.trending('movie', 'day'),
@@ -24,13 +27,15 @@ const tvQuery = {
 export default function Top10Section() {
   const [selectedTab, setSelectedTab] = useState<MediaType>('movie');
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  const isOnline = useNetworkStatus();
 
-  const { data: movies, isLoading: moviesLoading, isError: moviesError } = useQuery(movieQuery);
-  const { data: tvShows, isLoading: tvLoading, isError: tvError } = useQuery(tvQuery);
+  const { data: movies, isLoading: moviesLoading, isError: moviesError, error: moviesErrorObj } = useQuery(movieQuery);
+  const { data: tvShows, isLoading: tvLoading, isError: tvError, error: tvErrorObj } = useQuery(tvQuery);
 
   const currentData = selectedTab === 'movie' ? movies : tvShows;
   const isLoading = selectedTab === 'movie' ? moviesLoading : tvLoading;
   const isError = selectedTab === 'movie' ? moviesError : tvError;
+  const error = selectedTab === 'movie' ? moviesErrorObj : tvErrorObj;
 
   // Get top 10 items
   const topItems = currentData?.results?.slice(0, 10) || [];
@@ -51,14 +56,28 @@ export default function Top10Section() {
       </div>
 
       {isError ? (
-        <div className='border-Error-500/20 bg-Error-500/5 flex h-[280px] items-center justify-center rounded-xl border'>
-          <div className='text-center'>
-            <p className='text-Error-400 mb-2 text-sm font-medium'>
-              Failed to load top {selectedTab === 'movie' ? 'movies' : 'TV shows'}
-            </p>
-            <p className='text-Grey-500 text-xs'>Please try again later</p>
+        !isOnline || isNetworkError(error) ? (
+          <div className='border-warning/20 bg-warning/5 flex h-[280px] items-center justify-center rounded-xl border'>
+            <div className='flex flex-col items-center gap-3 text-center'>
+              <WifiOff className='h-8 w-8 text-warning' />
+              <div>
+                <p className='text-Grey-50 mb-2 text-sm font-medium'>
+                  No Internet Connection
+                </p>
+                <p className='text-Grey-400 text-xs'>Connect to the internet to see top {selectedTab === 'movie' ? 'movies' : 'TV shows'}</p>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className='border-Error-500/20 bg-Error-500/5 flex h-[280px] items-center justify-center rounded-xl border'>
+            <div className='text-center'>
+              <p className='text-Error-400 mb-2 text-sm font-medium'>
+                Failed to load top {selectedTab === 'movie' ? 'movies' : 'TV shows'}
+              </p>
+              <p className='text-Grey-500 text-xs'>Please try again later</p>
+            </div>
+          </div>
+        )
       ) : isLoading ? (
         <div className='scrollbar-hide relative overflow-x-auto'>
           <div className='flex gap-4 pb-4' style={{ width: 'max-content' }}>

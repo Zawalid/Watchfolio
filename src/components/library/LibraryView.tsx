@@ -28,9 +28,10 @@ interface LibraryViewProps {
   profile?: Profile;
   stats?: LibraryStats;
   status: LibraryFilterStatus;
+  isSearching?: boolean;
 }
 
-export default function LibraryView({ profile, stats, status }: LibraryViewProps) {
+export default function LibraryView({ profile, stats, status, isSearching = false }: LibraryViewProps) {
   const { checkIsOwnProfile } = useAuthStore();
 
   const isOwnProfile = !profile || checkIsOwnProfile(profile?.username);
@@ -38,7 +39,7 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
 
   const { sortBy, sortDir, selectedTypes, selectedGenres, selectedNetworks } = useDiscoverParams(undefined, 'recent');
   const [query, setQuery] = useQueryState('query', { defaultValue: '' });
-  const debouncedQuery = useDebounce(query, 300);
+  const debouncedQuery = useDebounce(query, 150);
   const { ref: inViewRef, inView } = useInView({ rootMargin: '400px' });
   const localLibraryCount = useLibraryTotalCount();
 
@@ -58,6 +59,8 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
   const publicQuery = useInfinitePublicLibraryItems(libraryId!, filters, { enabled: !isOwnProfile && !!libraryId });
 
   const { data, fetchNextPage, hasNextPage, isLoading, isError } = isOwnProfile ? localQuery : publicQuery;
+
+  const isDebouncing = query !== debouncedQuery;
 
   useEffect(() => {
     if (inView && hasNextPage && !isLoading) {
@@ -83,9 +86,9 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
     setCurrentIndex(-1);
   }, [query, status, setCurrentIndex]);
 
-  if (isLoading) return <MediaCardsListSkeleton />;
+  if (isLoading && !query) return <MediaCardsListSkeleton />;
   if (isError) return <Status.Error message='There was an error loading the media list. Please try again.' />;
-  if (items.length === 0) {
+  if (items.length === 0 && !isLoading && !isDebouncing) {
     if (!isOwnProfile)
       return <Status.Empty title='This Library is Empty' message='This user has not added any items yet.' />;
     return <EmptyState status={status} isOwnProfile={isOwnProfile} />;
@@ -121,7 +124,9 @@ export default function LibraryView({ profile, stats, status }: LibraryViewProps
       </div>
       <div
         ref={containerRef}
-        className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'
+        className={`grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 transition-opacity duration-200 ${
+          isSearching ? 'opacity-60' : 'opacity-100'
+        }`}
       >
         {items.map((item, index) => {
           if (isOwnProfile)

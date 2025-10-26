@@ -9,15 +9,13 @@ import { Tv } from 'lucide-react';
 import { cn } from '@/utils';
 import { containerVariants, itemVariants } from '@/lib/animations';
 import { useDiscoverParams } from '@/hooks/useDiscoverParams';
-import FiltersModal from '@/components/FiltersModal';
-import { useDisclosure } from '@heroui/react';
+import FiltersModal from '@/components/modals/FiltersModal';
 import { Status } from '@/components/ui/Status';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function NetworkDetails() {
   const { slug } = useParams();
   const { discoverParams } = useDiscoverParams('tv');
-  const filtersDisclosure = useDisclosure();
 
   const network = NETWORKS.find((n) => n.slug === slug);
 
@@ -71,7 +69,6 @@ export default function NetworkDetails() {
             defaultSort='popularity'
           />
           <FiltersModal
-            disclosure={filtersDisclosure}
             title='TV Shows'
             filterOptions={['genres', 'language', 'ratingRange', 'releaseYear']}
           />

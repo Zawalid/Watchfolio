@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@heroui/react';
 import { Globe, Heart, Tv, Film, X } from 'lucide-react';
 import { addToast } from '@heroui/react';
-import { FAVORITE_GENRES_LIMIT, FAVORITE_NETWORKS_LIMIT } from '@/utils/constants';
+import { FAVORITE_GENRES_LIMIT, FAVORITE_NETWORKS_LIMIT } from '@/config/app';
 import { GENRES, NETWORKS, CONTENT_PREFERENCES } from '@/utils/constants/TMDB';
 import { cn } from '@/utils';
 import { Slider } from '@/components/ui/Slider';

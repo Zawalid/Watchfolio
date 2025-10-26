@@ -60,12 +60,12 @@ export default function CelebrityDetails() {
     ],
   });
 
-  const { person, combinedCredits, isLoading, isError } = {
+  const { person, combinedCredits, isLoading, isError, error } = {
     person: personResult.data,
     combinedCredits: creditsResult.data,
     isLoading: personResult.isLoading || creditsResult.isLoading,
     isError: personResult.isError || creditsResult.isError,
-    // error: personResult.error || creditsResult.error,
+    error: personResult.error || creditsResult.error,
   };
 
   usePageTitle(isLoading ? 'Loading...' : person?.name || '');
@@ -129,7 +129,7 @@ export default function CelebrityDetails() {
   );
 
   if (isLoading) return <CelebritySkeleton />;
-  if (isError) return <Status.Error message='There was an error loading the celebrity details. Please try again.' />;
+  if (isError) return <Status.Error message='There was an error loading the celebrity details. Please try again.' error={error} />;
   if (!person)
     return (
       <Status.NotFound

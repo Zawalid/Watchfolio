@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router';
 import { FileJson, GalleryVerticalEnd, HelpCircle, MoreVertical, Star, Trash2, TrendingUp } from 'lucide-react';
 import {
@@ -8,11 +8,9 @@ import {
   DropdownMenu,
   DropdownItem,
   DropdownSection,
-  useDisclosure,
 } from '@heroui/react';
 import { AnimatePresence } from 'framer-motion';
 import { WelcomeBanner } from '@/components/ui/WelcomeBanner';
-import ImportExportModal from '@/components/library/ImportExportModal';
 import LibraryViewLayout from '@/components/library/LibraryViewLayout';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
@@ -20,19 +18,23 @@ import { useLibraryTotalCount } from '@/hooks/library/useLibraryQueries';
 import { DROPDOWN_CLASSNAMES } from '@/styles/heroui';
 import { slugify } from '@/utils';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useUIStore } from '@/stores/useUIStore';
 
 export default function LibraryLayout() {
   const { status } = useParams<{ status: LibraryFilterStatus }>();
   const activeTab = status || 'all';
 
   const libraryCount = useLibraryTotalCount();
-  const importExportDisclosure = useDisclosure();
+  const openImportExport = useUIStore((state) => state.openImportExport);
   const { clearLibrary } = useClearLibrary();
 
   const location = useLocation();
   const [onboardingMessage, setOnboardingMessage] = useState({ show: false, action: null });
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleSearchingChange = useCallback((searching: boolean) => {
+    setIsSearching(searching);
+  }, []);
 
   useEffect(() => {
     const onboardingAction = location.state?.action;
@@ -43,8 +45,6 @@ export default function LibraryLayout() {
       setOnboardingMessage({ show: true, action: onboardingAction });
     }
   }, [location.state]);
-
-  useHotkeys(getShortcut('clearLibrary')?.hotkey || '', clearLibrary, { useKey: true });
 
   const renderActions = () => (
     <>
@@ -59,7 +59,7 @@ export default function LibraryLayout() {
             <DropdownItem
               key='import-export'
               startContent={<FileJson className='size-4 shrink-0' />}
-              onPress={() => importExportDisclosure.onOpen()}
+              onPress={() => openImportExport()}
               description='Import or export your library'
             >
               Import / Export
@@ -117,6 +117,7 @@ export default function LibraryLayout() {
       searchLabel='Search Your Library'
       renderActions={renderActions}
       isOwnProfile={true}
+      onSearchingChange={handleSearchingChange}
     >
       <AnimatePresence>
         <WelcomeBanner
@@ -140,8 +141,7 @@ export default function LibraryLayout() {
           show={onboardingMessage.show}
         />
       </AnimatePresence>
-      <Outlet />
-      <ImportExportModal disclosure={importExportDisclosure} />
+      <Outlet context={{ isSearching }} />
     </LibraryViewLayout>
   );
 }

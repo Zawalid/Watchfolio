@@ -1,4 +1,4 @@
-import { LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { LOCAL_STORAGE_PREFIX } from '@/config/app';
 import { useState, useEffect } from 'react';
 
 /**

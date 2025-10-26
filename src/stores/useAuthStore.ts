@@ -2,7 +2,7 @@ import { Models } from 'appwrite';
 import { create } from 'zustand';
 import { authService } from '@/lib/auth';
 import { persistAndSync } from '@/utils/persistAndSync';
-import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/utils/constants';
+import { DEFAULT_USER_PREFERENCES, LOCAL_STORAGE_PREFIX } from '@/config/app';
 import { deepEqual } from '@/utils';
 import {
   CreateUserPreferencesInput,
@@ -13,6 +13,7 @@ import {
 import { destroyDB, getDBStatus } from '@/lib/rxdb';
 import { authStorePartializer } from './utils';
 import { useSyncStore } from './useSyncStore';
+import { isActuallyOnline, isNetworkError } from '@/utils/connectivity';
 
 export interface AuthState {
   // Core user/auth state
@@ -20,6 +21,7 @@ export interface AuthState {
   userPreferences: CreateUserPreferencesInput;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isHydrated: boolean; // True when persisted state has been loaded from storage
   syncError: string | null;
 
   // Modal/UI state
@@ -69,6 +71,7 @@ export const useAuthStore = create<AuthState>()(
       userPreferences: DEFAULT_USER_PREFERENCES,
       isLoading: false,
       isAuthenticated: false,
+      isHydrated: false,
       syncError: null,
       showAuthModal: false,
       authModalType: 'signin',
@@ -137,12 +140,37 @@ export const useAuthStore = create<AuthState>()(
 
       checkAuth: async () => {
         set({ isLoading: true, syncError: null });
+
+        // Check for actual internet connectivity (not just network adapter)
+        const online = await isActuallyOnline();
+        if (!online) {
+          const currentState = get();
+          set({
+            isLoading: false,
+            isAuthenticated: currentState.isAuthenticated,
+            user: currentState.user,
+          });
+          return;
+        }
+
         try {
           const user = await authService.getCurrentUser();
           set({ user, isAuthenticated: !!user, isLoading: false });
           await useSyncStore.getState().startSync();
-        } catch {
-          set({ user: null, isAuthenticated: false, isLoading: false });
+        } catch (error) {
+          // Check if this is a network error (not an auth error)
+          if (isNetworkError(error)) {
+            // Network error - keep cached state
+            const currentState = get();
+            set({
+              isLoading: false,
+              isAuthenticated: currentState.isAuthenticated,
+              user: currentState.user,
+            });
+          } else {
+            // Real auth failure (401, 403, etc) - clear state
+            set({ user: null, isAuthenticated: false, isLoading: false });
+          }
         }
       },
 
@@ -190,11 +218,25 @@ export const useAuthStore = create<AuthState>()(
         const updatedPreferences = { ...userPreferences, ...preferencesData };
         set({ userPreferences: updatedPreferences });
         if (!user) return;
+
+        // Check if online before attempting to sync
+        const isOnline = await isActuallyOnline();
+        if (!isOnline) {
+          // Offline: preferences updated locally, will sync when online
+          return;
+        }
+
         set({ isLoading: true });
         try {
           const updatedUser = await authService.updateUserPreferences(user.$id, updatedPreferences);
           set({ user: updatedUser, isLoading: false });
         } catch (error) {
+          // Check if this is a network error
+          if (isNetworkError(error)) {
+            set({ isLoading: false });
+            // Silently fail on network error - local state already updated
+            return;
+          }
           set({ isLoading: false, syncError: 'Failed to update preferences' });
           throw error;
         }
@@ -239,7 +281,7 @@ export const useAuthStore = create<AuthState>()(
       openOnboardingModal: () => set({ showOnboardingModal: true }),
       closeOnboardingModal: () => {
         set({ showOnboardingModal: false });
-        useSyncStore.getState().manualSync();
+        useSyncStore.getState().triggerSync();
       },
       setPendingOnboarding: (value) => {
         set({ pendingOnboarding: value });
@@ -264,6 +306,9 @@ export const useAuthStore = create<AuthState>()(
       name: `${LOCAL_STORAGE_PREFIX}auth`,
       storage: 'cookie',
       partialize: authStorePartializer,
+      onRehydrate: (_state, _store, set) => {
+        set({ isHydrated: true });
+      },
     }
   )
 );

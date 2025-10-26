@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { getShortcut, ShortcutName } from '@/utils/keyboardShortcuts';
+import { getShortcut, ShortcutName } from '@/config/shortcuts';
 import { cn } from '@/utils';
 
 export const ShortcutKey: FC<{ shortcutName?: ShortcutName; className?: string; shortcut?: string }> = ({

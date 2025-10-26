@@ -1,11 +1,15 @@
 // Landing & Home
 export { default as Landing } from './Landing';
+export { default as Download } from './Download';
 export { default as Home } from './Home';
 
 // Library & Collections
 export { default as Library } from './library/Library';
 export { default as Collections } from './collection/Collections';
 export { default as CollectionDetails } from './collection/CollectionDetails';
+
+// Quick Add (Standalone Window)
+export { default as QuickAdd } from './QuickAdd';
 
 // Media (Movies & TV)
 export { default as Movies } from './media/Movies';

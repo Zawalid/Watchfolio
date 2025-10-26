@@ -13,7 +13,7 @@ export default function SyncStatusWidget() {
 
   const lastSyncText = lastSyncTime
     ? `Last sync: ${formatDistanceToNow(new Date(lastSyncTime), { addSuffix: true })}`
-    : 'Syncing now...';
+    : 'Synced';
 
   const renderDeviceList = () => {
     if (isLoading)

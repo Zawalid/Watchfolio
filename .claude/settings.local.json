@@ -6,7 +6,12 @@
       "Bash(npm run typecheck:*)",
       "Bash(cat:*)",
       "Bash(npm run lint)",
-      "Read(//c/Users/walid/Downloads/Screenshots/**)"
+      "Read(//c/Users/walid/Downloads/Screenshots/**)",
+      "WebFetch(domain:v2.tauri.app)",
+      "Bash(pnpm typecheck)",
+      "WebFetch(domain:docs.dndkit.com)",
+      "WebFetch(domain:github.com)",
+      "Read(//c/Users/walid/Downloads/**)"
     ],
     "deny": [],
     "ask": []

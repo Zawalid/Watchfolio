@@ -1,14 +1,13 @@
 import { ReactNode } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { PanelLeftClose } from 'lucide-react';
 import { Button, Tooltip, useDisclosure, Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@heroui/react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { Tabs } from '@/components/ui/Tabs';
 import { cn } from '@/utils';
-import { getShortcut } from '@/utils/keyboardShortcuts';
 import { SyncStatusIndicator } from './SyncStatusIndicator';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { DRAWER_CLASSNAMES } from '@/styles/heroui';
+import { useUIStore } from '@/stores/useUIStore';
 
 interface TabItem {
   label: string;
@@ -23,8 +22,6 @@ interface LibrarySidebarProps {
   activeTab: string;
   onTabChange?: (value: string) => void;
   isOwnProfile: boolean;
-  showSidebar: boolean;
-  setShowSidebar: (value: boolean) => void;
 }
 
 export default function LibrarySidebar({
@@ -33,21 +30,16 @@ export default function LibrarySidebar({
   activeTab,
   onTabChange,
   isOwnProfile,
-  showSidebar,
-  setShowSidebar,
 }: LibrarySidebarProps) {
+  const showSidebar = useUIStore((state) => state.sidebar);
+  const closeSidebar = useUIStore((state) => state.closeSidebar);
+
   const drawerDisclosure = useDisclosure({
     isOpen: showSidebar,
-    onClose: () => setShowSidebar(false),
-    onOpen: () => setShowSidebar(true),
+    onClose: closeSidebar,
   });
   const { isBelow } = useViewportSize();
 
-  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => setShowSidebar(!showSidebar), [
-    showSidebar,
-    setShowSidebar,
-    drawerDisclosure,
-  ]);
 
   if (isBelow('lg'))
     return (
@@ -114,7 +106,7 @@ export default function LibrarySidebar({
               isIconOnly
               size='sm'
               className='button-secondary!'
-              onPress={() => setShowSidebar(false)}
+              onPress={closeSidebar}
               aria-label='Close sidebar'
             >
               <PanelLeftClose className='size-4' />

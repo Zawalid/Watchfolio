@@ -1,18 +1,37 @@
 import { useQuery } from '@tanstack/react-query';
 import { getTrendingAll } from '@/lib/api/TMDB';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, WifiOff } from 'lucide-react';
 import HeroItem from './HeroSectionItem';
 import { placeholder } from '@/utils/shimmer-placeholder';
 import { Slider } from '../ui/Slider';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { isNetworkError } from '@/utils/connectivity';
 
 export default function HeroSection() {
-  const { data: featuredData, isLoading } = useQuery({
+  const { data: featuredData, isLoading, isError, error } = useQuery({
     queryKey: ['featured-content'],
     queryFn: async () => await getTrendingAll('week', 1),
-    staleTime: 1000 * 60 * 15, 
+    staleTime: 1000 * 60 * 15,
   });
 
+  const isOnline = useNetworkStatus();
+
   const featuredItems = (featuredData?.results as Media[])?.slice(0, 10) || [];
+
+  // Check for offline/network error
+  if (isError && (!isOnline || isNetworkError(error))) {
+    return (
+      <div className='from-Grey-800 to-Grey-700 absolute inset-0 flex h-screen w-screen items-center justify-center bg-gradient-to-r'>
+        <div className='space-y-4 text-center'>
+          <div className='mx-auto flex size-20 items-center justify-center rounded-full border border-warning/20 bg-warning/5 backdrop-blur-md'>
+            <WifiOff className='h-8 w-8 text-warning' />
+          </div>
+          <p className='text-Grey-50 text-lg font-medium'>No Internet Connection</p>
+          <p className='text-Grey-400 text-sm'>Connect to the internet to see trending content</p>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

@@ -1,17 +1,17 @@
-import { useRef, ReactNode } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useRef, ReactNode, useState, useEffect } from 'react';
 import { useQueryState } from 'nuqs';
-import { PanelLeftClose } from 'lucide-react';
-import { Button, Tooltip, useDisclosure } from '@heroui/react';
+import { PanelLeftClose, Loader2 } from 'lucide-react';
+import { Button, Tooltip } from '@heroui/react';
 import { Input } from '@/components/ui/Input';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
-import FiltersModal from '../FiltersModal';
+import FiltersModal from '@/components/modals/FiltersModal';
 import SortBy from '../SortBy';
-import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/utils';
-import { getShortcut } from '@/utils/keyboardShortcuts';
 import LibrarySidebar from './LibrarySidebar';
 import { useViewportSize } from '@/hooks/useViewportSize';
+import { useShortcuts } from '@/hooks/useShortcut';
+import { useUIStore } from '@/stores/useUIStore';
 
 interface TabItem {
   label: string;
@@ -29,6 +29,7 @@ interface LibraryViewLayoutProps {
   renderActions?: () => ReactNode;
   children: ReactNode;
   isOwnProfile: boolean;
+  onSearchingChange?: (isSearching: boolean) => void;
 }
 
 export default function LibraryViewLayout({
@@ -40,18 +41,46 @@ export default function LibraryViewLayout({
   renderActions,
   children,
   isOwnProfile,
+  onSearchingChange,
 }: LibraryViewLayoutProps) {
   const [query, setQuery] = useQueryState('query', { defaultValue: '', shallow: false });
-  const [showSidebar, setShowSidebar] = useLocalStorageState(`show-sidebar-${sidebarTitle}`, true);
+  const [localQuery, setLocalQuery] = useState(query);
+  const debouncedLocalQuery = useDebounce(localQuery, 150);
+  const showSidebar = useUIStore((state) => state.sidebar);
+  const openSidebar = useUIStore((state) => state.openSidebar);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const filtersDisclosure = useDisclosure();
   const { isAbove } = useViewportSize();
 
-  useHotkeys(getShortcut('focusSearch')?.hotkey || '', (e) => {
-    e.preventDefault();
-    searchInputRef.current?.focus();
-  });
-  useHotkeys(getShortcut('clearSearch')?.hotkey || '', () => setQuery(null));
+  const isSearching = localQuery !== debouncedLocalQuery;
+
+  useEffect(() => {
+    onSearchingChange?.(isSearching);
+  }, [isSearching, onSearchingChange]);
+
+  useEffect(() => {
+    setQuery(debouncedLocalQuery);
+  }, [debouncedLocalQuery, setQuery]);
+
+  useEffect(() => {
+    setLocalQuery(query);
+  }, [query]);
+
+  const handleClearSearch = () => {
+    setLocalQuery('');
+    setQuery(null);
+  };
+
+  // Local shortcuts (need access to component state/refs)
+  useShortcuts([
+    {
+      name: 'focusSearch',
+      handler: () => searchInputRef.current?.focus(),
+    },
+    {
+      name: 'clearSearch',
+      handler: handleClearSearch,
+    },
+  ]);
 
   return (
     <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>
@@ -61,8 +90,6 @@ export default function LibraryViewLayout({
         activeTab={activeTab}
         onTabChange={onTabChange}
         isOwnProfile={isOwnProfile}
-        showSidebar={showSidebar}
-        setShowSidebar={setShowSidebar}
       />
 
       {/* Main Content */}
@@ -80,12 +107,18 @@ export default function LibraryViewLayout({
               icon='search'
               parentClassname='w-full md:w-80'
               name='search'
-              value={query}
+              value={localQuery}
               label={searchLabel}
               placeholder='Search by title...'
               ref={searchInputRef}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+              onChange={(e) => setLocalQuery(e.target.value)}
+            >
+              {isSearching && (
+                <span className='text-Primary-400 absolute top-1/2 right-4 z-10 -translate-y-1/2'>
+                  <Loader2 className='size-4 animate-spin' />
+                </span>
+              )}
+            </Input>
             {!showSidebar && (
               <Tooltip
                 content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
@@ -94,7 +127,7 @@ export default function LibraryViewLayout({
                 <Button
                   isIconOnly
                   className='button-secondary! max-sm:order-1'
-                  onPress={() => setShowSidebar(true)}
+                  onPress={openSidebar}
                   aria-label='Show sidebar'
                 >
                   <PanelLeftClose className='size-4 rotate-180' />
@@ -115,7 +148,6 @@ export default function LibraryViewLayout({
               defaultSort='recent'
             />
             <FiltersModal
-              disclosure={filtersDisclosure}
               title='Library Filters'
               filterOptions={['genres', 'networks', 'types']}
             />

@@ -7,6 +7,7 @@ import { router } from './router';
 import '@/styles/index.css';
 import { useAuthStore } from './stores/useAuthStore';
 import { useSyncStore } from './stores/useSyncStore';
+import { useUIStore } from './stores/useUIStore';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -33,6 +34,7 @@ if (import.meta.env.DEV && typeof window !== 'undefined') {
   if (!devtoolsMounted) {
     mountStoreDevtool('AuthStore', useAuthStore);
     mountStoreDevtool('SyncStore', useSyncStore);
+    mountStoreDevtool('UIStore', useUIStore);
     devtoolsMounted = true;
   }
 }

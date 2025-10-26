@@ -1,22 +1,23 @@
 import { Button, closeToast } from '@heroui/react';
 import { addToast } from '@heroui/react';
-import { useDisclosure } from '@heroui/react';
 import { Cloud, Database, Download, Upload, Trash2, RefreshCw, Library as LibraryIcon } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import ImportExportModal from '@/components/library/ImportExportModal';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { SettingItem, SettingSection } from '@/components/settings/SettingSection';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
 import { useSyncStore } from '@/stores/useSyncStore';
 import { useClearLibrary } from '@/hooks/library/useLibraryMutations';
 import { useViewportSize } from '@/hooks/useViewportSize';
+import { useUIStore } from '@/stores/useUIStore';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 
 export default function Library() {
   const { isAuthenticated, userPreferences, updateUserPreferences } = useAuthStore();
-  const { syncStatus, lastSyncTime, manualSync, toggleAutoSync } = useSyncStore();
+  const { syncStatus, lastSyncTime, triggerSync, toggleAutoSync } = useSyncStore();
   const { clearLibrary } = useClearLibrary();
-  const importExportDisclosure = useDisclosure();
-  const {isBelow} = useViewportSize()
+  const openImportExport = useUIStore((state) => state.openImportExport);
+  const { isBelow } = useViewportSize();
+  const isOnline = useNetworkStatus();
 
   const isSyncing = syncStatus === 'syncing' || syncStatus === 'connecting';
 
@@ -39,15 +40,15 @@ export default function Library() {
     }
   };
 
-  const handleManualSync = async () => {
+  const handletriggerSync = async () => {
     if (!isAuthenticated) {
       addToast({ title: 'Sign in required', description: 'Please sign in to sync your library', color: 'warning' });
       return;
     }
     try {
       const key = addToast({ title: 'Syncing...', description: 'Your library is being synced.', color: 'secondary' });
-      await manualSync();
-      if(key) closeToast(key);
+      await triggerSync();
+      if (key) closeToast(key);
       addToast({
         title: 'Sync completed',
         description: 'Your library has been synced successfully',
@@ -62,13 +63,25 @@ export default function Library() {
     try {
       const shouldReset = userPreferences.defaultMediaStatus === status;
       await updateUserPreferences({ defaultMediaStatus: shouldReset ? 'none' : status });
-      addToast({
-        title: 'Default status updated',
-        description: shouldReset
-          ? 'No default status will be set when adding items to your library.'
-          : `Items will now be added with "${LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label}" status by default.`,
-        color: 'success',
-      });
+
+      const description = shouldReset
+        ? 'No default status will be set when adding items to your library.'
+        : `Items will now be added with "${LIBRARY_MEDIA_STATUS.find((s) => s.value === status)?.label}" status by default.`;
+
+      // Show appropriate message based on online status
+      if (!isOnline) {
+        addToast({
+          title: 'Saved locally',
+          description: `${description} Changes will sync when you reconnect to the internet.`,
+          color: 'warning',
+        });
+      } else {
+        addToast({
+          title: 'Default status updated',
+          description,
+          color: 'success',
+        });
+      }
     } catch (error) {
       log('ERR', 'Failed to update default status:', error);
       addToast({
@@ -85,7 +98,7 @@ export default function Library() {
         <div className='relative'>
           {!isAuthenticated && (
             <div className='absolute inset-0 z-10 flex items-center justify-center rounded-xl'>
-              <p className='text-Grey-300 text-center font-medium text-xs sm:text-sm'>
+              <p className='text-Grey-300 text-center text-xs font-medium sm:text-sm'>
                 Sign in to sync your library across devices and
                 <br className='hidden sm:block' />
                 keep your data backed up in the cloud.
@@ -101,22 +114,22 @@ export default function Library() {
               isSwitchDisabled={!isAuthenticated}
               onChange={handleAutoSyncToggle}
             />
-            <div className='mt-4 flex flex-col gap-3 mobile:mt-6 mobile:flex-row mobile:items-center mobile:justify-between'>
+            <div className='mobile:mt-6 mobile:flex-row mobile:items-center mobile:justify-between mt-4 flex flex-col gap-3'>
               <div className='flex-1'>
-                <h4 className='text-Grey-200 text-sm font-semibold mobile:text-base'>Manual Sync</h4>
-                <p className='text-Grey-400 mt-1 text-xs mobile:text-sm'>
+                <h4 className='text-Grey-200 mobile:text-base text-sm font-semibold'>Manual Sync</h4>
+                <p className='text-Grey-400 mobile:text-sm mt-1 text-xs'>
                   {lastSyncTime ? `Last synced: ${new Date(lastSyncTime).toLocaleString()}` : 'Not synced yet'}
                 </p>
               </div>
-              <div className='flex justify-end mobile:justify-start'>
+              <div className='mobile:justify-start flex justify-end'>
                 <Button
                   color='primary'
                   size={isBelow('sm') ? 'sm' : 'md'}
-                  onPress={handleManualSync}
+                  onPress={handletriggerSync}
                   isLoading={isSyncing}
                   isDisabled={!isAuthenticated || isSyncing}
                   startContent={<RefreshCw className='size-4' />}
-                  className='w-full mobile:w-auto'
+                  className='mobile:w-auto w-full'
                 >
                   {isSyncing ? 'Syncing...' : 'Sync Now'}
                 </Button>
@@ -129,18 +142,18 @@ export default function Library() {
       {/* Library Management */}
       <SettingSection Icon={Database} title='Library Management'>
         <div className='flex flex-col gap-4'>
-          <div className='flex flex-col gap-3 mobile:flex-row mobile:items-center mobile:justify-between'>
+          <div className='mobile:flex-row mobile:items-center mobile:justify-between flex flex-col gap-3'>
             <div className='flex-1'>
-              <h4 className='text-Grey-200 text-sm font-semibold mobile:text-base'>Import & Export</h4>
-              <p className='text-Grey-400 mt-1 text-xs mobile:text-sm'>
+              <h4 className='text-Grey-200 mobile:text-base text-sm font-semibold'>Import & Export</h4>
+              <p className='text-Grey-400 mobile:text-sm mt-1 text-xs'>
                 Backup your library or import data from other sources
               </p>
             </div>
-            <div className='flex justify-end mobile:justify-start'>
+            <div className='mobile:justify-start flex justify-end'>
               <Button
                 startContent={<Database className='size-4' />}
-                className='button-secondary! w-full mobile:w-auto'
-                onPress={importExportDisclosure.onOpen}
+                className='button-secondary! mobile:w-auto w-full'
+                onPress={() => openImportExport()}
                 size={isBelow('sm') ? 'sm' : 'md'}
               >
                 Import / Export
@@ -148,7 +161,7 @@ export default function Library() {
             </div>
           </div>
 
-          <div className='text-Grey-400 flex flex-col gap-2 text-xs xs:flex-row xs:items-center xs:gap-4'>
+          <div className='text-Grey-400 xs:flex-row xs:items-center xs:gap-4 flex flex-col gap-2 text-xs'>
             <div className='flex items-center gap-1'>
               <Download className='size-3' />
               <span>Export to JSON/CSV</span>
@@ -194,28 +207,26 @@ export default function Library() {
         iconClassName='text-red-400'
         iconContainerClassName='border-red-500/20 bg-red-500/10'
       >
-        <div className='flex flex-col gap-3 mobile:flex-row mobile:items-center mobile:justify-between'>
+        <div className='mobile:flex-row mobile:items-center mobile:justify-between flex flex-col gap-3'>
           <div className='flex-1'>
-            <h4 className='text-sm font-semibold text-red-200 mobile:text-base'>Clear Library</h4>
-            <p className='text-Grey-400 mt-1 text-xs mobile:text-sm'>
+            <h4 className='mobile:text-base text-sm font-semibold text-red-200'>Clear Library</h4>
+            <p className='text-Grey-400 mobile:text-sm mt-1 text-xs'>
               Permanently delete all items from your library. This action cannot be undone.
             </p>
           </div>
-          <div className='flex justify-end mobile:justify-start'>
+          <div className='mobile:justify-start flex justify-end'>
             <Button
               color='danger'
               size={isBelow('sm') ? 'sm' : 'md'}
               onPress={clearLibrary}
               startContent={<Trash2 className='size-4' />}
-              className='w-full mobile:w-auto'
+              className='mobile:w-auto w-full'
             >
               Clear Library
             </Button>
           </div>
         </div>
       </SettingSection>
-
-      <ImportExportModal disclosure={importExportDisclosure} />
     </div>
   );
 }

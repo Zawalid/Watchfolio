@@ -3,13 +3,14 @@ import { Link } from 'react-router';
 import { Drawer, DrawerContent, DrawerHeader, DrawerBody, DrawerFooter } from '@heroui/react';
 import { motion } from 'framer-motion';
 import { Avatar } from '@heroui/react';
-import { UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle } from 'lucide-react';
+import { UserIcon, Settings, LibraryBig, Heart, LogOut, HelpCircle, Info } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { AVATAR_CLASSNAMES, DRAWER_CLASSNAMES } from '@/styles/heroui';
 import { ShortcutKey } from '../ui/ShortcutKey';
 import { UserInfoSection, SignInSection, getLinks, isLinkActive, useSignOut, getAvatarUrl } from './Shared';
 import { SyncStatusIndicator } from '../library/SyncStatusIndicator';
 import { useViewportSize } from '@/hooks/useViewportSize';
+import { useDesktopActions } from '@/contexts/DesktopActionsContext';
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
   const { user } = useAuthStore();
   const { signOut } = useSignOut();
   const { isBelow } = useViewportSize();
+  const { openAbout } = useDesktopActions();
 
   const isAuthenticated = !!user;
 
@@ -235,6 +237,19 @@ export default function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
                     <ShortcutKey shortcutName='toggleShortcutsHelp' />
                   </div>
                   <span className='text-Grey-500 text-start text-xs'>View all keyboard shortcuts</span>
+                </div>
+              </button>
+              <button
+                onClick={() => {
+                  openAbout();
+                  onClose();
+                }}
+                className='text-Grey-300 hover:text-Primary-50 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-sm transition-all duration-200 hover:bg-white/5'
+              >
+                <Info className='size-4' />
+                <div className='flex flex-col'>
+                  <span className='font-medium'>About Watchfolio</span>
+                  <span className='text-Grey-500 text-start text-xs'>App info and credits</span>
                 </div>
               </button>
             </div>

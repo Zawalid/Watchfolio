@@ -15,7 +15,7 @@ export type InfiniteCardsListProps<T> = {
     | ((ctx: QueryFunctionContext<readonly unknown[], number>) => Promise<TMDBResponse<T>>)
     | (() => Promise<TMDBResponse<T>>);
   CardComponent: React.ComponentType<{ item: T; tabIndex?: number }>;
-  SkeletonComponent: React.ComponentType<{ length?: number; asSlider?: boolean }>;
+  SkeletonComponent: React.ComponentType<{ length?: number; asSlider?: boolean; noContainer?: boolean }>;
   getItemKey: (item: T) => string | number;
   asSlider?: boolean;
   slideClassName?: string;
@@ -95,6 +95,7 @@ export function InfiniteCardsList<T>({
   // Data extraction
   const isLoading = useInfinite ? infiniteQuery.isLoading : normalQuery.isLoading;
   const isError = useInfinite ? infiniteQuery.isError : normalQuery.isError;
+  const error = useInfinite ? infiniteQuery.error : normalQuery.error;
   const refetch = useInfinite ? infiniteQuery.refetch : normalQuery.refetch;
 
   function isInfiniteData(data: unknown): data is InfiniteData<TMDBResponse<T>, number> {
@@ -147,7 +148,7 @@ export function InfiniteCardsList<T>({
   }, [query]);
 
   if (isLoading) return <SkeletonComponent asSlider={asSlider} />;
-  if (isError) return <Status.Error message={errorMessage} onRetry={() => refetch()} />;
+  if (isError) return <Status.Error message={errorMessage} error={error} onRetry={() => refetch()} />;
   if (!results.length && (hasFilters || !!query)) return <Status.NoResults message={noResultsMessage} />;
   if (totalResults === 0) return <Status.Empty Icon={emptyIcon} title={emptyTitle} message={emptyMessage} />;
 
@@ -172,14 +173,12 @@ export function InfiniteCardsList<T>({
         {results.map((item, idx) => (
           <CardComponent key={getItemKey(item)} item={item} tabIndex={currentIndex === idx ? 0 : -1} />
         ))}
+        {useInfinite && infiniteQuery.isFetchingNextPage && <SkeletonComponent length={10} asSlider={asSlider} noContainer />}
         {useInfinite && (
           <div
-            className='col-span-full w-full'
             ref={sentinelRef}
-            style={{ height: infiniteQuery.isFetchingNextPage ? 'auto' : 1 }}
-          >
-            {infiniteQuery.isFetchingNextPage && <SkeletonComponent length={10} asSlider={asSlider} />}
-          </div>
+            style={{ height: 1, gridColumn: '1 / -1' }}
+          />
         )}
       </div>
       {!useInfinite && totalPages > 1 && (

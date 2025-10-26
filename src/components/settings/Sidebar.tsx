@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { PanelLeftClose } from 'lucide-react';
+import { PanelLeftClose, Info } from 'lucide-react';
 import { User, Lock, Sliders, LibraryBig, Monitor } from 'lucide-react';
 import { Button, Tooltip, useDisclosure, Drawer, DrawerContent, DrawerHeader, DrawerBody } from '@heroui/react';
 import { ShortcutTooltip } from '@/components/ui/ShortcutKey';
 import { useViewportSize } from '@/hooks/useViewportSize';
-import { getShortcut } from '@/utils/keyboardShortcuts';
+import { useShortcut } from '@/hooks/useShortcut';
 import { DRAWER_CLASSNAMES } from '@/styles/heroui';
+import { useDesktopActions } from '@/contexts/DesktopActionsContext';
 
 const links = [
   { href: '/settings/profile', label: 'Profile', icon: User },
@@ -19,8 +19,9 @@ const links = [
 export default function Sidebar() {
   const { isOpen, onClose, onOpen } = useDisclosure();
   const { isBelow } = useViewportSize();
+  const { openAbout } = useDesktopActions();
 
-  useHotkeys(getShortcut('toggleSidebar')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen]);
+  useShortcut('toggleSidebar', () => (isOpen ? onClose() : onOpen()));
 
   if (isBelow('lg'))
     return (
@@ -56,12 +57,25 @@ export default function Sidebar() {
               </Tooltip>
             </DrawerHeader>
 
-            <DrawerBody className='px-4 py-6'>
-              <ul className='flex flex-col gap-1'>
+            <DrawerBody className='flex flex-col px-4 py-6'>
+              <ul className='flex flex-1 flex-col gap-1'>
                 {links.map((link) => (
                   <Item key={link.href} href={link.href} label={link.label} icon={link.icon} onClose={onClose} />
                 ))}
               </ul>
+
+              <div className='border-t border-white/10 pt-4'>
+                <button
+                  onClick={() => {
+                    openAbout();
+                    onClose();
+                  }}
+                  className='text-Grey-400 hover:text-Grey-200 hover:bg-white/5 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-base font-medium transition-all duration-200'
+                >
+                  <Info className='h-5 w-5' />
+                  <span>About Watchfolio</span>
+                </button>
+              </div>
             </DrawerBody>
           </DrawerContent>
         </Drawer>
@@ -69,12 +83,22 @@ export default function Sidebar() {
     );
 
   return (
-    <aside className='sticky top-20 left-0 h-[calc(100vh-100px)]'>
-      <ul className='flex flex-col gap-1'>
+    <aside className='sticky top-20 left-0 flex h-[calc(100vh-100px)] flex-col'>
+      <ul className='flex flex-1 flex-col gap-1'>
         {links.map((link) => (
           <Item key={link.href} href={link.href} label={link.label} icon={link.icon} />
         ))}
       </ul>
+
+      <div className='border-t border-white/10 pt-4'>
+        <button
+          onClick={openAbout}
+          className='text-Grey-400 hover:text-Grey-200 hover:bg-white/5 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-base font-medium transition-all duration-200'
+        >
+          <Info className='h-5 w-5' />
+          <span>About Watchfolio</span>
+        </button>
+      </div>
     </aside>
   );
 }

@@ -1,5 +1,4 @@
 import { MonitorPlay, Bookmark, MonitorCheck, MonitorPause, MonitorX, Heart } from 'lucide-react';
-import { CreateUserPreferencesInput } from '@/lib/appwrite/types';
 
 export const RATING_LABELS = {
   1: 'Terrible',
@@ -83,44 +82,5 @@ export const LIBRARY_MEDIA_STATUS = [
   },
 ] as const;
 
-export const LIBRARY_IMPORT_MAX_SIZE = 10 * 1024 * 1024; // 10 MB
-export const LIBRARY_SYNC_DELAY = 3000;
-
-export const LOCAL_STORAGE_PREFIX = 'watchfolio-';
-
 export const TMDB_MOVIE_CATEGORIES: Categories[] = ['popular', 'top-rated', 'now-playing', 'upcoming'];
 export const TMDB_TV_CATEGORIES: Categories[] = ['popular', 'top-rated', 'airing-today', 'on-tv'];
-
-export const FAVORITE_GENRES_LIMIT = 5;
-export const FAVORITE_NETWORKS_LIMIT = 5;
-
-export const ITEMS_PER_PAGE = 20;
-
-export const MAX_TMDB_PAGES = 500;
-
-export const DEFAULT_USER_PREFERENCES: CreateUserPreferencesInput = {
-  signOutConfirmation: 'enabled',
-  removeFromLibraryConfirmation: 'enabled',
-  clearLibraryConfirmation: 'enabled',
-  enableAnimations: 'enabled',
-  defaultMediaStatus: 'none',
-  theme: 'system',
-  language: 'en',
-  autoSync: true,
-};
-
-export const HIDDEN_PROFILE_SECTIONS = [
-  'stats',
-  'stats.statistics',
-  'stats.overview',
-  'stats.topGenres',
-  'stats.recentActivity',
-  'taste',
-  'library',
-  'library.watching',
-  'library.completed',
-  'library.willWatch',
-  'library.onHold',
-  'library.dropped',
-  'library.favorites',
-] as const;

@@ -1,29 +1,23 @@
 import { Keyboard } from 'lucide-react';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { ModalBody, useDisclosure } from '@heroui/react';
+import { ModalBody } from '@heroui/react';
 import { Modal } from '@/components/ui/Modal';
-import { getShortcut, getShortcutsByCategory, type ShortcutCategory } from '@/utils/keyboardShortcuts';
+import { getShortcutsByCategory, type ShortcutCategory } from '@/config/shortcuts';
 import { ShortcutKey } from '@/components/ui/ShortcutKey';
-
+import { useShortcutsDisclosure } from '@/stores/useUIStore';
 
 const CATEGORY_TITLES: Record<ShortcutCategory, string> = {
   general: 'General',
+  navigation: 'Navigation',
   library: 'Library',
   cardFocus: 'Media Actions (When focused)',
-  modal: 'Media Status',
   filters: 'Filters',
+  mediaStatus: 'Media Status',
 };
 
-const CATEGORY_ORDER: ShortcutCategory[] = ['general', 'library', 'cardFocus', 'filters', 'modal'];
+const CATEGORY_ORDER = Object.keys(CATEGORY_TITLES) as ShortcutCategory[];
 
-export default function KeyboardShortcuts(  ) {
-  const disclosure = useDisclosure();
-  const { isOpen, onOpen, onClose } = disclosure;
-
-  useHotkeys(getShortcut('toggleShortcutsHelp')?.hotkey || '', () => (isOpen ? onClose() : onOpen()), [isOpen], {
-    useKey: true,
-  });
-  useHotkeys(getShortcut('escape')?.hotkey || '', () => (isOpen ? onClose() : null), { enabled: isOpen });
+export default function KeyboardShortcuts() {
+  const disclosure = useShortcutsDisclosure();
 
   return (
     <Modal disclosure={disclosure} classNames={{ base: 'full-mobile-modal' }}>

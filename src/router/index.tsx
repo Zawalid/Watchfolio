@@ -14,6 +14,7 @@ import {
   Preferences,
   LibrarySettings,
   Landing,
+  Download,
   CelebrityDetails,
   Celebrities,
   Collections,
@@ -28,6 +29,7 @@ import {
   StatsInsights,
   ViewingTaste,
   MoodRecommendations,
+  QuickAdd,
 } from '@/pages';
 import { moviesLoader, tvShowsLoader } from './loaders';
 import { LIBRARY_MEDIA_STATUS } from '@/utils/constants';
@@ -41,6 +43,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         Component: Landing,
+      },
+      {
+        path: 'download',
+        Component: Download,
       },
       {
         path: 'home',
@@ -219,6 +225,10 @@ export const router = createBrowserRouter([
   {
     path: '/verify-email',
     Component: EmailVerification,
+  },
+  {
+    path: '/quick-add',
+        Component: QuickAdd,
   },
   {
     path: '*',

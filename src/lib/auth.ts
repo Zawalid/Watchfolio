@@ -1,7 +1,7 @@
 import { getDefaultAvatarUrl } from '@/utils/avatar';
 import { appwriteService } from './appwrite/api';
 import { OAuthProvider } from 'appwrite';
-import { DEFAULT_USER_PREFERENCES } from '@/utils/constants';
+import { DEFAULT_USER_PREFERENCES } from '@/config/app';
 import { UpdateProfileInput, UpdateUserPreferencesInput } from './appwrite/types';
 import { UserWithProfile } from './appwrite/types';
 

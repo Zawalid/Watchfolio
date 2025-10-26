@@ -20,9 +20,11 @@ import {
   Users,
   Zap,
   Play,
+  Download,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import { useEffect } from 'react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -322,7 +324,14 @@ const features = [
 ];
 
 export default function LandingPage() {
-  const { openAuthModal } = useAuthStore();
+  const { openAuthModal, isAuthenticated, isLoading } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate('/library/all', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   return (
     <div className='relative overflow-hidden'>
@@ -377,25 +386,36 @@ export default function LandingPage() {
 
               <motion.div
                 variants={itemVariants}
-                className='flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row'
+                className='flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row sm:gap-4'
               >
                 <Button
                   onPress={() => openAuthModal('signup')}
                   size='md'
-                  color='primary'
-                  className='button-primary! w-full px-6! sm:w-auto'
+                  className='button-primary! w-full px-8 font-semibold! sm:w-auto'
                   endContent={<ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />}
                 >
-                  Start Your Journey
+                  Get Started
                 </Button>
                 <Button
                   as={Link}
-                  to='/home'
+                  to='/download'
                   size='md'
-                  className='button-secondary! w-full bg-transparent! px-6! sm:w-auto'
-                  startContent={<Play className='h-4 w-4' />}
+                  className='button-secondary! w-full bg-transparent! px-8 font-semibold! sm:w-auto'
+                  startContent={<Download className='h-4 w-4' />}
                 >
-                  Browse Trending
+                  Download
+                </Button>
+              </motion.div>
+              <motion.div variants={itemVariants} className='pt-2'>
+                <Button
+                  as={Link}
+                  to='/home'
+                  size='sm'
+                  variant='light'
+                  className='text-Grey-400 hover:text-white transition-colors'
+                  startContent={<Play className='h-3.5 w-3.5' />}
+                >
+                  or browse trending
                 </Button>
               </motion.div>
             </motion.div>
@@ -696,14 +716,23 @@ export default function LandingPage() {
                 className='flex flex-col items-center gap-4 sm:flex-row sm:justify-center'
               >
                 <Button
-                  size='lg'
-                  className='button-primary! w-full px-8 text-base font-semibold! sm:w-auto sm:px-10! sm:text-lg!'
+                  size='md'
+                  className='button-primary! w-full px-8 font-semibold! sm:w-auto'
                   endContent={
-                    <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1 sm:h-5 sm:w-5' />
+                    <ArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />
                   }
                   onPress={() => openAuthModal('signup')}
                 >
                   Start Your Journey Now
+                </Button>
+                <Button
+                  as={Link}
+                  to='/download'
+                  size='md'
+                  className='button-secondary! w-full bg-transparent! px-8 font-semibold! sm:w-auto'
+                  startContent={<Download className='h-4 w-4' />}
+                >
+                  Download App
                 </Button>
               </motion.div>
             </motion.div>

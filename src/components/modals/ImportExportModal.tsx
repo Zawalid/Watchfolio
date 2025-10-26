@@ -1,0 +1,63 @@
+import { Upload, Download, FileJson } from 'lucide-react';
+import { ModalBody } from '@heroui/react';
+import { Modal } from '@/components/ui/Modal';
+import { Tab, Tabs } from '@heroui/react';
+import { useShortcuts } from '@/hooks/useShortcut';
+import Import from '@/components/library/Import';
+import Export from '@/components/library/Export';
+import { ShortcutKey } from '@/components/ui/ShortcutKey';
+import { TABS_CLASSNAMES } from '@/styles/heroui';
+import { useImportExportDisclosure } from '@/stores/useUIStore';
+
+export default function ImportExportModal() {
+  const disclosure = useImportExportDisclosure();
+  const { isOpen, activeTab, onClose } = disclosure;
+
+  // Keyboard shortcuts for modal
+  useShortcuts([{ name: 'escape', handler: onClose, enabled: isOpen }]);
+
+  return (
+    <Modal disclosure={disclosure} size='xl' classNames={{ base: 'full-mobile-modal' }}>
+      <ModalBody className='space-y-6 p-6'>
+        <div className='flex items-center gap-3'>
+          <div className='bg-Primary-500/20 rounded-lg p-2'>
+            <FileJson className='text-Primary-400 size-5' />
+          </div>
+          <h2 className='text-Primary-50 text-xl font-semibold'>Import / Export Library</h2>
+        </div>
+
+        <Tabs selectedKey={activeTab} classNames={{ ...TABS_CLASSNAMES, tabList: `${TABS_CLASSNAMES.tabList} w-full` }}>
+          <Tab
+            key='import'
+            title={
+              <div className='flex items-center gap-2'>
+                <Upload className='size-4' />
+                <span>Import</span>
+              </div>
+            }
+          >
+            <Import onClose={onClose} />
+          </Tab>
+          <Tab
+            key='export'
+            title={
+              <div className='flex items-center gap-2'>
+                <Download className='size-4' />
+                <span>Export</span>
+              </div>
+            }
+          >
+            <Export onClose={onClose} />
+          </Tab>
+        </Tabs>
+
+        <div className='border-Primary-500/20 mt-auto bg-Primary-500/10 rounded-lg border p-3'>
+          <p className='text-Primary-300 text-xs'>
+            <span className='font-medium'>Tip:</span> Press <ShortcutKey shortcutName='openImport' /> to open Import or{' '}
+            <ShortcutKey shortcutName='openExport' /> to open Export
+          </p>
+        </div>
+      </ModalBody>
+    </Modal>
+  );
+}

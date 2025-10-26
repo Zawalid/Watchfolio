@@ -1,8 +1,5 @@
 import { placeholder } from '@/utils/shimmer-placeholder';
 
-interface CelebritiesCardsListSkeletonProps {
-  length?: number;
-}
 
 function CelebrityCardSkeleton() {
   return (
@@ -49,7 +46,20 @@ function CelebrityCardSkeleton() {
   );
 }
 
-export default function CelebritiesCardsListSkeleton({ length = 20 }: CelebritiesCardsListSkeletonProps) {
+export default function CelebritiesCardsListSkeleton({ length = 20,noContainer }: {
+  length?: number;
+  noContainer?: boolean;
+}) {
+  if (noContainer) {
+    return (
+      <>
+        {Array.from({ length }).map((_, index) => (
+          <CelebrityCardSkeleton key={index} />
+        ))}
+      </>
+    );
+  }
+
   return (
     <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'>
       {Array.from({ length }).map((_, index) => (

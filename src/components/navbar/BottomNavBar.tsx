@@ -15,7 +15,7 @@ export default function BottomNavBar() {
     >
       <div className='flex items-center justify-around p-2'>
         {getLinks(['home', 'tv', 'library', 'movies', 'search']).map((item) => {
-          const isActive = item.matches.some((match) => location.pathname.startsWith(match));
+          const isActive = item.matches?.some((match) => location.pathname.startsWith(match));
 
           return (
             <Link

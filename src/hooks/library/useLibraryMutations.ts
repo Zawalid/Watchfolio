@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addToast } from '@heroui/react';
 import { useConfirmationModal } from '@/contexts/ConfirmationModalContext';
-import { addOrUpdateLibraryItem, deleteLibraryItem, bulkaddOrUpdateLibraryItem, recreateDB } from '@/lib/rxdb';
+import { addOrUpdateLibraryItem, deleteLibraryItem, bulkaddOrUpdateLibraryItem, recreateDB, getLibraryItem } from '@/lib/rxdb';
 import { appwriteService } from '@/lib/appwrite/api';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { calculateTotalMinutesRuntime, getRating } from '@/utils/media';
@@ -41,7 +41,7 @@ export const useAddOrUpdateLibraryItem = () => {
   const { userId, library } = useInfo();
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       item,
       media,
     }: {
@@ -50,9 +50,23 @@ export const useAddOrUpdateLibraryItem = () => {
       toggleFavorite?: boolean;
     }) => {
       const metadata = media ? getMediaMetadata(media) : {};
-      const updatedItem = { ...item, ...metadata, userId };
+      const updates = { ...item, ...metadata, userId };
 
-      return addOrUpdateLibraryItem(updatedItem, { library, userId });
+      // Fetch current item to get complete state
+      const currentItem = await getLibraryItem(item.id);
+
+      // Merge current item with updates to get complete state
+      const mergedItem = currentItem ? { ...currentItem, ...updates } : updates;
+
+      // Check if item should be removed (no status, not favorite, not rated)
+      const shouldRemove =
+        (!mergedItem.status || mergedItem.status === 'none') && !mergedItem.isFavorite && !mergedItem.userRating;
+
+      if (shouldRemove) {
+        return deleteLibraryItem(item.id);
+      }
+
+      return addOrUpdateLibraryItem(updates, { library, userId });
     },
     onSuccess: invalidateQueries,
     onError: (error) => {
