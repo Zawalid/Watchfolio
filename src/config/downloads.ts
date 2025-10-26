@@ -15,11 +15,8 @@ export const getDownloadUrl = (filename: string): string => {
 /**
  * Generate versioned filename
  */
-export const getVersionedFilename = (baseFilename: string): string => {
-  const parts = baseFilename.split('.');
-  const extension = parts.pop();
-  const name = parts.join('.');
-  return `${name}_${APP_VERSION}.${extension}`;
+export const getVersionedFilename = (platform: string): string => {
+  return `Watchfolio_${APP_VERSION}_${platform}`;
 };
 
 /**
@@ -28,33 +25,33 @@ export const getVersionedFilename = (baseFilename: string): string => {
 export const PLATFORM_DOWNLOADS = {
   macOS: {
     appleSilicon: {
-      filename: getVersionedFilename('Watchfolio_aarch64.dmg'),
+      filename: getVersionedFilename('aarch64.dmg'),
       get url() {
         return getDownloadUrl(this.filename);
       },
     },
     intel: {
-      filename: getVersionedFilename('Watchfolio_x64.dmg'),
+      filename: getVersionedFilename('x64.dmg'),
       get url() {
         return getDownloadUrl(this.filename);
       },
     },
   },
   windows: {
-    filename: getVersionedFilename('Watchfolio_x64-setup.exe'),
+    filename: getVersionedFilename('x64-setup.exe'),
     get url() {
       return getDownloadUrl(this.filename);
     },
   },
   linux: {
     deb: {
-      filename: getVersionedFilename('Watchfolio_amd64.deb'),
+      filename: getVersionedFilename('amd64.deb'),
       get url() {
         return getDownloadUrl(this.filename);
       },
     },
     appImage: {
-      filename: getVersionedFilename('Watchfolio_x86_64.AppImage'),
+      filename: getVersionedFilename('x86_64.AppImage'),
       get url() {
         return getDownloadUrl(this.filename);
       },
