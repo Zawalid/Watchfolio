@@ -12,6 +12,7 @@ import LibrarySidebar from './LibrarySidebar';
 import { useViewportSize } from '@/hooks/useViewportSize';
 import { useShortcuts } from '@/hooks/useShortcut';
 import { useUIStore } from '@/stores/useUIStore';
+import { DragDropProvider } from './DragDropProvider';
 
 interface TabItem {
   label: string;
@@ -83,80 +84,79 @@ export default function LibraryViewLayout({
   ]);
 
   return (
-    <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>
-      <LibrarySidebar
-        sidebarTitle={sidebarTitle}
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={onTabChange}
-        isOwnProfile={isOwnProfile}
-      />
+    <DragDropProvider tabs={tabs} isOwnProfile={isOwnProfile}>
+      <div className='relative flex h-full gap-6 pb-3.5 lg:gap-10'>
+        <LibrarySidebar
+          sidebarTitle={sidebarTitle}
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={onTabChange}
+          isOwnProfile={isOwnProfile}
+        />
 
-      {/* Main Content */}
-      <div
-        className={cn(
-          'flex h-full flex-col gap-8 transition-all duration-300',
-          'sm:ml-0', 
-          showSidebar && isAbove('lg') ? 'sm:w-[calc(100%-290px)] sm:translate-x-[290px]' : 'w-full translate-x-0'
-        )}
-      >
-        <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex items-center gap-2'>
-            <Input
-              type='text'
-              icon='search'
-              parentClassname='w-full md:w-80'
-              name='search'
-              value={localQuery}
-              label={searchLabel}
-              placeholder='Search by title...'
-              ref={searchInputRef}
-              onChange={(e) => setLocalQuery(e.target.value)}
-            >
-              {isSearching && (
-                <span className='text-Primary-400 absolute top-1/2 right-4 z-10 -translate-y-1/2'>
-                  <Loader2 className='size-4 animate-spin' />
-                </span>
-              )}
-            </Input>
-            {!showSidebar && (
-              <Tooltip
-                content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
-                className='tooltip-secondary!'
+        {/* Main Content */}
+        <div
+          className={cn(
+            'flex h-full flex-col gap-8 transition-all duration-300',
+            'sm:ml-0',
+            showSidebar && isAbove('lg') ? 'sm:w-[calc(100%-290px)] sm:translate-x-[290px]' : 'w-full translate-x-0'
+          )}
+        >
+          <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between'>
+            <div className='flex items-center gap-2'>
+              <Input
+                type='text'
+                icon='search'
+                parentClassname='w-full md:w-80'
+                name='search'
+                value={localQuery}
+                label={searchLabel}
+                placeholder='Search by title...'
+                ref={searchInputRef}
+                onChange={(e) => setLocalQuery(e.target.value)}
               >
-                <Button
-                  isIconOnly
-                  className='button-secondary! max-sm:order-1'
-                  onPress={openSidebar}
-                  aria-label='Show sidebar'
+                {isSearching && (
+                  <span className='text-Primary-400 absolute top-1/2 right-4 z-10 -translate-y-1/2'>
+                    <Loader2 className='size-4 animate-spin' />
+                  </span>
+                )}
+              </Input>
+              {!showSidebar && (
+                <Tooltip
+                  content={<ShortcutTooltip shortcutName='toggleSidebar' description='Show sidebar' />}
+                  className='tooltip-secondary!'
                 >
-                  <PanelLeftClose className='size-4 rotate-180' />
-                </Button>
-              </Tooltip>
-            )}
+                  <Button
+                    isIconOnly
+                    className='button-secondary! max-sm:order-1'
+                    onPress={openSidebar}
+                    aria-label='Show sidebar'
+                  >
+                    <PanelLeftClose className='size-4 rotate-180' />
+                  </Button>
+                </Tooltip>
+              )}
+            </div>
+            <div className='flex items-center gap-3'>
+              <SortBy
+                options={[
+                  { key: 'recent', label: 'Recently Added' },
+                  { key: 'title', label: 'Title' },
+                  ...(isOwnProfile ? [{ key: 'user_rating', label: 'Your Rating' }] : []),
+                  { key: 'rating', label: 'Rating' },
+                  { key: 'release_date', label: 'Release Date' },
+                  { key: 'runtime', label: 'Runtime' },
+                ]}
+                defaultSort='recent'
+              />
+              <FiltersModal title='Library Filters' filterOptions={['genres', 'networks', 'types']} />
+              {renderActions?.()}
+            </div>
           </div>
-          <div className='flex items-center gap-3'>
-            <SortBy
-              options={[
-                { key: 'recent', label: 'Recently Added' },
-                { key: 'title', label: 'Title' },
-                ...(isOwnProfile ? [{ key: 'user_rating', label: 'Your Rating' }] : []),
-                { key: 'rating', label: 'Rating' },
-                { key: 'release_date', label: 'Release Date' },
-                { key: 'runtime', label: 'Runtime' },
-              ]}
-              defaultSort='recent'
-            />
-            <FiltersModal
-              title='Library Filters'
-              filterOptions={['genres', 'networks', 'types']}
-            />
-            {renderActions?.()}
-          </div>
-        </div>
 
-        <div className='flex flex-1 flex-col gap-6'>{children}</div>
+          <div className='flex flex-1 flex-col gap-6'>{children}</div>
+        </div>
       </div>
-    </div>
+    </DragDropProvider>
   );
 }

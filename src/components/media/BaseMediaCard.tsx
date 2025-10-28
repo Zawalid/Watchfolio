@@ -34,6 +34,7 @@ interface BaseMediaCardProps {
     detailed_analysis: string;
     mood_alignment: string;
   };
+  disableHover?: boolean;
 }
 
 export default function BaseMediaCard({
@@ -50,6 +51,7 @@ export default function BaseMediaCard({
   primaryRole,
   roleName,
   aiAnalysis,
+  disableHover = false,
 }: BaseMediaCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -68,11 +70,11 @@ export default function BaseMediaCard({
   const { data: mediaDetails } = useQuery({
     queryKey: queryKeys.details(mediaType, id),
     queryFn: () => getDetails(mediaType, id),
-    enabled: isHovered,
+    enabled: isHovered && !disableHover,
     staleTime: Infinity,
   });
 
-  const isInteractive = isHovered || isFocused;
+  const isInteractive = !disableHover && (isHovered || isFocused);
 
   const handleFavorite = useCallback(() => {
     const mediaId = generateMediaId(item || (media && { ...media, media_type: mediaType }));
@@ -91,7 +93,7 @@ export default function BaseMediaCard({
 
   const handleLongPress = useLongPress(
     () => {
-      if(!isMobile) return;
+      if (!isMobile) return;
       setShowMobileDrawer(true);
     },
     {
@@ -133,8 +135,8 @@ export default function BaseMediaCard({
   return (
     <>
       <motion.div
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => !disableHover && setIsHovered(true)}
+        onMouseLeave={() => !disableHover && setIsHovered(false)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         tabIndex={tabIndex}

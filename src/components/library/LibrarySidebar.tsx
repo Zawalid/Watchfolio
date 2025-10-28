@@ -40,7 +40,6 @@ export default function LibrarySidebar({
   });
   const { isBelow } = useViewportSize();
 
-
   if (isBelow('lg'))
     return (
       <Drawer
@@ -79,6 +78,7 @@ export default function LibrarySidebar({
               activeTab={activeTab}
               onChange={onTabChange}
               tabs={tabs}
+              enableDroppable={isOwnProfile}
             />
 
             {isOwnProfile && (
@@ -120,6 +120,7 @@ export default function LibrarySidebar({
           activeTab={activeTab}
           onChange={onTabChange}
           tabs={tabs}
+          enableDroppable={isOwnProfile}
         />
         {isOwnProfile && <SyncStatusIndicator className='mt-auto mb-5' />}
       </aside>

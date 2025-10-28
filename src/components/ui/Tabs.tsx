@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLocation, useSearchParams, Link } from 'react-router';
 import { cn } from '@/utils';
 import { Tooltip } from '@heroui/react';
+import { useDroppable } from '@dnd-kit/core';
 
 type TabItem = {
   label: string;
@@ -23,6 +24,7 @@ type TabsProps = {
   tabClassName?: string;
   indicatorClassName?: string;
   renderWrapper?: (tabContent: ReactNode, tab: TabItem) => ReactNode; // optional custom renderer
+  enableDroppable?: boolean; // Enable drag & drop on tabs
 };
 
 export function Tabs({
@@ -35,6 +37,7 @@ export function Tabs({
   tabClassName = '',
   indicatorClassName = '',
   renderWrapper,
+  enableDroppable = false,
 }: TabsProps) {
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
@@ -73,6 +76,33 @@ export function Tabs({
       e.preventDefault();
       onChange(tab.value);
     }
+  };
+
+  // Droppable wrapper component for individual tabs
+  const DroppableTabItem = ({ tab, children }: { tab: TabItem; children: ReactNode }) => {
+    const isDroppable = enableDroppable && tab.value !== 'all' && tab.value !== 'favorites';
+
+    const { setNodeRef, isOver } = useDroppable({
+      id: `tab-${tab.value}`,
+      data: {
+        type: 'status-tab',
+        status: tab.value,
+      },
+      disabled: !isDroppable,
+    });
+
+    if (!enableDroppable) {
+      return <>{children}</>;
+    }
+
+    return (
+      <div
+        ref={setNodeRef}
+        className={cn(isOver && isDroppable && 'ring-Primary-400 ring-offset-Grey-900 rounded-md ring-2 ring-offset-2')}
+      >
+        {children}
+      </div>
+    );
   };
 
   return (
@@ -151,7 +181,7 @@ export function Tabs({
               tabRefs.current[index] = el;
             }}
           >
-            {inner}
+            <DroppableTabItem tab={tab}>{inner}</DroppableTabItem>
           </li>
         );
       })}
